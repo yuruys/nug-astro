@@ -1,0 +1,140 @@
+<footer class="site-footer">
+
+	<div class="footer-inner">
+
+		<div class="footer-brand">
+
+			<p class="footer-logo">
+				NUG
+			</p>
+
+			<p class="footer-description">
+				Nekozouneko Unofficial Guide
+			</p>
+
+		</div>
+
+
+		<div class="footer-links">
+
+			<a href="/wiki/">
+				攻略
+			</a>
+
+			<a href="/news/">
+				ニュース
+			</a>
+
+			<a href="/tool/">
+				ツール
+			</a>
+
+			<a href="/about/">
+				NUGについて
+			</a>
+
+		</div>
+
+	</div>
+
+
+	<div class="footer-bottom">
+
+		<p>
+			NUG is an unofficial guide site.
+		</p>
+
+	</div>
+
+</footer>
+
+<style>
+	.site-footer {
+		margin-top: 80px;
+
+		border-top:
+			1px solid var(--color-border);
+	}
+
+	.footer-inner {
+		width: min(
+			var(--content-width),
+			calc(100% - 48px)
+		);
+
+		margin: 0 auto;
+
+		padding: 48px 0;
+
+		display: flex;
+
+		justify-content: space-between;
+
+		gap: 40px;
+	}
+
+	.footer-logo {
+		font-size: 22px;
+		font-weight: 800;
+	}
+
+	.footer-description {
+		margin-top: 4px;
+
+		font-size: 13px;
+
+		color: var(--color-text-secondary);
+	}
+
+	.footer-links {
+		display: flex;
+
+		flex-wrap: wrap;
+
+		gap: 20px;
+
+		align-items: center;
+	}
+
+	.footer-links a {
+		font-size: 13px;
+
+		color: var(--color-text-secondary);
+	}
+
+	.footer-links a:hover {
+		color: var(--color-text);
+	}
+
+	.footer-bottom {
+		width: min(
+			var(--content-width),
+			calc(100% - 48px)
+		);
+
+		margin: 0 auto;
+
+		padding:
+			20px 0 28px;
+
+		border-top:
+			1px solid var(--color-border);
+
+		font-size: 11px;
+
+		color: var(--color-text-secondary);
+	}
+
+	@media (max-width: 768px) {
+
+		.footer-inner {
+			flex-direction: column;
+
+			padding: 40px 0;
+		}
+
+		.footer-links {
+			gap: 14px;
+		}
+	}
+</style>

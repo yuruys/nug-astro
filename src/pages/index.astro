@@ -1,17 +1,267 @@
 ---
+import Layout from "../layouts/Layout.astro";
 
+import Hero from "../components/Hero.astro";
+import SearchBox from "../components/SearchBox.astro";
+import CategoryCard from "../components/CategoryCard.astro";
+import Footer from "../components/Footer.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout
+	title="NUG - Nekozouneko Unofficial Guide"
+	description="Nekozouneko Serverの攻略・情報をまとめた非公式ガイド"
+>
+
+	<Hero />
+
+	<SearchBox />
+
+	<section class="section">
+
+		<div class="section-header">
+
+			<p class="section-label">
+				EXPLORE
+			</p>
+
+			<h2>
+				攻略・情報を探す
+			</h2>
+
+			<p>
+				Nekozouneko Serverに関する情報を
+				カテゴリーから探せます。
+			</p>
+
+		</div>
+
+		<div class="category-grid">
+
+			<CategoryCard
+				title="攻略"
+				description="サーバーの仕様や攻略情報をまとめています。"
+				icon="📚"
+				href="/wiki/"
+			/>
+
+			<CategoryCard
+				title="ニュース"
+				description="サーバーに関する最新情報を掲載します。"
+				icon="📰"
+				href="/news/"
+			/>
+
+			<CategoryCard
+				title="ツール"
+				description="ゲーム攻略に役立つ便利なツール。"
+				icon="🛠️"
+				href="/tool/"
+			/>
+
+			<CategoryCard
+				title="NUGについて"
+				description="NUGの目的やサイトについて紹介します。"
+				icon="ℹ️"
+				href="/about/"
+			/>
+
+		</div>
+
+	</section>
+
+
+	<section class="section information-section">
+
+		<div class="section-header">
+
+			<p class="section-label">
+				INFORMATION
+			</p>
+
+			<h2>
+				NUGについて
+			</h2>
+
+		</div>
+
+		<div class="information-grid">
+
+			<div class="information-card">
+
+				<h3>
+					Nekozouneko Server
+				</h3>
+
+				<p>
+					NUGはNekozouneko Serverに関する
+					攻略・仕様・情報をまとめる非公式サイトです。
+				</p>
+
+			</div>
+
+
+			<div class="information-card">
+
+				<h3>
+					プレイヤーのための情報サイト
+				</h3>
+
+				<p>
+					公式サイトだけでは分かりにくい情報を
+					分かりやすく整理して掲載します。
+				</p>
+
+			</div>
+
+		</div>
+
+	</section>
+
+
+	<section class="section latest-section">
+
+		<div class="section-header">
+
+			<p class="section-label">
+				LATEST
+			</p>
+
+			<h2>
+				最新情報
+			</h2>
+
+			<p>
+				NUGの最新情報や更新情報を掲載します。
+			</p>
+
+		</div>
+
+		<div class="latest-placeholder">
+
+			<p>
+				最新情報は今後追加予定です。
+			</p>
+
+		</div>
+
+	</section>
+
+
+	<Footer />
+
+</Layout>
+
+
+<style>
+
+	.section {
+		padding: 80px 0;
+	}
+
+	.section-header {
+		margin-bottom: 32px;
+	}
+
+	.section-label {
+		margin-bottom: 8px;
+
+		font-size: 12px;
+
+		font-weight: 700;
+
+		letter-spacing: 0.12em;
+
+		color: var(--color-text-secondary);
+	}
+
+	.section-header h2 {
+		font-size: 32px;
+
+		letter-spacing: -0.03em;
+	}
+
+	.section-header > p:last-child {
+		margin-top: 8px;
+
+		color: var(--color-text-secondary);
+	}
+
+	.category-grid {
+		display: grid;
+
+		grid-template-columns:
+			repeat(2, minmax(0, 1fr));
+
+		gap: 16px;
+	}
+
+	.information-section {
+		border-top:
+			1px solid var(--color-border);
+	}
+
+	.information-grid {
+		display: grid;
+
+		grid-template-columns:
+			repeat(2, minmax(0, 1fr));
+
+		gap: 16px;
+	}
+
+	.information-card {
+		padding: 28px;
+
+		border-radius: var(--radius-medium);
+
+		background: var(--color-surface);
+	}
+
+	.information-card h3 {
+		font-size: 18px;
+	}
+
+	.information-card p {
+		margin-top: 10px;
+
+		color: var(--color-text-secondary);
+	}
+
+	.latest-section {
+		padding-bottom: 40px;
+	}
+
+	.latest-placeholder {
+		padding: 40px;
+
+		border: 1px dashed var(--color-border);
+
+		border-radius: var(--radius-medium);
+
+		text-align: center;
+
+		color: var(--color-text-secondary);
+	}
+
+
+	@media (max-width: 768px) {
+
+		.section {
+			padding: 60px 0;
+		}
+
+		.section-header h2 {
+			font-size: 28px;
+		}
+
+		.category-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.information-grid {
+			grid-template-columns: 1fr;
+		}
+
+	}
+
+</style>

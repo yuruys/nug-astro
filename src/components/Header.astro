@@ -1,0 +1,1330 @@
+<header class="site-header">
+
+	<div class="header-inner">
+
+		<!-- ========================================
+		     Logo
+		======================================== -->
+
+		<a
+			href="/"
+			class="logo"
+			aria-label="NUG ホーム"
+		>
+
+			<span class="logo-main">
+				NUG
+			</span>
+
+			<span class="logo-sub">
+				Nekozouneko Unofficial Guide
+			</span>
+
+		</a>
+
+
+		<!-- ========================================
+		     Desktop Navigation
+		======================================== -->
+
+		<nav
+			class="desktop-nav"
+			aria-label="メインナビゲーション"
+		>
+
+			<a
+				href="/wiki/"
+				class="nav-link"
+			>
+				<span>攻略</span>
+			</a>
+
+			<a
+				href="/news/"
+				class="nav-link"
+			>
+				<span>ニュース</span>
+			</a>
+
+			<a
+				href="/tool/"
+				class="nav-link"
+			>
+				<span>ツール</span>
+			</a>
+
+			<a
+				href="/about/"
+				class="nav-link"
+			>
+				<span>NUGについて</span>
+			</a>
+
+		</nav>
+
+
+		<!-- ========================================
+		     Header Actions
+		======================================== -->
+
+		<div class="header-actions">
+
+			<button
+				class="icon-button search-button"
+				type="button"
+				aria-label="検索"
+				aria-expanded="false"
+			>
+
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+				>
+
+					<circle
+						cx="11"
+						cy="11"
+						r="6.5"
+					></circle>
+
+					<path
+						d="M16 16L21 21"
+					></path>
+
+				</svg>
+
+			</button>
+
+
+			<button
+				class="menu-button"
+				type="button"
+				aria-label="メニューを開く"
+				aria-expanded="false"
+			>
+
+				<span></span>
+				<span></span>
+				<span></span>
+
+			</button>
+
+		</div>
+
+	</div>
+
+
+	<!-- ========================================
+	     Mobile Navigation
+	======================================== -->
+
+	<nav
+		class="mobile-nav"
+		aria-label="モバイルナビゲーション"
+	>
+
+		<a href="/wiki/">
+
+			<span class="mobile-icon">
+				📚
+			</span>
+
+			<span>
+				攻略
+			</span>
+
+		</a>
+
+
+		<a href="/news/">
+
+			<span class="mobile-icon">
+				📰
+			</span>
+
+			<span>
+				ニュース
+			</span>
+
+		</a>
+
+
+		<a href="/tool/">
+
+			<span class="mobile-icon">
+				🛠️
+			</span>
+
+			<span>
+				ツール
+			</span>
+
+		</a>
+
+
+		<a href="/about/">
+
+			<span class="mobile-icon">
+				ℹ️
+			</span>
+
+			<span>
+				NUGについて
+			</span>
+
+		</a>
+
+	</nav>
+
+
+	<!-- ========================================
+	     Search Panel
+	======================================== -->
+
+	<div
+		class="search-panel"
+		aria-hidden="true"
+	>
+
+		<div class="search-panel-inner">
+
+			<p class="search-label">
+				SEARCH
+			</p>
+
+
+			<h2>
+				NUGを検索
+			</h2>
+
+
+			<div class="search-input-wrapper">
+
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+				>
+
+					<circle
+						cx="11"
+						cy="11"
+						r="6.5"
+					></circle>
+
+					<path
+						d="M16 16L21 21"
+					></path>
+
+				</svg>
+
+
+				<input
+					id="nug-search-input"
+					type="search"
+					placeholder="攻略・プラグイン・コマンドなどを検索"
+					aria-label="サイト内検索"
+					autocomplete="off"
+				/>
+
+			</div>
+
+
+			<!-- Search Results -->
+
+			<div
+				id="nug-search-results"
+				class="search-results"
+			></div>
+
+		</div>
+
+	</div>
+
+</header>
+
+
+<script>
+
+	/* ========================================
+	   Elements
+	======================================== */
+
+	const header =
+		document.querySelector<HTMLElement>(
+			".site-header"
+		);
+
+
+	const menuButton =
+		document.querySelector<HTMLButtonElement>(
+			".menu-button"
+		);
+
+
+	const searchButton =
+		document.querySelector<HTMLButtonElement>(
+			".search-button"
+		);
+
+
+	const searchPanel =
+		document.querySelector<HTMLElement>(
+			".search-panel"
+		);
+
+
+	const searchInput =
+		document.querySelector<HTMLInputElement>(
+			"#nug-search-input"
+		);
+
+
+	const searchResults =
+		document.querySelector<HTMLElement>(
+			"#nug-search-results"
+		);
+
+
+	/* ========================================
+	   Pagefind Search
+	======================================== */
+
+	type PagefindResultData = {
+		title?: string;
+		url?: string;
+		excerpt?: string;
+		meta?: Record<string, string>;
+	};
+
+	type PagefindSearch = {
+		results: Array<{ data: () => Promise<PagefindResultData> }>;
+	};
+
+	type PagefindModule = {
+		search: (query: string) => Promise<PagefindSearch>;
+	};
+
+	let pagefind: PagefindModule | null = null;
+	let searchRequest = 0;
+
+	async function loadPagefind(): Promise<PagefindModule> {
+		if (!pagefind) {
+			const pagefindUrl = new URL("/pagefind/pagefind.js", window.location.origin).href;
+			const loadModule = new Function("url", "return import(url)") as (url: string) => Promise<PagefindModule>;
+			pagefind = await loadModule(pagefindUrl);
+		}
+		return pagefind;
+	}
+
+	function getCategory(url: string): string {
+		if (url.startsWith("/wiki/")) return "攻略";
+		if (url.startsWith("/news/")) return "ニュース";
+		if (url.startsWith("/tool/")) return "ツール";
+		return "サイト";
+	}
+
+	function appendText(parent: HTMLElement, className: string, text: string): void {
+		const element = document.createElement("span");
+		element.className = className;
+		element.textContent = text;
+		parent.append(element);
+	}
+
+	function clearSearchResults(): void {
+		searchResults?.replaceChildren();
+		searchResults?.classList.remove("has-results");
+	}
+
+	async function performSearch(query: string): Promise<void> {
+		if (!searchResults) return;
+		const keyword = query.trim();
+		const requestId = ++searchRequest;
+
+		if (!keyword) {
+			clearSearchResults();
+			return;
+		}
+
+		try {
+			const result = await (await loadPagefind()).search(keyword);
+			const items = await Promise.all(result.results.slice(0, 5).map((item) => item.data()));
+			if (requestId !== searchRequest) return;
+			searchResults.replaceChildren();
+
+			if (items.length === 0) {
+				const empty = document.createElement("div");
+				empty.className = "search-empty";
+				appendText(empty, "", "検索結果がありません");
+				searchResults.append(empty);
+			} else {
+				for (const item of items) {
+					const url = item.url ?? "/";
+					const link = document.createElement("a");
+					link.className = "search-result";
+					link.href = url.startsWith("/") ? url : "/";
+					const content = document.createElement("div");
+					content.className = "search-result-content";
+					appendText(content, "search-result-category", getCategory(url));
+					appendText(content, "search-result-title", item.meta?.title ?? item.title ?? "無題の記事");
+					const excerpt = document.createElement("p");
+					const parsedExcerpt = new DOMParser().parseFromString(item.excerpt ?? "", "text/html");
+					excerpt.textContent = parsedExcerpt.body.textContent ?? "";
+					content.append(excerpt);
+					appendText(link, "search-result-arrow", "→");
+					link.insertBefore(content, link.lastElementChild);
+					searchResults.append(link);
+				}
+			}
+			searchResults.classList.add("has-results");
+		} catch (error) {
+			if (requestId === searchRequest) console.error("NUG Pagefind Error:", error);
+		}
+	}
+
+	async function setSearchState(isOpen: boolean): Promise<void> {
+		if (!header || !searchButton || !searchPanel) return;
+		header.classList.toggle("search-open", isOpen);
+		searchButton.setAttribute("aria-expanded", String(isOpen));
+		searchPanel.setAttribute("aria-hidden", String(!isOpen));
+
+		if (isOpen) {
+			requestAnimationFrame(() => searchInput?.focus());
+		} else {
+			if (searchInput) searchInput.value = "";
+			clearSearchResults();
+		}
+	}
+
+	searchButton?.addEventListener("click", () => {
+		const isOpen = header?.classList.contains("search-open") ?? false;
+		void setSearchState(!isOpen);
+	});
+
+	document.addEventListener("nug:open-search", () => {
+		void setSearchState(true);
+	});
+
+
+	/* ========================================
+	   Input
+	======================================== */
+
+	if (searchInput) {
+
+	searchInput.addEventListener(
+		"input",
+		() => {
+
+			performSearch(
+				searchInput.value
+			);
+
+		}
+	);
+
+}
+
+
+	/* ========================================
+	   Enter
+	======================================== */
+
+	searchInput?.addEventListener(
+		"keydown",
+		(event) => {
+
+			if (
+				event.key !== "Enter"
+			) {
+
+				return;
+
+			}
+
+
+			const firstResult =
+				searchResults?.querySelector<HTMLAnchorElement>(
+					".search-result"
+				);
+
+
+			firstResult?.click();
+
+		}
+	);
+
+
+	/* ========================================
+	   Escape
+	======================================== */
+
+	document.addEventListener(
+		"keydown",
+		(event) => {
+
+			if (
+				event.key === "Escape" &&
+				header?.classList.contains(
+					"search-open"
+				)
+			) {
+
+				setSearchState(
+					false
+				);
+
+
+				searchButton?.focus();
+
+			}
+
+		}
+	);
+
+
+	/* ========================================
+	   Mobile Menu
+	======================================== */
+
+	menuButton?.addEventListener(
+		"click",
+		() => {
+
+			const isOpen =
+				header?.classList.toggle(
+					"menu-open"
+				) ?? false;
+
+
+			menuButton.setAttribute(
+				"aria-expanded",
+				String(isOpen)
+			);
+
+		}
+	);
+
+</script>
+
+
+<style>
+
+	/* ========================================
+	   Header
+	======================================== */
+
+	.site-header {
+
+		position: sticky;
+
+		top: 0;
+
+		z-index: 1000;
+
+		width: 100%;
+
+		background:
+			var(--color-background);
+
+		border-bottom:
+			1px solid var(--color-border);
+
+	}
+
+
+	.header-inner {
+
+		width: min(
+			var(--content-width),
+			calc(100% - 48px)
+		);
+
+		min-height: 68px;
+
+		margin: 0 auto;
+
+		display: flex;
+
+		align-items: center;
+
+		gap: 32px;
+
+	}
+
+
+	/* ========================================
+	   Logo
+	======================================== */
+
+	.logo {
+
+		display: flex;
+
+		align-items: baseline;
+
+		gap: 10px;
+
+		flex-shrink: 0;
+
+		transition:
+			opacity var(--transition-fast),
+			transform var(--transition-fast);
+
+	}
+
+
+	.logo:hover {
+		opacity: 0.8;
+	}
+
+
+	.logo:active {
+		transform:
+			scale(0.97);
+	}
+
+
+	.logo-main {
+
+		font-size: 23px;
+
+		font-weight: 800;
+
+		letter-spacing: -0.05em;
+
+	}
+
+
+	.logo-sub {
+
+		font-size: 11px;
+
+		color:
+			var(--color-text-secondary);
+
+		white-space: nowrap;
+
+	}
+
+
+	/* ========================================
+	   Desktop Navigation
+	======================================== */
+
+	.desktop-nav {
+
+		display: flex;
+
+		align-items: center;
+
+		gap: 4px;
+
+		margin-left: auto;
+
+	}
+
+
+	.nav-link {
+
+		display: flex;
+
+		align-items: center;
+
+		min-height: 40px;
+
+		padding:
+			0 14px;
+
+		border-radius: 10px;
+
+		font-size: 14px;
+
+		font-weight: 500;
+
+		color:
+			var(--color-text-secondary);
+
+		transition:
+			background var(--transition-fast),
+			color var(--transition-fast),
+			transform var(--transition-fast);
+
+	}
+
+
+	.nav-link:hover {
+
+		background:
+			var(--color-surface);
+
+		color:
+			var(--color-text);
+
+	}
+
+
+	.nav-link:active {
+
+		transform:
+			scale(0.96);
+
+	}
+
+
+	/* ========================================
+	   Header Actions
+	======================================== */
+
+	.header-actions {
+
+		display: flex;
+
+		align-items: center;
+
+		gap: 6px;
+
+	}
+
+
+	.icon-button,
+	.menu-button {
+
+		display: flex;
+
+		align-items: center;
+
+		justify-content: center;
+
+		width: 40px;
+
+		height: 40px;
+
+		border-radius: 50%;
+
+		color:
+			var(--color-text);
+
+		transition:
+			background var(--transition-fast),
+			transform var(--transition-fast);
+
+	}
+
+
+	.icon-button:hover,
+	.menu-button:hover {
+
+		background:
+			var(--color-surface);
+
+	}
+
+
+	.icon-button:active,
+	.menu-button:active {
+
+		transform:
+			scale(0.92);
+
+	}
+
+
+	.icon-button svg {
+
+		width: 19px;
+
+		height: 19px;
+
+		fill: none;
+
+		stroke: currentColor;
+
+		stroke-width: 1.8;
+
+		stroke-linecap: round;
+
+		stroke-linejoin: round;
+
+	}
+
+
+	/* ========================================
+	   Menu Button
+	======================================== */
+
+	.menu-button {
+
+		display: none;
+
+		flex-direction: column;
+
+		gap: 4px;
+
+	}
+
+
+	.menu-button span {
+
+		width: 18px;
+
+		height: 1.5px;
+
+		background:
+			currentColor;
+
+		border-radius: 999px;
+
+		transition:
+			transform var(--transition-normal),
+			opacity var(--transition-normal);
+
+	}
+
+
+	/* ========================================
+	   Mobile Navigation
+	======================================== */
+
+	.mobile-nav {
+
+		display: none;
+
+	}
+
+
+	/* ========================================
+	   Search Panel
+	======================================== */
+
+	.search-panel {
+
+		display: grid;
+
+		grid-template-rows: 0fr;
+
+		overflow: hidden;
+
+		background:
+			var(--color-background);
+
+		border-top:
+			1px solid transparent;
+
+		transition:
+			grid-template-rows 300ms ease,
+			border-color 300ms ease;
+
+	}
+
+
+	.search-panel-inner {
+
+		min-height: 0;
+
+		overflow: hidden;
+
+		width: min(
+			var(--content-width),
+			calc(100% - 48px)
+		);
+
+		margin: 0 auto;
+
+		padding: 0;
+
+	}
+
+
+	.search-open .search-panel {
+
+		grid-template-rows:
+			1fr;
+
+		border-top:
+			1px solid var(--color-border);
+
+	}
+
+
+	.search-open .search-panel-inner {
+
+		padding:
+			28px 0 32px;
+
+	}
+
+
+	.search-label {
+
+		font-size: 11px;
+
+		font-weight: 700;
+
+		letter-spacing: 0.14em;
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	.search-panel h2 {
+
+		margin-top: 4px;
+
+		font-size: 24px;
+
+	}
+
+
+	/* ========================================
+	   Search Input
+	======================================== */
+
+	.search-input-wrapper {
+
+		display: flex;
+
+		align-items: center;
+
+		gap: 12px;
+
+		margin-top: 18px;
+
+		padding:
+			0 16px;
+
+		height: 50px;
+
+		border:
+			1px solid var(--color-border);
+
+		border-radius: 14px;
+
+		background:
+			var(--color-surface);
+
+		transition:
+			border-color var(--transition-fast),
+			box-shadow var(--transition-fast);
+
+	}
+
+
+	.search-input-wrapper:focus-within {
+
+		border-color:
+			var(--color-accent);
+
+		box-shadow:
+			0 0 0 3px
+			rgba(0, 122, 255, 0.08);
+
+	}
+
+
+	.search-input-wrapper svg {
+
+		width: 18px;
+
+		height: 18px;
+
+		flex-shrink: 0;
+
+		fill: none;
+
+		stroke:
+			var(--color-text-secondary);
+
+		stroke-width: 1.8;
+
+		stroke-linecap: round;
+
+		stroke-linejoin: round;
+
+	}
+
+
+	.search-input-wrapper input {
+
+		width: 100%;
+
+		border: 0;
+
+		outline: 0;
+
+		background: transparent;
+
+		color:
+			var(--color-text);
+
+		font-size: 14px;
+
+	}
+
+
+	.search-input-wrapper input::placeholder {
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	/* ========================================
+	   Search Results
+	======================================== */
+
+	.search-results {
+
+		max-height: 0;
+
+		overflow: hidden;
+
+		opacity: 0;
+
+		transition:
+			max-height 250ms ease,
+			opacity 200ms ease;
+
+	}
+
+
+	.search-results.has-results {
+
+		max-height: 500px;
+
+		margin-top: 16px;
+
+		opacity: 1;
+
+		overflow-y: auto;
+
+	}
+
+
+	.search-result {
+
+		position: relative;
+
+		display: flex;
+
+		align-items: center;
+
+		gap: 20px;
+
+		padding:
+			16px 18px;
+
+		border:
+			1px solid var(--color-border);
+
+		border-radius: 14px;
+
+		background:
+			var(--color-surface);
+
+		transition:
+			transform var(--transition-fast),
+			background var(--transition-fast),
+			border-color var(--transition-fast);
+
+	}
+
+
+	.search-result + .search-result {
+
+		margin-top: 8px;
+
+	}
+
+
+	.search-result:hover {
+
+		transform:
+			translateY(-2px);
+
+		background:
+			var(--color-background);
+
+		border-color:
+			var(--color-text-secondary);
+
+	}
+
+
+	.search-result:active {
+
+		transform:
+			scale(0.99);
+
+	}
+
+
+	.search-result-content {
+
+		min-width: 0;
+
+		flex: 1;
+
+	}
+
+
+	.search-result-category {
+
+		display: inline-block;
+
+		margin-bottom: 3px;
+
+		font-size: 10px;
+
+		font-weight: 700;
+
+		letter-spacing: 0.08em;
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	.search-result-title {
+
+		font-size: 15px;
+
+		font-weight: 600;
+
+	}
+
+
+	.search-result p {
+
+		margin-top: 2px;
+
+		overflow: hidden;
+
+		font-size: 12px;
+
+		color:
+			var(--color-text-secondary);
+
+		text-overflow: ellipsis;
+
+		white-space: nowrap;
+
+	}
+
+
+	.search-result-arrow {
+
+		flex-shrink: 0;
+
+		color:
+			var(--color-text-secondary);
+
+		transition:
+			transform var(--transition-fast);
+
+	}
+
+
+	.search-result:hover
+	.search-result-arrow {
+
+		transform:
+			translateX(4px);
+
+	}
+
+
+	.search-empty {
+
+		padding:
+			24px;
+
+		text-align: center;
+
+		font-size: 13px;
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	/* ========================================
+	   Mobile
+	======================================== */
+
+	@media (max-width: 850px) {
+
+		.header-inner {
+
+			width: min(
+				var(--content-width),
+				calc(100% - 32px)
+			);
+
+			min-height: 60px;
+
+			gap: 12px;
+
+		}
+
+
+		.logo {
+
+			align-items: center;
+
+		}
+
+
+		.logo-sub {
+
+			display: none;
+
+		}
+
+
+		.desktop-nav {
+
+			display: none;
+
+		}
+
+
+		.menu-button {
+
+			display: flex;
+
+		}
+
+
+		.mobile-nav {
+
+			display: flex;
+
+			flex-direction: column;
+
+			max-height: 0;
+
+			overflow: hidden;
+
+			border-top:
+				1px solid transparent;
+
+			transition:
+				max-height 300ms ease,
+				border-color 300ms ease;
+
+		}
+
+
+		.menu-open .mobile-nav {
+
+			max-height: 300px;
+
+			border-top:
+				1px solid var(--color-border);
+
+		}
+
+
+		.mobile-nav a {
+
+			display: flex;
+
+			align-items: center;
+
+			gap: 12px;
+
+			padding:
+				14px 20px;
+
+			font-size: 14px;
+
+			border-bottom:
+				1px solid var(--color-border);
+
+			transition:
+				background var(--transition-fast),
+				transform var(--transition-fast);
+
+		}
+
+
+		.mobile-nav a:hover {
+
+			background:
+				var(--color-surface);
+
+		}
+
+
+		.mobile-nav a:active {
+
+			transform:
+				scale(0.98);
+
+		}
+
+
+		.mobile-icon {
+
+			width: 24px;
+
+			text-align: center;
+
+		}
+
+
+		.search-panel-inner {
+
+			width: min(
+				var(--content-width),
+				calc(100% - 32px)
+			);
+
+		}
+
+
+		.search-result {
+
+			padding:
+				14px;
+
+		}
+
+
+		.search-result p {
+
+			white-space: normal;
+
+		}
+
+	}
+
+
+	/* ========================================
+	   Small Mobile
+	======================================== */
+
+	@media (max-width: 480px) {
+
+		.header-inner {
+
+			width:
+				calc(100% - 24px);
+
+		}
+
+
+		.logo-main {
+
+			font-size: 21px;
+
+		}
+
+	}
+
+</style>

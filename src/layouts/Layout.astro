@@ -1,0 +1,42 @@
+---
+import Header from "../components/Header.astro";
+import "../styles/global.css";
+
+const {
+	title = "NUG",
+	description = "Nekozouneko Unofficial Guide",
+	pagefind = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1"
+		/>
+
+		<meta
+			name="description"
+			content={description}
+		/>
+
+		<meta
+			name="generator"
+			content={Astro.generator}
+		/>
+
+		<title>{title}</title>
+	</head>
+
+	<body>
+		<Header />
+
+		<main data-pagefind-body={pagefind ? true : undefined}>
+			<slot />
+		</main>
+	</body>
+</html>

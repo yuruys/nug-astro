@@ -1,0 +1,37 @@
+---
+import { getCollection, render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+	const entries = await getCollection("tool");
+	return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Layout title={`${entry.data.title} | NUG`} description={entry.data.description ?? "NUGツール"} pagefind>
+	<article class="article">
+		<header class="article-header">
+			<p class="article-category">{entry.data.category ?? "ツール"}</p>
+			<h1>{entry.data.title}</h1>
+			{entry.data.description && <p class="article-description">{entry.data.description}</p>}
+		</header>
+		<div class="article-body"><Content /></div>
+	</article>
+</Layout>
+
+<style>
+	.article { max-width: 820px; margin: 0 auto; padding: 72px 0 100px; }
+	.article-header { padding-bottom: 40px; border-bottom: 1px solid var(--color-border); }
+	.article-category { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: var(--color-text-secondary); }
+	.article h1 { margin-top: 10px; font-size: clamp(36px, 6vw, 56px); line-height: 1.15; }
+	.article-description { margin-top: 16px; color: var(--color-text-secondary); }
+	.article-body { padding-top: 40px; font-size: 16px; line-height: 1.9; }
+	.article-body :global(h2) { margin: 48px 0 16px; font-size: 28px; }
+	.article-body :global(h3) { margin: 36px 0 12px; font-size: 21px; }
+	.article-body :global(p), .article-body :global(ul) { margin-top: 16px; }
+	.article-body :global(ul) { padding-left: 24px; }
+	@media (max-width: 768px) { .article { padding: 48px 0 72px; } }
+</style>

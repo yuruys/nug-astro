@@ -1,0 +1,526 @@
+---
+import {
+	getCollection
+} from "astro:content";
+
+import Layout
+	from "../../layouts/Layout.astro";
+
+
+/* ========================================
+   Tool Collection
+======================================== */
+
+const tools =
+	await getCollection("tool");
+
+
+/* ========================================
+   Sort
+======================================== */
+
+const sortedTools =
+	[...tools].sort((a, b) => {
+
+		const titleA =
+			a.data.title ??
+			a.id;
+
+		const titleB =
+			b.data.title ??
+			b.id;
+
+		return titleA.localeCompare(
+			titleB,
+			"ja"
+		);
+
+	});
+
+---
+
+
+<Layout
+	title="ツール | NUG"
+	description="Nekozouneko Serverの攻略に役立つ便利なツールをまとめています。"
+>
+
+	<section class="tool-page">
+
+		<header class="page-header">
+
+			<p class="page-label">
+				TOOLS
+			</p>
+
+			<h1>
+				ツール
+			</h1>
+
+			<p class="page-description">
+				Nekozouneko Serverの攻略に役立つ
+				便利なツールをまとめています。
+			</p>
+
+		</header>
+
+
+		{
+			sortedTools.length > 0 ? (
+
+				<div class="tool-grid">
+
+					{
+						sortedTools.map((tool) => {
+
+							const title =
+								tool.data.title ??
+								tool.id;
+
+							const description =
+								tool.data.description ??
+								"このツールの詳細情報を見ることができます。";
+
+							const icon =
+								tool.data.icon ??
+								"🛠️";
+
+							const category =
+								tool.data.category;
+
+
+							return (
+
+								<a
+									href={`/tool/${tool.id}/`}
+									class="tool-card"
+								>
+
+									<div class="tool-card-top">
+
+										<div class="tool-icon">
+											{icon}
+										</div>
+
+
+										<span class="tool-arrow">
+											→
+										</span>
+
+									</div>
+
+
+									<div class="tool-card-content">
+
+										{
+											category && (
+
+												<p class="tool-category">
+													{category}
+												</p>
+
+											)
+										}
+
+
+										<h2>
+											{title}
+										</h2>
+
+
+										<p class="tool-description">
+											{description}
+										</p>
+
+									</div>
+
+								</a>
+
+							);
+
+						})
+					}
+
+				</div>
+
+			) : (
+
+				<div class="empty-state">
+
+					<div class="empty-icon">
+						🛠️
+					</div>
+
+					<h2>
+						ツールはまだありません
+					</h2>
+
+					<p>
+						現在公開されているツールはありません。
+					</p>
+
+				</div>
+
+			)
+		}
+
+	</section>
+
+</Layout>
+
+
+<style>
+
+	/* ========================================
+	   Page
+	======================================== */
+
+	.tool-page {
+
+		width: 100%;
+
+		padding:
+			72px 0 100px;
+	}
+
+
+	/* ========================================
+	   Header
+	======================================== */
+
+	.page-header {
+
+		max-width:
+			760px;
+
+		margin-bottom:
+			48px;
+	}
+
+
+	.page-label {
+
+		margin-bottom:
+			8px;
+
+		font-size:
+			12px;
+
+		font-weight:
+			700;
+
+		letter-spacing:
+			0.14em;
+
+		color:
+			var(--color-text-secondary);
+	}
+
+
+	.page-header h1 {
+
+		font-size:
+			clamp(40px, 7vw, 64px);
+
+		line-height:
+			1.1;
+
+		letter-spacing:
+			-0.05em;
+	}
+
+
+	.page-description {
+
+		margin-top:
+			16px;
+
+		font-size:
+			16px;
+
+		line-height:
+			1.7;
+
+		color:
+			var(--color-text-secondary);
+	}
+
+
+	/* ========================================
+	   Grid
+	======================================== */
+
+	.tool-grid {
+
+		display:
+			grid;
+
+		grid-template-columns:
+			repeat(
+				2,
+				minmax(0, 1fr)
+			);
+
+		gap:
+			16px;
+	}
+
+
+	/* ========================================
+	   Card
+	======================================== */
+
+	.tool-card {
+
+		position:
+			relative;
+
+		display:
+			block;
+
+		padding:
+			28px;
+
+		border:
+			1px solid var(--color-border);
+
+		border-radius:
+			var(--radius-medium);
+
+		background:
+			var(--color-background);
+
+		transition:
+			transform var(--transition-normal),
+			box-shadow var(--transition-normal),
+			border-color var(--transition-fast);
+	}
+
+
+	.tool-card:hover {
+
+		transform:
+			translateY(-4px);
+
+		border-color:
+			var(--color-border);
+
+		box-shadow:
+			0 12px 32px
+			rgba(0, 0, 0, 0.08);
+	}
+
+
+	.tool-card:active {
+
+		transform:
+			scale(0.98);
+	}
+
+
+	/* ========================================
+	   Card Top
+	======================================== */
+
+	.tool-card-top {
+
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			space-between;
+	}
+
+
+	.tool-icon {
+
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			center;
+
+		width:
+			48px;
+
+		height:
+			48px;
+
+		border-radius:
+			14px;
+
+		background:
+			var(--color-surface);
+
+		font-size:
+			22px;
+	}
+
+
+	.tool-arrow {
+
+		font-size:
+			20px;
+
+		color:
+			var(--color-text-secondary);
+
+		transition:
+			transform var(--transition-fast);
+	}
+
+
+	.tool-card:hover .tool-arrow {
+
+		transform:
+			translateX(4px);
+	}
+
+
+	/* ========================================
+	   Card Content
+	======================================== */
+
+	.tool-card-content {
+
+		margin-top:
+			24px;
+	}
+
+
+	.tool-category {
+
+		margin-bottom:
+			6px;
+
+		font-size:
+			11px;
+
+		font-weight:
+			700;
+
+		letter-spacing:
+			0.08em;
+
+		color:
+			var(--color-text-secondary);
+	}
+
+
+	.tool-card h2 {
+
+		font-size:
+			20px;
+
+		line-height:
+			1.4;
+
+		letter-spacing:
+			-0.02em;
+	}
+
+
+	.tool-description {
+
+		margin-top:
+			8px;
+
+		font-size:
+			14px;
+
+		line-height:
+			1.7;
+
+		color:
+			var(--color-text-secondary);
+	}
+
+
+	/* ========================================
+	   Empty
+	======================================== */
+
+	.empty-state {
+
+		padding:
+			64px 24px;
+
+		border:
+			1px dashed var(--color-border);
+
+		border-radius:
+			var(--radius-medium);
+
+		text-align:
+			center;
+
+		color:
+			var(--color-text-secondary);
+	}
+
+
+	.empty-icon {
+
+		margin-bottom:
+			12px;
+
+		font-size:
+			32px;
+	}
+
+
+	.empty-state h2 {
+
+		color:
+			var(--color-text);
+
+		font-size:
+			20px;
+	}
+
+
+	.empty-state p {
+
+		margin-top:
+			8px;
+
+		font-size:
+			14px;
+	}
+
+
+	/* ========================================
+	   Mobile
+	======================================== */
+
+	@media (max-width: 768px) {
+
+		.tool-page {
+
+			padding:
+				48px 0 72px;
+		}
+
+
+		.page-header {
+
+			margin-bottom:
+				32px;
+		}
+
+
+		.tool-grid {
+
+			grid-template-columns:
+				1fr;
+		}
+
+	}
+
+</style>
