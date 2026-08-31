@@ -6,14 +6,15 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-  "dev": "npm run prepare:pagefind && astro dev",
-  "build:astro": "astro build",
-  "build": "astro build && pagefind --site dist",
-  "prepare:pagefind": "node scripts/prepare-pagefind.mjs",
-  "preview": "astro preview",
-  "astro": "astro"
-},
+    "dev": "npm run prepare:pagefind && astro dev",
+    "build:astro": "astro build",
+    "build": "astro build && pagefind --site dist",
+    "prepare:pagefind": "node scripts/prepare-pagefind.mjs",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
   "dependencies": {
+    "@astrojs/starlight": "^0.41.10",
     "astro": "^7.2.5"
   },
   "allowScripts": {
