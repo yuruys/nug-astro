@@ -4,9 +4,13 @@
 
 		<div class="footer-brand">
 
-			<p class="footer-logo">
+			<a
+				href="/"
+				class="footer-logo"
+				aria-label="NUG ホーム"
+			>
 				NUG
-			</p>
+			</a>
 
 			<p class="footer-description">
 				Nekozouneko Unofficial Guide
@@ -15,10 +19,17 @@
 		</div>
 
 
-		<div class="footer-links">
+		<nav
+			class="footer-links"
+			aria-label="フッターナビゲーション"
+		>
+
+			<a href="/guide/">
+				攻略
+			</a>
 
 			<a href="/wiki/">
-				攻略
+				Wiki
 			</a>
 
 			<a href="/news/">
@@ -33,7 +44,7 @@
 				NUGについて
 			</a>
 
-		</div>
+		</nav>
 
 	</div>
 
@@ -48,15 +59,26 @@
 
 </footer>
 
+
 <style>
+
+	/* ========================================
+	   Footer
+	======================================== */
+
 	.site-footer {
-		margin-top: 80px;
+
+		margin-top:
+			80px;
 
 		border-top:
 			1px solid var(--color-border);
+
 	}
 
+
 	.footer-inner {
+
 		width: min(
 			var(--content-width),
 			calc(100% - 48px)
@@ -64,49 +86,136 @@
 
 		margin: 0 auto;
 
-		padding: 48px 0;
+		padding:
+			48px 0;
 
 		display: flex;
 
-		justify-content: space-between;
+		justify-content:
+			space-between;
 
-		gap: 40px;
+		align-items:
+			flex-start;
+
+		gap:
+			40px;
+
 	}
+
+
+	/* ========================================
+	   Brand
+	======================================== */
+
+	.footer-brand {
+
+		flex-shrink: 0;
+
+	}
+
 
 	.footer-logo {
-		font-size: 22px;
-		font-weight: 800;
+
+		display: inline-block;
+
+		font-size:
+			22px;
+
+		font-weight:
+			800;
+
+		letter-spacing:
+			-0.05em;
+
+		transition:
+			opacity var(--transition-fast),
+			transform var(--transition-fast);
+
 	}
+
+
+	.footer-logo:hover {
+
+		opacity:
+			0.75;
+
+	}
+
+
+	.footer-logo:active {
+
+		transform:
+			scale(0.97);
+
+	}
+
 
 	.footer-description {
-		margin-top: 4px;
 
-		font-size: 13px;
+		margin-top:
+			4px;
 
-		color: var(--color-text-secondary);
+		font-size:
+			13px;
+
+		color:
+			var(--color-text-secondary);
+
 	}
 
+
+	/* ========================================
+	   Links
+	======================================== */
+
 	.footer-links {
+
 		display: flex;
 
 		flex-wrap: wrap;
 
-		gap: 20px;
-
 		align-items: center;
+
+		justify-content: flex-end;
+
+		gap:
+			8px 20px;
+
 	}
+
 
 	.footer-links a {
-		font-size: 13px;
 
-		color: var(--color-text-secondary);
+		padding:
+			6px 0;
+
+		font-size:
+			13px;
+
+		color:
+			var(--color-text-secondary);
+
+		transition:
+			color var(--transition-fast),
+			opacity var(--transition-fast);
+
 	}
+
 
 	.footer-links a:hover {
-		color: var(--color-text);
+
+		color:
+			var(--color-text);
+
 	}
 
+
+	/* ========================================
+	   Bottom
+	======================================== */
+
 	.footer-bottom {
+
 		width: min(
 			var(--content-width),
 			calc(100% - 48px)
@@ -120,21 +229,53 @@
 		border-top:
 			1px solid var(--color-border);
 
-		font-size: 11px;
+		font-size:
+			11px;
 
-		color: var(--color-text-secondary);
+		color:
+			var(--color-text-secondary);
+
 	}
+
+
+	/* ========================================
+	   Mobile
+	======================================== */
 
 	@media (max-width: 768px) {
 
 		.footer-inner {
-			flex-direction: column;
 
-			padding: 40px 0;
+			flex-direction:
+				column;
+
+			padding:
+				40px 0;
+
+			gap:
+				24px;
+
 		}
+
 
 		.footer-links {
-			gap: 14px;
+
+			justify-content:
+				flex-start;
+
+			gap:
+				6px 18px;
+
 		}
+
+
+		.footer-bottom {
+
+			padding:
+				18px 0 24px;
+
+		}
+
 	}
+
 </style>

@@ -10,8 +10,11 @@ const {
 ---
 
 <!doctype html>
+
 <html lang="ja">
+
 	<head>
+
 		<meta charset="utf-8" />
 
 		<meta
@@ -30,13 +33,25 @@ const {
 		/>
 
 		<title>{title}</title>
+
 	</head>
 
+
 	<body>
+
 		<Header />
 
-		<main data-pagefind-body={pagefind ? true : undefined}>
+		<main
+			class="astro-main"
+			data-pagefind-body={
+				pagefind ? true : undefined
+			}
+		>
+
 			<slot />
+
 		</main>
+
 	</body>
+
 </html>

@@ -1,0 +1,574 @@
+/* ========================================
+   NUGBASE × Starlight
+   ======================================== */
+
+
+/* ----------------------------------------
+   NUGBASE Design Tokens
+   global.css と共通の値
+   ---------------------------------------- */
+
+:root {
+	--nug-background: #ffffff;
+	--nug-surface: #f7f7f8;
+	--nug-text: #1d1d1f;
+	--nug-text-secondary: #6e6e73;
+	--nug-border: #e5e5e7;
+	--nug-accent: #007aff;
+
+	--nug-radius-small: 10px;
+	--nug-radius-medium: 16px;
+	--nug-radius-large: 24px;
+
+	--nug-content-width: 1200px;
+
+	--nug-font:
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		"Helvetica Neue",
+		Arial,
+		"Noto Sans JP",
+		sans-serif;
+}
+
+
+/* ----------------------------------------
+   Dark Mode
+   ---------------------------------------- */
+
+:root[data-theme='dark'] {
+	--nug-background: #1c1c1e;
+	--nug-surface: #2c2c2e;
+	--nug-text: #f5f5f7;
+	--nug-text-secondary: #98989f;
+	--nug-border: #38383a;
+	--nug-accent: #0a84ff;
+}
+
+
+/* ----------------------------------------
+   Starlight Color System
+   ---------------------------------------- */
+
+:root {
+	--sl-color-accent-low: #eaf3ff;
+	--sl-color-accent: #007aff;
+	--sl-color-accent-high: #005ecb;
+
+	--sl-color-white: #1d1d1f;
+
+	--sl-color-gray-1: #3a3a3c;
+	--sl-color-gray-2: #6e6e73;
+	--sl-color-gray-3: #8e8e93;
+	--sl-color-gray-4: #aeaeb2;
+	--sl-color-gray-5: #d1d1d6;
+	--sl-color-gray-6: #e5e5e7;
+	--sl-color-gray-7: #f2f2f7;
+
+	--sl-color-black: #ffffff;
+
+	--sl-font:
+		var(--nug-font);
+}
+
+
+:root[data-theme='dark'] {
+	--sl-color-accent-low: #102d4d;
+	--sl-color-accent: #0a84ff;
+	--sl-color-accent-high: #64b5ff;
+
+	--sl-color-white: #f5f5f7;
+
+	--sl-color-gray-1: #e5e5e7;
+	--sl-color-gray-2: #aeaeb2;
+	--sl-color-gray-3: #98989f;
+	--sl-color-gray-4: #636366;
+	--sl-color-gray-5: #48484a;
+	--sl-color-gray-6: #38383a;
+	--sl-color-gray-7: #2c2c2e;
+
+	--sl-color-black: #1c1c1e;
+}
+
+
+/* ----------------------------------------
+   Base
+   ---------------------------------------- */
+
+html {
+	font-family: var(--nug-font);
+}
+
+
+body {
+	margin: 0;
+
+	background: var(--nug-background);
+	color: var(--nug-text);
+
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+
+/* ----------------------------------------
+   Starlight Header
+   NUGBASE Header.astro に寄せる
+   ---------------------------------------- */
+
+header.header {
+	height: 64px;
+
+	border-bottom:
+		1px solid var(--nug-border);
+
+	background:
+		color-mix(
+			in srgb,
+			var(--nug-background) 92%,
+			transparent
+		);
+
+	backdrop-filter:
+		blur(16px);
+
+	-webkit-backdrop-filter:
+		blur(16px);
+
+	box-shadow: none;
+}
+
+
+/* ----------------------------------------
+   Header inner
+   ---------------------------------------- */
+
+header.header > div {
+	max-width:
+		var(--nug-content-width);
+
+	margin:
+		0 auto;
+}
+
+
+/* ----------------------------------------
+   NUGBASE Logo
+   ---------------------------------------- */
+
+.site-title {
+	font-family:
+		var(--nug-font);
+
+	font-size:
+		20px;
+
+	font-weight:
+		800;
+
+	letter-spacing:
+		-0.04em;
+
+	color:
+		var(--nug-text);
+
+	transition:
+		opacity 150ms ease;
+}
+
+
+.site-title:hover {
+	opacity:
+		0.65;
+}
+
+
+/* ----------------------------------------
+   Header Links
+   ---------------------------------------- */
+
+header.header a {
+	font-family:
+		var(--nug-font);
+
+	color:
+		var(--nug-text-secondary);
+
+	font-size:
+		13px;
+
+	font-weight:
+		500;
+
+	transition:
+		color 150ms ease,
+		opacity 150ms ease;
+}
+
+
+header.header a:hover {
+	color:
+		var(--nug-text);
+
+	opacity:
+		1;
+}
+
+
+/* ----------------------------------------
+   Active Header Link
+   ---------------------------------------- */
+
+header.header a[aria-current='page'] {
+	color:
+		var(--nug-text);
+
+	font-weight:
+		600;
+}
+
+
+/* ----------------------------------------
+   Header buttons
+   ---------------------------------------- */
+
+header.header button {
+	border:
+		0;
+
+	border-radius:
+		var(--nug-radius-small);
+
+	background:
+		transparent;
+
+	color:
+		var(--nug-text-secondary);
+
+	transition:
+		background 150ms ease,
+		color 150ms ease;
+}
+
+
+header.header button:hover {
+	background:
+		var(--nug-surface);
+
+	color:
+		var(--nug-text);
+}
+
+
+/* ----------------------------------------
+   Header Search
+   ---------------------------------------- */
+
+site-search {
+	--pagefind-ui-scale: 0.9;
+}
+
+
+/* ----------------------------------------
+   Sidebar
+   ---------------------------------------- */
+
+.sidebar {
+	border-right:
+		1px solid var(--nug-border);
+
+	background:
+		var(--nug-background);
+}
+
+
+.sidebar-content {
+	padding-top:
+		24px;
+
+	padding-bottom:
+		24px;
+}
+
+
+/* ----------------------------------------
+   Sidebar Navigation
+   ---------------------------------------- */
+
+.sidebar a {
+	border-radius:
+		var(--nug-radius-small);
+
+	font-size:
+		14px;
+
+	transition:
+		background 150ms ease,
+		color 150ms ease;
+}
+
+
+.sidebar a:hover {
+	background:
+		var(--nug-surface);
+}
+
+
+.sidebar a[aria-current='page'] {
+	background:
+		var(--nug-surface);
+
+	color:
+		var(--nug-accent);
+
+	font-weight:
+		600;
+}
+
+
+/* ----------------------------------------
+   Main Content
+   ---------------------------------------- */
+
+.sl-markdown-content {
+	font-family:
+		var(--nug-font);
+
+	font-size:
+		16px;
+
+	line-height:
+		1.8;
+}
+
+
+/* ----------------------------------------
+   Headings
+   ---------------------------------------- */
+
+.sl-markdown-content h1 {
+	font-size:
+		40px;
+
+	line-height:
+		1.25;
+
+	letter-spacing:
+		-0.04em;
+
+	font-weight:
+		700;
+}
+
+
+.sl-markdown-content h2 {
+	margin-top:
+		48px;
+
+	font-size:
+		28px;
+
+	line-height:
+		1.35;
+
+	letter-spacing:
+		-0.03em;
+
+	border-bottom:
+		1px solid var(--nug-border);
+
+	padding-bottom:
+		10px;
+}
+
+
+.sl-markdown-content h3 {
+	margin-top:
+		36px;
+
+	font-size:
+		21px;
+
+	line-height:
+		1.4;
+}
+
+
+/* ----------------------------------------
+   Paragraph
+   ---------------------------------------- */
+
+.sl-markdown-content p {
+	line-height:
+		1.85;
+}
+
+
+/* ----------------------------------------
+   Links
+   ---------------------------------------- */
+
+.sl-markdown-content a {
+	color:
+		var(--nug-accent);
+
+	text-decoration:
+		none;
+
+	transition:
+		opacity 150ms ease;
+}
+
+
+.sl-markdown-content a:hover {
+	opacity:
+		0.7;
+}
+
+
+/* ----------------------------------------
+   Blockquote
+   ---------------------------------------- */
+
+.sl-markdown-content blockquote {
+	border-left:
+		3px solid var(--nug-accent);
+
+	border-radius:
+		0 var(--nug-radius-small)
+		var(--nug-radius-small)
+		0;
+
+	background:
+		var(--nug-surface);
+
+	padding:
+		16px 20px;
+}
+
+
+/* ----------------------------------------
+   Tables
+   ---------------------------------------- */
+
+.sl-markdown-content table {
+	border:
+		1px solid var(--nug-border);
+
+	border-radius:
+		var(--nug-radius-small);
+
+	overflow:
+		hidden;
+}
+
+
+.sl-markdown-content th {
+	background:
+		var(--nug-surface);
+}
+
+
+.sl-markdown-content th,
+.sl-markdown-content td {
+	border-color:
+		var(--nug-border);
+}
+
+
+/* ----------------------------------------
+   Inline Code
+   ---------------------------------------- */
+
+.sl-markdown-content :not(pre) > code {
+	border:
+		1px solid var(--nug-border);
+
+	border-radius:
+		6px;
+
+	background:
+		var(--nug-surface);
+
+	padding:
+		2px 6px;
+}
+
+
+/* ----------------------------------------
+   Code Block
+   ---------------------------------------- */
+
+.sl-markdown-content pre {
+	border:
+		1px solid var(--nug-border);
+
+	border-radius:
+		var(--nug-radius-medium);
+}
+
+
+/* ----------------------------------------
+   Table of Contents
+   ---------------------------------------- */
+
+starlight-toc a {
+	transition:
+		color 150ms ease;
+}
+
+
+starlight-toc a:hover {
+	color:
+		var(--nug-accent);
+}
+
+
+/* ----------------------------------------
+   Mobile Header
+   ---------------------------------------- */
+
+@media (max-width: 768px) {
+
+	header.header {
+		height:
+			56px;
+	}
+
+
+	.site-title {
+		font-size:
+			19px;
+	}
+
+
+	header.header a {
+		font-size:
+			13px;
+	}
+
+
+	.sl-markdown-content {
+		font-size:
+			15px;
+	}
+
+
+	.sl-markdown-content h1 {
+		font-size:
+			32px;
+	}
+
+
+	.sl-markdown-content h2 {
+		font-size:
+			24px;
+	}
+
+
+	.sidebar {
+		border-right:
+			0;
+	}
+}

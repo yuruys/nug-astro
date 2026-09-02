@@ -6,16 +6,31 @@ import { docsLoader } from "@astrojs/starlight/loaders";
 import { docsSchema } from "@astrojs/starlight/schema";
 
 
-
 /* ========================================
-   Wiki
+   Starlight Wiki
 ======================================== */
 
-const wiki = defineCollection({
+const docs = defineCollection({
+
+	loader: docsLoader(),
+
+	schema: docsSchema(),
+
+});
+
+
+/* ========================================
+   Guide
+======================================== */
+
+const guide = defineCollection({
 
 	loader: glob({
+
 		pattern: "**/*.md",
-		base: "./src/content/wiki",
+
+		base: "./src/content/guide",
+
 	}),
 
 	schema: z.object({
@@ -27,6 +42,8 @@ const wiki = defineCollection({
 		category: z.string().optional(),
 
 		icon: z.string().optional(),
+
+		date: z.coerce.date().optional(),
 
 		order: z.number().optional(),
 
@@ -42,8 +59,11 @@ const wiki = defineCollection({
 const news = defineCollection({
 
 	loader: glob({
+
 		pattern: "**/*.md",
+
 		base: "./src/content/news",
+
 	}),
 
 	schema: z.object({
@@ -72,8 +92,11 @@ const news = defineCollection({
 const tool = defineCollection({
 
 	loader: glob({
+
 		pattern: "**/*.md",
+
 		base: "./src/content/tool",
+
 	}),
 
 	schema: z.object({
@@ -98,12 +121,24 @@ const tool = defineCollection({
 ======================================== */
 
 export const collections = {
-	docs: defineCollection({
-		loader: docsLoader(),
-		schema: docsSchema(),
-	}),
 
-	wiki,
+	/* Starlight Wiki */
+
+	docs,
+
+
+	/* Astro 攻略 */
+
+	guide,
+
+
+	/* Astro ニュース */
+
 	news,
+
+
+	/* Astro ツール */
+
 	tool,
+
 };

@@ -32,32 +32,24 @@
 			aria-label="メインナビゲーション"
 		>
 
-			<a
-				href="/wiki/"
-				class="nav-link"
-			>
-				<span>攻略</span>
+			<a href="/guide/" class="nav-link">
+				攻略
 			</a>
 
-			<a
-				href="/news/"
-				class="nav-link"
-			>
-				<span>ニュース</span>
+			<a href="/docs/" class="nav-link">
+				Wiki
 			</a>
 
-			<a
-				href="/tool/"
-				class="nav-link"
-			>
-				<span>ツール</span>
+			<a href="/news/" class="nav-link">
+				ニュース
 			</a>
 
-			<a
-				href="/about/"
-				class="nav-link"
-			>
-				<span>NUGについて</span>
+			<a href="/tool/" class="nav-link">
+				ツール
+			</a>
+
+			<a href="/about/" class="nav-link">
+				NUGについて
 			</a>
 
 		</nav>
@@ -115,87 +107,42 @@
 
 
 	<!-- ========================================
-	     Mobile Navigation
-	======================================== -->
-
-	<nav
-		class="mobile-nav"
-		aria-label="モバイルナビゲーション"
-	>
-
-		<a href="/wiki/">
-
-			<span class="mobile-icon">
-				📚
-			</span>
-
-			<span>
-				攻略
-			</span>
-
-		</a>
-
-
-		<a href="/news/">
-
-			<span class="mobile-icon">
-				📰
-			</span>
-
-			<span>
-				ニュース
-			</span>
-
-		</a>
-
-
-		<a href="/tool/">
-
-			<span class="mobile-icon">
-				🛠️
-			</span>
-
-			<span>
-				ツール
-			</span>
-
-		</a>
-
-
-		<a href="/about/">
-
-			<span class="mobile-icon">
-				ℹ️
-			</span>
-
-			<span>
-				NUGについて
-			</span>
-
-		</a>
-
-	</nav>
-
-
-	<!-- ========================================
-	     Search Panel
+	     Search Overlay
 	======================================== -->
 
 	<div
-		class="search-panel"
+		class="search-overlay"
 		aria-hidden="true"
 	>
 
-		<div class="search-panel-inner">
+		<div class="search-overlay-backdrop"></div>
 
-			<p class="search-label">
-				SEARCH
-			</p>
+		<div class="search-dialog">
+
+			<div class="search-dialog-header">
+
+				<div>
+
+					<p class="search-label">
+						SEARCH
+					</p>
+
+					<h2>
+						NUGを検索
+					</h2>
+
+				</div>
 
 
-			<h2>
-				NUGを検索
-			</h2>
+				<button
+					class="search-close"
+					type="button"
+					aria-label="検索を閉じる"
+				>
+					×
+				</button>
+
+			</div>
 
 
 			<div class="search-input-wrapper">
@@ -229,14 +176,79 @@
 			</div>
 
 
-			<!-- Search Results -->
-
 			<div
 				id="nug-search-results"
 				class="search-results"
 			></div>
 
 		</div>
+
+	</div>
+
+
+	<!-- ========================================
+	     Mobile Menu Overlay
+	======================================== -->
+
+	<div
+		class="mobile-menu-overlay"
+		aria-hidden="true"
+	>
+
+		<div class="mobile-menu-backdrop"></div>
+
+		<nav
+			class="mobile-menu"
+			aria-label="モバイルナビゲーション"
+		>
+
+			<div class="mobile-menu-header">
+
+				<span class="mobile-menu-title">
+					MENU
+				</span>
+
+				<button
+					class="mobile-menu-close"
+					type="button"
+					aria-label="メニューを閉じる"
+				>
+					×
+				</button>
+
+			</div>
+
+
+			<div class="mobile-menu-links">
+
+				<a href="/guide/">
+					<span class="mobile-icon">📖</span>
+					<span>攻略</span>
+				</a>
+
+				<a href="/docs/">
+					<span class="mobile-icon">📚</span>
+					<span>Wiki</span>
+				</a>
+
+				<a href="/news/">
+					<span class="mobile-icon">📰</span>
+					<span>ニュース</span>
+				</a>
+
+				<a href="/tool/">
+					<span class="mobile-icon">🛠️</span>
+					<span>ツール</span>
+				</a>
+
+				<a href="/about/">
+					<span class="mobile-icon">ℹ️</span>
+					<span>NUGについて</span>
+				</a>
+
+			</div>
+
+		</nav>
 
 	</div>
 
@@ -254,39 +266,59 @@
 			".site-header"
 		);
 
-
-	const menuButton =
-		document.querySelector<HTMLButtonElement>(
-			".menu-button"
-		);
-
-
 	const searchButton =
 		document.querySelector<HTMLButtonElement>(
 			".search-button"
 		);
 
-
-	const searchPanel =
+	const searchOverlay =
 		document.querySelector<HTMLElement>(
-			".search-panel"
+			".search-overlay"
 		);
 
+	const searchClose =
+		document.querySelector<HTMLButtonElement>(
+			".search-close"
+		);
 
 	const searchInput =
 		document.querySelector<HTMLInputElement>(
 			"#nug-search-input"
 		);
 
-
 	const searchResults =
 		document.querySelector<HTMLElement>(
 			"#nug-search-results"
 		);
 
+	const searchBackdrop =
+		document.querySelector<HTMLElement>(
+			".search-overlay-backdrop"
+		);
+
+	const menuButton =
+		document.querySelector<HTMLButtonElement>(
+			".menu-button"
+		);
+
+	const mobileMenuOverlay =
+		document.querySelector<HTMLElement>(
+			".mobile-menu-overlay"
+		);
+
+	const mobileMenuClose =
+		document.querySelector<HTMLButtonElement>(
+			".mobile-menu-close"
+		);
+
+	const mobileMenuBackdrop =
+		document.querySelector<HTMLElement>(
+			".mobile-menu-backdrop"
+		);
+
 
 	/* ========================================
-	   Pagefind Search
+	   Pagefind
 	======================================== */
 
 	type PagefindResultData = {
@@ -297,121 +329,472 @@
 	};
 
 	type PagefindSearch = {
-		results: Array<{ data: () => Promise<PagefindResultData> }>;
+		results: Array<{
+			data: () => Promise<PagefindResultData>
+		}>;
 	};
 
 	type PagefindModule = {
-		search: (query: string) => Promise<PagefindSearch>;
+		search: (
+			query: string
+		) => Promise<PagefindSearch>;
 	};
 
 	let pagefind: PagefindModule | null = null;
+
 	let searchRequest = 0;
 
+
 	async function loadPagefind(): Promise<PagefindModule> {
+
 		if (!pagefind) {
-			const pagefindUrl = new URL("/pagefind/pagefind.js", window.location.origin).href;
-			const loadModule = new Function("url", "return import(url)") as (url: string) => Promise<PagefindModule>;
-			pagefind = await loadModule(pagefindUrl);
+
+			const pagefindUrl =
+				new URL(
+					"/pagefind/pagefind.js",
+					window.location.origin
+				).href;
+
+			const loadModule =
+				new Function(
+					"url",
+					"return import(url)"
+				) as (
+					url: string
+				) => Promise<PagefindModule>;
+
+			pagefind =
+				await loadModule(
+					pagefindUrl
+				);
+
 		}
+
 		return pagefind;
+
 	}
+
 
 	function getCategory(url: string): string {
-		if (url.startsWith("/wiki/")) return "攻略";
-		if (url.startsWith("/news/")) return "ニュース";
-		if (url.startsWith("/tool/")) return "ツール";
+
+		if (url.startsWith("/wiki/")) {
+			return "Wiki";
+		}
+
+		if (url.startsWith("/guide/")) {
+			return "攻略";
+		}
+
+		if (url.startsWith("/news/")) {
+			return "ニュース";
+		}
+
+		if (url.startsWith("/tool/")) {
+			return "ツール";
+		}
+
 		return "サイト";
+
 	}
 
-	function appendText(parent: HTMLElement, className: string, text: string): void {
-		const element = document.createElement("span");
-		element.className = className;
-		element.textContent = text;
+
+	function appendText(
+		parent: HTMLElement,
+		className: string,
+		text: string
+	): void {
+
+		const element =
+			document.createElement("span");
+
+		element.className =
+			className;
+
+		element.textContent =
+			text;
+
 		parent.append(element);
+
 	}
+
 
 	function clearSearchResults(): void {
+
 		searchResults?.replaceChildren();
-		searchResults?.classList.remove("has-results");
+
+		searchResults?.classList.remove(
+			"has-results"
+		);
+
 	}
 
-	async function performSearch(query: string): Promise<void> {
+
+	async function performSearch(
+		query: string
+	): Promise<void> {
+
 		if (!searchResults) return;
-		const keyword = query.trim();
-		const requestId = ++searchRequest;
+
+		const keyword =
+			query.trim();
+
+		const requestId =
+			++searchRequest;
+
 
 		if (!keyword) {
+
 			clearSearchResults();
+
 			return;
+
 		}
+
 
 		try {
-			const result = await (await loadPagefind()).search(keyword);
-			const items = await Promise.all(result.results.slice(0, 5).map((item) => item.data()));
-			if (requestId !== searchRequest) return;
+
+			const result =
+				await (
+					await loadPagefind()
+				).search(keyword);
+
+
+			const items =
+				await Promise.all(
+					result.results
+						.slice(0, 5)
+						.map(
+							(item) => item.data()
+						)
+				);
+
+
+			if (
+				requestId !== searchRequest
+			) {
+				return;
+			}
+
+
 			searchResults.replaceChildren();
 
+
 			if (items.length === 0) {
-				const empty = document.createElement("div");
-				empty.className = "search-empty";
-				appendText(empty, "", "検索結果がありません");
-				searchResults.append(empty);
+
+				const empty =
+					document.createElement("div");
+
+				empty.className =
+					"search-empty";
+
+				appendText(
+					empty,
+					"",
+					"検索結果がありません"
+				);
+
+				searchResults.append(
+					empty
+				);
+
 			} else {
+
 				for (const item of items) {
-					const url = item.url ?? "/";
-					const link = document.createElement("a");
-					link.className = "search-result";
-					link.href = url.startsWith("/") ? url : "/";
-					const content = document.createElement("div");
-					content.className = "search-result-content";
-					appendText(content, "search-result-category", getCategory(url));
-					appendText(content, "search-result-title", item.meta?.title ?? item.title ?? "無題の記事");
-					const excerpt = document.createElement("p");
-					const parsedExcerpt = new DOMParser().parseFromString(item.excerpt ?? "", "text/html");
-					excerpt.textContent = parsedExcerpt.body.textContent ?? "";
-					content.append(excerpt);
-					appendText(link, "search-result-arrow", "→");
-					link.insertBefore(content, link.lastElementChild);
-					searchResults.append(link);
+
+					const url =
+						item.url ?? "/";
+
+
+					const link =
+						document.createElement("a");
+
+					link.className =
+						"search-result";
+
+					link.href =
+						url.startsWith("/")
+							? url
+							: "/";
+
+
+					const content =
+						document.createElement("div");
+
+					content.className =
+						"search-result-content";
+
+
+					appendText(
+						content,
+						"search-result-category",
+						getCategory(url)
+					);
+
+
+					appendText(
+						content,
+						"search-result-title",
+						item.meta?.title ??
+							item.title ??
+							"無題の記事"
+					);
+
+
+					const excerpt =
+						document.createElement("p");
+
+
+					const parsedExcerpt =
+						new DOMParser()
+							.parseFromString(
+								item.excerpt ?? "",
+								"text/html"
+							);
+
+
+					excerpt.textContent =
+						parsedExcerpt
+							.body
+							.textContent ?? "";
+
+
+					content.append(
+						excerpt
+					);
+
+
+					appendText(
+						link,
+						"search-result-arrow",
+						"→"
+					);
+
+
+					link.insertBefore(
+						content,
+						link.lastElementChild
+					);
+
+
+					searchResults.append(
+						link
+					);
+
 				}
+
 			}
-			searchResults.classList.add("has-results");
+
+
+			searchResults.classList.add(
+				"has-results"
+			);
+
 		} catch (error) {
-			if (requestId === searchRequest) console.error("NUG Pagefind Error:", error);
+
+			if (
+				requestId === searchRequest
+			) {
+
+				console.error(
+					"NUG Pagefind Error:",
+					error
+				);
+
+			}
+
 		}
+
 	}
-
-	async function setSearchState(isOpen: boolean): Promise<void> {
-		if (!header || !searchButton || !searchPanel) return;
-		header.classList.toggle("search-open", isOpen);
-		searchButton.setAttribute("aria-expanded", String(isOpen));
-		searchPanel.setAttribute("aria-hidden", String(!isOpen));
-
-		if (isOpen) {
-			requestAnimationFrame(() => searchInput?.focus());
-		} else {
-			if (searchInput) searchInput.value = "";
-			clearSearchResults();
-		}
-	}
-
-	searchButton?.addEventListener("click", () => {
-		const isOpen = header?.classList.contains("search-open") ?? false;
-		void setSearchState(!isOpen);
-	});
-
-	document.addEventListener("nug:open-search", () => {
-		void setSearchState(true);
-	});
 
 
 	/* ========================================
-	   Input
+	   Search State
 	======================================== */
 
-	if (searchInput) {
+	function setSearchState(
+		isOpen: boolean
+	): void {
 
-	searchInput.addEventListener(
+		if (
+			!header ||
+			!searchButton ||
+			!searchOverlay
+		) {
+			return;
+		}
+
+
+		header.classList.toggle(
+			"search-open",
+			isOpen
+		);
+
+
+		searchButton.setAttribute(
+			"aria-expanded",
+			String(isOpen)
+		);
+
+
+		searchOverlay.setAttribute(
+			"aria-hidden",
+			String(!isOpen)
+		);
+
+
+		if (isOpen) {
+
+			document.body.classList.add(
+				"overlay-open"
+			);
+
+
+			requestAnimationFrame(
+				() => searchInput?.focus()
+			);
+
+		} else {
+
+			document.body.classList.remove(
+				"overlay-open"
+			);
+
+
+			if (searchInput) {
+				searchInput.value = "";
+			}
+
+
+			clearSearchResults();
+
+		}
+
+	}
+
+
+	/* ========================================
+	   Menu State
+	======================================== */
+
+	function setMenuState(
+		isOpen: boolean
+	): void {
+
+		if (
+			!header ||
+			!menuButton ||
+			!mobileMenuOverlay
+		) {
+			return;
+		}
+
+
+		header.classList.toggle(
+			"menu-open",
+			isOpen
+		);
+
+
+		menuButton.setAttribute(
+			"aria-expanded",
+			String(isOpen)
+		);
+
+
+		mobileMenuOverlay.setAttribute(
+			"aria-hidden",
+			String(!isOpen)
+		);
+
+
+		if (isOpen) {
+
+			document.body.classList.add(
+				"overlay-open"
+			);
+
+		} else {
+
+			document.body.classList.remove(
+				"overlay-open"
+			);
+
+		}
+
+	}
+
+
+	/* ========================================
+	   Search Button
+	======================================== */
+
+	searchButton?.addEventListener(
+		"click",
+		() => {
+
+			const isOpen =
+				header?.classList.contains(
+					"search-open"
+				) ?? false;
+
+
+			setMenuState(false);
+
+			setSearchState(
+				!isOpen
+			);
+
+		}
+	);
+
+
+	/* ========================================
+	   External Search Event
+	======================================== */
+
+	document.addEventListener(
+		"nug:open-search",
+		() => {
+
+			setMenuState(false);
+
+			setSearchState(true);
+
+		}
+	);
+
+
+	/* ========================================
+	   Search Close
+	======================================== */
+
+	searchClose?.addEventListener(
+		"click",
+		() => {
+
+			setSearchState(false);
+
+			searchButton?.focus();
+
+		}
+	);
+
+
+	searchBackdrop?.addEventListener(
+		"click",
+		() => {
+
+			setSearchState(false);
+
+		}
+	);
+
+
+	/* ========================================
+	   Search Input
+	======================================== */
+
+	searchInput?.addEventListener(
 		"input",
 		() => {
 
@@ -422,11 +805,9 @@
 		}
 	);
 
-}
-
 
 	/* ========================================
-	   Enter
+	   Search Enter
 	======================================== */
 
 	searchInput?.addEventListener(
@@ -436,9 +817,7 @@
 			if (
 				event.key !== "Enter"
 			) {
-
 				return;
-
 			}
 
 
@@ -455,34 +834,6 @@
 
 
 	/* ========================================
-	   Escape
-	======================================== */
-
-	document.addEventListener(
-		"keydown",
-		(event) => {
-
-			if (
-				event.key === "Escape" &&
-				header?.classList.contains(
-					"search-open"
-				)
-			) {
-
-				setSearchState(
-					false
-				);
-
-
-				searchButton?.focus();
-
-			}
-
-		}
-	);
-
-
-	/* ========================================
 	   Mobile Menu
 	======================================== */
 
@@ -491,15 +842,84 @@
 		() => {
 
 			const isOpen =
-				header?.classList.toggle(
+				header?.classList.contains(
 					"menu-open"
 				) ?? false;
 
 
-			menuButton.setAttribute(
-				"aria-expanded",
-				String(isOpen)
+			setSearchState(false);
+
+			setMenuState(
+				!isOpen
 			);
+
+		}
+	);
+
+
+	mobileMenuClose?.addEventListener(
+		"click",
+		() => {
+
+			setMenuState(false);
+
+			menuButton?.focus();
+
+		}
+	);
+
+
+	mobileMenuBackdrop?.addEventListener(
+		"click",
+		() => {
+
+			setMenuState(false);
+
+		}
+	);
+
+
+	/* ========================================
+	   Escape
+	======================================== */
+
+	document.addEventListener(
+		"keydown",
+		(event) => {
+
+			if (
+				event.key !== "Escape"
+			) {
+				return;
+			}
+
+
+			if (
+				header?.classList.contains(
+					"search-open"
+				)
+			) {
+
+				setSearchState(false);
+
+				searchButton?.focus();
+
+				return;
+
+			}
+
+
+			if (
+				header?.classList.contains(
+					"menu-open"
+				)
+			) {
+
+				setMenuState(false);
+
+				menuButton?.focus();
+
+			}
 
 		}
 	);
@@ -510,7 +930,7 @@
 <style>
 
 	/* ========================================
-	   Header
+	   Base
 	======================================== */
 
 	.site-header {
@@ -574,13 +994,17 @@
 
 
 	.logo:hover {
+
 		opacity: 0.8;
+
 	}
 
 
 	.logo:active {
+
 		transform:
 			scale(0.97);
+
 	}
 
 
@@ -683,6 +1107,8 @@
 
 		gap: 6px;
 
+		margin-left: 4px;
+
 	}
 
 
@@ -781,75 +1207,150 @@
 	}
 
 
-	/* ========================================
-	   Mobile Navigation
-	======================================== */
+	.menu-open .menu-button span:nth-child(1) {
 
-	.mobile-nav {
+		transform:
+			translateY(5.5px)
+			rotate(45deg);
 
-		display: none;
+	}
+
+
+	.menu-open .menu-button span:nth-child(2) {
+
+		opacity: 0;
+
+	}
+
+
+	.menu-open .menu-button span:nth-child(3) {
+
+		transform:
+			translateY(-5.5px)
+			rotate(-45deg);
 
 	}
 
 
 	/* ========================================
-	   Search Panel
+	   Search Overlay
 	======================================== */
 
-	.search-panel {
+	.search-overlay {
 
-		display: grid;
+		position: fixed;
 
-		grid-template-rows: 0fr;
+		inset: 0;
 
-		overflow: hidden;
+		z-index: 2000;
+
+		display: flex;
+
+		align-items: flex-start;
+
+		justify-content: center;
+
+		padding:
+			96px 24px 40px;
+
+		opacity: 0;
+
+		visibility: hidden;
+
+		pointer-events: none;
+
+		transition:
+			opacity 200ms ease,
+			visibility 200ms ease;
+
+	}
+
+
+	.search-open .search-overlay {
+
+		opacity: 1;
+
+		visibility: visible;
+
+		pointer-events: auto;
+
+	}
+
+
+	.search-overlay-backdrop {
+
+		position: absolute;
+
+		inset: 0;
+
+		background:
+			rgba(0, 0, 0, 0.28);
+
+		backdrop-filter:
+			blur(4px);
+
+	}
+
+
+	.search-dialog {
+
+		position: relative;
+
+		z-index: 1;
+
+		width: min(
+			760px,
+			100%
+		);
+
+		max-height:
+			calc(100vh - 136px);
+
+		overflow-y: auto;
+
+		padding:
+			28px;
+
+		border:
+			1px solid var(--color-border);
+
+		border-radius: 20px;
 
 		background:
 			var(--color-background);
 
-		border-top:
-			1px solid transparent;
+		box-shadow:
+			0 20px 60px
+			rgba(0, 0, 0, 0.14);
+
+		transform:
+			translateY(-10px)
+			scale(0.98);
 
 		transition:
-			grid-template-rows 300ms ease,
-			border-color 300ms ease;
+			transform 200ms ease;
 
 	}
 
 
-	.search-panel-inner {
+	.search-open .search-dialog {
 
-		min-height: 0;
-
-		overflow: hidden;
-
-		width: min(
-			var(--content-width),
-			calc(100% - 48px)
-		);
-
-		margin: 0 auto;
-
-		padding: 0;
+		transform:
+			translateY(0)
+			scale(1);
 
 	}
 
 
-	.search-open .search-panel {
+	.search-dialog-header {
 
-		grid-template-rows:
-			1fr;
+		display: flex;
 
-		border-top:
-			1px solid var(--color-border);
+		align-items: flex-start;
 
-	}
+		justify-content: space-between;
 
-
-	.search-open .search-panel-inner {
-
-		padding:
-			28px 0 32px;
+		gap: 20px;
 
 	}
 
@@ -868,11 +1369,64 @@
 	}
 
 
-	.search-panel h2 {
+	.search-dialog h2 {
 
 		margin-top: 4px;
 
 		font-size: 24px;
+
+	}
+
+
+	.search-close,
+	.mobile-menu-close {
+
+		display: flex;
+
+		align-items: center;
+
+		justify-content: center;
+
+		width: 36px;
+
+		height: 36px;
+
+		flex-shrink: 0;
+
+		border-radius: 50%;
+
+		font-size: 25px;
+
+		line-height: 1;
+
+		color:
+			var(--color-text-secondary);
+
+		transition:
+			background var(--transition-fast),
+			color var(--transition-fast),
+			transform var(--transition-fast);
+
+	}
+
+
+	.search-close:hover,
+	.mobile-menu-close:hover {
+
+		background:
+			var(--color-surface);
+
+		color:
+			var(--color-text);
+
+	}
+
+
+	.search-close:active,
+	.mobile-menu-close:active {
+
+		transform:
+			scale(0.9);
 
 	}
 
@@ -894,7 +1448,7 @@
 		padding:
 			0 16px;
 
-		height: 50px;
+		height: 52px;
 
 		border:
 			1px solid var(--color-border);
@@ -1153,19 +1707,231 @@
 
 
 	/* ========================================
-	   Mobile
+	   Mobile Menu Overlay
+	======================================== */
+
+	.mobile-menu-overlay {
+
+		position: fixed;
+
+		inset: 0;
+
+		z-index: 1900;
+
+		opacity: 0;
+
+		visibility: hidden;
+
+		pointer-events: none;
+
+		transition:
+			opacity 200ms ease,
+			visibility 200ms ease;
+
+	}
+
+
+	.menu-open .mobile-menu-overlay {
+
+		opacity: 1;
+
+		visibility: visible;
+
+		pointer-events: auto;
+
+	}
+
+
+	.mobile-menu-backdrop {
+
+		position: absolute;
+
+		inset: 0;
+
+		background:
+			rgba(0, 0, 0, 0.28);
+
+		backdrop-filter:
+			blur(4px);
+
+	}
+
+
+	.mobile-menu {
+
+		position: absolute;
+
+		top: 76px;
+
+		right: 16px;
+
+		width: min(
+			360px,
+			calc(100% - 32px)
+		);
+
+		padding:
+			18px;
+
+		border:
+			1px solid var(--color-border);
+
+		border-radius: 20px;
+
+		background:
+			var(--color-background);
+
+		box-shadow:
+			0 20px 60px
+			rgba(0, 0, 0, 0.14);
+
+		transform:
+			translateY(-10px)
+			scale(0.98);
+
+		transition:
+			transform 200ms ease;
+
+	}
+
+
+	.menu-open .mobile-menu {
+
+		transform:
+			translateY(0)
+			scale(1);
+
+	}
+
+
+	.mobile-menu-header {
+
+		display: flex;
+
+		align-items: center;
+
+		justify-content: space-between;
+
+		padding:
+			2px 2px 12px;
+
+		border-bottom:
+			1px solid var(--color-border);
+
+	}
+
+
+	.mobile-menu-title {
+
+		font-size: 11px;
+
+		font-weight: 700;
+
+		letter-spacing: 0.14em;
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	.mobile-menu-links {
+
+		display: flex;
+
+		flex-direction: column;
+
+		gap: 4px;
+
+		padding-top: 10px;
+
+	}
+
+
+	.mobile-menu-links a {
+
+		display: flex;
+
+		align-items: center;
+
+		gap: 12px;
+
+		min-height: 48px;
+
+		padding:
+			0 12px;
+
+		border-radius: 12px;
+
+		font-size: 15px;
+
+		font-weight: 500;
+
+		color:
+			var(--color-text);
+
+		transition:
+			background var(--transition-fast),
+			transform var(--transition-fast);
+
+	}
+
+
+	.mobile-menu-links a:hover {
+
+		background:
+			var(--color-surface);
+
+	}
+
+
+	.mobile-menu-links a:active {
+
+		transform:
+			scale(0.98);
+
+	}
+
+
+	.mobile-icon {
+
+		display: flex;
+
+		align-items: center;
+
+		justify-content: center;
+
+		width: 28px;
+
+		font-size: 18px;
+
+	}
+
+
+	/* ========================================
+	   Body Lock
+	======================================== */
+
+	:global(body.overlay-open) {
+
+		overflow: hidden;
+
+	}
+
+
+	/* ========================================
+	   Mobile Header
 	======================================== */
 
 	@media (max-width: 850px) {
 
 		.header-inner {
 
-			width: min(
-				var(--content-width),
-				calc(100% - 32px)
-			);
+			width:
+				calc(100% - 32px);
 
-			min-height: 60px;
+			min-height:
+				60px;
 
 			gap: 12px;
 
@@ -1193,6 +1959,13 @@
 		}
 
 
+		.header-actions {
+
+			margin-left: auto;
+
+		}
+
+
 		.menu-button {
 
 			display: flex;
@@ -1200,90 +1973,33 @@
 		}
 
 
-		.mobile-nav {
-
-			display: flex;
-
-			flex-direction: column;
-
-			max-height: 0;
-
-			overflow: hidden;
-
-			border-top:
-				1px solid transparent;
-
-			transition:
-				max-height 300ms ease,
-				border-color 300ms ease;
-
-		}
-
-
-		.menu-open .mobile-nav {
-
-			max-height: 300px;
-
-			border-top:
-				1px solid var(--color-border);
-
-		}
-
-
-		.mobile-nav a {
-
-			display: flex;
-
-			align-items: center;
-
-			gap: 12px;
+		.search-overlay {
 
 			padding:
-				14px 20px;
-
-			font-size: 14px;
-
-			border-bottom:
-				1px solid var(--color-border);
-
-			transition:
-				background var(--transition-fast),
-				transform var(--transition-fast);
+				76px 16px 24px;
 
 		}
 
 
-		.mobile-nav a:hover {
+		.search-dialog {
 
-			background:
-				var(--color-surface);
+			padding:
+				20px;
 
-		}
+			border-radius:
+				18px;
 
-
-		.mobile-nav a:active {
-
-			transform:
-				scale(0.98);
+			max-height:
+				calc(100vh - 100px);
 
 		}
 
 
-		.mobile-icon {
+		.mobile-menu {
 
-			width: 24px;
+			top: 68px;
 
-			text-align: center;
-
-		}
-
-
-		.search-panel-inner {
-
-			width: min(
-				var(--content-width),
-				calc(100% - 32px)
-			);
+			right: 16px;
 
 		}
 
@@ -1298,7 +2014,8 @@
 
 		.search-result p {
 
-			white-space: normal;
+			white-space:
+				normal;
 
 		}
 
@@ -1321,7 +2038,36 @@
 
 		.logo-main {
 
-			font-size: 21px;
+			font-size:
+				21px;
+
+		}
+
+
+		.search-overlay {
+
+			padding:
+				72px 12px 16px;
+
+		}
+
+
+		.search-dialog {
+
+			padding:
+				18px;
+
+		}
+
+
+		.mobile-menu {
+
+			top: 66px;
+
+			right: 12px;
+
+			width:
+				calc(100% - 24px);
 
 		}
 

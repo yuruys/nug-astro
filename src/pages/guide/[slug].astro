@@ -1,0 +1,373 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+
+	const guides = await getCollection("guide");
+
+	return guides.map((guide) => ({
+
+		params: {
+			slug: guide.id,
+		},
+
+		props: {
+			guide,
+		},
+
+	}));
+
+}
+
+
+const { guide } = Astro.props;
+
+const { Content } = await render(guide);
+---
+
+<Layout
+	title={`${guide.data.title} | NUGBASE`}
+	description={
+		guide.data.description ??
+		"NUGBASEの攻略情報"
+	}
+	pagefind={true}
+>
+
+	<article class="guide-article">
+
+		<header class="article-header">
+
+			{
+				guide.data.category && (
+
+					<p class="article-category">
+						{guide.data.category}
+					</p>
+
+				)
+			}
+
+			<h1>
+				{guide.data.title}
+			</h1>
+
+			{
+				guide.data.description && (
+
+					<p class="article-description">
+						{guide.data.description}
+					</p>
+
+				)
+			}
+
+		</header>
+
+
+		<div class="article-content">
+
+			<Content />
+
+		</div>
+
+	</article>
+
+</Layout>
+
+
+<style>
+
+	.guide-article {
+
+		padding:
+			64px 0 80px;
+
+	}
+
+
+	.article-header {
+
+		max-width:
+			800px;
+
+		margin:
+			0 auto;
+
+		padding-bottom:
+			40px;
+
+		border-bottom:
+			1px solid var(--color-border);
+
+	}
+
+
+	.article-category {
+
+		margin-bottom:
+			8px;
+
+		font-size:
+			11px;
+
+		font-weight:
+			700;
+
+		letter-spacing:
+			0.08em;
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	.article-header h1 {
+
+		font-size:
+			40px;
+
+		line-height:
+			1.25;
+
+		letter-spacing:
+			-0.04em;
+
+	}
+
+
+	.article-description {
+
+		margin-top:
+			14px;
+
+		font-size:
+			16px;
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	.article-content {
+
+		max-width:
+			800px;
+
+		margin:
+			40px auto 0;
+
+		font-size:
+			16px;
+
+		line-height:
+			1.9;
+
+	}
+
+
+	.article-content :global(h2) {
+
+		margin-top:
+			48px;
+
+		margin-bottom:
+			16px;
+
+		font-size:
+			26px;
+
+		line-height:
+			1.4;
+
+	}
+
+
+	.article-content :global(h3) {
+
+		margin-top:
+			36px;
+
+		margin-bottom:
+			12px;
+
+		font-size:
+			21px;
+
+		line-height:
+			1.4;
+
+	}
+
+
+	.article-content :global(p) {
+
+		margin-top:
+			16px;
+
+	}
+
+
+	.article-content :global(ul) {
+
+		margin-top:
+			16px;
+
+		padding-left:
+			24px;
+
+		list-style:
+			disc;
+
+	}
+
+
+	.article-content :global(ol) {
+
+		margin-top:
+			16px;
+
+		padding-left:
+			24px;
+
+		list-style:
+			decimal;
+
+	}
+
+
+	.article-content :global(li) {
+
+		margin-top:
+			6px;
+
+	}
+
+
+	.article-content :global(a) {
+
+		color:
+			var(--color-accent);
+
+		text-decoration:
+			underline;
+
+		text-underline-offset:
+			3px;
+
+	}
+
+
+	.article-content :global(blockquote) {
+
+		margin:
+			24px 0;
+
+		padding:
+			16px 20px;
+
+		border-left:
+			3px solid var(--color-border);
+
+		background:
+			var(--color-surface);
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	.article-content :global(code) {
+
+		padding:
+			2px 6px;
+
+		border-radius:
+			6px;
+
+		background:
+			var(--color-surface);
+
+		font-size:
+			0.9em;
+
+	}
+
+
+	.article-content :global(pre) {
+
+		overflow-x:
+			auto;
+
+		margin:
+			24px 0;
+
+		padding:
+			20px;
+
+		border-radius:
+			var(--radius-medium);
+
+		background:
+			var(--color-surface);
+
+	}
+
+
+	.article-content :global(pre code) {
+
+		padding:
+			0;
+
+		background:
+			transparent;
+
+	}
+
+
+	@media (max-width: 768px) {
+
+		.guide-article {
+
+			padding:
+				40px 0 60px;
+
+		}
+
+
+		.article-header h1 {
+
+			font-size:
+				32px;
+
+		}
+
+
+		.article-description {
+
+			font-size:
+				14px;
+
+		}
+
+
+		.article-content {
+
+			margin-top:
+				32px;
+
+			font-size:
+				15px;
+
+			line-height:
+				1.8;
+
+		}
+
+	}
+
+</style>

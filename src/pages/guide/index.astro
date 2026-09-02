@@ -1,0 +1,326 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const guides = await getCollection("guide");
+
+const sortedGuides = guides.sort((a, b) => {
+	return (a.data.order ?? 999) - (b.data.order ?? 999);
+});
+---
+
+<Layout
+	title="攻略 | NUGBASE"
+	description="Nekozouneko Serverの攻略情報をまとめています。"
+>
+
+	<section class="guide-header">
+
+		<p class="eyebrow">
+			GUIDE
+		</p>
+
+		<h1>
+			攻略
+		</h1>
+
+		<p class="description">
+			Nekozouneko Serverを楽しむための攻略情報をまとめています。
+		</p>
+
+	</section>
+
+
+	<section class="guide-list">
+
+		{
+			sortedGuides.map((guide) => (
+
+				<a
+					href={`/guide/${guide.id}/`}
+					class="guide-card"
+				>
+
+					<div class="guide-card-content">
+
+						{
+							guide.data.category && (
+
+								<span class="guide-category">
+									{guide.data.category}
+								</span>
+
+							)
+						}
+
+						<h2>
+							{guide.data.title}
+						</h2>
+
+						{
+							guide.data.description && (
+
+								<p>
+									{guide.data.description}
+								</p>
+
+							)
+						}
+
+					</div>
+
+
+					<span class="guide-arrow">
+						→
+					</span>
+
+				</a>
+
+			))
+		}
+
+	</section>
+
+</Layout>
+
+
+<style>
+
+	.guide-header {
+
+		padding:
+			72px 0 48px;
+
+	}
+
+
+	.eyebrow {
+
+		font-size:
+			11px;
+
+		font-weight:
+			700;
+
+		letter-spacing:
+			0.14em;
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	h1 {
+
+		margin-top:
+			8px;
+
+		font-size:
+			42px;
+
+		line-height:
+			1.2;
+
+		letter-spacing:
+			-0.04em;
+
+	}
+
+
+	.description {
+
+		max-width:
+			680px;
+
+		margin-top:
+			16px;
+
+		font-size:
+			16px;
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	.guide-list {
+
+		display:
+			flex;
+
+		flex-direction:
+			column;
+
+		gap:
+			12px;
+
+		padding-bottom:
+			40px;
+
+	}
+
+
+	.guide-card {
+
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			space-between;
+
+		gap:
+			24px;
+
+		padding:
+			24px;
+
+		border:
+			1px solid var(--color-border);
+
+		border-radius:
+			var(--radius-medium);
+
+		background:
+			var(--color-background);
+
+		transition:
+			transform var(--transition-fast),
+			border-color var(--transition-fast),
+			background var(--transition-fast);
+
+	}
+
+
+	.guide-card:hover {
+
+		transform:
+			translateY(-2px);
+
+		border-color:
+			var(--color-text-secondary);
+
+		background:
+			var(--color-surface);
+
+	}
+
+
+	.guide-card-content {
+
+		min-width:
+			0;
+
+	}
+
+
+	.guide-category {
+
+		display:
+			inline-block;
+
+		margin-bottom:
+			4px;
+
+		font-size:
+			11px;
+
+		font-weight:
+			700;
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	.guide-card h2 {
+
+		font-size:
+			18px;
+
+		font-weight:
+			600;
+
+	}
+
+
+	.guide-card p {
+
+		margin-top:
+			4px;
+
+		font-size:
+			13px;
+
+		color:
+			var(--color-text-secondary);
+
+	}
+
+
+	.guide-arrow {
+
+		flex-shrink:
+			0;
+
+		font-size:
+			18px;
+
+		color:
+			var(--color-text-secondary);
+
+		transition:
+			transform var(--transition-fast);
+
+	}
+
+
+	.guide-card:hover .guide-arrow {
+
+		transform:
+			translateX(4px);
+
+	}
+
+
+	@media (max-width: 768px) {
+
+		.guide-header {
+
+			padding:
+				48px 0 32px;
+
+		}
+
+
+		h1 {
+
+			font-size:
+				34px;
+
+		}
+
+
+		.description {
+
+			font-size:
+				14px;
+
+		}
+
+
+		.guide-card {
+
+			padding:
+				20px;
+
+		}
+
+	}
+
+</style>

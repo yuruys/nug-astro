@@ -1,0 +1,292 @@
+---
+import Search from "@astrojs/starlight/components/Search.astro";
+---
+
+	<div class="header-inner">
+
+		<a href="/" class="logo">
+			<span class="logo-main">NUG</span>
+			<span class="logo-sub">Nekozouneko Unofficial Guide</span>
+		</a>
+
+		<nav class="desktop-nav">
+			<a href="/guide/">攻略</a>
+			<a href="/wiki/" class="active">Wiki</a>
+			<a href="/news/">ニュース</a>
+			<a href="/tool/">ツール</a>
+			<a href="/about/">NUGについて</a>
+		</nav>
+
+		<div class="header-actions">
+
+			<div class="search-wrapper">
+				<Search />
+			</div>
+
+			<button
+				class="menu-button"
+				type="button"
+				aria-label="メニューを開く"
+				aria-expanded="false"
+			>
+				<span></span>
+				<span></span>
+				<span></span>
+			</button>
+
+		</div>
+
+	</div>
+
+
+<div class="mobile-menu">
+	<nav>
+		<a href="/guide/">📖 攻略</a>
+		<a href="/docs/">📚 Wiki</a>
+		<a href="/news/">📰 ニュース</a>
+		<a href="/tool/">🛠️ ツール</a>
+		<a href="/about/">ℹ️ NUGについて</a>
+	</nav>
+</div>
+
+
+<script>
+	const button = document.querySelector(
+		".menu-button"
+	);
+
+	const menu = document.querySelector(
+		".mobile-menu"
+	);
+
+	button?.addEventListener("click", () => {
+		const isOpen =
+			menu?.classList.toggle("open") ?? false;
+
+		button.setAttribute(
+			"aria-expanded",
+			String(isOpen)
+		);
+	});
+
+	document.addEventListener("keydown", (event) => {
+		if (event.key === "Escape") {
+			menu?.classList.remove("open");
+			button?.setAttribute(
+				"aria-expanded",
+				"false"
+			);
+		}
+	});
+</script>
+
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		width: 100%;
+		background: rgba(255, 255, 255, 0.92);
+		backdrop-filter: blur(20px);
+		border-bottom: 1px solid #e5e5e7;
+	}
+
+	.header-inner {
+		width: min(
+			var(--content-width),
+			calc(100% - 48px)
+		);
+
+		min-height: 68px;
+		margin: 0 auto;
+
+		display: flex;
+		align-items: center;
+		gap: 24px;
+	}
+
+	.logo {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		flex-shrink: 0;
+	}
+
+	.logo-main {
+		font-size: 23px;
+		font-weight: 800;
+		letter-spacing: -0.04em;
+	}
+
+	.logo-sub {
+		font-size: 11px;
+		color: #6e6e73;
+		white-space: nowrap;
+	}
+
+	.desktop-nav {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		margin-left: auto;
+	}
+
+	.desktop-nav a {
+		display: flex;
+		align-items: center;
+		min-height: 40px;
+		padding: 0 14px;
+
+		border-radius: 10px;
+
+		font-size: 14px;
+		font-weight: 500;
+
+		transition:
+			background 150ms ease,
+			color 150ms ease;
+	}
+
+	.desktop-nav a:hover {
+		background: #f7f7f8;
+	}
+
+	.desktop-nav a.active {
+		background: #f0f0f2;
+		font-weight: 600;
+	}
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.search-wrapper {
+		width: 40px;
+		height: 40px;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.search-wrapper :global(button) {
+		width: 40px;
+		height: 40px;
+
+		border-radius: 50%;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.menu-button {
+		display: none;
+
+		width: 40px;
+		height: 40px;
+
+		border-radius: 50%;
+
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		gap: 4px;
+
+		background: #f7f7f8;
+	}
+
+	.menu-button span {
+		width: 16px;
+		height: 2px;
+		background: #1d1d1f;
+		border-radius: 2px;
+	}
+
+	.mobile-menu {
+		display: none;
+	}
+
+
+	@media (max-width: 850px) {
+
+		.header-inner {
+			min-height: 60px;
+			width: calc(100% - 32px);
+		}
+
+		.logo-sub {
+			display: none;
+		}
+
+		.desktop-nav {
+			display: none;
+		}
+
+		.header-actions {
+			margin-left: auto;
+		}
+
+		.menu-button {
+			display: flex;
+		}
+
+		.mobile-menu {
+			position: fixed;
+			top: 68px;
+			left: 16px;
+			right: 16px;
+
+			z-index: 99;
+
+			display: block;
+
+			padding: 10px;
+
+			background: rgba(255, 255, 255, 0.96);
+			backdrop-filter: blur(20px);
+
+			border: 1px solid #e5e5e7;
+			border-radius: 16px;
+
+			box-shadow:
+				0 10px 30px rgba(0, 0, 0, 0.08);
+
+			opacity: 0;
+			transform: translateY(-8px);
+			pointer-events: none;
+
+			transition:
+				opacity 150ms ease,
+				transform 150ms ease;
+		}
+
+		.mobile-menu.open {
+			opacity: 1;
+			transform: translateY(0);
+			pointer-events: auto;
+		}
+
+		.mobile-menu nav {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+		}
+
+		.mobile-menu a {
+			display: block;
+			padding: 13px 14px;
+
+			border-radius: 10px;
+
+			font-size: 14px;
+		}
+
+		.mobile-menu a:hover {
+			background: #f7f7f8;
+		}
+	}
+</style>
