@@ -1,85 +1,61 @@
 ---
-import Search from "@astrojs/starlight/components/Search.astro";
+import Search from '@astrojs/starlight/components/Search.astro';
 ---
 
+<header class="site-header">
 	<div class="header-inner">
-
-		<a href="/" class="logo">
+		<a href="/" class="logo" aria-label="NUG ホーム">
 			<span class="logo-main">NUG</span>
 			<span class="logo-sub">Nekozouneko Unofficial Guide</span>
 		</a>
 
-		<nav class="desktop-nav">
+		<nav class="desktop-nav" aria-label="メインナビゲーション">
 			<a href="/guide/">攻略</a>
-			<a href="/wiki/" class="active">Wiki</a>
+			<a href="/docs/" class="active">Wiki</a>
 			<a href="/news/">ニュース</a>
 			<a href="/tool/">ツール</a>
 			<a href="/about/">NUGについて</a>
 		</nav>
 
 		<div class="header-actions">
-
-			<div class="search-wrapper">
+			<div class="search-wrapper" aria-label="検索">
 				<Search />
 			</div>
-
-			<button
-				class="menu-button"
-				type="button"
-				aria-label="メニューを開く"
-				aria-expanded="false"
-			>
+			<button class="menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">
 				<span></span>
 				<span></span>
 				<span></span>
 			</button>
-
 		</div>
-
 	</div>
 
-
-<div class="mobile-menu">
-	<nav>
-		<a href="/guide/">📖 攻略</a>
-		<a href="/docs/">📚 Wiki</a>
-		<a href="/news/">📰 ニュース</a>
-		<a href="/tool/">🛠️ ツール</a>
-		<a href="/about/">ℹ️ NUGについて</a>
-	</nav>
-</div>
-
+	<div class="mobile-menu">
+		<nav aria-label="モバイルナビゲーション">
+			<a href="/guide/">📖 攻略</a>
+			<a href="/docs/">📚 Wiki</a>
+			<a href="/news/">📰 ニュース</a>
+			<a href="/tool/">🛠️ ツール</a>
+			<a href="/about/">ℹ️ NUGについて</a>
+		</nav>
+	</div>
+</header>
 
 <script>
-	const button = document.querySelector(
-		".menu-button"
-	);
+	const button = document.querySelector<HTMLButtonElement>('.site-header .menu-button');
+	const menu = document.querySelector<HTMLElement>('.site-header .mobile-menu');
 
-	const menu = document.querySelector(
-		".mobile-menu"
-	);
-
-	button?.addEventListener("click", () => {
-		const isOpen =
-			menu?.classList.toggle("open") ?? false;
-
-		button.setAttribute(
-			"aria-expanded",
-			String(isOpen)
-		);
+	button?.addEventListener('click', () => {
+		const isOpen = menu?.classList.toggle('open') ?? false;
+		button.setAttribute('aria-expanded', String(isOpen));
 	});
 
-	document.addEventListener("keydown", (event) => {
-		if (event.key === "Escape") {
-			menu?.classList.remove("open");
-			button?.setAttribute(
-				"aria-expanded",
-				"false"
-			);
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') {
+			menu?.classList.remove('open');
+			button?.setAttribute('aria-expanded', 'false');
 		}
 	});
 </script>
-
 
 <style>
 	.site-header {
@@ -93,14 +69,9 @@ import Search from "@astrojs/starlight/components/Search.astro";
 	}
 
 	.header-inner {
-		width: min(
-			var(--content-width),
-			calc(100% - 48px)
-		);
-
+		width: min(var(--content-width), calc(100% - 48px));
 		min-height: 68px;
 		margin: 0 auto;
-
 		display: flex;
 		align-items: center;
 		gap: 24px;
@@ -137,23 +108,18 @@ import Search from "@astrojs/starlight/components/Search.astro";
 		align-items: center;
 		min-height: 40px;
 		padding: 0 14px;
-
 		border-radius: 10px;
-
 		font-size: 14px;
 		font-weight: 500;
-
-		transition:
-			background 150ms ease,
-			color 150ms ease;
+		transition: background 150ms ease, color 150ms ease;
 	}
 
-	.desktop-nav a:hover {
-		background: #f7f7f8;
+	.desktop-nav a:hover,
+	.desktop-nav a.active {
+		background: #f0f0f2;
 	}
 
 	.desktop-nav a.active {
-		background: #f0f0f2;
 		font-weight: 600;
 	}
 
@@ -163,21 +129,14 @@ import Search from "@astrojs/starlight/components/Search.astro";
 		gap: 8px;
 	}
 
-	.search-wrapper {
-		width: 40px;
-		height: 40px;
-
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
+	.search-wrapper,
 	.search-wrapper :global(button) {
 		width: 40px;
 		height: 40px;
+	}
 
+	.search-wrapper :global(button) {
 		border-radius: 50%;
-
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -185,17 +144,13 @@ import Search from "@astrojs/starlight/components/Search.astro";
 
 	.menu-button {
 		display: none;
-
 		width: 40px;
 		height: 40px;
-
 		border-radius: 50%;
-
 		align-items: center;
 		justify-content: center;
 		flex-direction: column;
 		gap: 4px;
-
 		background: #f7f7f8;
 	}
 
@@ -210,18 +165,13 @@ import Search from "@astrojs/starlight/components/Search.astro";
 		display: none;
 	}
 
-
 	@media (max-width: 850px) {
-
 		.header-inner {
 			min-height: 60px;
 			width: calc(100% - 32px);
 		}
 
-		.logo-sub {
-			display: none;
-		}
-
+		.logo-sub,
 		.desktop-nav {
 			display: none;
 		}
@@ -236,32 +186,21 @@ import Search from "@astrojs/starlight/components/Search.astro";
 
 		.mobile-menu {
 			position: fixed;
-			top: 68px;
+			top: 60px;
 			left: 16px;
 			right: 16px;
-
 			z-index: 99;
-
 			display: block;
-
 			padding: 10px;
-
 			background: rgba(255, 255, 255, 0.96);
 			backdrop-filter: blur(20px);
-
 			border: 1px solid #e5e5e7;
 			border-radius: 16px;
-
-			box-shadow:
-				0 10px 30px rgba(0, 0, 0, 0.08);
-
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 			opacity: 0;
 			transform: translateY(-8px);
 			pointer-events: none;
-
-			transition:
-				opacity 150ms ease,
-				transform 150ms ease;
+			transition: opacity 150ms ease, transform 150ms ease;
 		}
 
 		.mobile-menu.open {
@@ -279,9 +218,7 @@ import Search from "@astrojs/starlight/components/Search.astro";
 		.mobile-menu a {
 			display: block;
 			padding: 13px 14px;
-
 			border-radius: 10px;
-
 			font-size: 14px;
 		}
 
