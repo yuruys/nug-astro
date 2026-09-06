@@ -1,27 +1,57 @@
 /* ========================================
    NUGBASE × Starlight
+   Modern / Minimal / Distinctive
    ======================================== */
 
 
-/* ----------------------------------------
-   NUGBASE Design Tokens
-   global.css と共通の値
-   ---------------------------------------- */
+/* ========================================
+   01. Design Tokens
+   ======================================== */
 
 :root {
+	/* Background */
 	--nug-background: #ffffff;
 	--nug-surface: #f7f7f8;
+	--nug-surface-hover: #f2f2f4;
+	--nug-surface-subtle: #fafafa;
+
+	/* Text */
 	--nug-text: #1d1d1f;
 	--nug-text-secondary: #6e6e73;
+	--nug-text-tertiary: #8e8e93;
+
+	/* Border */
 	--nug-border: #e5e5e7;
+	--nug-border-strong: #d1d1d6;
+
+	/* Accent */
 	--nug-accent: #007aff;
+	--nug-accent-hover: #006ee6;
+	--nug-accent-soft: #eaf3ff;
 
+	/* Semantic */
+	--nug-note: #007aff;
+	--nug-note-bg: #f2f7ff;
+
+	--nug-tip: #8e44d6;
+	--nug-tip-bg: #faf5ff;
+
+	--nug-caution: #b26a00;
+	--nug-caution-bg: #fff9ed;
+
+	--nug-danger: #d93025;
+	--nug-danger-bg: #fff4f3;
+
+	/* Radius */
+	--nug-radius-xs: 6px;
 	--nug-radius-small: 10px;
-	--nug-radius-medium: 16px;
-	--nug-radius-large: 24px;
+	--nug-radius-medium: 14px;
+	--nug-radius-large: 20px;
 
+	/* Layout */
 	--nug-content-width: 1200px;
 
+	/* Typography */
 	--nug-font:
 		-apple-system,
 		BlinkMacSystemFont,
@@ -30,37 +60,68 @@
 		Arial,
 		"Noto Sans JP",
 		sans-serif;
+
+	--nug-mono:
+		ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		Monaco,
+		Consolas,
+		"Liberation Mono",
+		"Courier New",
+		monospace;
 }
 
 
-/* ----------------------------------------
-   Dark Mode
-   ---------------------------------------- */
+/* ========================================
+   02. Dark Mode
+   ======================================== */
 
 :root[data-theme='dark'] {
 	--nug-background: #1c1c1e;
 	--nug-surface: #2c2c2e;
+	--nug-surface-hover: #38383a;
+	--nug-surface-subtle: #232326;
+
 	--nug-text: #f5f5f7;
-	--nug-text-secondary: #98989f;
+	--nug-text-secondary: #aeaeb2;
+	--nug-text-tertiary: #98989f;
+
 	--nug-border: #38383a;
+	--nug-border-strong: #48484a;
+
 	--nug-accent: #0a84ff;
+	--nug-accent-hover: #409cff;
+	--nug-accent-soft: #102d4d;
+
+	--nug-note: #409cff;
+	--nug-note-bg: #172b40;
+
+	--nug-tip: #c084fc;
+	--nug-tip-bg: #2c2038;
+
+	--nug-caution: #ffb340;
+	--nug-caution-bg: #352b1c;
+
+	--nug-danger: #ff6961;
+	--nug-danger-bg: #382020;
 }
 
 
-/* ----------------------------------------
-   Starlight Color System
-   ---------------------------------------- */
+/* ========================================
+   03. Starlight Color System
+   ======================================== */
 
 :root {
 	--sl-nav-height: 68px;
 	--sl-nav-pad-x: 24px;
 	--sl-menu-button-size: 40px;
 
-	--sl-color-accent-low: #eaf3ff;
-	--sl-color-accent: #007aff;
-	--sl-color-accent-high: #005ecb;
+	--sl-color-accent-low: var(--nug-accent-soft);
+	--sl-color-accent: var(--nug-accent);
+	--sl-color-accent-high: var(--nug-accent-hover);
 
-	--sl-color-white: #1d1d1f;
+	--sl-color-white: var(--nug-text);
 
 	--sl-color-gray-1: #3a3a3c;
 	--sl-color-gray-2: #6e6e73;
@@ -72,17 +133,16 @@
 
 	--sl-color-black: #ffffff;
 
-	--sl-font:
-		var(--nug-font);
+	--sl-font: var(--nug-font);
 }
 
 
 :root[data-theme='dark'] {
-	--sl-color-accent-low: #102d4d;
-	--sl-color-accent: #0a84ff;
-	--sl-color-accent-high: #64b5ff;
+	--sl-color-accent-low: var(--nug-accent-soft);
+	--sl-color-accent: var(--nug-accent);
+	--sl-color-accent-high: var(--nug-accent-hover);
 
-	--sl-color-white: #f5f5f7;
+	--sl-color-white: var(--nug-text);
 
 	--sl-color-gray-1: #e5e5e7;
 	--sl-color-gray-2: #aeaeb2;
@@ -96,12 +156,13 @@
 }
 
 
-/* ----------------------------------------
-   Base
-   ---------------------------------------- */
+/* ========================================
+   04. Base
+   ======================================== */
 
 html {
 	font-family: var(--nug-font);
+	scroll-behavior: smooth;
 }
 
 
@@ -112,118 +173,395 @@ body {
 	color: var(--nug-text);
 
 	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
 	text-rendering: optimizeLegibility;
 }
 
 
-/* ----------------------------------------
-   Starlight Header
-   NUGBASE Header.astro に寄せる
-   ---------------------------------------- */
+/* ========================================
+   05. Header
+   ======================================== */
 
 header.header {
 	height: var(--sl-nav-height);
 
 	padding: 0;
 
-	border-bottom:
-		1px solid var(--nug-border);
+	border-bottom: 1px solid var(--nug-border);
 
-	background:
-		color-mix(
-			in srgb,
-			var(--nug-background) 92%,
-			transparent
-		);
+	background: color-mix(
+		in srgb,
+		var(--nug-background) 92%,
+		transparent
+	);
 
-	backdrop-filter:
-		blur(16px);
-
-	-webkit-backdrop-filter:
-		blur(16px);
+	backdrop-filter: blur(18px);
+	-webkit-backdrop-filter: blur(18px);
 
 	box-shadow: none;
 }
 
 
-/* ----------------------------------------
-   Header inner
-   ---------------------------------------- */
-
 header.header > div {
-	width:
-		min(var(--nug-content-width), calc(100% - 48px));
+	width: min(
+		var(--nug-content-width),
+		calc(100% - 48px)
+	);
 
-	max-width:
-		var(--nug-content-width);
+	max-width: var(--nug-content-width);
 
-	margin:
-		0 auto;
+	margin: 0 auto;
 }
 
 
-/* ----------------------------------------
-   NUGBASE Logo
-   ---------------------------------------- */
+/* ========================================
+   06. Header Logo
+   ======================================== */
 
 .site-title {
-	font-family:
-		var(--nug-font);
+	font-family: var(--nug-font);
 
-	font-size:
-		23px;
+	font-size: 23px;
+	font-weight: 800;
 
-	font-weight:
-		800;
+	letter-spacing: -0.04em;
 
-	letter-spacing:
-		-0.04em;
+	color: var(--nug-text);
 
-	color:
-		var(--nug-text);
-
-	transition:
-		opacity 150ms ease;
+	transition: opacity 150ms ease;
 }
 
 
 .site-title:hover {
-	opacity:
-		0.65;
+	opacity: 0.65;
 }
 
 
-/* ----------------------------------------
-   Header Links
-   ---------------------------------------- */
+/* ========================================
+   07. Header Navigation
+   ======================================== */
 
 header.header nav a {
-	font-family:
-		var(--nug-font);
+	display: flex;
+	align-items: center;
 
-	color:
-		var(--nug-text-secondary);
+	min-height: 40px;
 
-	font-size:
-		14px;
+	padding: 0 14px;
 
-	font-weight:
-		500;
+	border-radius: var(--nug-radius-small);
 
-	min-height:
-		40px;
+	font-family: var(--nug-font);
+	font-size: 14px;
+	font-weight: 500;
 
-	padding:
-		0 14px;
+	color: var(--nug-text-secondary);
 
-	border-radius:
-		var(--nug-radius-small);
+	transition:
+		color 150ms ease,
+		background 150ms ease;
+}
 
-	display:
-		flex;
 
-	align-items:
-		center;
+header.header nav a:hover {
+	color: var(--nug-text);
+
+	background: var(--nug-surface);
+}
+
+
+header.header nav a[aria-current='page'] {
+	color: var(--nug-text);
+
+	font-weight: 600;
+
+	background: var(--nug-surface);
+}
+
+
+/* ========================================
+   08. Header Buttons
+   ======================================== */
+
+header.header button {
+	width: 40px;
+	height: 40px;
+
+	border: 0;
+	border-radius: var(--nug-radius-small);
+
+	background: transparent;
+
+	color: var(--nug-text-secondary);
+
+	transition:
+		background 150ms ease,
+		color 150ms ease,
+		transform 150ms ease;
+}
+
+
+header.header button:hover {
+	background: var(--nug-surface);
+
+	color: var(--nug-text);
+}
+
+
+header.header button:active {
+	transform: scale(0.94);
+}
+
+
+.site-header .menu-button {
+	display: flex;
+
+	width: 40px;
+	height: 40px;
+
+	border-radius: 50%;
+
+	background: transparent;
+
+	color: var(--nug-text);
+}
+
+
+/* ========================================
+   09. Search
+   ======================================== */
+
+site-search {
+	--pagefind-ui-scale: 0.9;
+}
+
+
+/* ========================================
+   10. Sidebar
+   ======================================== */
+
+.sidebar {
+	border-right: 1px solid var(--nug-border);
+
+	background: var(--nug-background);
+}
+
+
+.sidebar-content {
+	padding-top: 24px;
+	padding-bottom: 24px;
+}
+
+
+/* Sidebar links */
+
+.sidebar a {
+	border-radius: var(--nug-radius-small);
+
+	font-size: 14px;
+
+	transition:
+		background 150ms ease,
+		color 150ms ease,
+		transform 150ms ease;
+}
+
+
+.sidebar a:hover {
+	background: var(--nug-surface);
+}
+
+
+.sidebar a[aria-current='page'] {
+	background: var(--nug-surface);
+
+	color: var(--nug-accent);
+
+	font-weight: 600;
+}
+
+
+/* ========================================
+   11. Main Markdown
+   ======================================== */
+
+.sl-markdown-content {
+	max-width: 760px;
+
+	font-family: var(--nug-font);
+
+	font-size: 16px;
+	line-height: 1.85;
+
+	letter-spacing: 0.005em;
+
+	color: var(--nug-text);
+
+	text-wrap: pretty;
+}
+
+
+/* ========================================
+   12. Headings
+   ======================================== */
+
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.sl-markdown-content h4 {
+	color: var(--nug-text);
+
+	font-weight: 700;
+
+	text-wrap: balance;
+}
+
+
+/* H1 */
+
+.sl-markdown-content h1 {
+	margin-top: 0;
+	margin-bottom: 28px;
+
+	font-size: 40px;
+	line-height: 1.25;
+
+	letter-spacing: -0.035em;
+}
+
+
+/* H2 */
+
+.sl-markdown-content h2 {
+	position: relative;
+
+	margin-top: 58px;
+	margin-bottom: 22px;
+
+	padding-bottom: 13px;
+
+	font-size: 28px;
+	line-height: 1.35;
+
+	letter-spacing: -0.025em;
+
+	border-bottom: 1px solid var(--nug-border);
+}
+
+
+/* Small accent line */
+
+.sl-markdown-content h2::after {
+	content: "";
+
+	position: absolute;
+
+	left: 0;
+	bottom: -1px;
+
+	width: 42px;
+	height: 2px;
+
+	border-radius: 999px;
+
+	background: var(--nug-accent);
+}
+
+
+/* H3 */
+
+.sl-markdown-content h3 {
+	margin-top: 40px;
+	margin-bottom: 16px;
+
+	font-size: 21px;
+	line-height: 1.45;
+
+	letter-spacing: -0.015em;
+}
+
+
+/* H4 */
+
+.sl-markdown-content h4 {
+	margin-top: 32px;
+	margin-bottom: 12px;
+
+	font-size: 17px;
+	line-height: 1.5;
+}
+
+
+/* ========================================
+   13. Paragraph
+   ======================================== */
+
+.sl-markdown-content p {
+	margin-top: 0;
+	margin-bottom: 18px;
+
+	line-height: 1.85;
+}
+
+
+/* ========================================
+   14. Strong / Emphasis
+   ======================================== */
+
+.sl-markdown-content strong {
+	font-weight: 700;
+
+	color: var(--nug-text);
+}
+
+
+.sl-markdown-content em {
+	color: var(--nug-text-secondary);
+}
+
+
+/* ========================================
+   15. Lists
+   ======================================== */
+
+.sl-markdown-content ul,
+.sl-markdown-content ol {
+	margin-top: 14px;
+	margin-bottom: 24px;
+
+	padding-left: 1.5em;
+}
+
+
+.sl-markdown-content li {
+	margin-top: 7px;
+	margin-bottom: 7px;
+
+	line-height: 1.75;
+}
+
+
+.sl-markdown-content li::marker {
+	color: var(--nug-text-tertiary);
+}
+
+
+.sl-markdown-content li > ul,
+.sl-markdown-content li > ol {
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+
+/* ========================================
+   16. Links
+   ======================================== */
+
+.sl-markdown-content a {
+	color: var(--nug-accent);
+
+	text-decoration: none;
 
 	transition:
 		color 150ms ease,
@@ -231,497 +569,486 @@ header.header nav a {
 }
 
 
-header.header nav a:hover {
-	color:
-		var(--nug-text);
-
-	opacity:
-		1;
-}
-
-
-/* ----------------------------------------
-   Active Header Link
-   ---------------------------------------- */
-
-header.header nav a[aria-current='page'] {
-	color:
-		var(--nug-text);
-
-	font-weight:
-		600;
-}
-
-
-/* ----------------------------------------
-   Header buttons
-   ---------------------------------------- */
-
-header.header button {
-	width:
-		40px;
-
-	height:
-		40px;
-
-	border:
-		0;
-
-	border-radius:
-		var(--nug-radius-small);
-
-	background:
-		transparent;
-
-	color:
-		var(--nug-text-secondary);
-
-	transition:
-		background 150ms ease,
-		color 150ms ease;
-}
-
-
-header.header button:hover {
-	background:
-		var(--nug-surface);
-
-	color:
-		var(--nug-text);
-}
-
-
-.site-header .menu-button {
-	display:
-		flex;
-
-	width:
-		40px;
-
-	height:
-		40px;
-
-	border-radius:
-		50%;
-
-	background:
-		transparent;
-
-	color:
-		var(--nug-text);
-}
-
-
-/* ----------------------------------------
-   Header Search
-   ---------------------------------------- */
-
-site-search {
-	--pagefind-ui-scale: 0.9;
-}
-
-
-/* ----------------------------------------
-   Sidebar
-   ---------------------------------------- */
-
-.sidebar {
-	border-right:
-		1px solid var(--nug-border);
-
-	background:
-		var(--nug-background);
-}
-
-
-.sidebar-content {
-	padding-top:
-		24px;
-
-	padding-bottom:
-		24px;
-}
-
-
-/* ----------------------------------------
-   Sidebar Navigation
-   ---------------------------------------- */
-
-.sidebar a {
-	border-radius:
-		var(--nug-radius-small);
-
-	font-size:
-		14px;
-
-	transition:
-		background 150ms ease,
-		color 150ms ease;
-}
-
-.sidebar a:hover {
-	background:
-		var(--nug-surface);
-}
-
-
-.sidebar a[aria-current='page'] {
-	background:
-		var(--nug-surface);
-
-	color:
-		var(--nug-accent);
-
-	font-weight:
-		600;
-}
-
-
-/* ----------------------------------------
-   Main Content
-   ---------------------------------------- */
-
-.sl-markdown-content {
-	font-family:
-		var(--nug-font);
-
-	font-size:
-		16px;
-
-	line-height:
-		1.8;
-}
-
-
-/* ----------------------------------------
-   Headings
-   ---------------------------------------- */
-
-.sl-markdown-content h1 {
-	font-size:
-		40px;
-
-	line-height:
-		1.25;
-
-	letter-spacing:
-		-0.04em;
-
-	font-weight:
-		700;
-}
-
-
-.sl-markdown-content h2 {
-	margin-top:
-		48px;
-
-	font-size:
-		28px;
-
-	line-height:
-		1.35;
-
-	letter-spacing:
-		-0.03em;
-
-	border-bottom:
-		1px solid var(--nug-border);
-
-	padding-bottom:
-		10px;
-}
-
-
-.sl-markdown-content h3 {
-	margin-top:
-		36px;
-
-	font-size:
-		21px;
-
-	line-height:
-		1.4;
-}
-
-
-/* ----------------------------------------
-   Paragraph
-   ---------------------------------------- */
-
-.sl-markdown-content p {
-	line-height:
-		1.85;
-}
-
-
-/* ----------------------------------------
-   Links
-   ---------------------------------------- */
-
-.sl-markdown-content a {
-	color:
-		var(--nug-accent);
-
-	text-decoration:
-		none;
-
-	transition:
-		opacity 150ms ease;
-}
-
-
 .sl-markdown-content a:hover {
-	opacity:
-		0.7;
+	color: var(--nug-accent-hover);
+
+	opacity: 0.8;
 }
 
 
-/* ----------------------------------------
-   Blockquote
-   ---------------------------------------- */
+/* ========================================
+   17. Horizontal Rule
+   ======================================== */
+
+.sl-markdown-content hr {
+	margin: 44px 0;
+
+	border: 0;
+	border-top: 1px solid var(--nug-border);
+}
+
+
+/* ========================================
+   18. Blockquote
+   ======================================== */
 
 .sl-markdown-content blockquote {
-	border-left:
-		3px solid var(--nug-accent);
+	margin: 28px 0;
+
+	padding: 17px 20px;
+
+	border: 1px solid var(--nug-border);
+
+	border-left: 3px solid var(--nug-accent);
 
 	border-radius:
-		0 var(--nug-radius-small)
-		var(--nug-radius-small)
+		0
+		var(--nug-radius-medium)
+		var(--nug-radius-medium)
 		0;
 
-	background:
-		var(--nug-surface);
+	background: var(--nug-surface);
 
-	padding:
-		16px 20px;
+	color: var(--nug-text-secondary);
 }
 
 
-/* ----------------------------------------
-   Tables
-   ---------------------------------------- */
+.sl-markdown-content blockquote p {
+	margin-bottom: 0;
+}
+
+
+/* ========================================
+   19. Tables
+   ======================================== */
 
 .sl-markdown-content table {
-	border:
-		1px solid var(--nug-border);
+	width: 100%;
 
-	border-radius:
-		var(--nug-radius-small);
+	margin: 28px 0;
 
-	overflow:
-		hidden;
+	border: 1px solid var(--nug-border);
+
+	border-radius: var(--nug-radius-medium);
+
+	border-spacing: 0;
+
+	background: var(--nug-background);
+
+	overflow: hidden;
 }
 
 
 .sl-markdown-content th {
-	background:
-		var(--nug-surface);
+	background: var(--nug-surface);
+
+	color: var(--nug-text);
+
+	font-weight: 650;
+
+	text-align: left;
 }
 
 
 .sl-markdown-content th,
 .sl-markdown-content td {
-	border-color:
-		var(--nug-border);
+	padding: 12px 14px;
+
+	border-right: 1px solid var(--nug-border);
+	border-bottom: 1px solid var(--nug-border);
+
+	vertical-align: top;
 }
 
 
-/* ----------------------------------------
-   Inline Code
-   ---------------------------------------- */
+.sl-markdown-content th:last-child,
+.sl-markdown-content td:last-child {
+	border-right: 0;
+}
+
+
+.sl-markdown-content tr:last-child td {
+	border-bottom: 0;
+}
+
+
+.sl-markdown-content tbody tr {
+	transition: background 120ms ease;
+}
+
+
+.sl-markdown-content tbody tr:hover {
+	background: var(--nug-surface-subtle);
+}
+
+
+/* ========================================
+   20. Inline Code
+   ======================================== */
 
 .sl-markdown-content :not(pre) > code {
-	border:
-		1px solid var(--nug-border);
+	display: inline-block;
 
-	border-radius:
-		6px;
+	padding: 2px 6px;
 
-	background:
-		var(--nug-surface);
+	border: 1px solid var(--nug-border);
 
-	padding:
-		2px 6px;
+	border-radius: var(--nug-radius-xs);
+
+	background: var(--nug-surface);
+
+	color: var(--nug-text);
+
+	font-family: var(--nug-mono);
+
+	font-size: 0.88em;
+
+	line-height: 1.5;
 }
 
 
-/* ----------------------------------------
-   Code Block
-   ---------------------------------------- */
+/* ========================================
+   21. Code Blocks
+   ======================================== */
 
 .sl-markdown-content pre {
-	border:
-		1px solid var(--nug-border);
+	margin: 28px 0;
 
-	border-radius:
-		var(--nug-radius-medium);
+	border: 1px solid var(--nug-border);
+
+	border-radius: var(--nug-radius-medium);
+
+	background: var(--nug-surface);
+
+	box-shadow: none;
+
+	overflow-x: auto;
+}
+
+
+.sl-markdown-content pre code {
+	font-family: var(--nug-mono);
+
+	font-size: 0.9em;
+
+	line-height: 1.7;
+}
+
+
+/* ========================================
+   22. Images
+   ======================================== */
+
+.sl-markdown-content img {
+	max-width: 100%;
+	height: auto;
+
+	border: 1px solid var(--nug-border);
+
+	border-radius: var(--nug-radius-medium);
+
+	box-shadow: none;
+}
+
+
+/* ========================================
+   23. Figures
+   ======================================== */
+
+.sl-markdown-content figure {
+	margin: 32px 0;
+}
+
+
+.sl-markdown-content figcaption {
+	margin-top: 10px;
+
+	color: var(--nug-text-tertiary);
+
+	font-size: 13px;
+
+	text-align: center;
+}
+
+
+/* ========================================
+   24. Starlight Asides
+   ======================================== */
+
+/*
+   :::note
+   :::tip
+   :::caution
+   :::danger
+
+   Starlight officially supports these four types.
+*/
+
+
+.sl-markdown-content .starlight-aside {
+	position: relative;
+
+	margin: 28px 0;
+
+	padding: 17px 20px 18px;
+
+	border: 1px solid var(--nug-border);
+
+	border-left-width: 4px;
+
+	border-radius: var(--nug-radius-medium);
+
+	background: var(--nug-surface);
+
+	box-shadow:
+		0 1px 2px rgb(0 0 0 / 0.03);
+
+	overflow: hidden;
+
+	transition:
+		border-color 150ms ease,
+		box-shadow 150ms ease;
+}
+
+
+.sl-markdown-content .starlight-aside:hover {
+	box-shadow:
+		0 4px 14px rgb(0 0 0 / 0.045);
 }
 
 
 /* ----------------------------------------
-   Table of Contents
+   Aside title
    ---------------------------------------- */
+
+.sl-markdown-content .starlight-aside__title {
+	margin-bottom: 8px;
+
+	font-size: 14px;
+
+	font-weight: 700;
+
+	line-height: 1.5;
+
+	color: var(--nug-text);
+}
+
+
+/* ----------------------------------------
+   Aside content
+   ---------------------------------------- */
+
+.sl-markdown-content .starlight-aside__content {
+	font-size: 14px;
+
+	line-height: 1.75;
+
+	color: var(--nug-text-secondary);
+}
+
+
+.sl-markdown-content .starlight-aside__content p:last-child {
+	margin-bottom: 0;
+}
+
+
+/* ----------------------------------------
+   NOTE
+   ---------------------------------------- */
+
+.sl-markdown-content .starlight-aside--note {
+	border-left-color: var(--nug-note);
+	background: var(--nug-note-bg);
+}
+
+
+.sl-markdown-content .starlight-aside--tip {
+	border-left-color: var(--nug-tip);
+	background: var(--nug-tip-bg);
+}
+
+
+.sl-markdown-content .starlight-aside--caution {
+	border-left-color: var(--nug-caution);
+	background: var(--nug-caution-bg);
+}
+
+
+.sl-markdown-content .starlight-aside--danger {
+	border-left-color: var(--nug-danger);
+	background: var(--nug-danger-bg);
+}
+
+
+.sl-markdown-content .starlight-aside--note .starlight-aside__title,
+.sl-markdown-content .starlight-aside--note .starlight-aside__icon {
+	color: var(--nug-note);
+}
+
+
+.sl-markdown-content .starlight-aside--tip .starlight-aside__title,
+.sl-markdown-content .starlight-aside--tip .starlight-aside__icon {
+	color: var(--nug-tip);
+}
+
+
+.sl-markdown-content .starlight-aside--caution .starlight-aside__title,
+.sl-markdown-content .starlight-aside--caution .starlight-aside__icon {
+	color: var(--nug-caution);
+}
+
+
+.sl-markdown-content .starlight-aside--danger .starlight-aside__title,
+.sl-markdown-content .starlight-aside--danger .starlight-aside__icon {
+	color: var(--nug-danger);
+}
+
+
+.sl-markdown-content .starlight-aside__icon {
+	width: 16px;
+	height: 16px;
+	margin-right: 8px;
+	vertical-align: -0.15em;
+}
+
+
+/* ========================================
+   25. Details and Keyboard
+   ======================================== */
+
+.sl-markdown-content details {
+	margin: 24px 0;
+	padding: 14px 16px;
+	border: 1px solid var(--nug-border);
+	border-radius: var(--nug-radius-medium);
+	background: var(--nug-surface);
+}
+
+
+.sl-markdown-content details > summary {
+	color: var(--nug-text);
+	cursor: pointer;
+	font-weight: 600;
+}
+
+
+.sl-markdown-content details[open] > summary {
+	margin-bottom: 12px;
+}
+
+
+.sl-markdown-content kbd {
+	padding: 2px 6px;
+	border: 1px solid var(--nug-border-strong);
+	border-bottom-width: 2px;
+	border-radius: var(--nug-radius-xs);
+	background: var(--nug-surface);
+	color: var(--nug-text-secondary);
+	font-family: var(--nug-mono);
+	font-size: 0.82em;
+}
+
+
+/* ========================================
+   26. Table of Contents and Pagination
+   ======================================== */
+
+starlight-toc {
+	font-size: 13px;
+}
+
 
 starlight-toc a {
+	color: var(--nug-text-secondary);
+	transition: color 150ms ease;
+}
+
+
+starlight-toc a:hover,
+starlight-toc a[aria-current='true'] {
+	color: var(--nug-accent);
+}
+
+
+.pagination-links a {
+	border: 1px solid var(--nug-border);
+	border-radius: var(--nug-radius-medium);
+	background: var(--nug-background);
 	transition:
-		color 150ms ease;
+		border-color 150ms ease,
+		background 150ms ease,
+		transform 150ms ease;
 }
 
 
-starlight-toc a:hover {
-	color:
-		var(--nug-accent);
+.pagination-links a:hover {
+	border-color: var(--nug-border-strong);
+	background: var(--nug-surface);
+	transform: translateY(-1px);
 }
 
 
-/* ----------------------------------------
-   Mobile Header
-   ---------------------------------------- */
+/* ========================================
+   27. Mobile and Motion
+   ======================================== */
 
 @media (max-width: 768px) {
-
 	:root {
 		--sl-nav-height: 60px;
 		--sl-nav-pad-x: 16px;
 	}
 
 	header.header {
-		height:
-			var(--sl-nav-height);
+		height: var(--sl-nav-height);
 	}
-
 
 	header.header > div {
-		width:
-			calc(100% - 32px);
+		width: calc(100% - 32px);
 	}
-
-
-	.site-title {
-		font-size:
-			23px;
-	}
-
-
-	header.header nav a {
-		font-size:
-			13px;
-	}
-
 
 	.sl-markdown-content {
-		font-size:
-			15px;
+		max-width: none;
+		font-size: 15px;
 	}
-
 
 	.sl-markdown-content h1 {
-		font-size:
-			32px;
+		font-size: 32px;
 	}
-
 
 	.sl-markdown-content h2 {
-		font-size:
-			24px;
+		margin-top: 44px;
+		font-size: 24px;
 	}
-
 
 	.sidebar {
-		border-right:
-			0;
+		border-right: 0;
 	}
-}
-
-
-/* ----------------------------------------
-   Mobile Sidebar Toggle
-   ---------------------------------------- */
-
-starlight-menu-button button {
-	display:
-		flex;
-
-	align-items:
-		center;
-
-	justify-content:
-		center;
-
-	width:
-		var(--sl-menu-button-size);
-
-	height:
-		var(--sl-menu-button-size);
-
-	padding:
-		0;
-
-	border:
-		0;
-
-	border-radius:
-		50%;
-
-	background:
-		transparent;
-
-	color:
-		var(--nug-text);
-
-	box-shadow:
-		none;
-
-	transition:
-		background 150ms ease,
-		transform 150ms ease;
-}
-
-
-starlight-menu-button button:hover {
-	background:
-		var(--nug-surface);
-
-	color:
-		var(--nug-text);
-}
-
-
-starlight-menu-button[aria-expanded='true'] button {
-	background:
-		var(--nug-surface);
-
-	box-shadow:
-		none;
-}
-
-
-starlight-menu-button button:active {
-	transform:
-		scale(0.92);
-}
-
-
-starlight-menu-button button svg {
-	width:
-		18px;
-
-	height:
-		18px;
 }
 
 
 @media (min-width: 50rem) {
-
-	.site-header .menu-button {
-		display:
-			none;
-	}
-
-
+	.site-header .menu-button,
 	starlight-menu-button button {
-		display:
-			none;
+		display: none;
+	}
+}
+
+
+@media (max-width: 49.99rem) {
+	.site-header .menu-button,
+	starlight-menu-button button {
+		display: flex;
+	}
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
 	}
 }
