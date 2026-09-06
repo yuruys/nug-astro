@@ -1,8 +1,5 @@
 ---
 title: NUGBASE Wiki
 description: Nekozouneko Serverの仕様・データをまとめたWiki
+category: Wiki
 ---
-
-# NUGBASE Wiki
-
-Nekozouneko Serverの仕様・データ・コマンドなどをまとめています。

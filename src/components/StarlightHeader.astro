@@ -63,36 +63,38 @@ import Search from '@astrojs/starlight/components/Search.astro';
 		top: 0;
 		z-index: 100;
 		width: 100%;
-		background: rgba(255, 255, 255, 0.92);
-		backdrop-filter: blur(20px);
-		border-bottom: 1px solid #e5e5e7;
+		background: color-mix(in srgb, var(--nug-background) 92%, transparent);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border-bottom: 1px solid var(--nug-border);
 	}
 
 	.header-inner {
-		width: min(var(--content-width), calc(100% - 48px));
+		width: min(var(--nug-content-width), calc(100% - 48px));
 		min-height: 68px;
 		margin: 0 auto;
 		display: flex;
 		align-items: center;
-		gap: 24px;
+		gap: 32px;
 	}
 
 	.logo {
 		display: flex;
 		align-items: baseline;
-		gap: 8px;
+		gap: 10px;
 		flex-shrink: 0;
+		color: var(--nug-text);
 	}
 
 	.logo-main {
 		font-size: 23px;
 		font-weight: 800;
-		letter-spacing: -0.04em;
+		letter-spacing: -0.05em;
 	}
 
 	.logo-sub {
 		font-size: 11px;
-		color: #6e6e73;
+		color: var(--nug-text-secondary);
 		white-space: nowrap;
 	}
 
@@ -111,35 +113,59 @@ import Search from '@astrojs/starlight/components/Search.astro';
 		border-radius: 10px;
 		font-size: 14px;
 		font-weight: 500;
-		transition: background 150ms ease, color 150ms ease;
+		color: var(--nug-text-secondary);
+		transition: background 150ms ease, color 150ms ease, transform 150ms ease;
 	}
 
 	.desktop-nav a:hover,
 	.desktop-nav a.active {
-		background: #f0f0f2;
+		background: var(--nug-surface);
+		color: var(--nug-text);
 	}
 
 	.desktop-nav a.active {
 		font-weight: 600;
 	}
 
+	.desktop-nav a:active {
+		transform: scale(0.96);
+	}
+
 	.header-actions {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 6px;
+		margin-left: 4px;
 	}
 
 	.search-wrapper,
-	.search-wrapper :global(button) {
+	.search-wrapper site-search :global(button[data-open-modal]) {
 		width: 40px;
 		height: 40px;
 	}
 
-	.search-wrapper :global(button) {
+	.search-wrapper site-search :global(button[data-open-modal]) {
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		background: transparent;
+		color: var(--nug-text);
+		transition: background 150ms ease, transform 150ms ease;
+	}
+
+	.search-wrapper site-search :global(button[data-open-modal]):hover {
+		background: var(--nug-surface);
+	}
+
+	.search-wrapper site-search :global(button[data-open-modal]):active {
+		transform: scale(0.92);
+	}
+
+	.search-wrapper site-search :global(button[data-open-modal]) :global(svg) {
+		width: 19px;
+		height: 19px;
+		color: currentColor;
 	}
 
 	.menu-button {
@@ -151,14 +177,25 @@ import Search from '@astrojs/starlight/components/Search.astro';
 		justify-content: center;
 		flex-direction: column;
 		gap: 4px;
-		background: #f7f7f8;
+		background: transparent;
+		color: var(--nug-text);
+		transition: background 150ms ease, transform 150ms ease;
+	}
+
+	.menu-button:hover,
+	.menu-button[aria-expanded='true'] {
+		background: var(--nug-surface);
+	}
+
+	.menu-button:active {
+		transform: scale(0.92);
 	}
 
 	.menu-button span {
-		width: 16px;
-		height: 2px;
-		background: #1d1d1f;
-		border-radius: 2px;
+		width: 18px;
+		height: 1.5px;
+		background: currentColor;
+		border-radius: 999px;
 	}
 
 	.mobile-menu {
@@ -178,6 +215,7 @@ import Search from '@astrojs/starlight/components/Search.astro';
 
 		.header-actions {
 			margin-left: auto;
+			padding-right: 48px;
 		}
 
 		.menu-button {
@@ -192,9 +230,10 @@ import Search from '@astrojs/starlight/components/Search.astro';
 			z-index: 99;
 			display: block;
 			padding: 10px;
-			background: rgba(255, 255, 255, 0.96);
-			backdrop-filter: blur(20px);
-			border: 1px solid #e5e5e7;
+			background: color-mix(in srgb, var(--nug-background) 96%, transparent);
+			backdrop-filter: blur(16px);
+			-webkit-backdrop-filter: blur(16px);
+			border: 1px solid var(--nug-border);
 			border-radius: 16px;
 			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 			opacity: 0;
@@ -223,7 +262,13 @@ import Search from '@astrojs/starlight/components/Search.astro';
 		}
 
 		.mobile-menu a:hover {
-			background: #f7f7f8;
+			background: var(--nug-surface);
+		}
+	}
+
+	@media (min-width: 50rem) and (max-width: 850px) {
+		.header-actions {
+			padding-right: 0;
 		}
 	}
 </style>

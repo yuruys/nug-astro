@@ -52,6 +52,10 @@
    ---------------------------------------- */
 
 :root {
+	--sl-nav-height: 68px;
+	--sl-nav-pad-x: 24px;
+	--sl-menu-button-size: 40px;
+
 	--sl-color-accent-low: #eaf3ff;
 	--sl-color-accent: #007aff;
 	--sl-color-accent-high: #005ecb;
@@ -118,7 +122,9 @@ body {
    ---------------------------------------- */
 
 header.header {
-	height: 64px;
+	height: var(--sl-nav-height);
+
+	padding: 0;
 
 	border-bottom:
 		1px solid var(--nug-border);
@@ -145,6 +151,9 @@ header.header {
    ---------------------------------------- */
 
 header.header > div {
+	width:
+		min(var(--nug-content-width), calc(100% - 48px));
+
 	max-width:
 		var(--nug-content-width);
 
@@ -162,7 +171,7 @@ header.header > div {
 		var(--nug-font);
 
 	font-size:
-		20px;
+		23px;
 
 	font-weight:
 		800;
@@ -188,7 +197,7 @@ header.header > div {
    Header Links
    ---------------------------------------- */
 
-header.header a {
+header.header nav a {
 	font-family:
 		var(--nug-font);
 
@@ -196,10 +205,25 @@ header.header a {
 		var(--nug-text-secondary);
 
 	font-size:
-		13px;
+		14px;
 
 	font-weight:
 		500;
+
+	min-height:
+		40px;
+
+	padding:
+		0 14px;
+
+	border-radius:
+		var(--nug-radius-small);
+
+	display:
+		flex;
+
+	align-items:
+		center;
 
 	transition:
 		color 150ms ease,
@@ -207,7 +231,7 @@ header.header a {
 }
 
 
-header.header a:hover {
+header.header nav a:hover {
 	color:
 		var(--nug-text);
 
@@ -220,7 +244,7 @@ header.header a:hover {
    Active Header Link
    ---------------------------------------- */
 
-header.header a[aria-current='page'] {
+header.header nav a[aria-current='page'] {
 	color:
 		var(--nug-text);
 
@@ -234,6 +258,12 @@ header.header a[aria-current='page'] {
    ---------------------------------------- */
 
 header.header button {
+	width:
+		40px;
+
+	height:
+		40px;
+
 	border:
 		0;
 
@@ -255,6 +285,27 @@ header.header button {
 header.header button:hover {
 	background:
 		var(--nug-surface);
+
+	color:
+		var(--nug-text);
+}
+
+
+.site-header .menu-button {
+	display:
+		flex;
+
+	width:
+		40px;
+
+	height:
+		40px;
+
+	border-radius:
+		50%;
+
+	background:
+		transparent;
 
 	color:
 		var(--nug-text);
@@ -307,7 +358,6 @@ site-search {
 		background 150ms ease,
 		color 150ms ease;
 }
-
 
 .sidebar a:hover {
 	background:
@@ -531,19 +581,30 @@ starlight-toc a:hover {
 
 @media (max-width: 768px) {
 
+	:root {
+		--sl-nav-height: 60px;
+		--sl-nav-pad-x: 16px;
+	}
+
 	header.header {
 		height:
-			56px;
+			var(--sl-nav-height);
+	}
+
+
+	header.header > div {
+		width:
+			calc(100% - 32px);
 	}
 
 
 	.site-title {
 		font-size:
-			19px;
+			23px;
 	}
 
 
-	header.header a {
+	header.header nav a {
 		font-size:
 			13px;
 	}
@@ -570,5 +631,97 @@ starlight-toc a:hover {
 	.sidebar {
 		border-right:
 			0;
+	}
+}
+
+
+/* ----------------------------------------
+   Mobile Sidebar Toggle
+   ---------------------------------------- */
+
+starlight-menu-button button {
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		center;
+
+	width:
+		var(--sl-menu-button-size);
+
+	height:
+		var(--sl-menu-button-size);
+
+	padding:
+		0;
+
+	border:
+		0;
+
+	border-radius:
+		50%;
+
+	background:
+		transparent;
+
+	color:
+		var(--nug-text);
+
+	box-shadow:
+		none;
+
+	transition:
+		background 150ms ease,
+		transform 150ms ease;
+}
+
+
+starlight-menu-button button:hover {
+	background:
+		var(--nug-surface);
+
+	color:
+		var(--nug-text);
+}
+
+
+starlight-menu-button[aria-expanded='true'] button {
+	background:
+		var(--nug-surface);
+
+	box-shadow:
+		none;
+}
+
+
+starlight-menu-button button:active {
+	transform:
+		scale(0.92);
+}
+
+
+starlight-menu-button button svg {
+	width:
+		18px;
+
+	height:
+		18px;
+}
+
+
+@media (min-width: 50rem) {
+
+	.site-header .menu-button {
+		display:
+			none;
+	}
+
+
+	starlight-menu-button button {
+		display:
+			none;
 	}
 }
