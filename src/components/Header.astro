@@ -62,6 +62,45 @@
 		<div class="header-actions">
 
 			<button
+				class="icon-button theme-button"
+				type="button"
+				aria-label="テーマを切り替える"
+				title="テーマを切り替える"
+			>
+
+				<svg
+					class="theme-icon theme-icon-sun"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+				>
+
+					<circle
+						cx="12"
+						cy="12"
+						r="4"
+					></circle>
+
+					<path
+						d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"
+					></path>
+
+				</svg>
+
+				<svg
+					class="theme-icon theme-icon-moon"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+				>
+
+					<path
+						d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"
+					></path>
+
+				</svg>
+
+			</button>
+
+			<button
 				class="icon-button search-button"
 				type="button"
 				aria-label="検索"
@@ -300,6 +339,104 @@
 		document.querySelector<HTMLButtonElement>(
 			".menu-button"
 		);
+
+	const themeButton =
+		document.querySelector<HTMLButtonElement>(
+			".theme-button"
+		);
+
+	const themeStorageKey = "nug-theme";
+
+	const getTheme = (): "light" | "dark" => {
+		const theme =
+			document.documentElement.dataset.theme;
+
+		return theme === "dark"
+			? "dark"
+			: "light";
+	};
+
+	const getSystemTheme = (): "light" | "dark" => {
+		return window.matchMedia(
+			"(prefers-color-scheme: dark)"
+		).matches
+			? "dark"
+			: "light";
+	};
+
+	const updateThemeButton = (): void => {
+		if (!themeButton) return;
+
+		const nextTheme =
+			getTheme() === "dark"
+				? "light"
+				: "dark";
+
+		const label =
+			nextTheme === "dark"
+				? "ダークモードに切り替える"
+				: "ライトモードに切り替える";
+
+		themeButton.setAttribute("aria-label", label);
+		themeButton.setAttribute("title", label);
+	};
+
+	const setTheme = (
+		theme: "light" | "dark",
+		save = true
+	) => {
+		document.documentElement.dataset.theme =
+			theme;
+
+		document.documentElement.style.colorScheme =
+			theme;
+
+		if (save) {
+			localStorage.setItem(
+				themeStorageKey,
+				theme
+			);
+		}
+
+		updateThemeButton();
+	};
+
+	themeButton?.addEventListener(
+		"click",
+		() => {
+			const currentTheme = getTheme();
+			const nextTheme =
+				currentTheme === "dark"
+					? "light"
+					: "dark";
+
+			setTheme(nextTheme, true);
+		}
+	);
+
+	const systemThemeQuery = window.matchMedia(
+		"(prefers-color-scheme: dark)"
+	);
+
+	systemThemeQuery.addEventListener(
+		"change",
+		() => {
+			const savedTheme = localStorage.getItem(
+				themeStorageKey
+			);
+
+			if (
+				savedTheme === "light" ||
+				savedTheme === "dark"
+			) {
+				return;
+			}
+
+			setTheme(getSystemTheme(), false);
+		}
+	);
+
+	updateThemeButton();
 
 	const mobileMenuOverlay =
 		document.querySelector<HTMLElement>(

@@ -3,13 +3,24 @@ import Search from '@astrojs/starlight/components/Search.astro';
 ---
 
 <header class="site-header">
+
 	<div class="header-inner">
-		<a href="/" class="logo" aria-label="NUG ホーム">
+
+		<a
+			href="/"
+			class="logo"
+			aria-label="NUG ホーム"
+		>
 			<span class="logo-main">NUG</span>
-			<span class="logo-sub">Nekozouneko Unofficial Guide</span>
+			<span class="logo-sub">
+				Nekozouneko Unofficial Guide
+			</span>
 		</a>
 
-		<nav class="desktop-nav" aria-label="メインナビゲーション">
+		<nav
+			class="desktop-nav"
+			aria-label="メインナビゲーション"
+		>
 			<a href="/guide/">攻略</a>
 			<a href="/docs/" class="active">Wiki</a>
 			<a href="/news/">ニュース</a>
@@ -18,257 +29,936 @@ import Search from '@astrojs/starlight/components/Search.astro';
 		</nav>
 
 		<div class="header-actions">
-			<div class="search-wrapper" aria-label="検索">
+
+			<!-- Theme -->
+
+			<button
+				class="theme-button"
+				type="button"
+				aria-label="テーマを切り替える"
+				title="テーマを切り替える"
+			>
+				<svg
+					class="theme-icon theme-icon-sun"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+				>
+					<circle
+						cx="12"
+						cy="12"
+						r="4"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+					/>
+
+					<path
+						d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+				</svg>
+
+				<svg
+					class="theme-icon theme-icon-moon"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+				>
+					<path
+						d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			</button>
+
+			<!-- Search -->
+
+			<div
+				class="search-wrapper"
+				aria-label="検索"
+			>
 				<Search />
 			</div>
-			<button class="menu-button" type="button" aria-label="メニューを開く" aria-expanded="false">
+
+			<!-- Mobile menu -->
+
+			<button
+				class="menu-button"
+				type="button"
+				aria-label="メニューを開く"
+				aria-expanded="false"
+			>
 				<span></span>
 				<span></span>
 				<span></span>
 			</button>
+
 		</div>
+
 	</div>
 
 	<div class="mobile-menu">
+
 		<nav aria-label="モバイルナビゲーション">
+
 			<a href="/guide/">📖 攻略</a>
 			<a href="/docs/">📚 Wiki</a>
 			<a href="/news/">📰 ニュース</a>
 			<a href="/tool/">🛠️ ツール</a>
 			<a href="/about/">ℹ️ NUGについて</a>
+
 		</nav>
+
 	</div>
+
 </header>
 
+
 <script>
-	const button = document.querySelector<HTMLButtonElement>('.site-header .menu-button');
-	const menu = document.querySelector<HTMLElement>('.site-header .mobile-menu');
+	/* ========================================
+	   Mobile Menu
+	======================================== */
 
-	button?.addEventListener('click', () => {
-		const isOpen = menu?.classList.toggle('open') ?? false;
-		button.setAttribute('aria-expanded', String(isOpen));
+	const menuButton =
+		document.querySelector<HTMLButtonElement>(
+			'.site-header .menu-button'
+		);
+
+	const mobileMenu =
+		document.querySelector<HTMLElement>(
+			'.site-header .mobile-menu'
+		);
+
+	menuButton?.addEventListener('click', () => {
+
+		const isOpen =
+			mobileMenu?.classList.toggle('open') ?? false;
+
+		menuButton.setAttribute(
+			'aria-expanded',
+			String(isOpen)
+		);
+
 	});
 
-	document.addEventListener('keydown', (event) => {
-		if (event.key === 'Escape') {
-			menu?.classList.remove('open');
-			button?.setAttribute('aria-expanded', 'false');
+
+	/* ========================================
+	   NUGBASE Theme System
+	======================================== */
+
+	const themeButton =
+		document.querySelector<HTMLButtonElement>(
+			'.site-header .theme-button'
+		);
+
+	const themeStorageKey = 'nug-theme';
+
+	const getSystemTheme = (): 'light' | 'dark' => {
+
+		return window.matchMedia(
+			'(prefers-color-scheme: dark)'
+		).matches
+			? 'dark'
+			: 'light';
+
+	};
+
+
+	const getCurrentTheme = (): 'light' | 'dark' => {
+
+		const theme =
+			document.documentElement.dataset.theme;
+
+		return theme === 'dark'
+			? 'dark'
+			: 'light';
+
+	};
+
+
+	const updateThemeButton = () => {
+
+		if (!themeButton) return;
+
+		const theme = getCurrentTheme();
+
+		const nextTheme =
+			theme === 'dark'
+				? 'light'
+				: 'dark';
+
+		themeButton.setAttribute(
+			'aria-label',
+			nextTheme === 'dark'
+				? 'ダークモードに切り替える'
+				: 'ライトモードに切り替える'
+		);
+
+		themeButton.setAttribute(
+			'title',
+			nextTheme === 'dark'
+				? 'ダークモードに切り替える'
+				: 'ライトモードに切り替える'
+		);
+
+	};
+
+
+	const applyTheme = (
+		theme: 'light' | 'dark',
+		save = false
+	) => {
+
+		document.documentElement.dataset.theme =
+			theme;
+
+		document.documentElement.style.colorScheme =
+			theme;
+
+		if (save) {
+
+			localStorage.setItem(
+				themeStorageKey,
+				theme
+			);
+
 		}
-	});
+
+		updateThemeButton();
+
+	};
+
+
+	themeButton?.addEventListener(
+		'click',
+		() => {
+
+			const currentTheme =
+				getCurrentTheme();
+
+			const nextTheme =
+				currentTheme === 'dark'
+					? 'light'
+					: 'dark';
+
+			/*
+				ユーザーが手動で切り替えたら、
+				以後はOS設定ではなく
+				ユーザー設定を優先する。
+			*/
+
+			applyTheme(
+				nextTheme,
+				true
+			);
+
+		}
+	);
+
+
+	/*
+		OSのテーマ変更を監視。
+
+		nug-theme が保存されている場合は
+		ユーザーが明示的に設定しているため、
+		OS変更には追従しない。
+	*/
+
+	const systemThemeQuery =
+		window.matchMedia(
+			'(prefers-color-scheme: dark)'
+		);
+
+
+	systemThemeQuery.addEventListener(
+		'change',
+		() => {
+
+			const savedTheme =
+				localStorage.getItem(
+					themeStorageKey
+				);
+
+			if (
+				savedTheme === 'light' ||
+				savedTheme === 'dark'
+			) {
+				return;
+			}
+
+			applyTheme(
+				getSystemTheme(),
+				false
+			);
+
+		}
+	);
+
+
+	/*
+		Starlight側のテーマ状態とも同期。
+
+		明示的なユーザー設定が存在する場合、
+		Starlight側にも同じ値を保存する。
+	*/
+
+	const savedTheme =
+		localStorage.getItem(
+			themeStorageKey
+		);
+
+	if (
+		savedTheme === 'light' ||
+		savedTheme === 'dark'
+	) {
+
+		applyTheme(
+			savedTheme,
+			false
+		);
+
+	}
+
+
+	updateThemeButton();
+
+
+	/* ========================================
+	   Escape
+	======================================== */
+
+	document.addEventListener(
+		'keydown',
+		(event) => {
+
+			if (event.key === 'Escape') {
+
+				mobileMenu?.classList.remove(
+					'open'
+				);
+
+				menuButton?.setAttribute(
+					'aria-expanded',
+					'false'
+				);
+
+			}
+
+		}
+	);
 </script>
 
+
 <style>
+
+	/* ========================================
+	   Header
+	======================================== */
+
 	.site-header {
+
 		position: sticky;
 		top: 0;
 		z-index: 100;
+
 		width: 100%;
-		background: color-mix(in srgb, var(--nug-background) 92%, transparent);
+
+		background:
+			color-mix(
+				in srgb,
+				var(--nug-background) 92%,
+				transparent
+			);
+
 		backdrop-filter: blur(16px);
 		-webkit-backdrop-filter: blur(16px);
-		border-bottom: 1px solid var(--nug-border);
+
+		border-bottom:
+			1px solid var(--nug-border);
+
 	}
+
 
 	.header-inner {
-		width: min(var(--nug-content-width), calc(100% - 48px));
+
+		width:
+			min(
+				var(--nug-content-width),
+				calc(100% - 48px)
+			);
+
 		min-height: 68px;
+
 		margin: 0 auto;
+
 		display: flex;
 		align-items: center;
+
 		gap: 32px;
+
 	}
+
+
+	/* ========================================
+	   Logo
+	======================================== */
 
 	.logo {
+
 		display: flex;
 		align-items: baseline;
-		gap: 10px;
-		flex-shrink: 0;
+
+		gap: 8px;
+
 		color: var(--nug-text);
+
+		text-decoration: none;
+
+		flex-shrink: 0;
+
 	}
+
 
 	.logo-main {
+
 		font-size: 23px;
 		font-weight: 800;
-		letter-spacing: -0.05em;
+		letter-spacing: -0.04em;
+
 	}
+
 
 	.logo-sub {
+
 		font-size: 11px;
-		color: var(--nug-text-secondary);
+		font-weight: 500;
+
+		color:
+			var(--nug-text-tertiary);
+
 		white-space: nowrap;
+
 	}
+
+
+	/* ========================================
+	   Navigation
+	======================================== */
 
 	.desktop-nav {
+
 		display: flex;
+
 		align-items: center;
+
 		gap: 4px;
+
 		margin-left: auto;
+
 	}
+
 
 	.desktop-nav a {
-		display: flex;
-		align-items: center;
-		min-height: 40px;
-		padding: 0 14px;
-		border-radius: 10px;
+
+		padding: 8px 11px;
+
+		border-radius:
+			var(--nug-radius-sm);
+
+		color:
+			var(--nug-text-secondary);
+
 		font-size: 14px;
-		font-weight: 500;
-		color: var(--nug-text-secondary);
-		transition: background 150ms ease, color 150ms ease, transform 150ms ease;
-	}
-
-	.desktop-nav a:hover,
-	.desktop-nav a.active {
-		background: var(--nug-surface);
-		color: var(--nug-text);
-	}
-
-	.desktop-nav a.active {
 		font-weight: 600;
+
+		text-decoration: none;
+
+		transition:
+			background-color 0.18s ease,
+			color 0.18s ease;
+
 	}
 
-	.desktop-nav a:active {
-		transform: scale(0.96);
+
+	.desktop-nav a:hover {
+
+		background:
+			var(--nug-surface-hover);
+
+		color:
+			var(--nug-text);
+
 	}
+
+
+	.desktop-nav a.active {
+
+		background:
+			var(--nug-accent-soft);
+
+		color:
+			var(--nug-accent);
+
+	}
+
+
+	/* ========================================
+	   Actions
+	======================================== */
 
 	.header-actions {
+
 		display: flex;
+
 		align-items: center;
+
 		gap: 6px;
-		margin-left: 4px;
+
+		flex-shrink: 0;
+
 	}
 
-	.search-wrapper,
-	.search-wrapper site-search :global(button[data-open-modal]) {
+
+	/* ========================================
+	   Theme Button
+	======================================== */
+
+	.theme-button {
+
 		width: 40px;
 		height: 40px;
-	}
 
-	.search-wrapper site-search :global(button[data-open-modal]) {
-		border-radius: 50%;
-		display: flex;
+		display: inline-flex;
+
 		align-items: center;
 		justify-content: center;
-		background: transparent;
-		color: var(--nug-text);
-		transition: background 150ms ease, transform 150ms ease;
+
+		padding: 0;
+
+		border: 0;
+
+		border-radius:
+			var(--nug-radius-sm);
+
+		background:
+			transparent;
+
+		color:
+			var(--nug-text-secondary);
+
+		cursor: pointer;
+
+		transition:
+			background-color 0.18s ease,
+			color 0.18s ease,
+			transform 0.18s ease;
+
 	}
 
-	.search-wrapper site-search :global(button[data-open-modal]):hover {
-		background: var(--nug-surface);
+
+	.theme-button:hover {
+
+		background:
+			var(--nug-surface-hover);
+
+		color:
+			var(--nug-text);
+
 	}
 
-	.search-wrapper site-search :global(button[data-open-modal]):active {
-		transform: scale(0.92);
+
+	.theme-button:active {
+
+		transform: scale(0.94);
+
 	}
 
-	.search-wrapper site-search :global(button[data-open-modal]) :global(svg) {
+
+	.theme-icon {
+
 		width: 19px;
 		height: 19px;
-		color: currentColor;
+
+		transition:
+			opacity 0.18s ease,
+			transform 0.18s ease;
+
 	}
 
-	.menu-button {
+
+	.theme-icon-sun {
+
 		display: none;
+
+	}
+
+
+	.theme-icon-moon {
+
+		display: block;
+
+	}
+
+
+	:global(html[data-theme='dark'])
+	.theme-icon-sun {
+
+		display: block;
+
+	}
+
+
+	:global(html[data-theme='dark'])
+	.theme-icon-moon {
+
+		display: none;
+
+	}
+
+
+	/* ========================================
+	   Search
+	======================================== */
+
+	.search-wrapper {
+
 		width: 40px;
 		height: 40px;
-		border-radius: 50%;
+
+		display: flex;
 		align-items: center;
 		justify-content: center;
+
+	}
+
+
+	.search-wrapper :global(site-search) {
+
+		display: block;
+
+		width: 40px;
+		height: 40px;
+
+	}
+
+
+	.search-wrapper
+	:global(site-search button[data-open-modal]) {
+
+		width: 40px;
+		height: 40px;
+
+		margin: 0;
+		padding: 0;
+
+		border-radius:
+			var(--nug-radius-sm);
+
+		background:
+			transparent;
+
+		border: 0;
+
+		color:
+			var(--nug-text-secondary);
+
+		transition:
+			background-color 0.18s ease,
+			color 0.18s ease;
+
+	}
+
+
+	.search-wrapper
+	:global(site-search button[data-open-modal]:hover) {
+
+		background:
+			var(--nug-surface-hover);
+
+		color:
+			var(--nug-text);
+
+	}
+
+
+	/* ========================================
+	   Mobile Menu Button
+	======================================== */
+
+	.menu-button {
+
+		display: none;
+
+		width: 40px;
+		height: 40px;
+
+		padding: 0;
+
+		border: 0;
+
+		border-radius:
+			var(--nug-radius-sm);
+
+		background:
+			transparent;
+
+		cursor: pointer;
+
+		align-items: center;
+		justify-content: center;
+
 		flex-direction: column;
+
 		gap: 4px;
-		background: transparent;
-		color: var(--nug-text);
-		transition: background 150ms ease, transform 150ms ease;
+
 	}
 
-	.menu-button:hover,
-	.menu-button[aria-expanded='true'] {
-		background: var(--nug-surface);
-	}
-
-	.menu-button:active {
-		transform: scale(0.92);
-	}
 
 	.menu-button span {
+
 		width: 18px;
 		height: 1.5px;
-		background: currentColor;
+
+		background:
+			var(--nug-text-secondary);
+
 		border-radius: 999px;
+
+		transition:
+			transform 0.2s ease,
+			opacity 0.2s ease;
+
 	}
+
+
+	.menu-button:hover {
+
+		background:
+			var(--nug-surface-hover);
+
+	}
+
+
+	/* ========================================
+	   Mobile Menu
+	======================================== */
 
 	.mobile-menu {
-		display: none;
+
+		position: fixed;
+
+		top: 60px;
+		left: 16px;
+		right: 16px;
+
+		z-index: 99;
+
+		padding: 8px;
+
+		border:
+			1px solid var(--nug-border);
+
+		border-radius:
+			var(--nug-radius-md);
+
+		background:
+			color-mix(
+				in srgb,
+				var(--nug-background) 94%,
+				transparent
+			);
+
+		backdrop-filter: blur(18px);
+		-webkit-backdrop-filter: blur(18px);
+
+		box-shadow:
+			var(--nug-shadow-lg);
+
+		opacity: 0;
+
+		transform:
+			translateY(-8px)
+			scale(0.98);
+
+		pointer-events: none;
+
+		transition:
+			opacity 0.18s ease,
+			transform 0.18s ease;
+
 	}
+
+
+	.mobile-menu.open {
+
+		opacity: 1;
+
+		transform:
+			translateY(0)
+			scale(1);
+
+		pointer-events: auto;
+
+	}
+
+
+	.mobile-menu nav {
+
+		display: flex;
+
+		flex-direction: column;
+
+		gap: 2px;
+
+	}
+
+
+	.mobile-menu a {
+
+		display: block;
+
+		padding: 12px 14px;
+
+		border-radius:
+			var(--nug-radius-sm);
+
+		color:
+			var(--nug-text);
+
+		font-size: 14px;
+		font-weight: 600;
+
+		text-decoration: none;
+
+		transition:
+			background-color 0.18s ease;
+
+	}
+
+
+	.mobile-menu a:hover {
+
+		background:
+			var(--nug-surface-hover);
+
+	}
+
+
+	/* ========================================
+	   Tablet / Mobile
+	======================================== */
 
 	@media (max-width: 850px) {
+
 		.header-inner {
+
+			width:
+				calc(100% - 32px);
+
 			min-height: 60px;
-			width: calc(100% - 32px);
+
 		}
 
-		.logo-sub,
-		.desktop-nav {
-			display: none;
+
+		.logo {
+
+			gap: 0;
+
 		}
+
+
+		.logo-main {
+
+			font-size: 21px;
+
+		}
+
+
+		.logo-sub {
+
+			display: none;
+
+		}
+
+
+		.desktop-nav {
+
+			display: none;
+
+		}
+
 
 		.header-actions {
+
 			margin-left: auto;
-			padding-right: 48px;
+
 		}
+
 
 		.menu-button {
-			display: flex;
+
+			display: inline-flex;
+
 		}
 
-		.mobile-menu {
-			position: fixed;
-			top: 60px;
-			left: 16px;
-			right: 16px;
-			z-index: 99;
-			display: block;
-			padding: 10px;
-			background: color-mix(in srgb, var(--nug-background) 96%, transparent);
-			backdrop-filter: blur(16px);
-			-webkit-backdrop-filter: blur(16px);
-			border: 1px solid var(--nug-border);
-			border-radius: 16px;
-			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-			opacity: 0;
-			transform: translateY(-8px);
-			pointer-events: none;
-			transition: opacity 150ms ease, transform 150ms ease;
-		}
-
-		.mobile-menu.open {
-			opacity: 1;
-			transform: translateY(0);
-			pointer-events: auto;
-		}
-
-		.mobile-menu nav {
-			display: flex;
-			flex-direction: column;
-			gap: 4px;
-		}
-
-		.mobile-menu a {
-			display: block;
-			padding: 13px 14px;
-			border-radius: 10px;
-			font-size: 14px;
-		}
-
-		.mobile-menu a:hover {
-			background: var(--nug-surface);
-		}
 	}
 
-	@media (min-width: 50rem) and (max-width: 850px) {
+
+	@media (
+		min-width: 50rem
+	) and (
+		max-width: 850px
+	) {
+
 		.header-actions {
-			padding-right: 0;
+
+			padding-right: 48px;
+
 		}
+
 	}
+
+
+	@media (max-width: 480px) {
+
+		.header-inner {
+
+			width:
+				calc(100% - 20px);
+
+		}
+
+
+		.header-actions {
+
+			gap: 2px;
+
+		}
+
+
+		.theme-button,
+		.menu-button {
+
+			width: 38px;
+			height: 38px;
+
+		}
+
+
+		.search-wrapper,
+		.search-wrapper :global(site-search) {
+
+			width: 38px;
+			height: 38px;
+
+		}
+
+	}
+
 </style>

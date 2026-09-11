@@ -34,8 +34,43 @@ const {
 
 		<title>{title}</title>
 
-	</head>
+		<!--
+			NUGBASE Theme Initialization
 
+			優先順位:
+			1. ユーザーが保存したテーマ
+			2. OSのテーマ
+		-->
+
+		<script is:inline>
+			(() => {
+				const storageKey = "nug-theme";
+
+				const savedTheme =
+					localStorage.getItem(storageKey);
+
+				const systemDark =
+					window.matchMedia(
+						"(prefers-color-scheme: dark)"
+					).matches;
+
+				const theme =
+					savedTheme === "light" ||
+					savedTheme === "dark"
+						? savedTheme
+						: systemDark
+							? "dark"
+							: "light";
+
+				document.documentElement.dataset.theme =
+					theme;
+
+				document.documentElement.style.colorScheme =
+					theme;
+			})();
+		</script>
+
+	</head>
 
 	<body>
 
