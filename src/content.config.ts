@@ -47,6 +47,8 @@ const guide = defineCollection({
 
 		order: z.number().optional(),
 
+		featured: z.boolean().optional(),
+
 	}),
 
 });
