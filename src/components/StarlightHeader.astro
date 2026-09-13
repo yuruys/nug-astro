@@ -3,8 +3,11 @@ import Search from '@astrojs/starlight/components/Search.astro';
 ---
 
 <header class="site-header">
-
 	<div class="header-inner">
+
+		<!-- ========================================
+		     Logo
+		======================================== -->
 
 		<a
 			href="/"
@@ -12,30 +15,40 @@ import Search from '@astrojs/starlight/components/Search.astro';
 			aria-label="NUG ホーム"
 		>
 			<span class="logo-main">NUG</span>
+
 			<span class="logo-sub">
 				Nekozouneko Unofficial Guide
 			</span>
 		</a>
+
+
+		<!-- ========================================
+		     Desktop Navigation
+		======================================== -->
 
 		<nav
 			class="desktop-nav"
 			aria-label="メインナビゲーション"
 		>
 			<a href="/guide/">攻略</a>
-			<a href="/docs/" class="active">Wiki</a>
+			<a href="/docs/">Wiki</a>
 			<a href="/news/">ニュース</a>
 			<a href="/tool/">ツール</a>
 			<a href="/about/">NUGについて</a>
 		</nav>
 
+
+		<!-- ========================================
+		     Header Actions
+		======================================== -->
+
 		<div class="header-actions">
 
-			<!-- Theme -->
-
+			<!-- Dark Mode -->
 			<button
-				class="theme-button"
 				type="button"
-				aria-label="テーマを切り替える"
+				class="theme-toggle"
+				aria-label="ダークモードに切り替え"
 				title="テーマを切り替える"
 			>
 				<svg
@@ -53,7 +66,63 @@ import Search from '@astrojs/starlight/components/Search.astro';
 					/>
 
 					<path
-						d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"
+						d="M12 2v2"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+
+					<path
+						d="M12 20v2"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+
+					<path
+						d="M4.93 4.93l1.41 1.41"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+
+					<path
+						d="M17.66 17.66l1.41 1.41"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+
+					<path
+						d="M2 12h2"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+
+					<path
+						d="M20 12h2"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+
+					<path
+						d="M4.93 19.07l1.41-1.41"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					/>
+
+					<path
+						d="M17.66 6.34l1.41-1.41"
 						fill="none"
 						stroke="currentColor"
 						stroke-width="1.8"
@@ -67,32 +136,29 @@ import Search from '@astrojs/starlight/components/Search.astro';
 					aria-hidden="true"
 				>
 					<path
-						d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"
+						d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"
 						fill="none"
 						stroke="currentColor"
 						stroke-width="1.8"
-						stroke-linecap="round"
 						stroke-linejoin="round"
 					/>
 				</svg>
 			</button>
 
-			<!-- Search -->
 
-			<div
-				class="search-wrapper"
-				aria-label="検索"
-			>
+			<!-- Search -->
+			<div class="header-search">
 				<Search />
 			</div>
 
-			<!-- Mobile menu -->
 
+			<!-- Mobile NUG Menu -->
 			<button
-				class="menu-button"
 				type="button"
+				class="mobile-menu-button"
 				aria-label="メニューを開く"
 				aria-expanded="false"
+				aria-controls="nug-mobile-menu"
 			>
 				<span></span>
 				<span></span>
@@ -100,308 +166,231 @@ import Search from '@astrojs/starlight/components/Search.astro';
 			</button>
 
 		</div>
-
 	</div>
-
-	<div class="mobile-menu">
-
-		<nav aria-label="モバイルナビゲーション">
-
-			<a href="/guide/">📖 攻略</a>
-			<a href="/docs/">📚 Wiki</a>
-			<a href="/news/">📰 ニュース</a>
-			<a href="/tool/">🛠️ ツール</a>
-			<a href="/about/">ℹ️ NUGについて</a>
-
-		</nav>
-
-	</div>
-
 </header>
+
+
+<!-- ========================================
+     Mobile NUG Menu
+======================================== -->
+
+<div
+	id="nug-mobile-menu"
+	class="mobile-menu"
+	aria-hidden="true"
+>
+	<nav aria-label="モバイルナビゲーション">
+
+		<a href="/guide/">
+			<span>攻略</span>
+		</a>
+
+		<a href="/docs/">
+			<span>Wiki</span>
+		</a>
+
+		<a href="/news/">
+			<span>ニュース</span>
+		</a>
+
+		<a href="/tool/">
+			<span>ツール</span>
+		</a>
+
+		<a href="/about/">
+			<span>NUGについて</span>
+		</a>
+
+	</nav>
+</div>
 
 
 <script>
 	/* ========================================
-	   Mobile Menu
+	   Theme
 	======================================== */
 
-	const menuButton =
+	const themeButton =
+		document.querySelector<HTMLButtonElement>('.theme-toggle');
+
+	const storageKey = 'nug-theme';
+
+	const applyTheme = (theme: 'light' | 'dark') => {
+		document.documentElement.dataset.theme = theme;
+
+		if (themeButton) {
+			themeButton.setAttribute(
+				'aria-label',
+				theme === 'dark'
+					? 'ライトモードに切り替え'
+					: 'ダークモードに切り替え'
+			);
+		}
+	};
+
+
+	const getCurrentTheme = (): 'light' | 'dark' => {
+		const current =
+			document.documentElement.dataset.theme;
+
+		if (current === 'dark') {
+			return 'dark';
+		}
+
+		return 'light';
+	};
+
+
+	themeButton?.addEventListener('click', () => {
+		const currentTheme = getCurrentTheme();
+
+		const nextTheme =
+			currentTheme === 'dark'
+				? 'light'
+				: 'dark';
+
+		localStorage.setItem(storageKey, nextTheme);
+
+		applyTheme(nextTheme);
+	});
+
+
+	/* ========================================
+	   Mobile NUG Menu
+	======================================== */
+
+	const mobileMenuButton =
 		document.querySelector<HTMLButtonElement>(
-			'.site-header .menu-button'
+			'.mobile-menu-button'
 		);
 
 	const mobileMenu =
 		document.querySelector<HTMLElement>(
-			'.site-header .mobile-menu'
+			'#nug-mobile-menu'
 		);
 
-	menuButton?.addEventListener('click', () => {
 
-		const isOpen =
-			mobileMenu?.classList.toggle('open') ?? false;
+	const setMobileMenu =
+		(open: boolean) => {
 
-		menuButton.setAttribute(
-			'aria-expanded',
-			String(isOpen)
-		);
+			if (!mobileMenuButton || !mobileMenu) {
+				return;
+			}
+
+			mobileMenuButton.setAttribute(
+				'aria-expanded',
+				String(open)
+			);
+
+			mobileMenuButton.setAttribute(
+				'aria-label',
+				open
+					? 'メニューを閉じる'
+					: 'メニューを開く'
+			);
+
+			mobileMenu.setAttribute(
+				'aria-hidden',
+				String(!open)
+			);
+
+			mobileMenu.classList.toggle(
+				'is-open',
+				open
+			);
+
+			document.body.classList.toggle(
+				'nug-menu-open',
+				open
+			);
+		};
+
+
+	mobileMenuButton?.addEventListener(
+		'click',
+		() => {
+
+			const isOpen =
+				mobileMenuButton.getAttribute(
+					'aria-expanded'
+				) === 'true';
+
+			setMobileMenu(!isOpen);
+		}
+	);
+
+
+	/* ========================================
+	   Close Mobile Menu
+	======================================== */
+
+	mobileMenu?.querySelectorAll('a').forEach((link) => {
+
+		link.addEventListener('click', () => {
+			setMobileMenu(false);
+		});
+
+	});
+
+
+	document.addEventListener('keydown', (event) => {
+
+		if (event.key === 'Escape') {
+			setMobileMenu(false);
+		}
 
 	});
 
 
 	/* ========================================
-	   NUGBASE Theme System
+	   Resize
 	======================================== */
 
-	const themeButton =
-		document.querySelector<HTMLButtonElement>(
-			'.site-header .theme-button'
-		);
+	window.addEventListener('resize', () => {
 
-	const themeStorageKey = 'nug-theme';
-
-	const getSystemTheme = (): 'light' | 'dark' => {
-
-		return window.matchMedia(
-			'(prefers-color-scheme: dark)'
-		).matches
-			? 'dark'
-			: 'light';
-
-	};
-
-
-	const getCurrentTheme = (): 'light' | 'dark' => {
-
-		const theme =
-			document.documentElement.dataset.theme;
-
-		return theme === 'dark'
-			? 'dark'
-			: 'light';
-
-	};
-
-
-	const updateThemeButton = () => {
-
-		if (!themeButton) return;
-
-		const theme = getCurrentTheme();
-
-		const nextTheme =
-			theme === 'dark'
-				? 'light'
-				: 'dark';
-
-		themeButton.setAttribute(
-			'aria-label',
-			nextTheme === 'dark'
-				? 'ダークモードに切り替える'
-				: 'ライトモードに切り替える'
-		);
-
-		themeButton.setAttribute(
-			'title',
-			nextTheme === 'dark'
-				? 'ダークモードに切り替える'
-				: 'ライトモードに切り替える'
-		);
-
-	};
-
-
-	const applyTheme = (
-		theme: 'light' | 'dark',
-		save = false
-	) => {
-
-		document.documentElement.dataset.theme =
-			theme;
-
-		document.documentElement.style.colorScheme =
-			theme;
-
-		if (save) {
-
-			localStorage.setItem(
-				themeStorageKey,
-				theme
-			);
-
+		if (window.innerWidth > 850) {
+			setMobileMenu(false);
 		}
 
-		updateThemeButton();
-
-	};
-
-
-	themeButton?.addEventListener(
-		'click',
-		() => {
-
-			const currentTheme =
-				getCurrentTheme();
-
-			const nextTheme =
-				currentTheme === 'dark'
-					? 'light'
-					: 'dark';
-
-			/*
-				ユーザーが手動で切り替えたら、
-				以後はOS設定ではなく
-				ユーザー設定を優先する。
-			*/
-
-			applyTheme(
-				nextTheme,
-				true
-			);
-
-		}
-	);
-
-
-	/*
-		OSのテーマ変更を監視。
-
-		nug-theme が保存されている場合は
-		ユーザーが明示的に設定しているため、
-		OS変更には追従しない。
-	*/
-
-	const systemThemeQuery =
-		window.matchMedia(
-			'(prefers-color-scheme: dark)'
-		);
-
-
-	systemThemeQuery.addEventListener(
-		'change',
-		() => {
-
-			const savedTheme =
-				localStorage.getItem(
-					themeStorageKey
-				);
-
-			if (
-				savedTheme === 'light' ||
-				savedTheme === 'dark'
-			) {
-				return;
-			}
-
-			applyTheme(
-				getSystemTheme(),
-				false
-			);
-
-		}
-	);
-
-
-	/*
-		Starlight側のテーマ状態とも同期。
-
-		明示的なユーザー設定が存在する場合、
-		Starlight側にも同じ値を保存する。
-	*/
-
-	const savedTheme =
-		localStorage.getItem(
-			themeStorageKey
-		);
-
-	if (
-		savedTheme === 'light' ||
-		savedTheme === 'dark'
-	) {
-
-		applyTheme(
-			savedTheme,
-			false
-		);
-
-	}
-
-
-	updateThemeButton();
-
-
-	/* ========================================
-	   Escape
-	======================================== */
-
-	document.addEventListener(
-		'keydown',
-		(event) => {
-
-			if (event.key === 'Escape') {
-
-				mobileMenu?.classList.remove(
-					'open'
-				);
-
-				menuButton?.setAttribute(
-					'aria-expanded',
-					'false'
-				);
-
-			}
-
-		}
-	);
+	});
 </script>
 
 
 <style>
-
 	/* ========================================
 	   Header
 	======================================== */
 
 	.site-header {
-
 		position: sticky;
 		top: 0;
 		z-index: 100;
 
 		width: 100%;
+		height: 60px;
 
-		background:
-			color-mix(
-				in srgb,
-				var(--nug-background) 92%,
-				transparent
-			);
+		background: var(--nug-background);
+		border-bottom: 1px solid var(--nug-border);
 
-		backdrop-filter: blur(16px);
-		-webkit-backdrop-filter: blur(16px);
-
-		border-bottom:
-			1px solid var(--nug-border);
-
+		-webkit-backdrop-filter: blur(18px);
+		backdrop-filter: blur(18px);
 	}
 
 
 	.header-inner {
+		width: min(
+			var(--nug-content-width),
+			calc(100% - 48px)
+		);
 
-		width:
-			min(
-				var(--nug-content-width),
-				calc(100% - 48px)
-			);
-
-		min-height: 68px;
-
+		height: 100%;
 		margin: 0 auto;
 
 		display: flex;
 		align-items: center;
+		justify-content: space-between;
 
-		gap: 32px;
-
+		gap: 24px;
 	}
 
 
@@ -410,118 +399,98 @@ import Search from '@astrojs/starlight/components/Search.astro';
 	======================================== */
 
 	.logo {
-
-		display: flex;
+		display: inline-flex;
 		align-items: baseline;
 
-		gap: 8px;
+		gap: 10px;
 
 		color: var(--nug-text);
-
 		text-decoration: none;
 
-		flex-shrink: 0;
+		white-space: nowrap;
 
+		flex-shrink: 0;
 	}
 
 
 	.logo-main {
-
-		font-size: 23px;
+		font-size: 21px;
 		font-weight: 800;
 		letter-spacing: -0.04em;
-
+		line-height: 1;
 	}
 
 
 	.logo-sub {
+		color: var(--nug-text-secondary);
 
 		font-size: 11px;
 		font-weight: 500;
 
-		color:
-			var(--nug-text-tertiary);
+		letter-spacing: 0;
 
-		white-space: nowrap;
+		line-height: 1;
+	}
 
+
+	.logo:hover {
+		color: var(--nug-text);
 	}
 
 
 	/* ========================================
-	   Navigation
+	   Desktop Navigation
 	======================================== */
 
 	.desktop-nav {
-
 		display: flex;
-
 		align-items: center;
 
-		gap: 4px;
+		gap: 24px;
 
 		margin-left: auto;
-
 	}
 
 
 	.desktop-nav a {
+		position: relative;
 
-		padding: 8px 11px;
+		display: inline-flex;
+		align-items: center;
 
-		border-radius:
-			var(--nug-radius-sm);
+		height: 60px;
 
-		color:
-			var(--nug-text-secondary);
+		color: var(--nug-text-secondary);
 
 		font-size: 14px;
 		font-weight: 600;
 
 		text-decoration: none;
 
-		transition:
-			background-color 0.18s ease,
-			color 0.18s ease;
+		white-space: nowrap;
 
+		transition:
+			color 0.18s ease,
+			opacity 0.18s ease;
 	}
 
 
 	.desktop-nav a:hover {
-
-		background:
-			var(--nug-surface-hover);
-
-		color:
-			var(--nug-text);
-
-	}
-
-
-	.desktop-nav a.active {
-
-		background:
-			var(--nug-accent-soft);
-
-		color:
-			var(--nug-accent);
-
+		color: var(--nug-text);
 	}
 
 
 	/* ========================================
-	   Actions
+	   Header Actions
 	======================================== */
 
 	.header-actions {
-
 		display: flex;
-
 		align-items: center;
 
-		gap: 6px;
+		gap: 8px;
 
 		flex-shrink: 0;
-
 	}
 
 
@@ -529,96 +498,59 @@ import Search from '@astrojs/starlight/components/Search.astro';
 	   Theme Button
 	======================================== */
 
-	.theme-button {
-
-		width: 40px;
-		height: 40px;
+	.theme-toggle {
+		width: 36px;
+		height: 36px;
 
 		display: inline-flex;
-
 		align-items: center;
 		justify-content: center;
 
 		padding: 0;
 
 		border: 0;
+		border-radius: 10px;
 
-		border-radius:
-			var(--nug-radius-sm);
-
-		background:
-			transparent;
-
-		color:
-			var(--nug-text-secondary);
+		background: transparent;
+		color: var(--nug-text-secondary);
 
 		cursor: pointer;
 
 		transition:
-			background-color 0.18s ease,
-			color 0.18s ease,
-			transform 0.18s ease;
-
+			background 0.18s ease,
+			color 0.18s ease;
 	}
 
 
-	.theme-button:hover {
-
-		background:
-			var(--nug-surface-hover);
-
-		color:
-			var(--nug-text);
-
-	}
-
-
-	.theme-button:active {
-
-		transform: scale(0.94);
-
+	.theme-toggle:hover {
+		background: var(--nug-surface-hover);
+		color: var(--nug-text);
 	}
 
 
 	.theme-icon {
-
 		width: 19px;
 		height: 19px;
-
-		transition:
-			opacity 0.18s ease,
-			transform 0.18s ease;
-
 	}
 
 
 	.theme-icon-sun {
-
 		display: none;
-
 	}
 
 
 	.theme-icon-moon {
-
 		display: block;
-
 	}
 
 
-	:global(html[data-theme='dark'])
-	.theme-icon-sun {
-
+	:global(html[data-theme='dark']) .theme-icon-sun {
 		display: block;
-
 	}
 
 
-	:global(html[data-theme='dark'])
-	.theme-icon-moon {
-
+	:global(html[data-theme='dark']) .theme-icon-moon {
 		display: none;
-
 	}
 
 
@@ -626,64 +558,9 @@ import Search from '@astrojs/starlight/components/Search.astro';
 	   Search
 	======================================== */
 
-	.search-wrapper {
-
-		width: 40px;
-		height: 40px;
-
+	.header-search {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-
-	}
-
-
-	.search-wrapper :global(site-search) {
-
-		display: block;
-
-		width: 40px;
-		height: 40px;
-
-	}
-
-
-	.search-wrapper
-	:global(site-search button[data-open-modal]) {
-
-		width: 40px;
-		height: 40px;
-
-		margin: 0;
-		padding: 0;
-
-		border-radius:
-			var(--nug-radius-sm);
-
-		background:
-			transparent;
-
-		border: 0;
-
-		color:
-			var(--nug-text-secondary);
-
-		transition:
-			background-color 0.18s ease,
-			color 0.18s ease;
-
-	}
-
-
-	.search-wrapper
-	:global(site-search button[data-open-modal]:hover) {
-
-		background:
-			var(--nug-surface-hover);
-
-		color:
-			var(--nug-text);
-
 	}
 
 
@@ -691,22 +568,18 @@ import Search from '@astrojs/starlight/components/Search.astro';
 	   Mobile Menu Button
 	======================================== */
 
-	.menu-button {
-
+	.mobile-menu-button {
 		display: none;
 
-		width: 40px;
-		height: 40px;
+		width: 36px;
+		height: 36px;
 
 		padding: 0;
 
 		border: 0;
+		border-radius: 10px;
 
-		border-radius:
-			var(--nug-radius-sm);
-
-		background:
-			transparent;
+		background: transparent;
 
 		cursor: pointer;
 
@@ -716,32 +589,23 @@ import Search from '@astrojs/starlight/components/Search.astro';
 		flex-direction: column;
 
 		gap: 4px;
-
 	}
 
 
-	.menu-button span {
+	.mobile-menu-button:hover {
+		background: var(--nug-surface-hover);
+	}
+
+
+	.mobile-menu-button span {
+		display: block;
 
 		width: 18px;
 		height: 1.5px;
 
-		background:
-			var(--nug-text-secondary);
-
 		border-radius: 999px;
 
-		transition:
-			transform 0.2s ease,
-			opacity 0.2s ease;
-
-	}
-
-
-	.menu-button:hover {
-
-		background:
-			var(--nug-surface-hover);
-
+		background: var(--nug-text);
 	}
 
 
@@ -750,215 +614,149 @@ import Search from '@astrojs/starlight/components/Search.astro';
 	======================================== */
 
 	.mobile-menu {
+		display: none;
 
 		position: fixed;
 
 		top: 60px;
-		left: 16px;
-		right: 16px;
+		left: 0;
+		right: 0;
 
 		z-index: 99;
 
-		padding: 8px;
+		background: var(--nug-background);
 
-		border:
-			1px solid var(--nug-border);
-
-		border-radius:
-			var(--nug-radius-md);
-
-		background:
-			color-mix(
-				in srgb,
-				var(--nug-background) 94%,
-				transparent
-			);
-
-		backdrop-filter: blur(18px);
-		-webkit-backdrop-filter: blur(18px);
+		border-bottom: 1px solid var(--nug-border);
 
 		box-shadow:
-			var(--nug-shadow-lg);
+			0 12px 30px rgba(0, 0, 0, 0.08);
 
 		opacity: 0;
-
-		transform:
-			translateY(-8px)
-			scale(0.98);
+		transform: translateY(-8px);
 
 		pointer-events: none;
 
 		transition:
-			opacity 0.18s ease,
-			transform 0.18s ease;
-
+			opacity 0.2s ease,
+			transform 0.2s ease;
 	}
 
 
-	.mobile-menu.open {
+	.mobile-menu.is-open {
+		display: block;
 
 		opacity: 1;
-
-		transform:
-			translateY(0)
-			scale(1);
+		transform: translateY(0);
 
 		pointer-events: auto;
-
 	}
 
 
 	.mobile-menu nav {
-
 		display: flex;
-
 		flex-direction: column;
 
-		gap: 2px;
-
+		padding: 8px 16px 16px;
 	}
 
 
 	.mobile-menu a {
+		display: flex;
+		align-items: center;
 
-		display: block;
+		min-height: 48px;
 
-		padding: 12px 14px;
+		padding: 0 12px;
 
-		border-radius:
-			var(--nug-radius-sm);
+		border-radius: 10px;
 
-		color:
-			var(--nug-text);
+		color: var(--nug-text);
 
-		font-size: 14px;
+		font-size: 15px;
 		font-weight: 600;
 
 		text-decoration: none;
-
-		transition:
-			background-color 0.18s ease;
-
 	}
 
 
 	.mobile-menu a:hover {
+		background: var(--nug-surface-hover);
+	}
 
-		background:
-			var(--nug-surface-hover);
+
+	/* ========================================
+	   Mobile
+	======================================== */
+
+	@media (max-width: 850px) {
+
+		.site-header {
+			height: 60px;
+		}
+
+
+		.header-inner {
+			width: calc(100% - 24px);
+
+			gap: 8px;
+		}
+
+
+		.logo {
+			gap: 7px;
+		}
+
+
+		.logo-main {
+			font-size: 20px;
+		}
+
+
+		.logo-sub {
+			display: none;
+		}
+
+
+		.desktop-nav {
+			display: none;
+		}
+
+
+		.header-actions {
+			margin-left: auto;
+
+			gap: 4px;
+		}
+
+
+		.mobile-menu-button {
+			display: inline-flex;
+		}
+
+
+		.header-search {
+			display: flex;
+		}
 
 	}
 
 
 	/* ========================================
-	   Tablet / Mobile
+	   Small Mobile
 	======================================== */
-
-	@media (max-width: 850px) {
-
-		.header-inner {
-
-			width:
-				calc(100% - 32px);
-
-			min-height: 60px;
-
-		}
-
-
-		.logo {
-
-			gap: 0;
-
-		}
-
-
-		.logo-main {
-
-			font-size: 21px;
-
-		}
-
-
-		.logo-sub {
-
-			display: none;
-
-		}
-
-
-		.desktop-nav {
-
-			display: none;
-
-		}
-
-
-		.header-actions {
-
-			margin-left: auto;
-
-		}
-
-
-		.menu-button {
-
-			display: inline-flex;
-
-		}
-
-	}
-
-
-	@media (
-		min-width: 50rem
-	) and (
-		max-width: 850px
-	) {
-
-		.header-actions {
-
-			padding-right: 48px;
-
-		}
-
-	}
-
 
 	@media (max-width: 480px) {
 
 		.header-inner {
-
-			width:
-				calc(100% - 20px);
-
+			width: calc(100% - 16px);
 		}
 
 
-		.header-actions {
-
-			gap: 2px;
-
-		}
-
-
-		.theme-button,
-		.menu-button {
-
-			width: 38px;
-			height: 38px;
-
-		}
-
-
-		.search-wrapper,
-		.search-wrapper :global(site-search) {
-
-			width: 38px;
-			height: 38px;
-
+		.theme-toggle,
+		.mobile-menu-button {
+			width: 34px;
+			height: 34px;
 		}
 
 	}
-
 </style>

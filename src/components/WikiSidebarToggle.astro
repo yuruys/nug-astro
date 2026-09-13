@@ -1,0 +1,117 @@
+---
+---
+
+<button
+	class="wiki-sidebar-toggle"
+	type="button"
+	aria-label="Wikiサイドバーを開く"
+	aria-expanded="false"
+>
+	<span class="wiki-sidebar-toggle-icon" aria-hidden="true">›</span>
+</button>
+
+<script>
+	const button = document.querySelector<HTMLButtonElement>(
+		'.wiki-sidebar-toggle'
+	);
+
+	if (button) {
+		const sidebar = document.querySelector<HTMLElement>(
+			'.sidebar'
+		);
+
+		if (sidebar) {
+			const updateState = () => {
+				const isOpen = document.documentElement.classList.contains(
+					'wiki-sidebar-open'
+				);
+
+				button.setAttribute(
+					'aria-expanded',
+					String(isOpen)
+				);
+
+				button.setAttribute(
+					'aria-label',
+					isOpen
+						? 'Wikiサイドバーを閉じる'
+						: 'Wikiサイドバーを開く'
+				);
+			};
+
+			const openSidebar = () => {
+				document.documentElement.classList.add(
+					'wiki-sidebar-open'
+				);
+
+				updateState();
+			};
+
+			const closeSidebar = () => {
+				document.documentElement.classList.remove(
+					'wiki-sidebar-open'
+				);
+
+				updateState();
+			};
+
+			button.addEventListener('click', () => {
+				const isOpen =
+					document.documentElement.classList.contains(
+						'wiki-sidebar-open'
+					);
+
+				if (isOpen) {
+					closeSidebar();
+				} else {
+					openSidebar();
+				}
+			});
+
+			sidebar.addEventListener('click', (event) => {
+				const target = event.target as HTMLElement;
+
+				if (target.closest('a')) {
+					closeSidebar();
+				}
+			});
+
+			document.addEventListener('keydown', (event) => {
+				if (event.key === 'Escape') {
+					closeSidebar();
+				}
+			});
+
+			let touchStartX = 0;
+
+			document.addEventListener(
+				'touchstart',
+				(event) => {
+					touchStartX = event.touches[0]?.clientX ?? 0;
+				},
+				{ passive: true }
+			);
+
+			document.addEventListener(
+				'touchend',
+				(event) => {
+					const touchEndX =
+						event.changedTouches[0]?.clientX ?? 0;
+
+					const deltaX = touchEndX - touchStartX;
+
+					if (deltaX > 60) {
+						openSidebar();
+					}
+
+					if (deltaX < -60) {
+						closeSidebar();
+					}
+				},
+				{ passive: true }
+			);
+
+			updateState();
+		}
+	}
+</script>

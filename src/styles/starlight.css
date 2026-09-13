@@ -1,38 +1,48 @@
 /* ========================================
    NUGBASE × Starlight
    Ultra Modern / Minimal / Refined
-   ======================================== */
+======================================== */
 
 
 /* ========================================
    01. Design Tokens
-   ======================================== */
+======================================== */
 
 :root {
+
 	/* Backgrounds & Surfaces */
+
 	--nug-background: #ffffff;
 	--nug-surface: #f6f6f8;
 	--nug-surface-hover: #eeeeef;
 	--nug-surface-subtle: #fafafa;
 	--nug-glass: rgba(255, 255, 255, 0.75);
 
+
 	/* Text Colors */
+
 	--nug-text: #0f172a;
 	--nug-text-secondary: #475569;
 	--nug-text-tertiary: #94a3b8;
 
-	/* Subtle Borders (Dynamic Opacity) */
+
+	/* Subtle Borders */
+
 	--nug-border: rgba(15, 23, 42, 0.08);
 	--nug-border-strong: rgba(15, 23, 42, 0.16);
 	--nug-border-glass: rgba(255, 255, 255, 0.6);
 
+
 	/* Vibrant Accent & Glows */
+
 	--nug-accent: #2563eb;
 	--nug-accent-hover: #1d4ed8;
 	--nug-accent-soft: rgba(37, 99, 235, 0.08);
 	--nug-accent-glow: rgba(37, 99, 235, 0.25);
 
+
 	/* Callouts / Semantics */
+
 	--nug-note: #2563eb;
 	--nug-note-bg: rgba(37, 99, 235, 0.05);
 
@@ -45,20 +55,34 @@
 	--nug-danger: #dc2626;
 	--nug-danger-bg: rgba(220, 38, 38, 0.05);
 
+
 	/* Modern Radius Token Scale */
+
 	--nug-radius-xs: 6px;
 	--nug-radius-sm: 10px;
 	--nug-radius-md: 14px;
 	--nug-radius-lg: 20px;
 	--nug-radius-pill: 9999px;
 
+
 	/* Layout & Shadows */
+
 	--nug-content-width: 1200px;
-	--nug-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-	--nug-shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
-	--nug-shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+
+	--nug-shadow-sm:
+		0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+	--nug-shadow-md:
+		0 4px 12px -2px rgba(0, 0, 0, 0.08),
+		0 2px 6px -1px rgba(0, 0, 0, 0.04);
+
+	--nug-shadow-lg:
+		0 12px 32px -4px rgba(0, 0, 0, 0.12),
+		0 4px 12px -2px rgba(0, 0, 0, 0.04);
+
 
 	/* Typography */
+
 	--nug-font:
 		"Inter Variable",
 		-apple-system,
@@ -81,10 +105,12 @@
 
 
 /* ========================================
-   02. Dark Mode (Deep OLED Charcoal)
-   ======================================== */
+   02. Dark Mode
+   Deep OLED Charcoal
+======================================== */
 
 :root[data-theme='dark'] {
+
 	--nug-background: #0b0b0e;
 	--nug-surface: #141418;
 	--nug-surface-hover: #1f1f24;
@@ -116,17 +142,23 @@
 	--nug-danger: #ef4444;
 	--nug-danger-bg: rgba(239, 68, 68, 0.1);
 
-	--nug-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-	--nug-shadow-md: 0 6px 16px -2px rgba(0, 0, 0, 0.5);
-	--nug-shadow-lg: 0 16px 36px -4px rgba(0, 0, 0, 0.6);
+	--nug-shadow-sm:
+		0 1px 2px 0 rgba(0, 0, 0, 0.4);
+
+	--nug-shadow-md:
+		0 6px 16px -2px rgba(0, 0, 0, 0.5);
+
+	--nug-shadow-lg:
+		0 16px 36px -4px rgba(0, 0, 0, 0.6);
 }
 
 
 /* ========================================
    03. Starlight Custom Overrides
-   ======================================== */
+======================================== */
 
 :root {
+
 	--sl-nav-height: 64px;
 	--sl-nav-pad-x: 24px;
 	--sl-menu-button-size: 38px;
@@ -149,423 +181,928 @@
 
 /* ========================================
    04. Base Styles & Custom Scrollbar
-   ======================================== */
+======================================== */
 
 html {
+
 	font-family: var(--nug-font);
+
 	scroll-behavior: smooth;
+
 	-webkit-tap-highlight-color: transparent;
 }
 
+
 body {
+
 	margin: 0;
+
 	background: var(--nug-background);
 	color: var(--nug-text);
+
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+
 	text-rendering: optimizeLegibility;
 }
 
+
 /* Slick Custom Scrollbars */
+
 ::-webkit-scrollbar {
+
 	width: 6px;
 	height: 6px;
 }
+
+
 ::-webkit-scrollbar-track {
+
 	background: transparent;
 }
+
+
 ::-webkit-scrollbar-thumb {
+
 	background: var(--nug-border-strong);
+
 	border-radius: var(--nug-radius-pill);
 }
+
+
 ::-webkit-scrollbar-thumb:hover {
+
 	background: var(--nug-text-tertiary);
 }
 
+
 /* Focused Element Standard */
+
 :focus-visible {
+
 	outline: 2px solid var(--nug-accent);
 	outline-offset: 2px;
+
 	border-radius: var(--nug-radius-xs);
 }
 
 
 /* ========================================
    05. Glassmorphic Sticky Header
-   ======================================== */
+======================================== */
 
 header.header {
+
 	height: var(--sl-nav-height);
+
 	padding: 0;
+
 	border-bottom: 1px solid var(--nug-border);
+
 	background: var(--nug-glass);
-	backdrop-filter: blur(16px) saturate(180%);
-	-webkit-backdrop-filter: blur(16px) saturate(180%);
+
+	backdrop-filter:
+		blur(16px)
+		saturate(180%);
+
+	-webkit-backdrop-filter:
+		blur(16px)
+		saturate(180%);
+
 	position: sticky;
+
 	top: 0;
+
 	z-index: 100;
-	transition: border-color 200ms ease;
+
+	transition:
+		border-color 200ms ease;
 }
 
+
 header.header > div {
-	width: min(var(--nug-content-width), calc(100% - 48px));
+
+	width:
+		min(
+			var(--nug-content-width),
+			calc(100% - 48px)
+		);
+
 	max-width: var(--nug-content-width);
+
 	margin: 0 auto;
 }
 
+
 /* Site Logo / Title */
+
 .site-title {
+
 	font-family: var(--nug-font);
+
 	font-size: 18px;
+
 	font-weight: 700;
+
 	letter-spacing: -0.03em;
+
 	color: var(--nug-text);
-	transition: opacity 150ms ease, transform 150ms ease;
+
+	transition:
+		opacity 150ms ease,
+		transform 150ms ease;
 }
 
+
 .site-title:hover {
+
 	opacity: 0.8;
+
 	transform: translateY(-0.5px);
 }
 
 
 /* ========================================
    06. Header Nav & Interactive Buttons
-   ======================================== */
+======================================== */
 
 header.header nav a {
+
 	display: flex;
+
 	align-items: center;
+
 	min-height: 36px;
+
 	padding: 0 14px;
+
 	border-radius: var(--nug-radius-pill);
+
 	font-size: 13.5px;
+
 	font-weight: 500;
+
 	color: var(--nug-text-secondary);
-	transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+
+	transition:
+		all 150ms cubic-bezier(
+			0.16,
+			1,
+			0.3,
+			1
+		);
 }
+
 
 header.header nav a:hover {
+
 	color: var(--nug-text);
+
 	background: var(--nug-surface);
 }
+
 
 header.header nav a[aria-current='page'] {
+
 	color: var(--nug-text);
+
 	font-weight: 600;
+
 	background: var(--nug-surface);
-	box-shadow: inset 0 0 0 1px var(--nug-border);
+
+	box-shadow:
+		inset 0 0 0 1px var(--nug-border);
 }
+
 
 header.header button {
+
 	width: 36px;
+
 	height: 36px;
+
 	border: 0;
+
 	border-radius: var(--nug-radius-sm);
+
 	background: transparent;
+
 	color: var(--nug-text-secondary);
-	transition: all 150ms ease;
+
+	transition:
+		all 150ms ease;
 }
 
+
 header.header button:hover {
+
 	background: var(--nug-surface);
+
 	color: var(--nug-text);
 }
 
 
 /* ========================================
    07. Sidebar
-   ======================================== */
+======================================== */
 
 .sidebar {
+
 	border-right: 1px solid var(--nug-border);
+
 	background: var(--nug-background);
 }
 
+
 .sidebar-content {
+
 	padding: 24px 16px;
 }
 
+
 .sidebar a {
+
 	padding: 8px 12px;
+
 	border-radius: var(--nug-radius-sm);
+
 	font-size: 13.5px;
+
 	color: var(--nug-text-secondary);
-	transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+
+	transition:
+		all 150ms cubic-bezier(
+			0.16,
+			1,
+			0.3,
+			1
+		);
 }
 
+
 .sidebar a:hover {
+
 	background: var(--nug-surface);
+
 	color: var(--nug-text);
+
 	transform: translateX(2px);
 }
 
+
 .sidebar a[aria-current='page'] {
+
 	background: var(--nug-accent-soft);
+
 	color: var(--nug-accent);
+
 	font-weight: 600;
 }
 
 
 /* ========================================
    08. Main Content & Markdown
-   ======================================== */
+======================================== */
 
 .sl-markdown-content {
+
 	max-width: 760px;
+
 	font-family: var(--nug-font);
+
 	font-size: 15.5px;
+
 	line-height: 1.8;
+
 	color: var(--nug-text);
 }
 
+
 /* Headings Styling */
+
 .sl-markdown-content h1,
 .sl-markdown-content h2,
 .sl-markdown-content h3,
 .sl-markdown-content h4 {
+
 	color: var(--nug-text);
+
 	font-weight: 700;
+
 	letter-spacing: -0.025em;
+
 	text-wrap: balance;
 }
 
+
 .sl-markdown-content h1 {
+
 	margin-top: 0;
+
 	margin-bottom: 24px;
+
 	font-size: 38px;
+
 	line-height: 1.15;
+
 	letter-spacing: -0.035em;
 }
 
-/* H2: Left accent indicator style (ultra modern) */
+
+/* H2: Left accent indicator style */
+
 .sl-markdown-content h2 {
+
 	display: flex;
+
 	align-items: center;
+
 	gap: 12px;
+
 	margin-top: 56px;
+
 	margin-bottom: 20px;
+
 	padding-bottom: 0;
+
 	font-size: 24px;
+
 	line-height: 1.3;
+
 	border-bottom: 0;
 }
 
+
 .sl-markdown-content h2::before {
+
 	content: "";
+
 	display: inline-block;
+
 	width: 4px;
+
 	height: 1em;
+
 	border-radius: var(--nug-radius-pill);
+
 	background: var(--nug-accent);
 }
 
+
 .sl-markdown-content h3 {
+
 	margin-top: 36px;
+
 	margin-bottom: 14px;
+
 	font-size: 19px;
+
 	line-height: 1.4;
 }
 
 
 /* ========================================
    09. Inline Code & Code Blocks
-   ======================================== */
+======================================== */
 
 /* Inline Code */
+
 .sl-markdown-content :not(pre) > code {
+
 	display: inline-block;
+
 	padding: 0.15em 0.45em;
+
 	border: 1px solid var(--nug-border);
+
 	border-radius: var(--nug-radius-xs);
+
 	background: var(--nug-surface);
+
 	color: var(--nug-text);
+
 	font-family: var(--nug-mono);
+
 	font-size: 0.85em;
+
 	line-height: 1.45;
 }
 
+
 /* Code Blocks */
+
 .sl-markdown-content pre {
+
 	margin: 28px 0;
+
 	border: 1px solid var(--nug-border);
+
 	border-radius: var(--nug-radius-md);
+
 	background: var(--nug-surface-subtle) !important;
+
 	box-shadow: var(--nug-shadow-sm);
-	transition: border-color 200ms ease;
+
+	transition:
+		border-color 200ms ease;
 }
 
+
 .sl-markdown-content pre:hover {
+
 	border-color: var(--nug-border-strong);
 }
 
+
 .sl-markdown-content pre code {
+
 	font-family: var(--nug-mono);
+
 	font-size: 0.875em;
+
 	line-height: 1.7;
 }
 
 
 /* ========================================
    10. Tables & Blockquotes
-   ======================================== */
+======================================== */
 
 .sl-markdown-content table {
+
 	width: 100%;
+
 	margin: 32px 0;
+
 	border: 1px solid var(--nug-border);
+
 	border-radius: var(--nug-radius-md);
+
 	border-collapse: separate;
+
 	border-spacing: 0;
+
 	overflow: hidden;
+
 	box-shadow: var(--nug-shadow-sm);
 }
 
+
 .sl-markdown-content th {
+
 	background: var(--nug-surface);
+
 	color: var(--nug-text);
+
 	font-weight: 600;
+
 	font-size: 14px;
+
 	text-align: left;
 }
 
+
 .sl-markdown-content th,
 .sl-markdown-content td {
+
 	padding: 12px 18px;
+
 	border-bottom: 1px solid var(--nug-border);
 }
 
+
 .sl-markdown-content tr:last-child td {
+
 	border-bottom: 0;
 }
 
+
 /* Blockquote */
+
 .sl-markdown-content blockquote {
+
 	margin: 32px 0;
+
 	padding: 18px 22px;
+
 	border: 1px solid var(--nug-border);
+
 	border-left: 3px solid var(--nug-accent);
-	border-radius: 0 var(--nug-radius-md) var(--nug-radius-md) 0;
+
+	border-radius:
+		0
+		var(--nug-radius-md)
+		var(--nug-radius-md)
+		0;
+
 	background: var(--nug-surface-subtle);
+
 	color: var(--nug-text-secondary);
 }
 
 
 /* ========================================
    11. Callouts & Starlight Asides
-   ======================================== */
+======================================== */
 
 .sl-markdown-content .starlight-aside {
+
 	margin: 28px 0;
+
 	padding: 18px 22px;
+
 	border: 1px solid var(--nug-border);
+
 	border-left-width: 4px;
+
 	border-radius: var(--nug-radius-md);
+
 	box-shadow: var(--nug-shadow-sm);
-	transition: transform 150ms ease, box-shadow 150ms ease;
+
+	transition:
+		transform 150ms ease,
+		box-shadow 150ms ease;
 }
 
+
 .sl-markdown-content .starlight-aside:hover {
+
 	transform: translateY(-1px);
+
 	box-shadow: var(--nug-shadow-md);
 }
 
+
 .sl-markdown-content .starlight-aside--note {
+
 	border-left-color: var(--nug-note);
+
 	background: var(--nug-note-bg);
 }
 
+
 .sl-markdown-content .starlight-aside--tip {
+
 	border-left-color: var(--nug-tip);
+
 	background: var(--nug-tip-bg);
 }
 
+
 .sl-markdown-content .starlight-aside--caution {
+
 	border-left-color: var(--nug-caution);
+
 	background: var(--nug-caution-bg);
 }
 
+
 .sl-markdown-content .starlight-aside--danger {
+
 	border-left-color: var(--nug-danger);
+
 	background: var(--nug-danger-bg);
 }
 
 
 /* ========================================
    12. Cards Grid & Interactive Components
-   ======================================== */
+======================================== */
 
 .card-grid .card,
 .sl-markdown-content .card {
+
 	border: 1px solid var(--nug-border);
+
 	border-radius: var(--nug-radius-md);
+
 	background: var(--nug-surface-subtle);
+
 	padding: 24px;
-	transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+
+	transition:
+		all 200ms cubic-bezier(
+			0.16,
+			1,
+			0.3,
+			1
+		);
 }
 
+
 .card-grid .card:hover {
+
 	border-color: var(--nug-border-strong);
+
 	transform: translateY(-3px);
+
 	box-shadow: var(--nug-shadow-md);
 }
 
 
 /* ========================================
    13. Pagination Links
-   ======================================== */
+======================================== */
 
 .pagination-links a {
+
 	border: 1px solid var(--nug-border);
+
 	border-radius: var(--nug-radius-md);
+
 	background: var(--nug-background);
-	transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+
+	transition:
+		all 150ms cubic-bezier(
+			0.16,
+			1,
+			0.3,
+			1
+		);
 }
 
+
 .pagination-links a:hover {
+
 	border-color: var(--nug-border-strong);
+
 	background: var(--nug-surface);
+
 	transform: translateY(-2px);
+
 	box-shadow: var(--nug-shadow-sm);
 }
 
 
 /* ========================================
    14. Responsive Layouts
-   ======================================== */
+======================================== */
 
 @media (max-width: 768px) {
+
 	:root {
+
 		--sl-nav-height: 58px;
 	}
 
+
 	header.header > div {
+
 		width: calc(100% - 32px);
 	}
 
+
 	.sl-markdown-content h1 {
+
 		font-size: 30px;
 	}
 
+
 	.sl-markdown-content h2 {
+
 		font-size: 20px;
+
 		margin-top: 40px;
 	}
 
+
 	.sidebar {
+
 		border-right: 0;
 	}
 }
 
 
-/* Smooth Animation standard */
+/* ========================================
+   15. Wiki Mobile Sidebar Toggle
+======================================== */
+
+/*
+ * PCでは表示しない。
+ *
+ * モバイル時のみ、画面左端に
+ * 小さな「›」ボタンを表示する。
+ */
+
+.wiki-sidebar-toggle {
+
+	display: none;
+}
+
+
+@media (max-width: 768px) {
+
+	/* ----------------------------------------
+	   Toggle Button
+	---------------------------------------- */
+
+	.wiki-sidebar-toggle {
+
+		display: flex;
+
+		position: fixed;
+
+		left: 0;
+
+		top: calc(
+			var(--sl-nav-height) + 50%
+		);
+
+		z-index: 120;
+
+		width: 24px;
+
+		height: 52px;
+
+		align-items: center;
+
+		justify-content: center;
+
+		padding: 0;
+
+		border: 1px solid var(--nug-border);
+
+		border-left: 0;
+
+		border-radius:
+			0
+			var(--nug-radius-sm)
+			var(--nug-radius-sm)
+			0;
+
+		background: var(--nug-glass);
+
+		color: var(--nug-text-secondary);
+
+		box-shadow: var(--nug-shadow-md);
+
+		backdrop-filter:
+			blur(16px)
+			saturate(180%);
+
+		-webkit-backdrop-filter:
+			blur(16px)
+			saturate(180%);
+
+		cursor: pointer;
+
+		transform: translateY(-50%);
+
+		transition:
+			left 250ms cubic-bezier(
+				0.16,
+				1,
+				0.3,
+				1
+			),
+			background 150ms ease,
+			color 150ms ease,
+			box-shadow 150ms ease;
+	}
+
+
+	.wiki-sidebar-toggle:hover {
+
+		background: var(--nug-surface);
+
+		color: var(--nug-text);
+
+		box-shadow: var(--nug-shadow-lg);
+	}
+
+
+	.wiki-sidebar-toggle-icon {
+
+		display: block;
+
+		font-size: 24px;
+
+		font-weight: 300;
+
+		line-height: 1;
+
+		transition:
+			transform 250ms cubic-bezier(
+				0.16,
+				1,
+				0.3,
+				1
+			);
+	}
+
+
+	/* ----------------------------------------
+	   Sidebar Closed
+	---------------------------------------- */
+
+	.sidebar {
+
+		transform: translateX(-100%);
+
+		transition:
+			transform 250ms cubic-bezier(
+				0.16,
+				1,
+				0.3,
+				1
+			);
+	}
+
+
+	/* ----------------------------------------
+	   Sidebar Open
+	---------------------------------------- */
+
+	.wiki-sidebar-open .sidebar {
+
+		transform: translateX(0);
+
+		z-index: 110;
+	}
+
+
+	/* ----------------------------------------
+	   Toggle Button Position
+	---------------------------------------- */
+
+	.wiki-sidebar-open .wiki-sidebar-toggle {
+
+		left: min(280px, 82vw);
+
+		z-index: 120;
+	}
+
+
+	.wiki-sidebar-open .wiki-sidebar-toggle-icon {
+
+		transform: rotate(180deg);
+	}
+
+
+	/* ----------------------------------------
+	   Backdrop
+	---------------------------------------- */
+
+	.wiki-sidebar-open::after {
+
+		content: "";
+
+		position: fixed;
+
+		inset:
+			var(--sl-nav-height)
+			0
+			0
+			0;
+
+		z-index: 90;
+
+		background: rgba(0, 0, 0, 0.18);
+
+		pointer-events: none;
+
+		opacity: 1;
+
+		transition:
+			opacity 250ms ease;
+	}
+
+
+	/* ----------------------------------------
+	   Sidebar Content
+	---------------------------------------- */
+
+	.wiki-sidebar-open .sidebar {
+
+		box-shadow: var(--nug-shadow-lg);
+	}
+}
+
+
+/* ========================================
+   16. Smooth Animation Standard
+======================================== */
+
 @media (prefers-reduced-motion: reduce) {
+
 	*,
 	*::before,
 	*::after {
+
 		scroll-behavior: auto !important;
+
 		transition-duration: 0.01ms !important;
+
 		animation-duration: 0.01ms !important;
+
 		animation-iteration-count: 1 !important;
+	}
+
+
+	.wiki-sidebar-toggle,
+	.wiki-sidebar-toggle-icon,
+	.sidebar {
+
+		transition: none !important;
 	}
 }

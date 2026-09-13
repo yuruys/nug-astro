@@ -14,6 +14,7 @@ export default defineConfig({
 
 			components: {
 				Header: './src/components/StarlightHeader.astro',
+				MobileMenuToggle: './src/components/WikiSidebarToggle.astro',
 				ThemeProvider: './src/components/NugThemeProvider.astro',
 			},
 
