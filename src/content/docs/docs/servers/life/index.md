@@ -76,6 +76,6 @@ PlayerGuardで保護できるブロック数は、サーバーでの累計プレ
 
 :::tip[保護プラグインの使い方を知りたい場合]
 
-PlayerGuardの詳しい使い方は、[PlayerGuardとは](/playerguard/) を確認してください。
+PlayerGuardの詳しい使い方は、[PlayerGuardとは](/docs/playerguard/) を確認してください。
 
 :::

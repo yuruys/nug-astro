@@ -93,6 +93,6 @@ PlayerGuardで使用できるコマンドを、目的別にまとめています
 
 :::tip[基本的な使い方を知りたい場合]
 
-保護の基本的な仕組みについては、[PlayerGuardとは](/playerguard/) を確認してください。
+保護の基本的な仕組みについては、[PlayerGuardとは](/docs/playerguard/) を確認してください。
 
 :::

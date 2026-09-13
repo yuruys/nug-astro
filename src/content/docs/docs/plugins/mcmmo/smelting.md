@@ -37,6 +37,6 @@ category: プラグイン
 
 :::tip[mcMMO全体の仕組みを知りたい場合]
 
-mcMMOの基本的な仕組みや、他のスキルについては、[mcMMOとは](/mcmmo/) を確認してください。採掘・修理については、それぞれ[Mining - 採掘](/mcmmo/mining/)・[Repair - 修理](/mcmmo/repair/)を確認してください。
+mcMMOの基本的な仕組みや、他のスキルについては、[mcMMOとは](/docs/mcmmo/) を確認してください。採掘・修理については、それぞれ[Mining - 採掘](/docs/mcmmo/mining/)・[Repair - 修理](/docs/mcmmo/repair/)を確認してください。
 
 :::

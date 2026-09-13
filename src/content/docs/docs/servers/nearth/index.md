@@ -91,8 +91,8 @@ LandsとHuskHomesの詳しいコマンドは、それぞれのページを確認
 
 :::tip[各プラグインの詳しい使い方を知りたい場合]
 
-- Landsの詳しい使い方は、[Landsとは](/lands/) を確認してください。
-- mcMMOの詳しい使い方は、[mcMMOとは](/mcmmo/) を確認してください。
-- Jobsの詳しい使い方は、[Jobsとは](/jobs/) を確認してください。
+- Landsの詳しい使い方は、[Landsとは](/docs/lands/) を確認してください。
+- mcMMOの詳しい使い方は、[mcMMOとは](/docs/mcmmo/) を確認してください。
+- Jobsの詳しい使い方は、[Jobsとは](/docs/jobs/) を確認してください。
 
 :::
