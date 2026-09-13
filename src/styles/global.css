@@ -1,11 +1,25 @@
-/* ========================================
-   NUG Global Styles
-   ======================================== */
+/* =========================================================
+   NUGBASE Global Design System
+   Minecraft-inspired × Vibrant Visuals
+   ---------------------------------------------------------
+   This file is the official visual foundation of NUGBASE.
+
+   Design principles:
+   - Fixed world background
+   - Fixed light direction: top-left
+   - Block / voxel-inspired surfaces
+   - Hard contact shadows + soft atmospheric light
+   - Square corners by default
+   - 8px base spacing
+   - Light / dark theme
+   - Accessible contrast
+   - Responsive by default
+========================================================= */
 
 
-/* ----------------------------------------
-   CSS Reset
-======================================== */
+/* =========================================================
+   Reset
+========================================================= */
 
 *,
 *::before,
@@ -13,44 +27,22 @@
 	box-sizing: border-box;
 }
 
-
-/* ----------------------------------------
-   HTML
-======================================== */
-
-html {
-	margin: 0;
-	padding: 0;
-
-	color-scheme: light;
-
-	background:
-		var(--color-background);
-
-	scroll-behavior: smooth;
-
-	-webkit-tap-highlight-color: transparent;
-}
-
-
-html[data-theme="dark"] {
-	color-scheme: dark;
-}
-
-
-/* ----------------------------------------
-   Body
-======================================== */
-
+html,
 body {
 	margin: 0;
 	padding: 0;
 }
 
+html {
+	color-scheme: light;
+	background: var(--color-background);
+	scroll-behavior: smooth;
+	-webkit-tap-highlight-color: transparent;
+}
 
-/* ----------------------------------------
-   Typography Reset
-======================================== */
+html[data-theme="dark"] {
+	color-scheme: dark;
+}
 
 h1,
 h2,
@@ -60,36 +52,16 @@ h5,
 h6,
 p,
 ul,
-ol {
+ol,
+figure {
 	margin: 0;
 	padding: 0;
 }
-
 
 ul,
 ol {
 	list-style: none;
 }
-
-
-/* ----------------------------------------
-   Links
-======================================== */
-
-a {
-	color: inherit;
-
-	text-decoration: none;
-
-	transition:
-		opacity var(--transition-fast),
-		color var(--transition-fast);
-}
-
-
-/* ----------------------------------------
-   Controls
-======================================== */
 
 button,
 input,
@@ -98,192 +70,611 @@ select {
 	font: inherit;
 }
 
-
 button {
 	border: 0;
-
 	background: none;
-
 	cursor: pointer;
 }
 
+img,
+svg,
+video,
+canvas {
+	display: block;
+	max-width: 100%;
+}
 
-/* ----------------------------------------
-   Root Design Tokens
-======================================== */
+img {
+	height: auto;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+::selection {
+	background: var(--color-accent);
+	color: var(--color-text-inverse);
+}
+
+
+/* =========================================================
+   Design Tokens
+========================================================= */
 
 :root {
 
-	/* ------------------------------
-	   Font
-	------------------------------ */
+	/* -------------------------------------------------------
+	   Typography
+	------------------------------------------------------- */
 
 	--font-sans:
 		-apple-system,
 		BlinkMacSystemFont,
 		"Segoe UI",
+		"Noto Sans JP",
 		"Helvetica Neue",
 		Arial,
-		"Noto Sans JP",
 		sans-serif;
 
+	--font-display:
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		"Noto Sans JP",
+		"Helvetica Neue",
+		Arial,
+		sans-serif;
 
-	/* ------------------------------
-	   Light Theme
-	------------------------------ */
+	--font-mono:
+		"SFMono-Regular",
+		"JetBrains Mono",
+		"Consolas",
+		"Menlo",
+		monospace;
+
+
+	/* -------------------------------------------------------
+	   8px Spacing System
+	------------------------------------------------------- */
+
+	--space-1: 4px;
+	--space-2: 8px;
+	--space-3: 12px;
+	--space-4: 16px;
+	--space-5: 20px;
+	--space-6: 24px;
+	--space-8: 32px;
+	--space-10: 40px;
+	--space-12: 48px;
+	--space-16: 64px;
+	--space-20: 80px;
+	--space-24: 96px;
+
+
+	/* -------------------------------------------------------
+	   World / Minecraft-inspired palette
+	------------------------------------------------------- */
+
+	--color-grass:
+		#5f9f3a;
+
+	--color-grass-dark:
+		#477d2b;
+
+	--color-grass-light:
+		#8ac95a;
+
+	--color-dirt:
+		#8b5e3c;
+
+	--color-dirt-dark:
+		#68452d;
+
+	--color-stone:
+		#73777b;
+
+	--color-stone-dark:
+		#4d5256;
+
+	--color-water:
+		#3f8fc4;
+
+	--color-water-dark:
+		#286c9a;
+
+	--color-sky:
+		#63b3df;
+
+	--color-gold:
+		#d9a441;
+
+	--color-gold-light:
+		#efc45d;
+
+
+	/* -------------------------------------------------------
+	   Light theme surfaces
+	------------------------------------------------------- */
 
 	--color-background:
-		#ffffff;
+		#eef2f3;
+
+	--color-background-deep:
+		#e1e7e9;
 
 	--color-surface:
-		#f7f7f8;
+		#ffffff;
 
 	--color-surface-hover:
-		#eeeeef;
+		#f5f8f8;
 
 	--color-surface-subtle:
-		#fafafa;
+		#e9eef0;
+
+	--color-surface-strong:
+		#dce3e5;
+
+
+	/* -------------------------------------------------------
+	   Light theme text
+	------------------------------------------------------- */
 
 	--color-text:
-		#1d1d1f;
+		#202521;
 
 	--color-text-secondary:
-		#6e6e73;
+		#58615b;
 
 	--color-text-tertiary:
-		#86868b;
+		#747d77;
+
+	--color-text-inverse:
+		#ffffff;
+
+
+	/* -------------------------------------------------------
+	   Borders
+	------------------------------------------------------- */
 
 	--color-border:
-		#e5e5e7;
+		#cfd7d9;
 
 	--color-border-strong:
-		#d2d2d7;
+		#abb7bb;
+
+	--color-border-accent:
+		rgba(95, 159, 58, 0.45);
+
+
+	/* -------------------------------------------------------
+	   Accent
+	------------------------------------------------------- */
 
 	--color-accent:
-		#007aff;
+		#4f8f32;
 
 	--color-accent-hover:
-		#0066d6;
+		#3f7627;
 
 	--color-accent-soft:
-		rgba(0, 122, 255, 0.08);
+		rgba(79, 143, 50, 0.10);
+
+
+	/* -------------------------------------------------------
+	   Semantic colors
+	------------------------------------------------------- */
+
+	--color-info:
+		#3f8fc4;
+
+	--color-info-soft:
+		rgba(63, 143, 196, 0.10);
+
+	--color-success:
+		#5f9f3a;
+
+	--color-success-soft:
+		rgba(95, 159, 58, 0.10);
+
+	--color-warning:
+		#c8902e;
+
+	--color-warning-soft:
+		rgba(200, 144, 46, 0.12);
+
+	--color-danger:
+		#bd5144;
+
+	--color-danger-soft:
+		rgba(189, 81, 68, 0.10);
+
+
+	/* -------------------------------------------------------
+	   Atmosphere
+	------------------------------------------------------- */
+
+	--color-sky-atmosphere:
+		rgba(99, 179, 223, 0.12);
+
+	--color-sunlight:
+		rgba(255, 247, 214, 0.75);
 
 	--color-overlay:
-		rgba(0, 0, 0, 0.28);
+		rgba(17, 23, 22, 0.38);
+
+
+	/* -------------------------------------------------------
+	   World Background
+	------------------------------------------------------- */
+
+	--world-background:
+		url("/public/images/mein.webp");
+
+	--world-background-position:
+		center center;
+
+	--world-background-size:
+		cover;
+
+	--world-background-overlay:
+		rgba(238, 242, 243, 0.34);
+
+	--world-background-opacity:
+		1;
+
+
+	/* -------------------------------------------------------
+	   Light direction
+	   ------------------------------------------------------
+	   All components behave as if light comes from
+	   the upper-left.
+	------------------------------------------------------- */
+
+	--light-direction-x:
+		-1;
+
+	--light-direction-y:
+		-1;
+
+	--light-angle:
+		135deg;
+
+	--light-highlight:
+		rgba(255, 247, 214, 0.72);
+
+
+	/* -------------------------------------------------------
+	   Shadows
+	------------------------------------------------------- */
 
 	--color-shadow:
-		rgba(0, 0, 0, 0.14);
+		rgba(35, 49, 42, 0.16);
+
+	--color-shadow-strong:
+		rgba(25, 34, 30, 0.25);
+
+	--shadow-strength:
+		1;
+
+	--shadow-soft:
+		0 8px 24px rgba(35, 49, 42, 0.10);
+
+	--shadow-medium:
+		0 8px 20px rgba(35, 49, 42, 0.14);
+
+	--shadow-deep:
+		8px 8px 0 rgba(35, 49, 42, 0.18);
 
 
-	/* ------------------------------
+	/* -------------------------------------------------------
+	   Block shadows
+	------------------------------------------------------- */
+
+	--block-shadow:
+		0 3px 0 var(--color-border-strong);
+
+	--block-shadow-hover:
+		0 5px 0 var(--color-border-strong);
+
+	--block-shadow-active:
+		0 1px 0 var(--color-border-strong);
+
+
+	/* -------------------------------------------------------
+	   Borders
+	------------------------------------------------------- */
+
+	--border-width:
+		1px;
+
+	--border-width-strong:
+		2px;
+
+
+	/* -------------------------------------------------------
+	   Corners
+	   ------------------------------------------------------
+	   NUGBASE uses square / block-like geometry.
+	------------------------------------------------------- */
+
+	--radius-small:
+		0px;
+
+	--radius-medium:
+		0px;
+
+	--radius-large:
+		0px;
+
+	--radius-pill:
+		0px;
+
+
+	/* -------------------------------------------------------
 	   Layout
-	------------------------------ */
+	------------------------------------------------------- */
 
 	--content-width:
 		1200px;
+
+	--content-width-wide:
+		1400px;
 
 	--page-padding:
 		24px;
 
 
-	/* ------------------------------
-	   Radius
-	------------------------------ */
-
-	--radius-small:
-		10px;
-
-	--radius-medium:
-		16px;
-
-	--radius-large:
-		24px;
-
-
-	/* ------------------------------
-	   Animation
-	------------------------------ */
+	/* -------------------------------------------------------
+	   Motion
+	------------------------------------------------------- */
 
 	--transition-fast:
-		150ms ease;
+		150ms ease-in-out;
 
 	--transition-normal:
-		250ms ease;
+		250ms ease-in-out;
+
+	--transition-slow:
+		400ms ease-in-out;
 
 	--transition-theme:
-		200ms ease;
+		200ms ease-in-out;
+
+
+	/* -------------------------------------------------------
+	   Z-index
+	------------------------------------------------------- */
+
+	--z-base:
+		1;
+
+	--z-world:
+		0;
+
+	--z-content:
+		1;
+
+	--z-header:
+		1000;
+
+	--z-overlay:
+		1900;
+
+	--z-modal:
+		3000;
 
 }
 
 
-/* ----------------------------------------
+/* =========================================================
    Dark Theme
-======================================== */
+========================================================= */
 
 html[data-theme="dark"] {
 
+	/* -------------------------------------------------------
+	   Backgrounds
+	------------------------------------------------------- */
+
 	--color-background:
-		#0b0b0e;
+		#111416;
+
+	--color-background-deep:
+		#0b0e10;
 
 	--color-surface:
-		#141418;
+		#292e32;
 
 	--color-surface-hover:
-		#1f1f24;
+		#343a3f;
 
 	--color-surface-subtle:
-		#101014;
+		#202529;
+
+	--color-surface-strong:
+		#3b4247;
+
+
+	/* -------------------------------------------------------
+	   Text
+	------------------------------------------------------- */
 
 	--color-text:
-		#f8fafc;
+		#f1f4f2;
 
 	--color-text-secondary:
-		#a1a1aa;
+		#b2bbb7;
 
 	--color-text-tertiary:
-		#71717a;
+		#858f8b;
+
+	--color-text-inverse:
+		#111416;
+
+
+	/* -------------------------------------------------------
+	   Borders
+	------------------------------------------------------- */
 
 	--color-border:
-		rgba(255, 255, 255, 0.08);
+		rgba(228, 238, 232, 0.13);
 
 	--color-border-strong:
-		rgba(255, 255, 255, 0.16);
+		rgba(228, 238, 232, 0.24);
+
+	--color-border-accent:
+		rgba(138, 201, 90, 0.42);
+
+
+	/* -------------------------------------------------------
+	   Accent
+	------------------------------------------------------- */
 
 	--color-accent:
-		#3b82f6;
+		#82bd50;
 
 	--color-accent-hover:
-		#60a5fa;
+		#9bd76a;
 
 	--color-accent-soft:
-		rgba(59, 130, 246, 0.15);
+		rgba(130, 189, 80, 0.14);
+
+
+	/* -------------------------------------------------------
+	   Semantic
+	------------------------------------------------------- */
+
+	--color-info:
+		#67b5e3;
+
+	--color-info-soft:
+		rgba(103, 181, 227, 0.14);
+
+	--color-success:
+		#82bd50;
+
+	--color-success-soft:
+		rgba(130, 189, 80, 0.14);
+
+	--color-warning:
+		#e0b34d;
+
+	--color-warning-soft:
+		rgba(224, 179, 77, 0.15);
+
+	--color-danger:
+		#df7668;
+
+	--color-danger-soft:
+		rgba(223, 118, 104, 0.14);
+
+
+	/* -------------------------------------------------------
+	   Atmosphere
+	------------------------------------------------------- */
+
+	--color-sky-atmosphere:
+		rgba(80, 145, 183, 0.12);
+
+	--color-sunlight:
+		rgba(255, 247, 214, 0.18);
 
 	--color-overlay:
-		rgba(0, 0, 0, 0.58);
+		rgba(0, 0, 0, 0.66);
+
+	--light-highlight:
+		rgba(255, 247, 214, 0.20);
+
+
+	/* -------------------------------------------------------
+	   World Background
+	------------------------------------------------------- */
+
+	--world-background-overlay:
+		rgba(8, 11, 13, 0.58);
+
+
+	/* -------------------------------------------------------
+	   Shadows
+	------------------------------------------------------- */
 
 	--color-shadow:
-		rgba(0, 0, 0, 0.45);
+		rgba(0, 0, 0, 0.42);
+
+	--color-shadow-strong:
+		rgba(0, 0, 0, 0.62);
+
+	--shadow-soft:
+		0 8px 28px rgba(0, 0, 0, 0.26);
+
+	--shadow-medium:
+		0 10px 24px rgba(0, 0, 0, 0.34);
+
+	--shadow-deep:
+		8px 8px 0 rgba(0, 0, 0, 0.48);
+
+
+	/* -------------------------------------------------------
+	   Block shadows
+	------------------------------------------------------- */
+
+	--block-shadow:
+		0 3px 0 rgba(0, 0, 0, 0.42);
+
+	--block-shadow-hover:
+		0 5px 0 rgba(0, 0, 0, 0.54);
+
+	--block-shadow-active:
+		0 1px 0 rgba(0, 0, 0, 0.46);
 
 }
 
 
-/* ----------------------------------------
-   Body
-======================================== */
+/* =========================================================
+   Base Body
+========================================================= */
 
 body {
+
+	position:
+		relative;
+
+	min-height:
+		100vh;
 
 	font-family:
 		var(--font-sans);
 
-	background:
+	background-color:
 		var(--color-background);
+
+	/*
+	 * The world itself lives on the body.
+	 * Content is placed above it.
+	 */
+
+	background-image:
+		var(--world-background);
+
+	background-position:
+		var(--world-background-position);
+
+	background-size:
+		var(--world-background-size);
+
+	background-repeat:
+		no-repeat;
+
+	background-attachment:
+		fixed;
 
 	color:
 		var(--color-text);
 
 	line-height:
-		1.6;
+		1.7;
 
 	-webkit-font-smoothing:
 		antialiased;
@@ -301,9 +692,111 @@ body {
 }
 
 
-/* ----------------------------------------
-   Astro Main
-======================================== */
+/* =========================================================
+   World Atmosphere
+========================================================= */
+
+body::before {
+
+	content:
+		"";
+
+	position:
+		fixed;
+
+	inset:
+		0;
+
+	z-index:
+		var(--z-world);
+
+	pointer-events:
+		none;
+
+	background:
+
+		linear-gradient(
+			180deg,
+			var(--world-background-overlay),
+			transparent 28%,
+			transparent 72%,
+			var(--world-background-overlay)
+		),
+
+		linear-gradient(
+			var(--light-angle),
+			var(--color-sunlight),
+			transparent 30%
+		);
+
+	opacity:
+		var(--world-background-opacity);
+
+}
+
+
+/* =========================================================
+   World Atmospheric Fog
+========================================================= */
+
+body::after {
+
+	content:
+		"";
+
+	position:
+		fixed;
+
+	inset:
+		0;
+
+	z-index:
+		var(--z-world);
+
+	pointer-events:
+		none;
+
+	background:
+
+		radial-gradient(
+			ellipse at 18% 20%,
+			var(--color-sky-atmosphere),
+			transparent 38%
+		),
+
+		linear-gradient(
+			180deg,
+			transparent 55%,
+			rgba(255, 255, 255, 0.08) 100%
+		);
+
+	mix-blend-mode:
+		normal;
+
+	opacity:
+		0.8;
+
+}
+
+
+/* =========================================================
+   Direct Children Above World
+========================================================= */
+
+body > * {
+
+	position:
+		relative;
+
+	z-index:
+		var(--z-content);
+
+}
+
+
+/* =========================================================
+   Main Container
+========================================================= */
 
 .astro-main {
 
@@ -313,65 +806,782 @@ body {
 	max-width:
 		var(--content-width);
 
+	min-height:
+		calc(100vh - 64px);
+
 	margin:
 		0 auto;
 
 	padding:
 		0 var(--page-padding);
 
+	/*
+	 * Slight transparency allows the world to remain
+	 * visually connected to the page while preserving
+	 * text readability.
+	 */
+
+	background:
+		color-mix(
+			in srgb,
+			var(--color-background) 94%,
+			transparent
+		);
+
+	box-shadow:
+
+		0 0 32px
+		rgba(0, 0, 0, 0.10),
+
+		0 16px 40px
+		rgba(0, 0, 0, 0.08);
+
 }
 
 
-/* ----------------------------------------
-   Inputs
-======================================== */
+/* =========================================================
+   Typography
+========================================================= */
 
-input,
-textarea,
-select {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+
+	font-family:
+		var(--font-display);
+
+	font-weight:
+		800;
+
+	line-height:
+		1.3;
+
+	letter-spacing:
+		-0.025em;
 
 	color:
 		var(--color-text);
 
 }
 
+h1 {
+	font-size:
+		clamp(32px, 5vw, 48px);
+}
 
-/* ----------------------------------------
-   Images
-======================================== */
+h2 {
+	font-size:
+		clamp(24px, 3vw, 34px);
+}
 
-img {
+h3 {
+	font-size:
+		clamp(20px, 2.5vw, 26px);
+}
 
-	display:
-		block;
+h4 {
+	font-size:
+		20px;
+}
 
-	max-width:
-		100%;
-
-	height:
-		auto;
-
+p {
+	color:
+		var(--color-text);
 }
 
 
-/* ----------------------------------------
-   Selection
-======================================== */
+/* =========================================================
+   Links
+========================================================= */
 
-::selection {
+a {
 
-	background:
-		var(--color-accent);
+	transition:
+		color var(--transition-fast),
+		opacity var(--transition-fast),
+		transform var(--transition-fast);
+
+}
+
+a:hover {
 
 	color:
-		white;
+		var(--color-accent);
 
 }
 
 
-/* ----------------------------------------
+/* =========================================================
+   Inputs
+========================================================= */
+
+input,
+textarea,
+select {
+
+	width:
+		100%;
+
+	color:
+		var(--color-text);
+
+	background:
+		var(--color-surface);
+
+	border:
+		var(--border-width) solid var(--color-border);
+
+	border-radius:
+		0;
+
+	box-shadow:
+		inset 0 2px 0 var(--color-surface-strong);
+
+	transition:
+		border-color var(--transition-fast),
+		background-color var(--transition-fast),
+		box-shadow var(--transition-fast),
+		transform var(--transition-fast);
+
+}
+
+input,
+select {
+
+	min-height:
+		44px;
+
+}
+
+input,
+textarea,
+select {
+
+	padding:
+		10px 12px;
+
+}
+
+input::placeholder,
+textarea::placeholder {
+
+	color:
+		var(--color-text-tertiary);
+
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+
+	border-color:
+		var(--color-border-strong);
+
+	background:
+		var(--color-surface-hover);
+
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+
+	border-color:
+		var(--color-accent);
+
+	outline:
+		none;
+
+	box-shadow:
+
+		inset 0 2px 0
+		var(--color-surface-strong),
+
+		0 0 0 3px
+		var(--color-accent-soft);
+
+}
+
+
+/* =========================================================
+   Buttons
+========================================================= */
+
+button {
+
+	color:
+		var(--color-text);
+
+	border-radius:
+		0;
+
+}
+
+button:active {
+
+	transform:
+		translateY(2px);
+
+}
+
+
+/* =========================================================
+   Tables
+========================================================= */
+
+table {
+
+	width:
+		100%;
+
+	border-collapse:
+		separate;
+
+	border-spacing:
+		0;
+
+	overflow:
+		hidden;
+
+	border:
+		var(--border-width) solid var(--color-border);
+
+	border-radius:
+		0;
+
+	background:
+		var(--color-surface);
+
+	box-shadow:
+		var(--block-shadow);
+
+}
+
+th,
+td {
+
+	padding:
+		12px 16px;
+
+	border-bottom:
+		var(--border-width) solid var(--color-border);
+
+	text-align:
+		left;
+
+}
+
+th {
+
+	background:
+		var(--color-surface-strong);
+
+	font-size:
+		13px;
+
+	font-weight:
+		800;
+
+	color:
+		var(--color-text);
+
+}
+
+td {
+
+	font-size:
+		14px;
+
+	color:
+		var(--color-text-secondary);
+
+}
+
+tr:last-child td {
+
+	border-bottom:
+		0;
+
+}
+
+tbody tr {
+
+	transition:
+		background-color var(--transition-fast);
+
+}
+
+tbody tr:hover {
+
+	background:
+		var(--color-surface-hover);
+
+}
+
+
+/* =========================================================
+   Inline Code
+========================================================= */
+
+code {
+
+	font-family:
+		var(--font-mono);
+
+	font-size:
+		0.9em;
+
+	padding:
+		3px 7px;
+
+	border:
+		1px solid var(--color-border);
+
+	border-radius:
+		0;
+
+	background:
+		var(--color-surface-subtle);
+
+	color:
+		var(--color-accent);
+
+}
+
+
+/* =========================================================
+   Code Blocks
+========================================================= */
+
+pre {
+
+	overflow-x:
+		auto;
+
+	margin:
+		24px 0;
+
+	padding:
+		20px;
+
+	border:
+		1px solid var(--color-border-strong);
+
+	border-radius:
+		0;
+
+	background:
+		#202522;
+
+	color:
+		#f1f5ef;
+
+	box-shadow:
+		4px 4px 0 rgba(0, 0, 0, 0.25);
+
+}
+
+pre code {
+
+	padding:
+		0;
+
+	border:
+		0;
+
+	border-radius:
+		0;
+
+	background:
+		transparent;
+
+	color:
+		inherit;
+
+}
+
+
+/* =========================================================
+   Blockquote
+========================================================= */
+
+blockquote {
+
+	position:
+		relative;
+
+	margin:
+		24px 0;
+
+	padding:
+		18px 20px;
+
+	border:
+		1px solid var(--color-border);
+
+	border-left:
+		4px solid var(--color-accent);
+
+	border-radius:
+		0;
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-accent-soft),
+			var(--color-surface)
+		);
+
+	color:
+		var(--color-text-secondary);
+
+	box-shadow:
+		2px 3px 0 var(--color-border);
+
+}
+
+
+/* =========================================================
+   Horizontal Rule
+========================================================= */
+
+hr {
+
+	margin:
+		40px 0;
+
+	border:
+		0;
+
+	border-top:
+		1px solid var(--color-border-strong);
+
+}
+
+
+/* =========================================================
+   Lists
+========================================================= */
+
+ul,
+ol {
+
+	margin:
+		16px 0;
+
+	padding-left:
+		24px;
+
+}
+
+ul {
+
+	list-style:
+		disc;
+
+}
+
+ol {
+
+	list-style:
+		decimal;
+
+}
+
+li {
+
+	margin:
+		6px 0;
+
+}
+
+li::marker {
+
+	color:
+		var(--color-accent);
+
+	font-weight:
+		700;
+
+}
+
+
+/* =========================================================
+   NUGBASE Block Utility
+========================================================= */
+
+.nug-block {
+
+	position:
+		relative;
+
+	border:
+		var(--border-width) solid var(--color-border);
+
+	border-radius:
+		0;
+
+	background:
+		var(--color-surface);
+
+	box-shadow:
+		var(--block-shadow);
+
+	transition:
+		background var(--transition-fast),
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast),
+		transform var(--transition-fast);
+
+}
+
+
+/* ---------------------------------------------------------
+   Top-left light
+--------------------------------------------------------- */
+
+.nug-block::before {
+
+	content:
+		"";
+
+	position:
+		absolute;
+
+	top:
+		0;
+
+	left:
+		0;
+
+	width:
+		55%;
+
+	height:
+		2px;
+
+	background:
+		linear-gradient(
+			90deg,
+			var(--color-gold-light),
+			var(--color-grass-light),
+			transparent
+		);
+
+	pointer-events:
+		none;
+
+}
+
+
+/* ---------------------------------------------------------
+   Hover
+--------------------------------------------------------- */
+
+.nug-block:hover {
+
+	background:
+		var(--color-surface-hover);
+
+	border-color:
+		var(--color-border-strong);
+
+	box-shadow:
+		var(--block-shadow-hover);
+
+	transform:
+		translateY(-1px);
+
+}
+
+
+/* ---------------------------------------------------------
+   Active
+--------------------------------------------------------- */
+
+.nug-block:active {
+
+	transform:
+		translateY(2px);
+
+	box-shadow:
+		var(--block-shadow-active);
+
+}
+
+
+/* =========================================================
+   Color Utilities
+========================================================= */
+
+.nug-accent {
+
+	color:
+		var(--color-accent);
+
+}
+
+.nug-grass {
+
+	color:
+		var(--color-grass);
+
+}
+
+.nug-gold {
+
+	color:
+		var(--color-gold);
+
+}
+
+.nug-water {
+
+	color:
+		var(--color-water);
+
+}
+
+
+/* =========================================================
+   Inventory Label Utility
+========================================================= */
+
+.nug-label {
+
+	display:
+		inline-flex;
+
+	align-items:
+		center;
+
+	min-height:
+		24px;
+
+	padding:
+		0 8px;
+
+	border:
+		1px solid var(--color-border);
+
+	border-radius:
+		0;
+
+	background:
+		var(--color-surface-subtle);
+
+	font-family:
+		var(--font-mono);
+
+	font-size:
+		10px;
+
+	font-weight:
+		800;
+
+	line-height:
+		1;
+
+	letter-spacing:
+		0.06em;
+
+	color:
+		var(--color-text-secondary);
+
+	box-shadow:
+		inset 0 1px 0 var(--color-surface-strong);
+
+}
+
+
+/* =========================================================
+   Voxel Slot Utility
+========================================================= */
+
+.nug-slot {
+
+	position:
+		relative;
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		center;
+
+	width:
+		48px;
+
+	height:
+		48px;
+
+	flex-shrink:
+		0;
+
+	border:
+		1px solid var(--color-border-strong);
+
+	border-radius:
+		0;
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-surface-strong),
+			var(--color-surface)
+		);
+
+	box-shadow:
+
+		inset 2px 2px 0
+		rgba(255, 255, 255, 0.20),
+
+		inset -2px -2px 0
+		rgba(0, 0, 0, 0.08),
+
+		var(--block-shadow);
+
+}
+
+html[data-theme="dark"] .nug-slot {
+
+	box-shadow:
+
+		inset 2px 2px 0
+		rgba(255, 255, 255, 0.07),
+
+		inset -2px -2px 0
+		rgba(0, 0, 0, 0.22),
+
+		var(--block-shadow);
+
+}
+
+
+/* =========================================================
+   Focus Accessibility
+========================================================= */
+
+:focus-visible {
+
+	outline:
+		3px solid var(--color-accent);
+
+	outline-offset:
+		3px;
+
+}
+
+
+/* =========================================================
    Scrollbar
-======================================== */
+========================================================= */
 
 html {
 
@@ -381,17 +1591,15 @@ html {
 
 }
 
-
 ::-webkit-scrollbar {
 
 	width:
-		10px;
+		11px;
 
 	height:
-		10px;
+		11px;
 
 }
-
 
 ::-webkit-scrollbar-track {
 
@@ -400,21 +1608,18 @@ html {
 
 }
 
-
 ::-webkit-scrollbar-thumb {
 
 	background:
 		var(--color-border-strong);
 
-	border-radius:
-		999px;
-
 	border:
-		2px solid
-		var(--color-background);
+		3px solid var(--color-background);
+
+	border-radius:
+		0;
 
 }
-
 
 ::-webkit-scrollbar-thumb:hover {
 
@@ -424,25 +1629,9 @@ html {
 }
 
 
-/* ----------------------------------------
-   Focus
-======================================== */
-
-:focus-visible {
-
-	outline:
-		2px solid
-		var(--color-accent);
-
-	outline-offset:
-		3px;
-
-}
-
-
-/* ----------------------------------------
+/* =========================================================
    Responsive
-======================================== */
+========================================================= */
 
 @media (max-width: 768px) {
 
@@ -461,6 +1650,103 @@ html {
 
 		padding-right:
 			var(--page-padding);
+
+	}
+
+
+	table {
+
+		min-width:
+			640px;
+
+	}
+
+
+	th,
+	td {
+
+		padding:
+			10px 12px;
+
+	}
+
+
+	pre {
+
+		padding:
+			16px;
+
+	}
+
+
+	/*
+	 * Fixed background attachment can behave poorly
+	 * on some mobile browsers.
+	 */
+
+	body {
+
+		background-attachment:
+			scroll;
+
+		background-position:
+			center center;
+
+	}
+
+
+	body::before,
+	body::after {
+
+		position:
+			absolute;
+
+	}
+
+}
+
+
+/* =========================================================
+   Small Screens
+========================================================= */
+
+@media (max-width: 480px) {
+
+	:root {
+
+		--page-padding:
+			12px;
+
+	}
+
+}
+
+
+/* =========================================================
+   Reduced Motion
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+	html {
+
+		scroll-behavior:
+			auto;
+
+	}
+
+	*,
+	*::before,
+	*::after {
+
+		transition-duration:
+			0.01ms !important;
+
+		animation-duration:
+			0.01ms !important;
+
+		animation-iteration-count:
+			1 !important;
 
 	}
 

@@ -4,7 +4,6 @@ import Layout from "../layouts/Layout.astro";
 import Hero from "../components/Hero.astro";
 import SearchBox from "../components/SearchBox.astro";
 import CategoryCard from "../components/CategoryCard.astro";
-import Footer from "../components/Footer.astro";
 ---
 
 <Layout
@@ -18,65 +17,247 @@ import Footer from "../components/Footer.astro";
 
 
 	<!-- ========================================
-	     Explore
+	     Servers
 	======================================== -->
 
-	<section class="section">
+	<section class="section servers-section">
 
-		<div class="section-header">
+		<div class="section-inner">
 
-			<p class="section-label">
-				EXPLORE
-			</p>
+			<div class="section-header">
 
-			<h2>
-				攻略・情報を探す
-			</h2>
+				<div class="section-heading">
 
-			<p>
-				Minecraft Serverの攻略・仕様・情報を
-				目的に合わせて探せます。
-			</p>
+					<p class="section-label">
+						SERVERS
+					</p>
 
-		</div>
+					<h2>
+						サーバーから探す
+					</h2>
+
+					<p>
+						プレイしているサーバーを選んで、
+						攻略・情報を探せます。
+					</p>
+
+				</div>
+
+			</div>
 
 
-		<div class="category-grid">
+			<div class="server-grid">
 
-			<CategoryCard
-				title="攻略"
-				description="サーバーごとの攻略情報やプレイのコツをまとめています。"
-				icon="📚"
-				href="/guide/"
-			/>
+				<!-- ========================================
+				     NEarth
+				======================================== -->
 
-			<CategoryCard
-				title="Wiki"
-				description="サーバーの仕様やプラグインなどの情報を整理しています。"
-				icon="📖"
-				href="/docs/"
-			/>
+				<a
+					href="/guide/nekozouneko/nearth/"
+					class="server-card server-card-earth"
+				>
 
-			<CategoryCard
-				title="ニュース"
-				description="Minecraft Serverに関する最新情報を掲載します。"
-				icon="📰"
-				href="/news/"
-			/>
+					<div
+						class="server-light"
+						aria-hidden="true"
+					></div>
 
-			<CategoryCard
-				title="ツール"
-				description="ゲーム攻略に役立つ便利なツールを提供します。"
-				icon="🛠️"
-				href="/tool/"
-			/>
+					<div
+						class="server-surface-light"
+						aria-hidden="true"
+					></div>
 
-			<CategoryCard
-				title="NUGについて"
-				description="NUGの目的やサイトについて紹介します。"
-				icon="ℹ️"
-				href="/about/"
-			/>
+
+					<div class="server-card-top">
+
+						<div class="server-slot">
+
+							<span class="server-icon">
+								🌎
+							</span>
+
+						</div>
+
+						<span class="server-arrow">
+							→
+						</span>
+
+					</div>
+
+
+					<div class="server-card-content">
+
+						<p class="server-label">
+							NEKOZOUNEKO
+						</p>
+
+						<h3>
+							NEarth
+						</h3>
+
+						<p>
+							地球を舞台にした
+							経済・建国サーバー
+						</p>
+
+					</div>
+
+
+					<div class="server-card-footer">
+
+						<span>
+							GUIDE
+						</span>
+
+						<span>
+							01
+						</span>
+
+					</div>
+
+				</a>
+
+
+				<!-- ========================================
+				     Life
+				======================================== -->
+
+				<a
+					href="/guide/nekozouneko/life/"
+					class="server-card server-card-life"
+				>
+
+					<div
+						class="server-light"
+						aria-hidden="true"
+					></div>
+
+					<div
+						class="server-surface-light"
+						aria-hidden="true"
+					></div>
+
+
+					<div class="server-card-top">
+
+						<div class="server-slot">
+
+							<span class="server-icon">
+								🌿
+							</span>
+
+						</div>
+
+						<span class="server-arrow">
+							→
+						</span>
+
+					</div>
+
+
+					<div class="server-card-content">
+
+						<p class="server-label">
+							NEKOZOUNEKO
+						</p>
+
+						<h3>
+							Life
+						</h3>
+
+						<p>
+							軽くて遊びやすい
+							生活サーバー
+						</p>
+
+					</div>
+
+
+					<div class="server-card-footer">
+
+						<span>
+							GUIDE
+						</span>
+
+						<span>
+							02
+						</span>
+
+					</div>
+
+				</a>
+
+
+				<!-- ========================================
+				     Cho
+				======================================== -->
+
+				<a
+					href="/guide/nekozouneko/cho/"
+					class="server-card server-card-cho"
+				>
+
+					<div
+						class="server-light"
+						aria-hidden="true"
+					></div>
+
+					<div
+						class="server-surface-light"
+						aria-hidden="true"
+					></div>
+
+
+					<div class="server-card-top">
+
+						<div class="server-slot">
+
+							<span class="server-icon">
+								🏙️
+							</span>
+
+						</div>
+
+						<span class="server-arrow">
+							→
+						</span>
+
+					</div>
+
+
+					<div class="server-card-content">
+
+						<p class="server-label">
+							NEKOZOUNEKO
+						</p>
+
+						<h3>
+							Cho
+						</h3>
+
+						<p>
+							月１でリセットされる
+							独自要素つめ込みサーバー
+						</p>
+
+					</div>
+
+
+					<div class="server-card-footer">
+
+						<span>
+							GUIDE
+						</span>
+
+						<span>
+							03
+						</span>
+
+					</div>
+
+				</a>
+
+			</div>
 
 		</div>
 
@@ -84,50 +265,155 @@ import Footer from "../components/Footer.astro";
 
 
 	<!-- ========================================
-	     Information
+	     Explore
 	======================================== -->
 
-	<section class="section information-section">
+	<section class="section explore-section">
 
-		<div class="section-header">
+		<div class="section-inner">
 
-			<p class="section-label">
-				INFORMATION
-			</p>
+			<div class="section-header">
 
-			<h2>
-				NUGについて
-			</h2>
+				<div class="section-heading">
 
-		</div>
+					<p class="section-label">
+						EXPLORE
+					</p>
 
+					<h2>
+						目的から探す
+					</h2>
 
-		<div class="information-grid">
+					<p>
+						知りたいことや目的に合わせて、
+						NUGBASEの情報を探せます。
+					</p>
 
-			<div class="information-card">
-
-				<h3>
-					Minecraft Serverの情報サイト
-				</h3>
-
-				<p>
-					NUGはMinecraft Serverに関する
-					攻略・仕様・情報をまとめる非公式ガイドサイトです。
-				</p>
+				</div>
 
 			</div>
 
 
-			<div class="information-card">
+			<div class="category-grid">
 
-				<h3>
-					プレイヤーのための情報サイト
-				</h3>
+				<CategoryCard
+					title="攻略"
+					description="サーバーごとの攻略情報やプレイのコツをまとめています。"
+					icon="📚"
+					href="/guide/"
+				/>
 
-				<p>
-					公式情報だけでは分かりにくい内容を、
-					プレイヤーの視点から分かりやすく整理して掲載します。
-				</p>
+				<CategoryCard
+					title="Wiki"
+					description="サーバーの仕様やプラグインなどの情報を整理しています。"
+					icon="📖"
+					href="/docs/"
+				/>
+
+				<CategoryCard
+					title="ニュース"
+					description="Minecraft Serverに関する最新情報を掲載します。"
+					icon="📰"
+					href="/news/"
+				/>
+
+				<CategoryCard
+					title="ツール"
+					description="ゲーム攻略に役立つ便利なツールを提供します。"
+					icon="🛠"
+					href="/tool/"
+				/>
+
+				<CategoryCard
+					title="NUGについて"
+					description="NUGBASEの目的や、このサイトについて紹介します。"
+					icon="ℹ"
+					href="/about/"
+				/>
+
+			</div>
+
+		</div>
+
+	</section>
+
+
+	<!-- ========================================
+	     About
+	======================================== -->
+
+	<section class="about-section">
+
+		<div class="section-inner">
+
+			<div class="about-panel">
+
+				<div
+					class="about-light"
+					aria-hidden="true"
+				></div>
+
+
+				<div
+					class="about-atmosphere"
+					aria-hidden="true"
+				></div>
+
+
+				<div class="about-content">
+
+					<p class="section-label">
+						ABOUT NUGBASE
+					</p>
+
+					<h2>
+						プレイヤーのための
+						<br />
+						非公式ガイド
+					</h2>
+
+					<p class="about-description">
+						NUGBASEは、Minecraft Serverの
+						攻略・仕様・情報をプレイヤー目線で
+						分かりやすく整理する非公式ガイドサイトです。
+					</p>
+
+					<a
+						href="/about/"
+						class="about-button"
+					>
+
+						<span>
+							NUGについて見る
+						</span>
+
+						<span>
+							→
+						</span>
+
+					</a>
+
+				</div>
+
+
+				<div
+					class="about-blocks"
+					aria-hidden="true"
+				>
+
+					<div class="about-block about-block-large">
+
+						<div class="block-grass"></div>
+
+						<div class="block-dirt"></div>
+
+					</div>
+
+					<div class="about-block about-block-small"></div>
+
+					<div class="about-block about-block-stone"></div>
+
+				</div>
 
 			</div>
 
@@ -142,185 +428,2004 @@ import Footer from "../components/Footer.astro";
 
 	<section class="section latest-section">
 
-		<div class="section-header">
+		<div class="section-inner">
 
-			<p class="section-label">
-				LATEST
-			</p>
+			<div class="section-header">
 
-			<h2>
-				最新情報
-			</h2>
+				<div class="section-heading">
 
-			<p>
-				NUGの最新記事や更新情報を掲載します。
-			</p>
+					<p class="section-label">
+						LATEST
+					</p>
 
-		</div>
+					<h2>
+						最新情報
+					</h2>
+
+					<p>
+						NUGBASEの新しい記事や更新情報を掲載します。
+					</p>
+
+				</div>
+
+				<a
+					href="/news/"
+					class="section-link"
+				>
+					<span>ニュースを見る</span>
+					<span>→</span>
+				</a>
+
+			</div>
 
 
-		<div class="latest-placeholder">
+			<div class="latest-panel">
 
-			<p>
-				最新情報は今後追加予定です。
-			</p>
+				<div class="latest-slot">
+
+					<span class="latest-icon">
+						📰
+					</span>
+
+				</div>
+
+
+				<div class="latest-content">
+
+					<p class="latest-label">
+						COMING SOON
+					</p>
+
+					<h3>
+						最新情報は今後追加予定です
+					</h3>
+
+					<p>
+						NUGBASEの更新情報や新しい記事を
+						順次掲載していきます。
+					</p>
+
+				</div>
+
+
+				<span class="latest-arrow">
+					→
+				</span>
+
+			</div>
 
 		</div>
 
 	</section>
 
 
-	<Footer />
-
 </Layout>
 
 
 <style>
 
-	/* ========================================
-	   Section
-	======================================== */
+/* =========================================================
+   Common Section
+========================================================= */
+
+.section {
+
+	position:
+		relative;
+
+	padding:
+		var(--space-20) 0;
+
+}
+
+
+.section-inner {
+
+	width:
+		100%;
+
+	max-width:
+		var(--content-width);
+
+	margin:
+		0 auto;
+
+	padding:
+		0 var(--page-padding);
+
+}
+
+
+/* =========================================================
+   Section Header
+========================================================= */
+
+.section-header {
+
+	display:
+		flex;
+
+	align-items:
+		flex-end;
+
+	justify-content:
+		space-between;
+
+	gap:
+		var(--space-8);
+
+	margin-bottom:
+		30px;
+
+}
+
+
+.section-heading {
+
+	max-width:
+		760px;
+
+}
+
+
+.section-label {
+
+	margin-bottom:
+		10px;
+
+	font-family:
+		var(--font-mono);
+
+	font-size:
+		10px;
+
+	font-weight:
+		800;
+
+	letter-spacing:
+		0.18em;
+
+	color:
+		var(--color-grass);
+
+}
+
+
+.section-header h2 {
+
+	font-size:
+		34px;
+
+	line-height:
+		1.2;
+
+	letter-spacing:
+		-0.035em;
+
+}
+
+
+.section-header p:not(.section-label) {
+
+	margin-top:
+		10px;
+
+	color:
+		var(--color-text-secondary);
+
+	line-height:
+		1.75;
+
+}
+
+
+/* =========================================================
+   Section Link
+========================================================= */
+
+.section-link {
+
+	position:
+		relative;
+
+	display:
+		inline-flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		space-between;
+
+	gap:
+		12px;
+
+	flex-shrink:
+		0;
+
+	min-height:
+		44px;
+
+	padding:
+		0 14px;
+
+	border:
+		1px solid var(--color-border);
+
+	border-radius:
+		0;
+
+	background:
+		var(--color-surface);
+
+	color:
+		var(--color-text-secondary);
+
+	font-size:
+		12px;
+
+	font-weight:
+		750;
+
+	box-shadow:
+		var(--block-shadow);
+
+	transition:
+		transform var(--transition-fast),
+		background-color var(--transition-fast),
+		color var(--transition-fast),
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast);
+
+}
+
+
+.section-link::before {
+
+	content:
+		"";
+
+	position:
+		absolute;
+
+	top:
+		0;
+
+	left:
+		0;
+
+	width:
+		55%;
+
+	height:
+		2px;
+
+	background:
+		linear-gradient(
+			90deg,
+			var(--color-gold-light),
+			var(--color-grass-light),
+			transparent
+		);
+
+	opacity:
+		0;
+
+	transition:
+		opacity var(--transition-fast);
+
+}
+
+
+.section-link:hover {
+
+	transform:
+		translateY(-2px);
+
+	background:
+		var(--color-surface-hover);
+
+	border-color:
+		var(--color-accent);
+
+	color:
+		var(--color-accent);
+
+	box-shadow:
+		var(--block-shadow-hover);
+
+}
+
+
+.section-link:hover::before {
+
+	opacity:
+		1;
+
+}
+
+
+.section-link:active {
+
+	transform:
+		translateY(2px);
+
+	box-shadow:
+		var(--block-shadow-active);
+
+}
+
+
+/* =========================================================
+   Servers Section
+========================================================= */
+
+.servers-section {
+
+	background:
+		linear-gradient(
+			180deg,
+			var(--color-background-deep),
+			var(--color-background)
+		);
+
+	border-top:
+		1px solid var(--color-border);
+
+	border-bottom:
+		1px solid var(--color-border);
+
+}
+
+
+.servers-section::before {
+
+	content:
+		"";
+
+	position:
+		absolute;
+
+	inset:
+		0;
+
+	pointer-events:
+		none;
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.07),
+			transparent 30%
+		);
+
+}
+
+
+/* =========================================================
+   Server Grid
+========================================================= */
+
+.server-grid {
+
+	position:
+		relative;
+
+	display:
+		grid;
+
+	grid-template-columns:
+		repeat(3, minmax(0, 1fr));
+
+	gap:
+		12px;
+
+}
+
+
+/* =========================================================
+   Compact Server Card
+========================================================= */
+
+.server-card {
+
+	position:
+		relative;
+
+	display:
+		flex;
+
+	flex-direction:
+		column;
+
+	min-height:
+		230px;
+
+	padding:
+		20px;
+
+	overflow:
+		hidden;
+
+	border:
+		var(--border-width-strong) solid var(--color-border);
+
+	border-radius:
+		0;
+
+	background:
+		var(--color-surface);
+
+	color:
+		var(--color-text);
+
+	box-shadow:
+		var(--block-shadow),
+		var(--shadow-soft);
+
+	transition:
+		transform var(--transition-normal),
+		border-color var(--transition-normal),
+		background-color var(--transition-normal),
+		box-shadow var(--transition-normal);
+
+}
+
+
+/* =========================================================
+   Server Top Edge
+========================================================= */
+
+.server-card::before {
+
+	content:
+		"";
+
+	position:
+		absolute;
+
+	top:
+		0;
+
+	left:
+		0;
+
+	width:
+		70%;
+
+	height:
+		3px;
+
+	background:
+		linear-gradient(
+			90deg,
+			var(--server-accent),
+			var(--color-gold-light),
+			transparent
+		);
+
+	opacity:
+		0.85;
+
+	pointer-events:
+		none;
+
+}
+
+
+/* =========================================================
+   Directional Light
+========================================================= */
+
+.server-light {
+
+	position:
+		absolute;
+
+	top:
+		-120px;
+
+	left:
+		-120px;
+
+	width:
+		330px;
+
+	height:
+		330px;
+
+	background:
+		radial-gradient(
+			circle,
+			rgba(255, 247, 214, 0.24),
+			rgba(255, 255, 255, 0.07) 34%,
+			transparent 70%
+		);
+
+	opacity:
+		0.60;
+
+	pointer-events:
+		none;
+
+	transition:
+		opacity var(--transition-normal),
+		transform var(--transition-normal);
+
+}
+
+
+.server-surface-light {
+
+	position:
+		absolute;
+
+	inset:
+		0;
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.06),
+			transparent 35%
+		);
+
+	pointer-events:
+		none;
+
+}
+
+
+/* =========================================================
+   Server Accent
+========================================================= */
+
+.server-card-earth {
+
+	--server-accent:
+		var(--color-grass);
+
+	--server-accent-dark:
+		var(--color-grass-dark);
+
+}
+
+
+.server-card-life {
+
+	--server-accent:
+		#6f9f46;
+
+	--server-accent-dark:
+		#4f7331;
+
+}
+
+
+.server-card-cho {
+
+	--server-accent:
+		var(--color-water);
+
+	--server-accent-dark:
+		var(--color-water-dark);
+
+}
+
+
+/* =========================================================
+   Server Hover
+========================================================= */
+
+.server-card:hover {
+
+	transform:
+		translateY(-3px);
+
+	border-color:
+		var(--server-accent);
+
+	background:
+		var(--color-surface-hover);
+
+	box-shadow:
+		0 5px 0 var(--server-accent-dark),
+		0 14px 28px var(--color-shadow-strong);
+
+}
+
+
+.server-card:hover .server-light {
+
+	opacity:
+		0.90;
+
+	transform:
+		translate(7px, 7px);
+
+}
+
+
+.server-card:active {
+
+	transform:
+		translateY(2px);
+
+	box-shadow:
+		0 1px 0 var(--server-accent-dark),
+		0 5px 12px var(--color-shadow);
+
+}
+
+
+/* =========================================================
+   Server Top
+========================================================= */
+
+.server-card-top {
+
+	position:
+		relative;
+
+	z-index:
+		2;
+
+	display:
+		flex;
+
+	align-items:
+		flex-start;
+
+	justify-content:
+		space-between;
+
+}
+
+
+/* =========================================================
+   Server Slot
+========================================================= */
+
+.server-slot {
+
+	position:
+		relative;
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		center;
+
+	width:
+		46px;
+
+	height:
+		46px;
+
+	border:
+		1px solid var(--color-border-strong);
+
+	border-radius:
+		0;
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-surface-strong),
+			var(--color-surface)
+		);
+
+	box-shadow:
+		inset 3px 3px 0 rgba(255, 255, 255, 0.24),
+		inset -3px -3px 0 rgba(0, 0, 0, 0.08),
+		0 3px 0 var(--color-border-strong);
+
+	transition:
+		transform var(--transition-normal),
+		border-color var(--transition-normal),
+		box-shadow var(--transition-normal);
+
+}
+
+
+.server-slot::before {
+
+	content:
+		"";
+
+	position:
+		absolute;
+
+	top:
+		0;
+
+	left:
+		0;
+
+	width:
+		70%;
+
+	height:
+		2px;
+
+	background:
+		rgba(255, 255, 255, 0.42);
+
+}
+
+
+.server-card:hover .server-slot {
+
+	transform:
+		translateY(-2px);
+
+	border-color:
+		var(--server-accent);
+
+	box-shadow:
+		inset 3px 3px 0 rgba(255, 255, 255, 0.30),
+		inset -3px -3px 0 rgba(0, 0, 0, 0.08),
+		0 4px 0 var(--server-accent-dark);
+
+}
+
+
+.server-icon {
+
+	font-size:
+		22px;
+
+	line-height:
+		1;
+
+}
+
+
+/* =========================================================
+   Server Arrow
+========================================================= */
+
+.server-arrow {
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		center;
+
+	width:
+		32px;
+
+	height:
+		32px;
+
+	border:
+		1px solid var(--color-border);
+
+	border-radius:
+		0;
+
+	background:
+		var(--color-surface-subtle);
+
+	color:
+		var(--color-text-secondary);
+
+	font-size:
+		16px;
+
+	box-shadow:
+		0 2px 0 var(--color-border-strong);
+
+	transition:
+		transform var(--transition-fast),
+		background-color var(--transition-fast),
+		color var(--transition-fast),
+		border-color var(--transition-fast);
+
+}
+
+
+.server-card:hover .server-arrow {
+
+	transform:
+		translateX(4px);
+
+	border-color:
+		var(--server-accent);
+
+	background:
+		var(--server-accent);
+
+	color:
+		#ffffff;
+
+}
+
+
+/* =========================================================
+   Server Content
+========================================================= */
+
+.server-card-content {
+
+	position:
+		relative;
+
+	z-index:
+		2;
+
+	margin-top:
+		auto;
+
+	padding-top:
+		28px;
+
+}
+
+
+.server-label {
+
+	font-family:
+		var(--font-mono);
+
+	font-size:
+		8px;
+
+	font-weight:
+		800;
+
+	letter-spacing:
+		0.16em;
+
+	color:
+		var(--color-text-tertiary);
+
+}
+
+
+.server-card h3 {
+
+	margin-top:
+		4px;
+
+	font-size:
+		26px;
+
+	line-height:
+		1.1;
+
+	letter-spacing:
+		-0.04em;
+
+}
+
+
+.server-card-content > p:last-child {
+
+	max-width:
+		280px;
+
+	margin-top:
+		8px;
+
+	font-size:
+		12px;
+
+	line-height:
+		1.6;
+
+	color:
+		var(--color-text-secondary);
+
+}
+
+
+/* =========================================================
+   Server Footer
+========================================================= */
+
+.server-card-footer {
+
+	position:
+		relative;
+
+	z-index:
+		2;
+
+	display:
+		flex;
+
+	justify-content:
+		space-between;
+
+	margin-top:
+		16px;
+
+	padding-top:
+		8px;
+
+	border-top:
+		1px solid var(--color-border);
+
+	font-family:
+		var(--font-mono);
+
+	font-size:
+		8px;
+
+	font-weight:
+		800;
+
+	letter-spacing:
+		0.12em;
+
+	color:
+		var(--color-text-tertiary);
+
+}
+
+
+/* =========================================================
+   Explore
+========================================================= */
+
+.explore-section {
+
+	background:
+		var(--color-background);
+
+}
+
+
+/* =========================================================
+   Category Grid
+========================================================= */
+
+.category-grid {
+
+	display:
+		grid;
+
+	grid-template-columns:
+		repeat(2, minmax(0, 1fr));
+
+	gap:
+		16px;
+
+}
+
+
+/* =========================================================
+   About
+========================================================= */
+
+.about-section {
+
+	position:
+		relative;
+
+	padding:
+		16px 0 var(--space-20);
+
+}
+
+
+.about-panel {
+
+	position:
+		relative;
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		space-between;
+
+	min-height:
+		320px;
+
+	padding:
+		52px;
+
+	overflow:
+		hidden;
+
+	border:
+		1px solid
+		rgba(255, 255, 255, 0.16);
+
+	border-radius:
+		0;
+
+	background:
+		linear-gradient(
+			180deg,
+			#8b633f 0%,
+			#704a30 100%
+		);
+
+	color:
+		#ffffff;
+
+	box-shadow:
+		0 5px 0 #4c3425,
+		0 18px 38px rgba(43, 29, 19, 0.25);
+
+}
+
+
+/* =========================================================
+   About Light
+========================================================= */
+
+.about-light {
+
+	position:
+		absolute;
+
+	top:
+		-180px;
+
+	left:
+		-140px;
+
+	width:
+		520px;
+
+	height:
+		520px;
+
+	background:
+		radial-gradient(
+			circle,
+			rgba(255, 239, 190, 0.30),
+			transparent 68%
+		);
+
+	pointer-events:
+		none;
+
+}
+
+
+.about-atmosphere {
+
+	position:
+		absolute;
+
+	inset:
+		0;
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.07),
+			transparent 35%
+		);
+
+	opacity:
+		0.8;
+
+	pointer-events:
+		none;
+
+}
+
+
+/* =========================================================
+   About Content
+========================================================= */
+
+.about-content {
+
+	position:
+		relative;
+
+	z-index:
+		2;
+
+	max-width:
+		660px;
+
+}
+
+
+.about-content .section-label {
+
+	color:
+		#f2c96a;
+
+}
+
+
+.about-content h2 {
+
+	font-size:
+		38px;
+
+	line-height:
+		1.25;
+
+	letter-spacing:
+		-0.04em;
+
+	color:
+		#ffffff;
+
+}
+
+
+.about-description {
+
+	max-width:
+		600px;
+
+	margin-top:
+		18px;
+
+	color:
+		rgba(255, 255, 255, 0.80);
+
+	line-height:
+		1.85;
+
+}
+
+
+/* =========================================================
+   About Button
+========================================================= */
+
+.about-button {
+
+	display:
+		inline-flex;
+
+	align-items:
+		center;
+
+	gap:
+		16px;
+
+	margin-top:
+		28px;
+
+	min-height:
+		44px;
+
+	padding:
+		0 16px;
+
+	border:
+		1px solid
+		rgba(255, 255, 255, 0.30);
+
+	border-radius:
+		0;
+
+	background:
+		rgba(30, 20, 12, 0.28);
+
+	color:
+		#ffffff;
+
+	font-size:
+		12px;
+
+	font-weight:
+		800;
+
+	box-shadow:
+		0 3px 0 rgba(40, 24, 13, 0.35);
+
+	transition:
+		transform var(--transition-fast),
+		background-color var(--transition-fast),
+		box-shadow var(--transition-fast);
+
+}
+
+
+.about-button:hover {
+
+	transform:
+		translateY(-2px);
+
+	background:
+		rgba(30, 20, 12, 0.42);
+
+	box-shadow:
+		0 5px 0 rgba(40, 24, 13, 0.42);
+
+}
+
+
+.about-button:active {
+
+	transform:
+		translateY(2px);
+
+	box-shadow:
+		0 1px 0 rgba(40, 24, 13, 0.42);
+
+}
+
+
+/* =========================================================
+   About Blocks
+========================================================= */
+
+.about-blocks {
+
+	position:
+		absolute;
+
+	right:
+		30px;
+
+	bottom:
+		-30px;
+
+	width:
+		310px;
+
+	height:
+		310px;
+
+	transform:
+		rotate(-7deg);
+
+	opacity:
+		0.95;
+
+}
+
+
+.about-block {
+
+	position:
+		absolute;
+
+	border:
+		1px solid
+		rgba(255, 255, 255, 0.14);
+
+	box-shadow:
+		0 8px 0 rgba(38, 24, 15, 0.28);
+
+}
+
+
+.about-block-large {
+
+	right:
+		10px;
+
+	top:
+		35px;
+
+	width:
+		190px;
+
+	height:
+		190px;
+
+	background:
+		#5d9639;
+
+}
+
+
+.block-grass {
+
+	position:
+		absolute;
+
+	top:
+		0;
+
+	left:
+		0;
+
+	right:
+		0;
+
+	height:
+		34px;
+
+	background:
+		#7bb34d;
+
+	border-bottom:
+		1px solid
+		rgba(36, 65, 25, 0.35);
+
+}
+
+
+.block-dirt {
+
+	position:
+		absolute;
+
+	left:
+		0;
+
+	right:
+		0;
+
+	bottom:
+		0;
+
+	height:
+		155px;
+
+	background:
+		#795235;
+
+}
+
+
+.about-block-small {
+
+	left:
+		25px;
+
+	top:
+		0;
+
+	width:
+		72px;
+
+	height:
+		72px;
+
+	background:
+		var(--color-gold);
+
+	transform:
+		rotate(8deg);
+
+}
+
+
+.about-block-stone {
+
+	left:
+		0;
+
+	bottom:
+		20px;
+
+	width:
+		110px;
+
+	height:
+		110px;
+
+	background:
+		var(--color-stone);
+
+	transform:
+		rotate(-6deg);
+
+}
+
+
+/* =========================================================
+   Latest
+========================================================= */
+
+.latest-section {
+
+	padding-top:
+		20px;
+
+	padding-bottom:
+		72px;
+
+}
+
+
+.latest-panel {
+
+	position:
+		relative;
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	gap:
+		20px;
+
+	min-height:
+		104px;
+
+	padding:
+		20px 22px;
+
+	border:
+		1px solid var(--color-border);
+
+	border-radius:
+		0;
+
+	background:
+		var(--color-surface);
+
+	box-shadow:
+		var(--block-shadow),
+		var(--shadow-soft);
+
+	transition:
+		transform var(--transition-fast),
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast);
+
+}
+
+
+.latest-panel::before {
+
+	content:
+		"";
+
+	position:
+		absolute;
+
+	top:
+		0;
+
+	left:
+		0;
+
+	width:
+		45%;
+
+	height:
+		2px;
+
+	background:
+		linear-gradient(
+			90deg,
+			var(--color-gold-light),
+			var(--color-grass-light),
+			transparent
+		);
+
+}
+
+
+.latest-panel:hover {
+
+	transform:
+		translateY(-2px);
+
+	border-color:
+		var(--color-border-strong);
+
+	box-shadow:
+		var(--block-shadow-hover),
+		var(--shadow-medium);
+
+}
+
+
+.latest-slot {
+
+	position:
+		relative;
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		center;
+
+	width:
+		56px;
+
+	height:
+		56px;
+
+	flex-shrink:
+		0;
+
+	border:
+		1px solid var(--color-border-strong);
+
+	border-radius:
+		0;
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-surface-strong),
+			var(--color-surface)
+		);
+
+	box-shadow:
+		inset 3px 3px 0 rgba(255, 255, 255, 0.22),
+		inset -3px -3px 0 rgba(0, 0, 0, 0.08),
+		0 3px 0 var(--color-border-strong);
+
+}
+
+
+.latest-icon {
+
+	font-size:
+		24px;
+
+	line-height:
+		1;
+
+}
+
+
+.latest-content {
+
+	min-width:
+		0;
+
+}
+
+
+.latest-label {
+
+	margin-bottom:
+		4px;
+
+	font-family:
+		var(--font-mono);
+
+	font-size:
+		9px;
+
+	font-weight:
+		800;
+
+	letter-spacing:
+		0.16em;
+
+	color:
+		var(--color-text-tertiary);
+
+}
+
+
+.latest-panel h3 {
+
+	font-size:
+		17px;
+
+}
+
+
+.latest-panel p:last-child {
+
+	margin-top:
+		5px;
+
+	font-size:
+		13px;
+
+	color:
+		var(--color-text-secondary);
+
+}
+
+
+.latest-arrow {
+
+	margin-left:
+		auto;
+
+	font-size:
+		20px;
+
+	color:
+		var(--color-text-tertiary);
+
+	transition:
+		transform var(--transition-fast),
+		color var(--transition-fast);
+
+}
+
+
+.latest-panel:hover .latest-arrow {
+
+	transform:
+		translateX(4px);
+
+	color:
+		var(--color-accent);
+
+}
+
+
+/* =========================================================
+   Dark Mode
+========================================================= */
+
+html[data-theme="dark"] .servers-section {
+
+	background:
+		linear-gradient(
+			180deg,
+			var(--color-background-deep),
+			var(--color-background)
+		);
+
+}
+
+
+html[data-theme="dark"] .server-light {
+
+	opacity:
+		0.28;
+
+}
+
+
+html[data-theme="dark"] .server-card:hover .server-light {
+
+	opacity:
+		0.55;
+
+}
+
+
+html[data-theme="dark"] .about-panel {
+
+	background:
+		linear-gradient(
+			180deg,
+			#68482f,
+			#4c3323
+		);
+
+	box-shadow:
+		0 5px 0 #241810,
+		0 20px 42px rgba(0, 0, 0, 0.40);
+
+}
+
+
+html[data-theme="dark"] .server-slot,
+html[data-theme="dark"] .latest-slot {
+
+	box-shadow:
+		inset 3px 3px 0 rgba(255, 255, 255, 0.08),
+		inset -3px -3px 0 rgba(0, 0, 0, 0.28),
+		0 3px 0 rgba(0, 0, 0, 0.42);
+
+}
+
+
+/* =========================================================
+   Tablet
+========================================================= */
+
+@media (max-width: 900px) {
+
+	.server-grid {
+
+		gap:
+			10px;
+
+	}
+
+
+	.server-card {
+
+		min-height:
+			215px;
+
+		padding:
+			18px;
+
+	}
+
+
+	.server-slot {
+
+		width:
+			42px;
+
+		height:
+			42px;
+
+	}
+
+
+	.server-icon {
+
+		font-size:
+			20px;
+
+	}
+
+
+	.server-arrow {
+
+		width:
+			30px;
+
+		height:
+			30px;
+
+		font-size:
+			15px;
+
+	}
+
+
+	.server-card h3 {
+
+		font-size:
+			24px;
+
+	}
+
+
+	.server-card-content {
+
+		padding-top:
+			22px;
+
+	}
+
+}
+
+
+/* =========================================================
+   Mobile
+========================================================= */
+
+@media (max-width: 768px) {
 
 	.section {
-		padding: 80px 0;
+
+		padding:
+			60px 0;
+
+	}
+
+
+	.section-inner {
+
+		padding:
+			0 var(--page-padding);
+
 	}
 
 
 	.section-header {
-		margin-bottom: 32px;
-	}
 
+		align-items:
+			flex-start;
 
-	.section-label {
-		margin-bottom: 8px;
+		flex-direction:
+			column;
 
-		font-size: 12px;
+		gap:
+			18px;
 
-		font-weight: 700;
+		margin-bottom:
+			28px;
 
-		letter-spacing: 0.12em;
-
-		color: var(--color-text-secondary);
 	}
 
 
 	.section-header h2 {
-		font-size: 32px;
 
-		letter-spacing: -0.03em;
+		font-size:
+			28px;
+
 	}
 
 
-	.section-header > p:last-child {
-		margin-top: 8px;
+	.section-link {
 
-		color: var(--color-text-secondary);
+		width:
+			100%;
+
 	}
 
 
-	/* ========================================
-	   Category
-	======================================== */
+	.server-grid {
+
+		grid-template-columns:
+			1fr;
+
+		gap:
+			12px;
+
+	}
+
+
+	.server-card {
+
+		min-height:
+			190px;
+
+		padding:
+			18px;
+
+	}
+
+
+	.server-card-content {
+
+		padding-top:
+			24px;
+
+	}
+
+
+	.server-card h3 {
+
+		font-size:
+			25px;
+
+	}
+
 
 	.category-grid {
-		display: grid;
 
 		grid-template-columns:
-			repeat(2, minmax(0, 1fr));
+			1fr;
 
-		gap: 16px;
+		gap:
+			14px;
+
+	}
+
+
+	.about-section {
+
+		padding:
+			8px 0 60px;
+
 	}
 
 
-	/* ========================================
-	   Information
-	======================================== */
+	.about-panel {
 
-	.information-section {
-		border-top:
-			1px solid var(--color-border);
+		min-height:
+			380px;
+
+		padding:
+			30px;
+
+		align-items:
+			flex-start;
+
+	}
+
+
+	.about-content h2 {
+
+		font-size:
+			29px;
+
 	}
 
 
-	.information-grid {
-		display: grid;
+	.about-description {
 
-		grid-template-columns:
-			repeat(2, minmax(0, 1fr));
+		font-size:
+			14px;
 
-		gap: 16px;
+	}
+
+
+	.about-blocks {
+
+		right:
+			-55px;
+
+		bottom:
+			-45px;
+
+		transform:
+			rotate(-7deg)
+			scale(0.8);
+
+		opacity:
+			0.45;
+
 	}
 
 
-	.information-card {
-		padding: 28px;
+	.latest-panel {
 
-		border-radius: var(--radius-medium);
+		padding:
+			18px;
 
-		background: var(--color-surface);
+	}
+
+
+	.latest-arrow {
+
+		display:
+			none;
+
+	}
+
+}
+
+
+/* =========================================================
+   Small Mobile
+========================================================= */
+
+@media (max-width: 480px) {
+
+	.server-card {
+
+		min-height:
+			180px;
+
+		padding:
+			16px;
+
 	}
 
 
-	.information-card h3 {
-		font-size: 18px;
+	.server-card h3 {
+
+		font-size:
+			24px;
+
+	}
+
+
+	.server-card-content {
+
+		padding-top:
+			20px;
+
 	}
 
 
-	.information-card p {
-		margin-top: 10px;
+	.about-panel {
 
-		color: var(--color-text-secondary);
-	}
+		min-height:
+			400px;
 
-
-	/* ========================================
-	   Latest
-	======================================== */
-
-	.latest-section {
-		padding-bottom: 40px;
-	}
-
-
-	.latest-placeholder {
-		padding: 40px;
-
-		border: 1px dashed var(--color-border);
-
-		border-radius: var(--radius-medium);
-
-		text-align: center;
-
-		color: var(--color-text-secondary);
-	}
-
-
-	/* ========================================
-	   Responsive
-	======================================== */
-
-	@media (max-width: 768px) {
-
-		.section {
-			padding: 60px 0;
-		}
-
-
-		.section-header h2 {
-			font-size: 28px;
-		}
-
-
-		.category-grid {
-			grid-template-columns: 1fr;
-		}
-
-
-		.information-grid {
-			grid-template-columns: 1fr;
-		}
+		padding:
+			26px;
 
 	}
+
+
+	.latest-panel {
+
+		align-items:
+			flex-start;
+
+	}
+
+}
 
 </style>
-```

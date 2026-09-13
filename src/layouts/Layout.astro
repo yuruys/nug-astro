@@ -1,5 +1,6 @@
 ---
 import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
 import "../styles/global.css";
 
 const {
@@ -34,20 +35,21 @@ const {
 
 		<title>{title}</title>
 
-		<!--
-			NUGBASE Theme Initialization
 
-			優先順位:
-			1. ユーザーが保存したテーマ
-			2. OSのテーマ
-		-->
+		<!-- ========================================
+		     NUGBASE Theme Initialization
+		======================================== -->
 
 		<script is:inline>
 			(() => {
-				const storageKey = "nug-theme";
+
+				const storageKey =
+					"nug-theme";
 
 				const savedTheme =
-					localStorage.getItem(storageKey);
+					localStorage.getItem(
+						storageKey
+					);
 
 				const systemDark =
 					window.matchMedia(
@@ -67,14 +69,25 @@ const {
 
 				document.documentElement.style.colorScheme =
 					theme;
+
 			})();
 		</script>
 
 	</head>
 
+
 	<body>
 
+		<!-- ========================================
+		     Header
+		======================================== -->
+
 		<Header />
+
+
+		<!-- ========================================
+		     Main Content
+		======================================== -->
 
 		<main
 			class="astro-main"
@@ -86,6 +99,13 @@ const {
 			<slot />
 
 		</main>
+
+
+		<!-- ========================================
+		     Footer
+		======================================== -->
+
+		<Footer />
 
 	</body>
 
