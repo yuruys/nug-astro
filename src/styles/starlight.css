@@ -890,7 +890,13 @@ header.header button:hover {
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 49.999rem) {
+
+	:root {
+
+		--wiki-sidebar-width: 90vw;
+		--wiki-sidebar-toggle-top: 50%;
+	}
 
 	/* ----------------------------------------
 	   Toggle Button
@@ -904,9 +910,7 @@ header.header button:hover {
 
 		left: 0;
 
-		top: calc(
-			var(--sl-nav-height) + 50%
-		);
+		top: var(--wiki-sidebar-toggle-top);
 
 		z-index: 120;
 
@@ -995,9 +999,13 @@ header.header button:hover {
 	   Sidebar Closed
 	---------------------------------------- */
 
-	.sidebar {
+	.sidebar-pane {
+
+		width: var(--wiki-sidebar-width);
 
 		transform: translateX(-100%);
+
+		visibility: hidden;
 
 		transition:
 			transform 250ms cubic-bezier(
@@ -1013,9 +1021,11 @@ header.header button:hover {
 	   Sidebar Open
 	---------------------------------------- */
 
-	.wiki-sidebar-open .sidebar {
+	.wiki-sidebar-open .sidebar-pane {
 
 		transform: translateX(0);
+
+		visibility: visible;
 
 		z-index: 110;
 	}
@@ -1027,15 +1037,9 @@ header.header button:hover {
 
 	.wiki-sidebar-open .wiki-sidebar-toggle {
 
-		left: min(280px, 82vw);
+		left: var(--wiki-sidebar-width);
 
 		z-index: 120;
-	}
-
-
-	.wiki-sidebar-open .wiki-sidebar-toggle-icon {
-
-		transform: rotate(180deg);
 	}
 
 
@@ -1059,7 +1063,7 @@ header.header button:hover {
 
 		background: rgba(0, 0, 0, 0.18);
 
-		pointer-events: none;
+		pointer-events: auto;
 
 		opacity: 1;
 
@@ -1072,7 +1076,7 @@ header.header button:hover {
 	   Sidebar Content
 	---------------------------------------- */
 
-	.wiki-sidebar-open .sidebar {
+	.wiki-sidebar-open .sidebar-pane {
 
 		box-shadow: var(--nug-shadow-lg);
 	}
@@ -1101,7 +1105,7 @@ header.header button:hover {
 
 	.wiki-sidebar-toggle,
 	.wiki-sidebar-toggle-icon,
-	.sidebar {
+	.sidebar-pane {
 
 		transition: none !important;
 	}
