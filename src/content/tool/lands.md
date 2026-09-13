@@ -1,6 +1,6 @@
 ---
-title: "土地計算ツール"
-description: "土地に関する計算を行うツール"
+title: "Lands維持費計算ツール"
+description: "土地の維持費に関する計算を行うツール"
 category: "ツール"
 icon: "🛠️"
 order: 1

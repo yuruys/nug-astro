@@ -1,0 +1,4548 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+---
+
+<Layout
+	title="LANDS 維持費計算機 | NUGBASE"
+	description="Minecraft LANDSの集団数・チャンク数・ステータス・予算から維持費を計算できるNUGBASEの計算ツールです。"
+	pagefind={false}
+>
+	<section class="lands-tool">
+
+		<!-- ==================================================
+		     Header
+		================================================== -->
+
+		<header class="tool-header">
+
+			<div class="tool-header-top">
+				<span class="tool-label">
+					NUGBASE TOOL
+				</span>
+
+				<span class="tool-version">
+					v2.0.3
+				</span>
+			</div>
+
+			<h1>
+				LANDS 維持費計算機
+			</h1>
+
+			<p>
+				Minecraft LANDSの集団数・チャンク数・ステータス・予算から、
+				初期費用・取得費・週間維持費・予算で維持できる期間を計算します。
+			</p>
+
+		</header>
+
+
+		<!-- ==================================================
+		     Navigation
+		================================================== -->
+
+		<nav class="flow-navigation" aria-label="計算機内ナビゲーション">
+
+			<a href="#conditions">
+				<span>01</span>
+				条件を入力
+			</a>
+
+			<a href="#costs">
+				<span>02</span>
+				費用を確認
+			</a>
+
+			<a href="#budget">
+				<span>03</span>
+				予算を試算
+			</a>
+
+			<a href="#reverse">
+				<span>04</span>
+				チャンクを逆算
+			</a>
+
+		</nav>
+
+
+		<!-- ==================================================
+		     Conditions
+		================================================== -->
+
+		<section
+			id="conditions"
+			class="tool-section"
+		>
+
+			<div class="section-heading">
+
+				<div class="section-number">
+					01
+				</div>
+
+				<div>
+					<p class="section-eyebrow">
+						CONDITIONS
+					</p>
+
+					<h2>
+						条件を入力
+					</h2>
+
+					<p>
+						現在のLandsの状態を入力してください。
+					</p>
+				</div>
+
+			</div>
+
+
+			<div class="conditions-grid">
+
+				<!-- 集団数 -->
+
+				<div class="input-block">
+
+					<label for="group-count">
+						<span class="input-label">
+							集団数
+						</span>
+
+						<span class="input-description">
+							初期費用 20G / 集団
+						</span>
+					</label>
+
+					<div class="number-control">
+
+						<button
+							type="button"
+							class="step-button"
+							data-action="decrease"
+							data-target="group-count"
+							aria-label="集団数を減らす"
+						>
+							−
+						</button>
+
+						<input
+							id="group-count"
+							type="number"
+							min="1"
+							max="9999"
+							value="1"
+							inputmode="numeric"
+						/>
+
+						<button
+							type="button"
+							class="step-button"
+							data-action="increase"
+							data-target="group-count"
+							aria-label="集団数を増やす"
+						>
+							+
+						</button>
+
+					</div>
+
+				</div>
+
+
+				<!-- チャンク数 -->
+
+				<div class="input-block">
+
+					<label for="chunk-count">
+						<span class="input-label">
+							チャンク数
+						</span>
+
+						<span class="input-description">
+							追加取得 5G / チャンク
+						</span>
+					</label>
+
+					<div class="number-control">
+
+						<button
+							type="button"
+							class="step-button"
+							data-action="decrease"
+							data-target="chunk-count"
+							aria-label="チャンク数を減らす"
+						>
+							−
+						</button>
+
+						<input
+							id="chunk-count"
+							type="number"
+							min="1"
+							max="99999"
+							value="1"
+							inputmode="numeric"
+						/>
+
+						<button
+							type="button"
+							class="step-button"
+							data-action="increase"
+							data-target="chunk-count"
+							aria-label="チャンク数を増やす"
+						>
+							+
+						</button>
+
+					</div>
+
+				</div>
+
+
+				<!-- ステータス -->
+
+				<div class="input-block status-block">
+
+					<div>
+						<span class="input-label">
+							ステータス
+						</span>
+
+						<span class="input-description">
+							維持費の倍率に影響します
+						</span>
+					</div>
+
+
+					<div
+						class="status-options"
+						role="radiogroup"
+						aria-label="ステータス"
+					>
+
+						<button
+							type="button"
+							class="status-option active"
+							data-status="group"
+							aria-pressed="true"
+						>
+							<span>集団</span>
+							<strong>1.00倍</strong>
+						</button>
+
+						<button
+							type="button"
+							class="status-option"
+							data-status="federation"
+							aria-pressed="false"
+						>
+							<span>連邦</span>
+							<strong>1.00倍</strong>
+						</button>
+
+						<button
+							type="button"
+							class="status-option"
+							data-status="nation"
+							aria-pressed="false"
+						>
+							<span>国家</span>
+							<strong>1.20倍</strong>
+						</button>
+
+						<button
+							type="button"
+							class="status-option"
+							data-status="empire"
+							aria-pressed="false"
+						>
+							<span>帝国</span>
+							<strong>1.35倍</strong>
+						</button>
+
+					</div>
+
+				</div>
+
+
+				<!-- 予算 -->
+
+				<div class="input-block">
+
+					<label for="budget-amount">
+						<span class="input-label">
+							予算
+						</span>
+
+						<span class="input-description">
+							維持費として使用できるG
+						</span>
+					</label>
+
+					<div class="currency-input">
+
+						<input
+							id="budget-amount"
+							type="number"
+							min="0"
+							step="1"
+							placeholder="0"
+							inputmode="decimal"
+						/>
+
+						<span>
+							G
+						</span>
+
+					</div>
+
+					<p
+						id="budget-error"
+						class="input-error"
+						hidden
+					>
+						0G以上の数値を入力してください。
+					</p>
+
+				</div>
+
+			</div>
+
+		</section>
+
+
+		<!-- ==================================================
+		     Costs
+		================================================== -->
+
+		<section
+			id="costs"
+			class="tool-section"
+		>
+
+			<div class="section-heading">
+
+				<div class="section-number">
+					02
+				</div>
+
+				<div>
+					<p class="section-eyebrow">
+						COST SUMMARY
+					</p>
+
+					<h2>
+						費用を確認
+					</h2>
+
+					<p>
+						現在の条件から必要になる費用を確認できます。
+					</p>
+				</div>
+
+			</div>
+
+
+			<div class="cost-grid">
+
+				<div class="cost-card">
+
+					<span class="cost-label">
+						初期投資
+					</span>
+
+					<strong id="setup-fee">
+						20G
+					</strong>
+
+					<span id="setup-detail">
+						1集団
+					</span>
+
+				</div>
+
+
+				<div class="cost-card">
+
+					<span class="cost-label">
+						チャンク取得費
+					</span>
+
+					<strong id="acquisition-fee">
+						0G
+					</strong>
+
+					<span id="acquisition-detail">
+						(1 - 1) × 5
+					</span>
+
+				</div>
+
+
+				<div class="cost-card cost-card-primary">
+
+					<span class="cost-label">
+						週間維持費
+					</span>
+
+					<strong id="weekly-maintenance">
+						3G
+					</strong>
+
+					<span>
+						毎週木曜日
+					</span>
+
+				</div>
+
+
+				<div class="cost-card">
+
+					<span class="cost-label">
+						年間維持費
+					</span>
+
+					<strong id="annual-maintenance">
+						156G
+					</strong>
+
+					<span>
+						52週間
+					</span>
+
+				</div>
+
+			</div>
+
+
+			<!-- Countdown -->
+
+			<div class="countdown-card">
+
+				<div>
+
+					<span class="countdown-label">
+						NEXT COLLECTION
+					</span>
+
+					<h3>
+						次回の集金
+					</h3>
+
+					<p>
+						毎週木曜日 23:00
+					</p>
+
+				</div>
+
+
+				<div class="countdown-values">
+
+					<div>
+						<strong id="countdown-days">
+							0
+						</strong>
+
+						<span>
+							日
+						</span>
+					</div>
+
+					<div>
+						<strong id="countdown-hours">
+							00
+						</strong>
+
+						<span>
+							時間
+						</span>
+					</div>
+
+					<div>
+						<strong id="countdown-minutes">
+							00
+						</strong>
+
+						<span>
+							分
+						</span>
+					</div>
+
+					<div>
+						<strong id="countdown-seconds">
+							00
+						</strong>
+
+						<span>
+							秒
+						</span>
+					</div>
+
+				</div>
+
+			</div>
+
+		</section>
+
+
+		<!-- ==================================================
+		     Budget
+		================================================== -->
+
+		<section
+			id="budget"
+			class="tool-section"
+		>
+
+			<div class="section-heading">
+
+				<div class="section-number">
+					03
+				</div>
+
+				<div>
+					<p class="section-eyebrow">
+						BUDGET SIMULATION
+					</p>
+
+					<h2>
+						予算を試算
+					</h2>
+
+					<p>
+						入力した予算で何週間維持できるかを計算します。
+					</p>
+				</div>
+
+			</div>
+
+
+			<div class="budget-panel">
+
+				<div class="budget-result">
+
+					<span class="result-label">
+						維持できる期間
+					</span>
+
+					<div class="result-value">
+						<strong id="affordable-weeks">
+							0
+						</strong>
+
+						<span>
+							週間
+						</span>
+					</div>
+
+					<p id="budget-message">
+						予算を入力すると計算されます。
+					</p>
+
+				</div>
+
+
+				<div class="payment-result">
+
+					<span class="result-label">
+						最終支払予定日
+					</span>
+
+					<strong id="final-payment-date">
+						—
+					</strong>
+
+					<p>
+						木曜日23:00の集金を基準に計算します。
+					</p>
+
+				</div>
+
+			</div>
+
+
+			<!-- Budget graph -->
+
+			<div class="graph-card">
+
+				<div class="graph-header">
+
+					<div>
+						<span class="graph-label">
+							BUDGET
+						</span>
+
+						<h3>
+							予算残高の推移
+						</h3>
+					</div>
+
+					<span id="graph-summary">
+						—
+					</span>
+
+				</div>
+
+
+				<div
+					id="budget-graph"
+					class="budget-graph"
+					aria-label="予算残高の推移"
+				>
+					<div class="graph-empty">
+						予算を入力するとグラフが表示されます。
+					</div>
+				</div>
+
+			</div>
+
+
+
+		</section>
+
+
+		<!-- ==================================================
+		     Reverse
+		================================================== -->
+
+		<section
+			id="reverse"
+			class="tool-section"
+		>
+
+			<div class="section-heading">
+
+				<div class="section-number">
+					04
+				</div>
+
+				<div>
+					<p class="section-eyebrow">
+						REVERSE CALCULATOR
+					</p>
+
+					<h2>
+						チャンクを逆算
+					</h2>
+
+					<p>
+						指定した期間と予算から、維持できる最大チャンク数を計算します。
+					</p>
+				</div>
+
+			</div>
+
+
+			<div class="reverse-panel">
+
+				<div class="reverse-inputs">
+
+					<div class="date-field">
+
+						<label for="start-date">
+							開始日
+						</label>
+
+						<input
+							id="start-date"
+							type="date"
+						/>
+
+					</div>
+
+
+					<div class="date-arrow">
+						→
+					</div>
+
+
+					<div class="date-field">
+
+						<label for="end-date">
+							終了日
+						</label>
+
+						<input
+							id="end-date"
+							type="date"
+						/>
+
+					</div>
+
+				</div>
+
+
+				<div class="reverse-info">
+
+					<span id="reverse-days">
+						0日
+					</span>
+
+					<span>
+						·
+					</span>
+
+					<span id="reverse-weeks">
+						0週
+					</span>
+
+					<span>
+						·
+					</span>
+
+					<span id="reverse-multiplier">
+						1.00倍
+					</span>
+
+				</div>
+
+
+				<div class="reverse-result">
+
+					<span>
+						最大チャンク数
+					</span>
+
+					<div>
+
+						<strong id="maximum-chunks">
+							0
+						</strong>
+
+						<span>
+							チャンク
+						</span>
+
+					</div>
+
+					<p id="reverse-description">
+						予算と期間を入力してください。
+					</p>
+
+				</div>
+
+			</div>
+
+		</section>
+
+
+		<!-- ==================================================
+		     Rules
+		================================================== -->
+
+		<section class="rules-section">
+
+			<div class="section-heading">
+
+				<div class="section-number">
+					?
+				</div>
+
+				<div>
+					<p class="section-eyebrow">
+						RULES
+					</p>
+
+					<h2>
+						計算ルール
+					</h2>
+				</div>
+
+			</div>
+
+
+			<div class="rules-grid">
+
+				<div class="rules-card">
+
+					<span>
+						01
+					</span>
+
+					<strong>
+						初期費用
+					</strong>
+
+					<p>
+						20G × 集団数
+					</p>
+
+				</div>
+
+
+				<div class="rules-card">
+
+					<span>
+						02
+					</span>
+
+					<strong>
+						チャンク取得費
+					</strong>
+
+					<p>
+						5G × max(0, チャンク数 − 集団数)
+					</p>
+
+				</div>
+
+
+				<div class="rules-card">
+
+					<span>
+						03
+					</span>
+
+					<strong>
+						週間維持費
+					</strong>
+
+					<p>
+						3G × チャンク数 × ステータス倍率
+					</p>
+
+				</div>
+
+
+				<div class="rules-card">
+
+					<span>
+						04
+					</span>
+
+					<strong>
+						年間維持費
+					</strong>
+
+					<p>
+						週間維持費 × 52
+					</p>
+
+				</div>
+
+			</div>
+
+
+			<div class="multiplier-table">
+
+				<div class="multiplier-row multiplier-header">
+					<span>ステータス</span>
+					<span>倍率</span>
+				</div>
+
+				<div class="multiplier-row">
+					<span>集団</span>
+					<strong>1.00倍</strong>
+				</div>
+
+				<div class="multiplier-row">
+					<span>連邦</span>
+					<strong>1.00倍</strong>
+				</div>
+
+				<div class="multiplier-row">
+					<span>国家</span>
+					<strong>1.20倍</strong>
+				</div>
+
+				<div class="multiplier-row">
+					<span>帝国</span>
+					<strong>1.35倍</strong>
+				</div>
+
+			</div>
+
+		</section>
+
+
+		<!-- ==================================================
+		     Footer note
+		================================================== -->
+
+		<footer class="tool-footer">
+
+			<p>
+				NUGBASEはMinecraftサーバー「Nekozouneko」の
+				情報をまとめた非公式ファンサイトです。
+			</p>
+
+			<p>
+				この計算機の結果は参考値です。
+				実際のゲーム内仕様と異なる場合があります。
+			</p>
+
+		</footer>
+
+	</section>
+</Layout>
+
+
+<script>
+	/* =====================================================
+	   LANDS Maintenance Calculator
+	   NUGBASE
+	   ===================================================== */
+
+	const STORAGE_KEY = "nugbase-lands-calculator";
+
+
+	/* -----------------------------------------------------
+	   Types
+	   ----------------------------------------------------- */
+
+	type LandsStatus =
+		| "group"
+		| "federation"
+		| "nation"
+		| "empire";
+
+
+	type SavedState = {
+		groupCount?: string;
+		chunkCount?: string;
+		budgetAmount?: string;
+		status?: LandsStatus;
+		startDate?: string;
+		endDate?: string;
+	};
+
+
+	type DateRangeDuration = {
+		days: number;
+		weeks: number;
+	};
+
+
+	/* -----------------------------------------------------
+	   Status multipliers
+	   ----------------------------------------------------- */
+
+	const STATUS_MULTIPLIERS: Record<LandsStatus, number> = {
+		group: 1,
+		federation: 1,
+		nation: 1.2,
+		empire: 1.35,
+	};
+
+
+	let currentStatus: LandsStatus = "group";
+
+
+	/* -----------------------------------------------------
+	   Constants
+	   ----------------------------------------------------- */
+
+	const MIN_GROUP = 1;
+	const MIN_CHUNK = 1;
+
+	const MAX_GROUP = 9999;
+	const MAX_CHUNK = 99999;
+
+	const SETUP_FEE_PER_GROUP = 20;
+	const ACQUISITION_FEE_PER_CHUNK = 5;
+	const MAINTENANCE_PER_CHUNK_PER_WEEK = 3;
+
+
+	/* -----------------------------------------------------
+	   DOM helper
+	   ----------------------------------------------------- */
+
+	function getElement<T extends Element>(
+		selector: string,
+	): T {
+		const element =
+			document.querySelector<T>(selector);
+
+		if (!element) {
+			throw new Error(
+				`Element not found: ${selector}`,
+			);
+		}
+
+		return element;
+	}
+
+
+	/* -----------------------------------------------------
+	   Elements
+	   ----------------------------------------------------- */
+
+	const groupInput =
+		getElement<HTMLInputElement>(
+			"#group-count",
+		);
+
+	const chunkInput =
+		getElement<HTMLInputElement>(
+			"#chunk-count",
+		);
+
+	const budgetInput =
+		getElement<HTMLInputElement>(
+			"#budget-amount",
+		);
+
+	const budgetError =
+		getElement<HTMLParagraphElement>(
+			"#budget-error",
+		);
+
+	const startDateInput =
+		getElement<HTMLInputElement>(
+			"#start-date",
+		);
+
+	const endDateInput =
+		getElement<HTMLInputElement>(
+			"#end-date",
+		);
+
+	const statusButtons =
+		document.querySelectorAll<HTMLButtonElement>(
+			".status-option",
+		);
+
+
+	/* -----------------------------------------------------
+	   Helpers
+	   ----------------------------------------------------- */
+
+	function clamp(
+		value: number,
+		min: number,
+		max: number,
+	): number {
+		return Math.min(
+			Math.max(value, min),
+			max,
+		);
+	}
+
+
+	function getNumber(
+		input: HTMLInputElement,
+		fallback = 0,
+	): number {
+		const value =
+			Number.parseFloat(input.value);
+
+		return Number.isFinite(value)
+			? value
+			: fallback;
+	}
+
+
+	function formatNumber(
+		value: number,
+	): string {
+		return new Intl.NumberFormat("ja-JP").format(
+			Math.max(0, Math.floor(value)),
+		);
+	}
+
+
+	function formatMultiplier(
+		value: number,
+	): string {
+		return value.toFixed(2);
+	}
+
+
+	function formatDate(
+		date: Date | null,
+	): string {
+		if (
+			!date ||
+			Number.isNaN(date.getTime())
+		) {
+			return "—";
+		}
+
+		return new Intl.DateTimeFormat(
+			"ja-JP",
+			{
+				year: "numeric",
+				month: "long",
+				day: "numeric",
+				weekday: "short",
+			},
+		).format(date);
+	}
+
+
+	function toDateInputValue(
+		date: Date,
+	): string {
+		const year =
+			date.getFullYear();
+
+		const month =
+			String(date.getMonth() + 1)
+				.padStart(2, "0");
+
+		const day =
+			String(date.getDate())
+				.padStart(2, "0");
+
+		return `${year}-${month}-${day}`;
+	}
+
+
+	function parseLocalDate(
+		value: string,
+	): Date | null {
+		if (!value) {
+			return null;
+		}
+
+		const parts =
+			value.split("-").map(Number);
+
+		if (parts.length !== 3) {
+			return null;
+		}
+
+		const [year, month, day] =
+			parts;
+
+		if (
+			year === undefined ||
+			month === undefined ||
+			day === undefined
+		) {
+			return null;
+		}
+
+		const date =
+			new Date(
+				year,
+				month - 1,
+				day,
+				0,
+				0,
+				0,
+				0,
+			);
+
+		return Number.isNaN(date.getTime())
+			? null
+			: date;
+	}
+
+
+	/* -----------------------------------------------------
+	   Core calculations
+	   ----------------------------------------------------- */
+
+	function getStatusMultiplier(): number {
+		return STATUS_MULTIPLIERS[currentStatus];
+	}
+
+
+	function calculateSetupFee(
+		groupCount: number,
+	): number {
+		return (
+			SETUP_FEE_PER_GROUP *
+			Math.max(1, groupCount)
+		);
+	}
+
+
+	function calculateAcquisitionFee(
+		groupCount: number,
+		chunkCount: number,
+	): number {
+		return (
+			Math.max(
+				0,
+				chunkCount - groupCount,
+			) *
+			ACQUISITION_FEE_PER_CHUNK
+		);
+	}
+
+
+	function calculateWeeklyMaintenance(
+		chunkCount: number,
+	): number {
+		return (
+			MAINTENANCE_PER_CHUNK_PER_WEEK *
+			chunkCount *
+			getStatusMultiplier()
+		);
+	}
+
+
+	function calculateAnnualMaintenance(
+		weeklyMaintenance: number,
+	): number {
+		return weeklyMaintenance * 52;
+	}
+
+
+	/* -----------------------------------------------------
+	   Collection date
+	   Every Thursday 23:00
+	   ----------------------------------------------------- */
+
+	function getNextCollectionTime(): Date {
+		const now = new Date();
+
+		const next =
+			new Date(now);
+
+		const currentDay =
+			now.getDay();
+
+		let daysUntilThursday =
+			4 - currentDay;
+
+		if (daysUntilThursday < 0) {
+			daysUntilThursday += 7;
+		}
+
+		next.setDate(
+			next.getDate() +
+			daysUntilThursday,
+		);
+
+		next.setHours(
+			23,
+			0,
+			0,
+			0,
+		);
+
+		if (next <= now) {
+			next.setDate(
+				next.getDate() + 7,
+			);
+		}
+
+		return next;
+	}
+
+
+	/* -----------------------------------------------------
+	   Budget duration
+	   ----------------------------------------------------- */
+
+	function calculateBudgetDuration(
+		budget: number,
+		weeklyMaintenance: number,
+	): number {
+		if (
+			budget <= 0 ||
+			weeklyMaintenance <= 0
+		) {
+			return 0;
+		}
+
+		return Math.floor(
+			budget / weeklyMaintenance,
+		);
+	}
+
+
+	function calculateFinalPaymentDate(
+		affordableWeeks: number,
+	): Date | null {
+		if (affordableWeeks <= 0) {
+			return null;
+		}
+
+		const firstCollection =
+			getNextCollectionTime();
+
+		const finalDate =
+			new Date(firstCollection);
+
+		finalDate.setDate(
+			finalDate.getDate() +
+			(affordableWeeks - 1) * 7,
+		);
+
+		return finalDate;
+	}
+
+
+	/* -----------------------------------------------------
+	   Reverse calculation
+	   ----------------------------------------------------- */
+
+	function calculateDateRangeDuration(
+		startDate: Date | null,
+		endDate: Date | null,
+	): DateRangeDuration {
+		if (!startDate || !endDate) {
+			return {
+				days: 0,
+				weeks: 0,
+			};
+		}
+
+		const diff =
+			endDate.getTime() -
+			startDate.getTime();
+
+		if (diff < 0) {
+			return {
+				days: 0,
+				weeks: 0,
+			};
+		}
+
+		const days =
+			Math.floor(
+				diff /
+				(24 * 60 * 60 * 1000),
+			);
+
+		const weeks =
+			Math.max(
+				1,
+				Math.ceil(days / 7),
+			);
+
+		return {
+			days,
+			weeks,
+		};
+	}
+
+
+	function calculateMaximumChunks(
+		budget: number,
+		weeks: number,
+	): number {
+		if (
+			budget <= 0 ||
+			weeks <= 0
+		) {
+			return 0;
+		}
+
+		const maintenancePerChunk =
+			MAINTENANCE_PER_CHUNK_PER_WEEK *
+			getStatusMultiplier() *
+			weeks;
+
+		if (maintenancePerChunk <= 0) {
+			return 0;
+		}
+
+		return Math.max(
+			0,
+			Math.floor(
+				budget /
+				maintenancePerChunk,
+			),
+		);
+	}
+
+
+	/* -----------------------------------------------------
+	   Main calculator
+	   ----------------------------------------------------- */
+
+	function updateCalculator(): void {
+
+		const groupCount =
+			clamp(
+				Math.floor(
+					getNumber(
+						groupInput,
+						1,
+					),
+				),
+				MIN_GROUP,
+				MAX_GROUP,
+			);
+
+		const chunkCount =
+			clamp(
+				Math.floor(
+					getNumber(
+						chunkInput,
+						1,
+					),
+				),
+				MIN_CHUNK,
+				MAX_CHUNK,
+			);
+
+		let budget =
+			getNumber(
+				budgetInput,
+				0,
+			);
+
+		if (budget < 0) {
+			budget = 0;
+		}
+
+		groupInput.value =
+			String(groupCount);
+
+		chunkInput.value =
+			String(chunkCount);
+
+
+		/* Costs */
+
+		const setupFee =
+			calculateSetupFee(
+				groupCount,
+			);
+
+		const acquisitionFee =
+			calculateAcquisitionFee(
+				groupCount,
+				chunkCount,
+			);
+
+		const weeklyMaintenance =
+			calculateWeeklyMaintenance(
+				chunkCount,
+			);
+
+		const annualMaintenance =
+			calculateAnnualMaintenance(
+				weeklyMaintenance,
+			);
+
+
+		getElement<HTMLElement>(
+			"#setup-fee",
+		).textContent =
+			`${formatNumber(setupFee)}G`;
+
+		getElement<HTMLElement>(
+			"#setup-detail",
+		).textContent =
+			`${groupCount}集団`;
+
+
+		getElement<HTMLElement>(
+			"#acquisition-fee",
+		).textContent =
+			`${formatNumber(acquisitionFee)}G`;
+
+		getElement<HTMLElement>(
+			"#acquisition-detail",
+		).textContent =
+			`(${chunkCount} - ${groupCount}) × 5`;
+
+
+		getElement<HTMLElement>(
+			"#weekly-maintenance",
+		).textContent =
+			`${formatNumber(weeklyMaintenance)}G`;
+
+		getElement<HTMLElement>(
+			"#annual-maintenance",
+		).textContent =
+			`${formatNumber(annualMaintenance)}G`;
+
+
+		/* Budget */
+
+		const affordableWeeks =
+			calculateBudgetDuration(
+				budget,
+				weeklyMaintenance,
+			);
+
+		const finalPaymentDate =
+			calculateFinalPaymentDate(
+				affordableWeeks,
+			);
+
+
+		getElement<HTMLElement>(
+			"#affordable-weeks",
+		).textContent =
+			formatNumber(
+				affordableWeeks,
+			);
+
+
+		getElement<HTMLElement>(
+			"#final-payment-date",
+		).textContent =
+			finalPaymentDate
+				? formatDate(finalPaymentDate)
+				: "—";
+
+
+		const budgetMessage =
+			getElement<HTMLElement>(
+				"#budget-message",
+			);
+
+
+		if (budget <= 0) {
+
+			budgetMessage.textContent =
+				"予算を入力すると計算されます。";
+
+		} else if (affordableWeeks <= 0) {
+
+			budgetMessage.textContent =
+				"現在の予算では1週間分の維持費を確保できません。";
+
+		} else {
+
+			budgetMessage.textContent =
+				`週間維持費 ${formatNumber(
+					weeklyMaintenance,
+				)}G`;
+		}
+
+
+		updateBudgetGraph(
+			budget,
+			weeklyMaintenance,
+			affordableWeeks,
+		);
+
+		updateReverseCalculator();
+
+		saveState();
+	}
+
+
+	/* -----------------------------------------------------
+	   Budget graph
+	   ----------------------------------------------------- */
+
+	function updateBudgetGraph(
+		budget: number,
+		weeklyMaintenance: number,
+		affordableWeeks: number,
+	): void {
+		const graph =
+			getElement<HTMLElement>(
+				"#budget-graph",
+			);
+
+		const summary =
+			getElement<HTMLElement>(
+				"#graph-summary",
+			);
+
+		if (
+			budget <= 0 ||
+			weeklyMaintenance <= 0
+		) {
+			graph.innerHTML = `
+				<div class="graph-empty">
+					予算を入力するとグラフが表示されます。
+				</div>
+			`;
+
+			summary.textContent = "—";
+			return;
+		}
+
+		const displayWeeks =
+			Math.min(
+				Math.max(affordableWeeks, 1),
+				52,
+			);
+
+		const values: number[] = [];
+
+		for (
+			let week = 0;
+			week <= displayWeeks;
+			week++
+		) {
+			values.push(
+				Math.max(
+					0,
+					budget - weeklyMaintenance * week,
+				),
+			);
+		}
+
+		const maxValue = Math.max(...values, 1);
+		const width = 1000;
+		const height = 320;
+		const padding = {
+			top: 22,
+			right: 28,
+			bottom: 42,
+			left: 70,
+		};
+
+		const graphWidth =
+			width - padding.left - padding.right;
+		const graphHeight =
+			height - padding.top - padding.bottom;
+
+		const points = values.map(
+			(value: number, index: number) => {
+				const x =
+					padding.left +
+					(index / Math.max(values.length - 1, 1)) *
+						graphWidth;
+
+				const y =
+					padding.top +
+					(1 - value / maxValue) *
+						graphHeight;
+
+				return { x, y };
+			},
+		);
+
+		const linePath = points
+			.map(
+				(
+					point: { x: number; y: number },
+					index: number,
+				) =>
+					`${index === 0 ? "M" : "L"} ${point.x} ${point.y}`,
+			)
+			.join(" ");
+
+		const firstPoint = points[0];
+		const lastPoint = points[points.length - 1];
+
+		if (!firstPoint || !lastPoint) {
+			return;
+		}
+
+		const areaPath =
+			`${linePath} L ${lastPoint.x} ${height - padding.bottom} L ${firstPoint.x} ${height - padding.bottom} Z`;
+
+		const gridLines = [0, 0.25, 0.5, 0.75, 1]
+			.map((ratio: number) => {
+				const y =
+					padding.top + ratio * graphHeight;
+				const value = maxValue * (1 - ratio);
+
+				return `
+					<line
+						x1="${padding.left}"
+						y1="${y}"
+						x2="${width - padding.right}"
+						y2="${y}"
+						class="graph-grid-line"
+					/>
+					<text
+						x="${padding.left - 12}"
+						y="${y + 4}"
+						text-anchor="end"
+						class="graph-y-label"
+					>
+						${formatNumber(value)}G
+					</text>
+				`;
+			})
+			.join("");
+
+		const xLabels = [
+			{ week: 0, label: "開始" },
+			{
+				week: Math.round(displayWeeks / 2),
+				label: `${Math.round(displayWeeks / 2)}週`,
+			},
+			{ week: displayWeeks, label: `${displayWeeks}週` },
+		];
+
+		const xLabelMarkup = xLabels
+			.map(({ week, label }: { week: number; label: string }) => {
+				const x =
+					padding.left +
+					(week / Math.max(displayWeeks, 1)) *
+						graphWidth;
+
+				return `
+					<line
+						x1="${x}"
+						y1="${padding.top}"
+						x2="${x}"
+						y2="${height - padding.bottom}"
+						class="graph-vertical-line"
+					/>
+					<text
+						x="${x}"
+						y="${height - 14}"
+						text-anchor="middle"
+						class="graph-x-label"
+					>
+						${label}
+					</text>
+				`;
+			})
+			.join("");
+
+		const lastValue = values[values.length - 1] ?? 0;
+
+		graph.innerHTML = `
+			<svg
+				viewBox="0 0 ${width} ${height}"
+				preserveAspectRatio="none"
+				role="img"
+				aria-label="予算残高の推移グラフ"
+			>
+				<defs>
+					<linearGradient
+						id="lands-budget-fill"
+						x1="0"
+						y1="0"
+						x2="0"
+						y2="1"
+					>
+						<stop
+							offset="0%"
+						stop-color="var(--lands-green)"
+						stop-opacity=".28"
+						/>
+						<stop
+							offset="100%"
+						stop-color="var(--lands-green)"
+						stop-opacity="0"
+						/>
+					</linearGradient>
+				</defs>
+
+				${gridLines}
+				${xLabelMarkup}
+
+				<path
+					d="${areaPath}"
+					class="graph-area"
+				/>
+
+				<path
+					d="${linePath}"
+					class="graph-line"
+				/>
+
+				<circle
+					cx="${firstPoint.x}"
+					cy="${firstPoint.y}"
+					r="5"
+					class="graph-point"
+				/>
+
+				<circle
+					cx="${lastPoint.x}"
+					cy="${lastPoint.y}"
+					r="6"
+					class="graph-point graph-point-final"
+				/>
+
+				<text
+					x="${lastPoint.x}"
+					y="${Math.max(lastPoint.y - 16, 18)}"
+					text-anchor="end"
+					class="graph-value-label"
+				>
+					残高 ${formatNumber(lastValue)}G
+				</text>
+			</svg>
+		`;
+
+		summary.textContent =
+			`${displayWeeks}週間・最終残高 ${formatNumber(lastValue)}G`;
+	}
+
+	/* -----------------------------------------------------
+	   Reverse calculator
+	   ----------------------------------------------------- */
+
+	function updateReverseCalculator(): void {
+
+		const budget =
+			Math.max(
+				0,
+				getNumber(
+					budgetInput,
+					0,
+				),
+			);
+
+
+		const startDate =
+			parseLocalDate(
+				startDateInput.value,
+			);
+
+		const endDate =
+			parseLocalDate(
+				endDateInput.value,
+			);
+
+
+		const duration =
+			calculateDateRangeDuration(
+				startDate,
+				endDate,
+			);
+
+
+		const multiplier =
+			getStatusMultiplier();
+
+
+		getElement<HTMLElement>(
+			"#reverse-days",
+		).textContent =
+			`${duration.days}日`;
+
+		getElement<HTMLElement>(
+			"#reverse-weeks",
+		).textContent =
+			`${duration.weeks}週`;
+
+		getElement<HTMLElement>(
+			"#reverse-multiplier",
+		).textContent =
+			`${formatMultiplier(multiplier)}倍`;
+
+
+		const maximumChunks =
+			calculateMaximumChunks(
+				budget,
+				duration.weeks,
+			);
+
+
+		getElement<HTMLElement>(
+			"#maximum-chunks",
+		).textContent =
+			formatNumber(
+				maximumChunks,
+			);
+
+
+		const description =
+			getElement<HTMLElement>(
+				"#reverse-description",
+			);
+
+
+		if (!startDate || !endDate) {
+
+			description.textContent =
+				"開始日と終了日を入力してください。";
+
+			return;
+		}
+
+
+		if (endDate < startDate) {
+
+			description.textContent =
+				"終了日は開始日以降にしてください。";
+
+			getElement<HTMLElement>(
+				"#maximum-chunks",
+			).textContent = "0";
+
+			return;
+		}
+
+
+		if (budget <= 0) {
+
+			description.textContent =
+				"予算を入力すると最大チャンク数を計算できます。";
+
+			return;
+		}
+
+
+		description.textContent =
+			`${duration.weeks}週間分の維持費として計算しています。`;
+	}
+
+
+	/* -----------------------------------------------------
+	   Countdown
+	   ----------------------------------------------------- */
+
+	function updateCountdown(): void {
+
+		const now =
+			new Date();
+
+		const next =
+			getNextCollectionTime();
+
+		const diff =
+			Math.max(
+				0,
+				next.getTime() -
+				now.getTime(),
+			);
+
+
+		const totalSeconds =
+			Math.floor(
+				diff / 1000,
+			);
+
+
+		const days =
+			Math.floor(
+				totalSeconds /
+				86400,
+			);
+
+		const hours =
+			Math.floor(
+				(totalSeconds % 86400) /
+				3600,
+			);
+
+		const minutes =
+			Math.floor(
+				(totalSeconds % 3600) /
+				60,
+			);
+
+		const seconds =
+			totalSeconds % 60;
+
+
+		getElement<HTMLElement>(
+			"#countdown-days",
+		).textContent =
+			String(days);
+
+		getElement<HTMLElement>(
+			"#countdown-hours",
+		).textContent =
+			String(hours).padStart(
+				2,
+				"0",
+			);
+
+		getElement<HTMLElement>(
+			"#countdown-minutes",
+		).textContent =
+			String(minutes).padStart(
+				2,
+				"0",
+			);
+
+		getElement<HTMLElement>(
+			"#countdown-seconds",
+		).textContent =
+			String(seconds).padStart(
+				2,
+				"0",
+			);
+	}
+
+
+	/* -----------------------------------------------------
+	   Status
+	   ----------------------------------------------------- */
+
+	function isLandsStatus(
+		value: string,
+	): value is LandsStatus {
+		return (
+			value === "group" ||
+			value === "federation" ||
+			value === "nation" ||
+			value === "empire"
+		);
+	}
+
+
+	function setStatus(
+		status: LandsStatus,
+	): void {
+
+		currentStatus =
+			status;
+
+
+		statusButtons.forEach(
+			(
+				button: HTMLButtonElement,
+			) => {
+
+				const active =
+					button.dataset.status === status;
+
+				button.classList.toggle(
+					"active",
+					active,
+				);
+
+				button.setAttribute(
+					"aria-pressed",
+					String(active),
+				);
+			},
+		);
+
+
+		updateCalculator();
+	}
+
+
+	statusButtons.forEach(
+		(
+			button: HTMLButtonElement,
+		) => {
+
+			button.addEventListener(
+				"click",
+				() => {
+
+					const status =
+						button.dataset.status;
+
+					if (
+						status &&
+						isLandsStatus(status)
+					) {
+						setStatus(status);
+					}
+				},
+			);
+
+		},
+	);
+
+
+	/* -----------------------------------------------------
+	   Number steppers
+	   ----------------------------------------------------- */
+
+	const stepButtons =
+		document.querySelectorAll<HTMLButtonElement>(
+			".step-button",
+		);
+
+
+	stepButtons.forEach(
+		(
+			button: HTMLButtonElement,
+		) => {
+
+			button.addEventListener(
+				"click",
+				() => {
+
+					const targetId =
+						button.dataset.target;
+
+					if (!targetId) {
+						return;
+					}
+
+
+					const input =
+						document.querySelector<HTMLInputElement>(
+							`#${targetId}`,
+						);
+
+					if (!input) {
+						return;
+					}
+
+
+					let value =
+						getNumber(
+							input,
+							1,
+						);
+
+
+					if (
+						button.dataset.action ===
+						"increase"
+					) {
+						value += 1;
+					} else {
+						value -= 1;
+					}
+
+
+					const min =
+						Number(input.min) || 1;
+
+					const max =
+						Number(input.max) || 99999;
+
+
+					value =
+						clamp(
+							value,
+							min,
+							max,
+						);
+
+
+					input.value =
+						String(value);
+
+
+					updateCalculator();
+				},
+			);
+
+		},
+	);
+
+
+	/* -----------------------------------------------------
+	   Input listeners
+	   ----------------------------------------------------- */
+
+	[groupInput, chunkInput, budgetInput]
+		.forEach(
+			(
+				input: HTMLInputElement,
+			) => {
+
+				input.addEventListener(
+					"input",
+					() => {
+
+						if (
+							input === budgetInput
+						) {
+
+							const value =
+								Number.parseFloat(
+									input.value,
+								);
+
+
+							if (
+								input.value !== "" &&
+								(
+									!Number.isFinite(value) ||
+									value < 0
+								)
+							) {
+
+								budgetError.hidden =
+									false;
+
+							} else {
+
+								budgetError.hidden =
+									true;
+							}
+						}
+
+
+						updateCalculator();
+					},
+				);
+
+			},
+		);
+
+
+	/* -----------------------------------------------------
+	   Date listeners
+	   ----------------------------------------------------- */
+
+	startDateInput.addEventListener(
+		"change",
+		() => {
+
+			if (startDateInput.value) {
+
+				endDateInput.min =
+					startDateInput.value;
+
+			}
+
+
+			updateReverseCalculator();
+
+			saveState();
+		},
+	);
+
+
+	endDateInput.addEventListener(
+		"change",
+		() => {
+
+			updateReverseCalculator();
+
+			saveState();
+		},
+	);
+
+
+	/* -----------------------------------------------------
+	   LocalStorage
+	   ----------------------------------------------------- */
+
+	function saveState(): void {
+
+		try {
+
+			const state: SavedState = {
+				groupCount:
+					groupInput.value,
+
+				chunkCount:
+					chunkInput.value,
+
+				budgetAmount:
+					budgetInput.value,
+
+				status:
+					currentStatus,
+
+				startDate:
+					startDateInput.value,
+
+				endDate:
+					endDateInput.value,
+			};
+
+
+			localStorage.setItem(
+				STORAGE_KEY,
+				JSON.stringify(state),
+			);
+
+		} catch {
+			/* LocalStorage unavailable */
+		}
+	}
+
+
+	function loadState(): void {
+
+		try {
+
+			const raw =
+				localStorage.getItem(
+					STORAGE_KEY,
+				);
+
+			if (!raw) {
+				return;
+			}
+
+
+			const state =
+				JSON.parse(raw) as SavedState;
+
+
+			if (
+				typeof state.groupCount ===
+				"string"
+			) {
+				groupInput.value =
+					state.groupCount;
+			}
+
+
+			if (
+				typeof state.chunkCount ===
+				"string"
+			) {
+				chunkInput.value =
+					state.chunkCount;
+			}
+
+
+			if (
+				typeof state.budgetAmount ===
+				"string"
+			) {
+				budgetInput.value =
+					state.budgetAmount;
+			}
+
+
+			if (
+				typeof state.status ===
+				"string" &&
+				isLandsStatus(state.status)
+			) {
+				currentStatus =
+					state.status;
+			}
+
+
+			if (
+				typeof state.startDate ===
+				"string"
+			) {
+				startDateInput.value =
+					state.startDate;
+			}
+
+
+			if (
+				typeof state.endDate ===
+				"string"
+			) {
+				endDateInput.value =
+					state.endDate;
+			}
+
+		} catch {
+			/* Ignore corrupted saved data */
+		}
+	}
+
+
+	/* -----------------------------------------------------
+	   Initial dates
+	   ----------------------------------------------------- */
+
+	function initializeDates(): void {
+
+		if (
+			!startDateInput.value &&
+			!endDateInput.value
+		) {
+
+			const today =
+				new Date();
+
+			const future =
+				new Date(today);
+
+			future.setDate(
+				future.getDate() + 28,
+			);
+
+
+			startDateInput.value =
+				toDateInputValue(today);
+
+			endDateInput.value =
+				toDateInputValue(future);
+		}
+
+
+		if (startDateInput.value) {
+
+			endDateInput.min =
+				startDateInput.value;
+
+		}
+	}
+
+
+	/* -----------------------------------------------------
+	   Start
+	   ----------------------------------------------------- */
+
+	initializeDates();
+
+	loadState();
+
+	setStatus(
+		currentStatus,
+	);
+
+	updateCalculator();
+
+	updateCountdown();
+
+
+	window.setInterval(
+		updateCountdown,
+		1000,
+	);
+</script>
+
+
+<style>
+	/* =====================================================
+	   Base
+	   ===================================================== */
+
+	.lands-tool {
+		--lands-green: #5a8a3a;
+		--lands-green-dark: #42672a;
+		--lands-green-light: #7ca957;
+
+		--lands-stone: #dfe5e1;
+		--lands-stone-dark: #b8c1bc;
+
+		--lands-blue-gray: #687a80;
+
+		--lands-text: #17201b;
+		--lands-text-secondary: #617067;
+
+		--lands-background: #edf2ef;
+		--lands-surface: #f8faf9;
+		--lands-border: #c8d2cc;
+
+		--lands-shadow:
+			0 5px 0 rgba(54, 68, 60, .18);
+
+		--lands-shadow-hover:
+			0 7px 0 rgba(54, 68, 60, .24);
+
+		max-width:
+			1200px;
+
+		margin:
+			0 auto;
+
+		padding:
+			48px 24px 80px;
+
+		color:
+			var(--lands-text);
+	}
+
+
+	/* =====================================================
+	   Header
+	   ===================================================== */
+
+	.tool-header {
+		padding:
+			16px 0 40px;
+
+		border-top:
+			4px solid var(--lands-green);
+	}
+
+
+	.tool-header-top {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			space-between;
+
+		gap:
+			16px;
+
+		margin-bottom:
+			16px;
+	}
+
+
+	.tool-label,
+	.tool-version {
+		display:
+			inline-flex;
+
+		align-items:
+			center;
+
+		min-height:
+			28px;
+
+		padding:
+			0 10px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-surface);
+
+		font-size:
+			11px;
+
+		font-weight:
+			800;
+
+		letter-spacing:
+			.08em;
+	}
+
+
+	.tool-label {
+		color:
+			var(--lands-green-dark);
+	}
+
+
+	.tool-version {
+		color:
+			var(--lands-text-secondary);
+	}
+
+
+	.tool-header h1 {
+		margin:
+			0;
+
+		font-size:
+			clamp(32px, 5vw, 52px);
+
+		line-height:
+			1.15;
+
+		letter-spacing:
+			-.04em;
+	}
+
+
+	.tool-header > p {
+		max-width:
+			780px;
+
+		margin:
+			18px 0 0;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			15px;
+
+		line-height:
+			1.8;
+	}
+
+
+	/* =====================================================
+	   Navigation
+	   ===================================================== */
+
+	.flow-navigation {
+		display:
+			grid;
+
+		grid-template-columns:
+			repeat(4, 1fr);
+
+		margin-bottom:
+			48px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-surface);
+
+		box-shadow:
+			var(--lands-shadow);
+	}
+
+
+	.flow-navigation a {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		gap:
+			10px;
+
+		min-height:
+			52px;
+
+		padding:
+			0 16px;
+
+		border-right:
+			1px solid var(--lands-border);
+
+		color:
+			var(--lands-text);
+
+		text-decoration:
+			none;
+
+		font-size:
+			13px;
+
+		font-weight:
+			700;
+
+		transition:
+			background .18s ease,
+			color .18s ease;
+	}
+
+
+	.flow-navigation a:last-child {
+		border-right:
+			0;
+	}
+
+
+	.flow-navigation a:hover {
+		background:
+			var(--lands-green);
+
+		color:
+			white;
+	}
+
+
+	.flow-navigation a span {
+		font-size:
+			10px;
+
+		font-weight:
+			900;
+
+		opacity:
+			.65;
+	}
+
+
+	/* =====================================================
+	   Sections
+	   ===================================================== */
+
+	.tool-section,
+	.rules-section {
+		margin-top:
+			72px;
+	}
+
+
+	.section-heading {
+		display:
+			flex;
+
+		align-items:
+			flex-start;
+
+		gap:
+			16px;
+
+		margin-bottom:
+			28px;
+	}
+
+
+	.section-number {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			center;
+
+		flex:
+			0 0 42px;
+
+		width:
+			42px;
+
+		height:
+			42px;
+
+		background:
+			var(--lands-green);
+
+		color:
+			white;
+
+		font-size:
+			12px;
+
+		font-weight:
+			900;
+
+		box-shadow:
+			3px 3px 0 var(--lands-green-dark);
+	}
+
+
+	.section-eyebrow {
+		margin:
+			0 0 5px;
+
+		color:
+			var(--lands-green-dark);
+
+		font-size:
+			10px;
+
+		font-weight:
+			900;
+
+		letter-spacing:
+			.16em;
+	}
+
+
+	.section-heading h2 {
+		margin:
+			0;
+
+		font-size:
+			28px;
+
+		line-height:
+			1.3;
+
+		letter-spacing:
+			-.03em;
+	}
+
+
+	.section-heading h2 + p {
+		margin:
+			7px 0 0;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			14px;
+	}
+
+
+	/* =====================================================
+	   Conditions
+	   ===================================================== */
+
+	.conditions-grid {
+		display:
+			grid;
+
+		grid-template-columns:
+			repeat(2, 1fr);
+
+		gap:
+			16px;
+	}
+
+
+	.input-block {
+		padding:
+			20px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-surface);
+
+		box-shadow:
+			var(--lands-shadow);
+	}
+
+
+	.input-block label {
+		display:
+			block;
+	}
+
+
+	.input-label {
+		display:
+			block;
+
+		font-size:
+			14px;
+
+		font-weight:
+			800;
+	}
+
+
+	.input-description {
+		display:
+			block;
+
+		margin-top:
+			4px;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			11px;
+	}
+
+
+	.number-control {
+		display:
+			grid;
+
+		grid-template-columns:
+			44px 1fr 44px;
+
+		height:
+			48px;
+
+		margin-top:
+			16px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-background);
+	}
+
+
+	.number-control input {
+		width:
+			100%;
+
+		border:
+			0;
+
+		border-left:
+			1px solid var(--lands-border);
+
+		border-right:
+			1px solid var(--lands-border);
+
+		background:
+			transparent;
+
+		color:
+			var(--lands-text);
+
+		text-align:
+			center;
+
+		font-size:
+			17px;
+
+		font-weight:
+			800;
+
+		outline:
+			none;
+	}
+
+
+	.number-control input:focus {
+		background:
+			rgba(90, 138, 58, .08);
+	}
+
+
+	.step-button {
+		border:
+			0;
+
+		background:
+			var(--lands-stone);
+
+		color:
+			var(--lands-text);
+
+		font-size:
+			20px;
+
+		font-weight:
+			800;
+
+		cursor:
+			pointer;
+
+		transition:
+			background .15s ease,
+			transform .15s ease;
+	}
+
+
+	.step-button:hover {
+		background:
+			var(--lands-stone-dark);
+	}
+
+
+	.step-button:active {
+		transform:
+			translateY(2px);
+	}
+
+
+	/* =====================================================
+	   Status
+	   ===================================================== */
+
+	.status-options {
+		display:
+			grid;
+
+		grid-template-columns:
+			repeat(2, 1fr);
+
+		gap:
+			8px;
+
+		margin-top:
+			16px;
+	}
+
+
+	.status-option {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			space-between;
+
+		gap:
+			10px;
+
+		min-height:
+			44px;
+
+		padding:
+			0 12px;
+
+		border:
+			1px solid var(--lands-border);
+
+		border-radius:
+			0;
+
+		background:
+			var(--lands-background);
+
+		color:
+			var(--lands-text);
+
+		cursor:
+			pointer;
+
+		text-align:
+			left;
+
+		transition:
+			background .15s ease,
+			border-color .15s ease,
+			transform .15s ease;
+	}
+
+
+	.status-option:hover {
+		border-color:
+			var(--lands-green);
+	}
+
+
+	.status-option.active {
+		border-color:
+			var(--lands-green);
+
+		background:
+			var(--lands-green);
+
+		color:
+			white;
+
+		box-shadow:
+			2px 2px 0 var(--lands-green-dark);
+	}
+
+
+	.status-option span {
+		font-size:
+			12px;
+
+		font-weight:
+			800;
+	}
+
+
+	.status-option strong {
+		font-size:
+			10px;
+
+		opacity:
+			.8;
+	}
+
+
+	/* =====================================================
+	   Currency
+	   ===================================================== */
+
+	.currency-input {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		height:
+			48px;
+
+		margin-top:
+			16px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-background);
+	}
+
+
+	.currency-input input {
+		min-width:
+			0;
+
+		flex:
+			1;
+
+		height:
+			100%;
+
+		padding:
+			0 14px;
+
+		border:
+			0;
+
+		outline:
+			0;
+
+		background:
+			transparent;
+
+		color:
+			var(--lands-text);
+
+		font-size:
+			16px;
+
+		font-weight:
+			800;
+	}
+
+
+	.currency-input span {
+		padding:
+			0 14px;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			13px;
+
+		font-weight:
+			900;
+	}
+
+
+	.input-error {
+		margin:
+			8px 0 0;
+
+		color:
+			#b42318;
+
+		font-size:
+			11px;
+	}
+
+
+	/* =====================================================
+	   Costs
+	   ===================================================== */
+
+	.cost-grid {
+		display:
+			grid;
+
+		grid-template-columns:
+			repeat(4, 1fr);
+
+		gap:
+			12px;
+	}
+
+
+	.cost-card {
+		min-height:
+			148px;
+
+		padding:
+			20px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-surface);
+
+		box-shadow:
+			var(--lands-shadow);
+
+		display:
+			flex;
+
+		flex-direction:
+			column;
+
+		justify-content:
+			space-between;
+	}
+
+
+	.cost-card-primary {
+		border-color:
+			var(--lands-green);
+
+		box-shadow:
+			0 5px 0 var(--lands-green-dark);
+	}
+
+
+	.cost-label {
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			11px;
+
+		font-weight:
+			800;
+
+		letter-spacing:
+			.04em;
+	}
+
+
+	.cost-card strong {
+		margin:
+			12px 0;
+
+		font-size:
+			27px;
+
+		line-height:
+			1;
+	}
+
+
+	.cost-card > span:last-child {
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			11px;
+	}
+
+
+	/* =====================================================
+	   Rule note
+	   ===================================================== */
+
+	.rule-note {
+		display:
+			flex;
+
+		align-items:
+			flex-start;
+
+		gap:
+			14px;
+
+		margin-top:
+			20px;
+
+		padding:
+			18px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-background);
+	}
+
+
+	.rule-note-icon {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			center;
+
+		flex:
+			0 0 28px;
+
+		width:
+			28px;
+
+		height:
+			28px;
+
+		background:
+			var(--lands-green);
+
+		color:
+			white;
+
+		font-weight:
+			900;
+	}
+
+
+	.rule-note strong {
+		font-size:
+			13px;
+	}
+
+
+	.rule-note p {
+		margin:
+			5px 0 0;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			12px;
+
+		line-height:
+			1.7;
+	}
+
+
+	/* =====================================================
+	   Budget
+	   ===================================================== */
+
+	.budget-panel {
+		display:
+			grid;
+
+		grid-template-columns:
+			1fr 1fr;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-surface);
+
+		box-shadow:
+			var(--lands-shadow);
+	}
+
+
+	.budget-result,
+	.payment-result {
+		padding:
+			28px;
+	}
+
+
+	.payment-result {
+		border-left:
+			1px solid var(--lands-border);
+	}
+
+
+	.result-label {
+		display:
+			block;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			11px;
+
+		font-weight:
+			800;
+
+		letter-spacing:
+			.06em;
+	}
+
+
+	.result-value {
+		display:
+			flex;
+
+		align-items:
+			baseline;
+
+		gap:
+			8px;
+
+		margin-top:
+			14px;
+	}
+
+
+	.result-value strong {
+		font-size:
+			48px;
+
+		line-height:
+			1;
+
+		letter-spacing:
+			-.05em;
+	}
+
+
+	.result-value span {
+		font-size:
+			14px;
+
+		font-weight:
+			800;
+	}
+
+
+	.budget-result p,
+	.payment-result p {
+		margin:
+			12px 0 0;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			12px;
+	}
+
+
+	.payment-result > strong {
+		display:
+			block;
+
+		margin-top:
+			18px;
+
+		font-size:
+			24px;
+
+		line-height:
+			1.4;
+	}
+
+
+	/* =====================================================
+	   Graph
+	   ===================================================== */
+
+	.graph-card {
+		position:
+			relative;
+
+		margin-top:
+			16px;
+
+		border:
+			1px solid color-mix(
+				in srgb,
+				var(--lands-border) 78%,
+				white
+			);
+
+		background:
+			linear-gradient(
+				180deg,
+				color-mix(
+					in srgb,
+					var(--lands-surface) 96%,
+					white
+				) 0%,
+				var(--lands-surface) 100%
+			);
+
+		box-shadow:
+			0 8px 24px rgba(54, 68, 60, .08),
+			var(--lands-shadow);
+
+		overflow:
+		hidden;
+	}
+
+
+	.graph-header {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			space-between;
+
+		gap:
+			16px;
+
+		padding:
+			18px 20px;
+
+		border-bottom:
+			1px solid color-mix(
+				in srgb,
+				var(--lands-border) 72%,
+				transparent
+			);
+
+		background:
+			linear-gradient(
+				90deg,
+				color-mix(
+					in srgb,
+					var(--lands-green) 5%,
+					transparent
+				),
+				transparent 55%
+			);
+	}
+
+
+	.graph-label,
+	.countdown-label {
+		display:
+			block;
+
+		color:
+			var(--lands-green-dark);
+
+		font-size:
+			10px;
+
+		font-weight:
+			900;
+
+		letter-spacing:
+			.14em;
+	}
+
+
+	.graph-header h3 {
+		margin:
+			5px 0 0;
+
+		font-size:
+			16px;
+
+		letter-spacing:
+			-.02em;
+	}
+
+
+	#graph-summary {
+		max-width:
+			260px;
+
+		padding:
+			7px 10px;
+
+		border:
+			1px solid color-mix(
+				in srgb,
+				var(--lands-green) 22%,
+				var(--lands-border)
+			);
+
+		background:
+			color-mix(
+				in srgb,
+				var(--lands-green) 6%,
+				var(--lands-surface)
+			);
+
+		color:
+			var(--lands-green-dark);
+
+		font-size:
+			11px;
+
+		font-weight:
+			800;
+
+		line-height:
+			1.4;
+
+		text-align:
+			right;
+	}
+
+
+	.budget-graph {
+		height:
+			300px;
+
+		padding:
+			12px 16px 14px;
+
+		background:
+			radial-gradient(
+				circle at 82% 8%,
+				color-mix(
+					in srgb,
+					var(--lands-green) 7%,
+					transparent
+				) 0,
+				transparent 34%
+			);
+	}
+
+
+	.budget-graph svg {
+		display:
+			block;
+
+		width:
+			100%;
+
+		height:
+			100%;
+
+		overflow:
+			visible;
+	}
+
+
+	.graph-grid-line {
+		stroke:
+			var(--lands-border);
+
+		stroke-width:
+			1;
+
+		stroke-dasharray:
+			2 8;
+
+		opacity:
+			.52;
+	}
+
+
+	.graph-vertical-line {
+		stroke:
+			var(--lands-border);
+
+		stroke-width:
+			1;
+
+		stroke-dasharray:
+			2 8;
+
+		opacity:
+			.22;
+	}
+
+
+	.graph-area {
+		fill:
+			url(#lands-budget-fill);
+
+		opacity:
+			.95;
+	}
+
+
+	.graph-line {
+		fill:
+			none;
+
+		stroke:
+			var(--lands-green);
+
+		stroke-width:
+			4;
+
+		stroke-linejoin:
+			round;
+
+		stroke-linecap:
+			round;
+
+		filter:
+			drop-shadow(
+				0 2px 5px
+				rgba(90, 138, 58, .22)
+			);
+	}
+
+
+	.graph-point {
+		fill:
+			var(--lands-surface);
+
+		stroke:
+			var(--lands-green);
+
+		stroke-width:
+			3;
+
+		filter:
+			drop-shadow(
+				0 2px 4px
+				rgba(54, 68, 60, .16)
+			);
+	}
+
+
+	.graph-point-final {
+		fill:
+			var(--lands-green);
+
+		stroke:
+			var(--lands-surface);
+
+		stroke-width:
+			3;
+
+		filter:
+			drop-shadow(
+				0 2px 5px
+				rgba(54, 68, 60, .22)
+			);
+	}
+
+
+	.graph-y-label,
+	.graph-x-label,
+	.graph-value-label {
+		fill:
+			var(--lands-text-secondary);
+
+		font-family:
+			inherit;
+
+		font-variant-numeric:
+			tabular-nums;
+	}
+
+
+	.graph-y-label,
+	.graph-x-label {
+		font-size:
+			11px;
+
+		font-weight:
+			600;
+	}
+
+
+	.graph-value-label {
+		fill:
+			var(--lands-text);
+
+		font-size:
+			12px;
+
+		font-weight:
+			900;
+
+		paint-order:
+			stroke;
+
+		stroke:
+			var(--lands-surface);
+
+		stroke-width:
+			4px;
+
+		stroke-linejoin:
+			round;
+	}
+
+
+	.graph-empty {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			center;
+
+		height:
+			100%;
+
+		border:
+			1px dashed var(--lands-border);
+
+		background:
+			color-mix(
+				in srgb,
+				var(--lands-background) 55%,
+				transparent
+			);
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			12px;
+	}
+
+	/* =====================================================
+	   Countdown
+	   ===================================================== */
+
+	.countdown-card {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			space-between;
+
+		gap:
+			24px;
+
+		margin-top:
+			16px;
+
+		padding:
+			22px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-background);
+
+		box-shadow:
+			var(--lands-shadow);
+	}
+
+
+	.countdown-card h3 {
+		margin:
+			5px 0 0;
+
+		font-size:
+			18px;
+	}
+
+
+	.countdown-card p {
+		margin:
+			5px 0 0;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			12px;
+	}
+
+
+	.countdown-values {
+		display:
+			flex;
+
+		gap:
+			8px;
+	}
+
+
+	.countdown-values > div {
+		display:
+			flex;
+
+		flex-direction:
+			column;
+
+		align-items:
+			center;
+
+		justify-content:
+			center;
+
+		min-width:
+			62px;
+
+		min-height:
+			62px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-surface);
+	}
+
+
+	.countdown-values strong {
+		font-size:
+			22px;
+
+		line-height:
+			1;
+	}
+
+
+	.countdown-values span {
+		margin-top:
+			5px;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			9px;
+	}
+
+
+	/* =====================================================
+	   Reverse
+	   ===================================================== */
+
+	.reverse-panel {
+		padding:
+			24px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-surface);
+
+		box-shadow:
+			var(--lands-shadow);
+	}
+
+
+	.reverse-inputs {
+		display:
+			grid;
+
+		grid-template-columns:
+			1fr 40px 1fr;
+
+		align-items:
+			end;
+
+		gap:
+			12px;
+	}
+
+
+	.date-field label {
+		display:
+			block;
+
+		margin-bottom:
+			8px;
+
+		font-size:
+			12px;
+
+		font-weight:
+			800;
+	}
+
+
+	.date-field input {
+		width:
+			100%;
+
+		height:
+			46px;
+
+		padding:
+			0 12px;
+
+		border:
+			1px solid var(--lands-border);
+
+		border-radius:
+			0;
+
+		background:
+			var(--lands-background);
+
+		color:
+			var(--lands-text);
+
+		font-family:
+			inherit;
+
+		font-size:
+			13px;
+
+		outline:
+			none;
+	}
+
+
+	.date-field input:focus {
+		border-color:
+			var(--lands-green);
+	}
+
+
+	.date-arrow {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			center;
+
+		height:
+			46px;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			18px;
+
+		font-weight:
+			900;
+	}
+
+
+	.reverse-info {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		gap:
+			8px;
+
+		margin-top:
+			18px;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			12px;
+
+		font-weight:
+			800;
+	}
+
+
+	.reverse-result {
+		margin-top:
+			22px;
+
+		padding:
+			22px;
+
+		border:
+			1px solid var(--lands-green);
+
+		background:
+			var(--lands-background);
+	}
+
+
+	.reverse-result > span {
+		display:
+			block;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			11px;
+
+		font-weight:
+			800;
+	}
+
+
+	.reverse-result > div {
+		display:
+			flex;
+
+		align-items:
+			baseline;
+
+		gap:
+			8px;
+
+		margin-top:
+			8px;
+	}
+
+
+	.reverse-result strong {
+		font-size:
+			42px;
+
+		line-height:
+			1;
+	}
+
+
+	.reverse-result > div span {
+		font-size:
+			13px;
+
+		font-weight:
+			800;
+	}
+
+
+	.reverse-result p {
+		margin:
+			10px 0 0;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			11px;
+	}
+
+
+	/* =====================================================
+	   Rules
+	   ===================================================== */
+
+	.rules-grid {
+		display:
+			grid;
+
+		grid-template-columns:
+			repeat(4, 1fr);
+
+		gap:
+			12px;
+	}
+
+
+	.rules-card {
+		padding:
+			20px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-surface);
+	}
+
+
+	.rules-card > span {
+		display:
+			block;
+
+		color:
+			var(--lands-green);
+
+		font-size:
+			10px;
+
+		font-weight:
+			900;
+	}
+
+
+	.rules-card strong {
+		display:
+			block;
+
+		margin-top:
+			10px;
+
+		font-size:
+			14px;
+	}
+
+
+	.rules-card p {
+		margin:
+			8px 0 0;
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			11px;
+
+		line-height:
+			1.6;
+	}
+
+
+	.multiplier-table {
+		margin-top:
+			16px;
+
+		border:
+			1px solid var(--lands-border);
+
+		background:
+			var(--lands-surface);
+	}
+
+
+	.multiplier-row {
+		display:
+			grid;
+
+		grid-template-columns:
+			1fr 120px;
+
+		min-height:
+			44px;
+
+		border-bottom:
+			1px solid var(--lands-border);
+	}
+
+
+	.multiplier-row:last-child {
+		border-bottom:
+			0;
+	}
+
+
+	.multiplier-row > * {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		padding:
+			0 16px;
+
+		font-size:
+			12px;
+	}
+
+
+	.multiplier-row strong {
+		justify-content:
+			flex-end;
+
+		color:
+			var(--lands-green-dark);
+	}
+
+
+	.multiplier-header {
+		background:
+			var(--lands-background);
+
+		font-size:
+			10px;
+
+		font-weight:
+			900;
+	}
+
+
+	.multiplier-header > * {
+		font-weight:
+			900;
+	}
+
+
+	/* =====================================================
+	   Footer
+	   ===================================================== */
+
+	.tool-footer {
+		margin-top:
+			72px;
+
+		padding-top:
+			24px;
+
+		border-top:
+			1px solid var(--lands-border);
+
+		color:
+			var(--lands-text-secondary);
+
+		font-size:
+			11px;
+
+		line-height:
+			1.8;
+	}
+
+
+	.tool-footer p {
+		margin:
+			4px 0;
+	}
+
+
+	/* =====================================================
+	   Dark mode
+	   ===================================================== */
+
+	:global([data-theme="dark"]) .lands-tool,
+	:global(.dark) .lands-tool {
+
+		--lands-green:
+			#72a94d;
+
+		--lands-green-dark:
+			#4d7635;
+
+		--lands-green-light:
+			#8bc061;
+
+		--lands-stone:
+			#343b3e;
+
+		--lands-stone-dark:
+			#454e52;
+
+		--lands-blue-gray:
+			#82949a;
+
+		--lands-text:
+			#edf2ef;
+
+		--lands-text-secondary:
+			#aab7b0;
+
+		--lands-background:
+			#202629;
+
+		--lands-surface:
+			#2d3438;
+
+		--lands-border:
+			#465055;
+
+		--lands-shadow:
+			0 5px 0 rgba(0, 0, 0, .45);
+
+		--lands-shadow-hover:
+			0 7px 0 rgba(0, 0, 0, .55);
+	}
+
+
+	/* =====================================================
+	   Responsive
+	   ===================================================== */
+
+	@media (max-width: 900px) {
+
+		.cost-grid {
+			grid-template-columns:
+				repeat(2, 1fr);
+		}
+
+
+		.rules-grid {
+			grid-template-columns:
+				repeat(2, 1fr);
+		}
+
+	}
+
+
+	@media (max-width: 768px) {
+
+		.lands-tool {
+			padding:
+				32px 16px 60px;
+		}
+
+
+		.tool-header {
+			padding-bottom:
+				28px;
+		}
+
+
+		.tool-header h1 {
+			font-size:
+				34px;
+		}
+
+
+		.tool-header > p {
+			font-size:
+				13px;
+		}
+
+
+		.flow-navigation {
+			grid-template-columns:
+				repeat(2, 1fr);
+
+			margin-bottom:
+				36px;
+		}
+
+
+		.flow-navigation a:nth-child(2) {
+			border-right:
+				0;
+		}
+
+
+		.flow-navigation a:nth-child(-n + 2) {
+			border-bottom:
+				1px solid var(--lands-border);
+		}
+
+
+		.conditions-grid {
+			grid-template-columns:
+				1fr;
+		}
+
+
+		.cost-grid {
+			grid-template-columns:
+				1fr 1fr;
+		}
+
+
+		.budget-panel {
+			grid-template-columns:
+				1fr;
+		}
+
+
+		.payment-result {
+			border-left:
+				0;
+
+			border-top:
+				1px solid var(--lands-border);
+		}
+
+
+		.countdown-card {
+			flex-direction:
+				column;
+
+			align-items:
+				stretch;
+		}
+
+
+		.countdown-values {
+			width:
+				100%;
+		}
+
+
+		.countdown-values > div {
+			flex:
+				1;
+
+			min-width:
+				0;
+		}
+
+
+		.section-heading {
+			gap:
+				12px;
+		}
+
+
+		.section-number {
+			flex-basis:
+				36px;
+
+			width:
+				36px;
+
+			height:
+				36px;
+		}
+
+
+		.section-heading h2 {
+			font-size:
+				24px;
+		}
+
+	}
+
+
+	@media (max-width: 560px) {
+
+		.tool-header-top {
+			align-items:
+				flex-start;
+		}
+
+
+		.tool-header h1 {
+			font-size:
+				30px;
+		}
+
+
+		.flow-navigation {
+			grid-template-columns:
+				1fr;
+		}
+
+
+		.flow-navigation a {
+			border-right:
+				0;
+
+			border-bottom:
+				1px solid var(--lands-border);
+		}
+
+
+		.flow-navigation a:last-child {
+			border-bottom:
+				0;
+		}
+
+
+		.cost-grid {
+			grid-template-columns:
+				repeat(2, 1fr);
+			gap:
+				8px;
+		}
+
+		.cost-card {
+			min-height:
+				112px;
+			padding:
+				14px;
+		}
+
+		.cost-card strong {
+			margin:
+				8px 0;
+			font-size:
+				21px;
+		}
+
+		.cost-label {
+			font-size:
+				10px;
+		}
+
+		.cost-card > span:last-child {
+			font-size:
+				9px;
+		}
+
+
+		.rules-grid {
+			grid-template-columns:
+				1fr;
+		}
+
+
+		.reverse-inputs {
+			grid-template-columns:
+				1fr;
+		}
+
+
+		.date-arrow {
+			display:
+				none;
+		}
+
+
+		.reverse-panel {
+			padding:
+				18px;
+		}
+
+
+		.result-value strong {
+			font-size:
+				40px;
+		}
+
+
+		.reverse-result strong {
+			font-size:
+				36px;
+		}
+
+
+		.budget-graph {
+			height:
+				220px;
+
+			padding:
+				8px 6px 10px;
+		}
+
+		#graph-summary {
+			max-width:
+				170px;
+
+			padding:
+				6px 8px;
+
+			font-size:
+				10px;
+		}
+
+
+		.countdown-values {
+			gap:
+				4px;
+		}
+
+
+		.countdown-values > div {
+			min-height:
+				56px;
+		}
+
+
+		.countdown-values strong {
+			font-size:
+				18px;
+		}
+
+	}
+
+
+	/* =====================================================
+	   Reduced motion
+	   ===================================================== */
+
+	@media (prefers-reduced-motion: reduce) {
+
+		* {
+			scroll-behavior:
+				auto !important;
+
+			transition:
+				none !important;
+		}
+
+	}
+</style>
