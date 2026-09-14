@@ -8,6 +8,9 @@ const {
 	description = "Nekozouneko Unofficial Guide",
 	pagefind = false,
 } = Astro.props;
+
+const canonicalURL = Astro.url.href;
+const ogImageURL = new URL("/images/main.webp", Astro.site ?? Astro.url).href;
 ---
 
 <!doctype html>
@@ -24,6 +27,11 @@ const {
 		/>
 
 		<meta
+			name="google-site-verification"
+			content="WbVZmpTkP4iASgVxWGNg-MXozfP0z_7sg08YZdEZiL0"
+		/>
+
+		<meta
 			name="description"
 			content={description}
 		/>
@@ -34,6 +42,81 @@ const {
 		/>
 
 		<title>{title}</title>
+
+
+		<!-- ========================================
+		     Canonical
+		======================================== -->
+
+		<link
+			rel="canonical"
+			href={canonicalURL}
+		/>
+
+
+		<!-- ========================================
+		     Open Graph
+		======================================== -->
+
+		<meta
+			property="og:type"
+			content="website"
+		/>
+
+		<meta
+			property="og:locale"
+			content="ja_JP"
+		/>
+
+		<meta
+			property="og:title"
+			content={title}
+		/>
+
+		<meta
+			property="og:description"
+			content={description}
+		/>
+
+		<meta
+			property="og:url"
+			content={canonicalURL}
+		/>
+
+		<meta
+			property="og:site_name"
+			content="NUGBASE"
+		/>
+
+		<meta
+			property="og:image"
+			content={ogImageURL}
+		/>
+
+
+		<!-- ========================================
+		     X / Twitter
+		======================================== -->
+
+		<meta
+			name="twitter:card"
+			content="summary_large_image"
+		/>
+
+		<meta
+			name="twitter:title"
+			content={title}
+		/>
+
+		<meta
+			name="twitter:description"
+			content={description}
+		/>
+
+		<meta
+			name="twitter:image"
+			content={ogImageURL}
+		/>
 
 
 		<!-- ========================================
