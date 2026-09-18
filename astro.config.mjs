@@ -4,8 +4,14 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
 
+
 export default defineConfig({
 	site: 'https://nugbace.pages.dev',
+
+	// Astro Dev Toolbarを非表示にする
+	devToolbar: {
+		enabled: false,
+	},
 
 	integrations: [
 		sitemap(),
@@ -18,8 +24,7 @@ export default defineConfig({
 			],
 
 			components: {
-				Header: './src/components/StarlightHeader.astro',
-				MobileMenuToggle: './src/components/WikiSidebarToggle.astro',
+				Header: './src/components/Header.astro',
 				ThemeProvider: './src/components/NugThemeProvider.astro',
 			},
 

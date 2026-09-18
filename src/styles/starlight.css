@@ -1,1112 +1,1701 @@
-/* ========================================
-   NUGBASE × Starlight
-   Ultra Modern / Minimal / Refined
-======================================== */
+/* =========================================================
+   NUGBASE Starlight
+   Minecraft-inspired × NUGBASE Original UI
+   ---------------------------------------------------------
+   Starlight-only visual system.
+
+   IMPORTANT
+   - Normal Astro pages use: src/styles/global.css
+   - Wiki pages use: src/styles/starlight.css
+   - This file intentionally does NOT style the old
+     Starlight mobile-menu-toggle.
+   - The Wiki header is NUGBASE's own Header.astro.
+   - The Starlight-generated page title is intentionally kept.
+     Do not add a second "# Title" in Markdown.
+========================================================= */
 
 
-/* ========================================
-   01. Design Tokens
-======================================== */
+/* =========================================================
+   00. FOUNDATION
+========================================================= */
 
 :root {
-
-	/* Backgrounds & Surfaces */
-
-	--nug-background: #ffffff;
-	--nug-surface: #f6f6f8;
-	--nug-surface-hover: #eeeeef;
-	--nug-surface-subtle: #fafafa;
-	--nug-glass: rgba(255, 255, 255, 0.75);
-
-
-	/* Text Colors */
-
-	--nug-text: #0f172a;
-	--nug-text-secondary: #475569;
-	--nug-text-tertiary: #94a3b8;
-
-
-	/* Subtle Borders */
-
-	--nug-border: rgba(15, 23, 42, 0.08);
-	--nug-border-strong: rgba(15, 23, 42, 0.16);
-	--nug-border-glass: rgba(255, 255, 255, 0.6);
-
-
-	/* Vibrant Accent & Glows */
-
-	--nug-accent: #2563eb;
-	--nug-accent-hover: #1d4ed8;
-	--nug-accent-soft: rgba(37, 99, 235, 0.08);
-	--nug-accent-glow: rgba(37, 99, 235, 0.25);
-
-
-	/* Callouts / Semantics */
-
-	--nug-note: #2563eb;
-	--nug-note-bg: rgba(37, 99, 235, 0.05);
-
-	--nug-tip: #9333ea;
-	--nug-tip-bg: rgba(147, 51, 234, 0.05);
-
-	--nug-caution: #d97706;
-	--nug-caution-bg: rgba(217, 119, 6, 0.05);
-
-	--nug-danger: #dc2626;
-	--nug-danger-bg: rgba(220, 38, 38, 0.05);
-
-
-	/* Modern Radius Token Scale */
-
-	--nug-radius-xs: 6px;
-	--nug-radius-sm: 10px;
-	--nug-radius-md: 14px;
-	--nug-radius-lg: 20px;
-	--nug-radius-pill: 9999px;
-
-
-	/* Layout & Shadows */
-
-	--nug-content-width: 1200px;
-
-	--nug-shadow-sm:
-		0 1px 2px 0 rgba(0, 0, 0, 0.05);
-
-	--nug-shadow-md:
-		0 4px 12px -2px rgba(0, 0, 0, 0.08),
-		0 2px 6px -1px rgba(0, 0, 0, 0.04);
-
-	--nug-shadow-lg:
-		0 12px 32px -4px rgba(0, 0, 0, 0.12),
-		0 4px 12px -2px rgba(0, 0, 0, 0.04);
-
-
 	/* Typography */
-
-	--nug-font:
-		"Inter Variable",
+	--font-sans:
 		-apple-system,
 		BlinkMacSystemFont,
-		"SF Pro Display",
-		"SF Pro Text",
-		"Hiragino Sans",
+		"Segoe UI",
 		"Noto Sans JP",
+		"Helvetica Neue",
+		Arial,
 		sans-serif;
 
-	--nug-mono:
-		"JetBrains Mono Variable",
-		ui-monospace,
-		SFMono-Regular,
-		"SF Mono",
-		Menlo,
-		Consolas,
+	--font-display:
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		"Noto Sans JP",
+		"Helvetica Neue",
+		Arial,
+		sans-serif;
+
+	--font-mono:
+		"SFMono-Regular",
+		"JetBrains Mono",
+		"Consolas",
+		"Menlo",
 		monospace;
-}
 
+	/* Spacing: 8px base grid */
+	--space-1: 4px;
+	--space-2: 8px;
+	--space-3: 12px;
+	--space-4: 16px;
+	--space-5: 20px;
+	--space-6: 24px;
+	--space-8: 32px;
+	--space-10: 40px;
+	--space-12: 48px;
+	--space-16: 64px;
+	--space-20: 80px;
+	--space-24: 96px;
 
-/* ========================================
-   02. Dark Mode
-   Deep OLED Charcoal
-======================================== */
+	/* World palette */
+	--color-grass: #5f9f3a;
+	--color-grass-dark: #477d2b;
+	--color-grass-light: #8ac95a;
 
-:root[data-theme='dark'] {
+	--color-dirt: #8b5e3c;
+	--color-dirt-dark: #68452d;
 
-	--nug-background: #0b0b0e;
-	--nug-surface: #141418;
-	--nug-surface-hover: #1f1f24;
-	--nug-surface-subtle: #101014;
-	--nug-glass: rgba(11, 11, 14, 0.75);
+	--color-stone: #73777b;
+	--color-stone-dark: #4d5256;
 
-	--nug-text: #f8fafc;
-	--nug-text-secondary: #94a3b8;
-	--nug-text-tertiary: #64748b;
+	--color-water: #3f8fc4;
+	--color-water-dark: #286c9a;
 
-	--nug-border: rgba(255, 255, 255, 0.08);
-	--nug-border-strong: rgba(255, 255, 255, 0.18);
-	--nug-border-glass: rgba(255, 255, 255, 0.05);
+	--color-sky: #63b3df;
 
-	--nug-accent: #3b82f6;
-	--nug-accent-hover: #60a5fa;
-	--nug-accent-soft: rgba(59, 130, 246, 0.15);
-	--nug-accent-glow: rgba(59, 130, 246, 0.35);
+	--color-gold: #d9a441;
+	--color-gold-light: #efc45d;
 
-	--nug-note: #3b82f6;
-	--nug-note-bg: rgba(59, 130, 246, 0.1);
+	/* Light theme */
+	--color-background: #eef2f3;
+	--color-background-deep: #e1e7e9;
 
-	--nug-tip: #a855f7;
-	--nug-tip-bg: rgba(168, 85, 247, 0.1);
+	--color-surface: #ffffff;
+	--color-surface-hover: #f5f8f8;
+	--color-surface-subtle: #e9eef0;
+	--color-surface-strong: #dce3e5;
 
-	--nug-caution: #f59e0b;
-	--nug-caution-bg: rgba(245, 158, 11, 0.1);
+	--color-text: #202521;
+	--color-text-secondary: #58615b;
+	--color-text-tertiary: #747d77;
+	--color-text-inverse: #ffffff;
 
-	--nug-danger: #ef4444;
-	--nug-danger-bg: rgba(239, 68, 68, 0.1);
+	--color-border: #cfd7d9;
+	--color-border-strong: #abb7bb;
+	--color-border-accent: rgba(95, 159, 58, 0.45);
 
-	--nug-shadow-sm:
-		0 1px 2px 0 rgba(0, 0, 0, 0.4);
+	--color-accent: #4f8f32;
+	--color-accent-hover: #3f7627;
+	--color-accent-soft: rgba(79, 143, 50, 0.10);
 
-	--nug-shadow-md:
-		0 6px 16px -2px rgba(0, 0, 0, 0.5);
+	/* Semantic colors */
+	--color-info: #3f8fc4;
+	--color-info-soft: rgba(63, 143, 196, 0.10);
 
-	--nug-shadow-lg:
-		0 16px 36px -4px rgba(0, 0, 0, 0.6);
-}
+	--color-success: #5f9f3a;
+	--color-success-soft: rgba(95, 159, 58, 0.10);
 
+	--color-warning: #c8902e;
+	--color-warning-soft: rgba(200, 144, 46, 0.12);
 
-/* ========================================
-   03. Starlight Custom Overrides
-======================================== */
+	--color-danger: #bd5144;
+	--color-danger-soft: rgba(189, 81, 68, 0.10);
 
-:root {
+	--color-tip: #8b5cf6;
+	--color-tip-soft: rgba(139, 92, 246, 0.10);
+	--color-tip-strong: #6d3fd1;
 
+	/* Atmosphere */
+	--color-sky-atmosphere: rgba(99, 179, 223, 0.12);
+	--color-sunlight: rgba(255, 247, 214, 0.75);
+	--color-overlay: rgba(17, 23, 22, 0.38);
+
+	--world-background-position: center center;
+	--world-background-size: cover;
+	--world-background-overlay: rgba(238, 242, 243, 0.34);
+
+	--light-angle: 135deg;
+	--light-highlight: rgba(255, 247, 214, 0.72);
+
+	/* Shadows */
+	--color-shadow: rgba(35, 49, 42, 0.16);
+	--color-shadow-strong: rgba(25, 34, 30, 0.25);
+
+	--shadow-soft: 0 8px 24px rgba(35, 49, 42, 0.10);
+	--shadow-medium: 0 8px 20px rgba(35, 49, 42, 0.14);
+	--shadow-deep: 8px 8px 0 rgba(35, 49, 42, 0.18);
+
+	/* Block geometry */
+	--block-shadow: 0 3px 0 var(--color-border-strong);
+	--block-shadow-hover: 0 5px 0 var(--color-border-strong);
+	--block-shadow-active: 0 1px 0 var(--color-border-strong);
+
+	--border-width: 1px;
+	--border-width-strong: 2px;
+
+	--radius-small: 0px;
+	--radius-medium: 0px;
+	--radius-large: 0px;
+	--radius-pill: 0px;
+
+	/* Motion */
+	--transition-fast: 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+	--transition-normal: 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+	/* Starlight layout */
 	--sl-nav-height: 64px;
 	--sl-nav-pad-x: 24px;
-	--sl-menu-button-size: 38px;
+	--sl-sidebar-width: 18rem;
+	--sl-content-width: 48rem;
 
-	--sl-color-accent-low: var(--nug-accent-soft);
-	--sl-color-accent: var(--nug-accent);
-	--sl-color-accent-high: var(--nug-accent-hover);
+	/* Starlight color bridge */
+	--sl-color-bg: var(--color-background);
+	--sl-color-bg-nav: var(--color-surface);
+	--sl-color-bg-sidebar: var(--color-surface);
 
-	--sl-color-white: var(--nug-text);
-	--sl-color-gray-1: var(--nug-text-secondary);
-	--sl-color-gray-2: var(--nug-text-tertiary);
-	--sl-color-gray-5: var(--nug-border);
-	--sl-color-gray-6: var(--nug-surface);
-	--sl-color-black: var(--nug-background);
+	--sl-color-text: var(--color-text);
+	--sl-color-text-accent: var(--color-accent);
 
-	--sl-font: var(--nug-font);
-	--sl-font-mono: var(--nug-mono);
+	--sl-color-accent-low: var(--color-accent-soft);
+	--sl-color-accent: var(--color-accent);
+	--sl-color-accent-high: var(--color-accent-hover);
+
+	--sl-color-white: #ffffff;
+	--sl-color-gray-1: var(--color-text);
+	--sl-color-gray-2: var(--color-text-secondary);
+	--sl-color-gray-3: var(--color-text-tertiary);
+	--sl-color-gray-4: var(--color-border-strong);
+	--sl-color-gray-5: var(--color-border);
+	--sl-color-gray-6: var(--color-surface-subtle);
+	--sl-color-black: var(--color-background);
+	--sl-color-hairline: var(--color-border);
+
+	--sl-font: var(--font-sans);
+	--sl-font-mono: var(--font-mono);
+
+	/* Starlight semantic aliases */
+	--sl-color-blue-low: var(--color-info-soft);
+	--sl-color-blue: var(--color-info);
+	--sl-color-blue-high: var(--color-water-dark);
+
+	--sl-color-purple-low: var(--color-tip-soft);
+	--sl-color-purple: var(--color-tip);
+	--sl-color-purple-high: var(--color-tip-strong);
+
+	--sl-color-orange-low: var(--color-warning-soft);
+	--sl-color-orange: var(--color-warning);
+	--sl-color-orange-high: #9d6e18;
+
+	--sl-color-red-low: var(--color-danger-soft);
+	--sl-color-red: var(--color-danger);
+	--sl-color-red-high: #963b31;
 }
 
 
-/* ========================================
-   04. Base Styles & Custom Scrollbar
-======================================== */
+/* =========================================================
+   01. DARK THEME
+========================================================= */
 
-html {
+html[data-theme="dark"] {
+	--color-background: #111416;
+	--color-background-deep: #0b0e10;
 
-	font-family: var(--nug-font);
+	--color-surface: #292e32;
+	--color-surface-hover: #343a3f;
+	--color-surface-subtle: #202529;
+	--color-surface-strong: #3b4247;
 
-	scroll-behavior: smooth;
+	--color-text: #f1f4f2;
+	--color-text-secondary: #b2bbb7;
+	--color-text-tertiary: #858f8b;
+	--color-text-inverse: #111416;
 
-	-webkit-tap-highlight-color: transparent;
+	--color-border: rgba(228, 238, 232, 0.13);
+	--color-border-strong: rgba(228, 238, 232, 0.24);
+	--color-border-accent: rgba(138, 201, 90, 0.42);
+
+	--color-accent: #82bd50;
+	--color-accent-hover: #9bd76a;
+	--color-accent-soft: rgba(130, 189, 80, 0.14);
+
+	--color-info: #67b5e3;
+	--color-info-soft: rgba(103, 181, 227, 0.14);
+
+	--color-success: #82bd50;
+	--color-success-soft: rgba(130, 189, 80, 0.14);
+
+	--color-warning: #e0b34d;
+	--color-warning-soft: rgba(224, 179, 77, 0.15);
+
+	--color-danger: #df7668;
+	--color-danger-soft: rgba(223, 118, 104, 0.14);
+
+	--color-tip: #a78bfa;
+	--color-tip-soft: rgba(167, 139, 250, 0.14);
+	--color-tip-strong: #c0adff;
+
+	--color-sky-atmosphere: rgba(80, 145, 183, 0.12);
+	--color-sunlight: rgba(255, 247, 214, 0.18);
+	--color-overlay: rgba(0, 0, 0, 0.66);
+
+	--world-background-overlay: rgba(8, 11, 13, 0.58);
+	--light-highlight: rgba(255, 247, 214, 0.20);
+
+	--color-shadow: rgba(0, 0, 0, 0.42);
+	--color-shadow-strong: rgba(0, 0, 0, 0.62);
+
+	--shadow-soft: 0 8px 28px rgba(0, 0, 0, 0.26);
+	--shadow-medium: 0 10px 24px rgba(0, 0, 0, 0.34);
+	--shadow-deep: 8px 8px 0 rgba(0, 0, 0, 0.48);
+
+	--block-shadow: 0 3px 0 rgba(0, 0, 0, 0.42);
+	--block-shadow-hover: 0 5px 0 rgba(0, 0, 0, 0.54);
+	--block-shadow-active: 0 1px 0 rgba(0, 0, 0, 0.46);
+
+	--sl-color-bg: var(--color-background);
+	--sl-color-bg-nav: var(--color-surface);
+	--sl-color-bg-sidebar: var(--color-surface);
+
+	--sl-color-text: var(--color-text);
+	--sl-color-text-accent: var(--color-accent);
+
+	--sl-color-accent-low: var(--color-accent-soft);
+	--sl-color-accent: var(--color-accent);
+	--sl-color-accent-high: var(--color-accent-hover);
+
+	--sl-color-white: #f4f7f5;
+	--sl-color-gray-1: var(--color-text);
+	--sl-color-gray-2: var(--color-text-secondary);
+	--sl-color-gray-3: var(--color-text-tertiary);
+	--sl-color-gray-4: var(--color-border-strong);
+	--sl-color-gray-5: var(--color-border);
+	--sl-color-gray-6: var(--color-surface-subtle);
+	--sl-color-black: var(--color-background);
+	--sl-color-hairline: var(--color-border);
+
+	--sl-color-blue-low: var(--color-info-soft);
+	--sl-color-blue: var(--color-info);
+	--sl-color-blue-high: #8cccf0;
+
+	--sl-color-purple-low: var(--color-tip-soft);
+	--sl-color-purple: var(--color-tip);
+	--sl-color-purple-high: var(--color-tip-strong);
+
+	--sl-color-orange-low: var(--color-warning-soft);
+	--sl-color-orange: var(--color-warning);
+	--sl-color-orange-high: #f0c96a;
+
+	--sl-color-red-low: var(--color-danger-soft);
+	--sl-color-red: var(--color-danger);
+	--sl-color-red-high: #ef9285;
 }
 
 
-body {
+/* =========================================================
+   02. WIKI WORLD / PAGE BACKGROUND
+========================================================= */
 
+html:has(.sl-markdown-content) {
+	background: var(--color-background);
+}
+
+body:has(.sl-markdown-content) {
+	position: relative;
+	min-height: 100vh;
 	margin: 0;
-
-	background: var(--nug-background);
-	color: var(--nug-text);
-
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-
-	text-rendering: optimizeLegibility;
+	background-color: var(--color-background);
+	background-image:
+		linear-gradient(
+			180deg,
+			var(--world-background-overlay),
+			transparent 28%,
+			transparent 72%,
+			var(--world-background-overlay)
+		),
+		linear-gradient(
+			var(--light-angle),
+			var(--color-sunlight),
+			transparent 30%
+		),
+		var(--world-background);
+	background-position:
+		center,
+		center,
+		var(--world-background-position);
+	background-size:
+		auto,
+		auto,
+		var(--world-background-size);
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	color: var(--color-text);
+	font-family: var(--font-sans);
 }
 
-
-/* Slick Custom Scrollbars */
-
-::-webkit-scrollbar {
-
-	width: 6px;
-	height: 6px;
-}
-
-
-::-webkit-scrollbar-track {
-
-	background: transparent;
-}
-
-
-::-webkit-scrollbar-thumb {
-
-	background: var(--nug-border-strong);
-
-	border-radius: var(--nug-radius-pill);
-}
-
-
-::-webkit-scrollbar-thumb:hover {
-
-	background: var(--nug-text-tertiary);
-}
-
-
-/* Focused Element Standard */
-
-:focus-visible {
-
-	outline: 2px solid var(--nug-accent);
-	outline-offset: 2px;
-
-	border-radius: var(--nug-radius-xs);
-}
-
-
-/* ========================================
-   05. Glassmorphic Sticky Header
-======================================== */
-
-header.header {
-
-	height: var(--sl-nav-height);
-
-	padding: 0;
-
-	border-bottom: 1px solid var(--nug-border);
-
-	background: var(--nug-glass);
-
-	backdrop-filter:
-		blur(16px)
-		saturate(180%);
-
-	-webkit-backdrop-filter:
-		blur(16px)
-		saturate(180%);
-
-	position: sticky;
-
-	top: 0;
-
-	z-index: 100;
-
-	transition:
-		border-color 200ms ease;
-}
-
-
-header.header > div {
-
-	width:
-		min(
-			var(--nug-content-width),
-			calc(100% - 48px)
-		);
-
-	max-width: var(--nug-content-width);
-
-	margin: 0 auto;
-}
-
-
-/* Site Logo / Title */
-
-.site-title {
-
-	font-family: var(--nug-font);
-
-	font-size: 18px;
-
-	font-weight: 700;
-
-	letter-spacing: -0.03em;
-
-	color: var(--nug-text);
-
-	transition:
-		opacity 150ms ease,
-		transform 150ms ease;
-}
-
-
-.site-title:hover {
-
-	opacity: 0.8;
-
-	transform: translateY(-0.5px);
-}
-
-
-/* ========================================
-   06. Header Nav & Interactive Buttons
-======================================== */
-
-header.header nav a {
-
-	display: flex;
-
-	align-items: center;
-
-	min-height: 36px;
-
-	padding: 0 14px;
-
-	border-radius: var(--nug-radius-pill);
-
-	font-size: 13.5px;
-
-	font-weight: 500;
-
-	color: var(--nug-text-secondary);
-
-	transition:
-		all 150ms cubic-bezier(
-			0.16,
-			1,
-			0.3,
-			1
+body:has(.sl-markdown-content)::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background:
+		radial-gradient(
+			ellipse at 18% 20%,
+			var(--color-sky-atmosphere),
+			transparent 38%
+		),
+		linear-gradient(
+			180deg,
+			transparent 55%,
+			rgba(255, 255, 255, 0.08) 100%
 		);
 }
 
-
-header.header nav a:hover {
-
-	color: var(--nug-text);
-
-	background: var(--nug-surface);
-}
-
-
-header.header nav a[aria-current='page'] {
-
-	color: var(--nug-text);
-
-	font-weight: 600;
-
-	background: var(--nug-surface);
-
-	box-shadow:
-		inset 0 0 0 1px var(--nug-border);
-}
-
-
-header.header button {
-
-	width: 36px;
-
-	height: 36px;
-
-	border: 0;
-
-	border-radius: var(--nug-radius-sm);
-
-	background: transparent;
-
-	color: var(--nug-text-secondary);
-
-	transition:
-		all 150ms ease;
-}
-
-
-header.header button:hover {
-
-	background: var(--nug-surface);
-
-	color: var(--nug-text);
-}
-
-
-/* ========================================
-   07. Sidebar
-======================================== */
-
-.sidebar {
-
-	border-right: 1px solid var(--nug-border);
-
-	background: var(--nug-background);
-}
-
-
-.sidebar-content {
-
-	padding: 24px 16px;
-}
-
-
-.sidebar a {
-
-	padding: 8px 12px;
-
-	border-radius: var(--nug-radius-sm);
-
-	font-size: 13.5px;
-
-	color: var(--nug-text-secondary);
-
-	transition:
-		all 150ms cubic-bezier(
-			0.16,
-			1,
-			0.3,
-			1
+html[data-theme="dark"] body:has(.sl-markdown-content)::before {
+	background:
+		radial-gradient(
+			ellipse at 18% 20%,
+			var(--color-sky-atmosphere),
+			transparent 38%
+		),
+		linear-gradient(
+			135deg,
+			var(--light-highlight),
+			transparent 30%
 		);
 }
 
-
-.sidebar a:hover {
-
-	background: var(--nug-surface);
-
-	color: var(--nug-text);
-
-	transform: translateX(2px);
+body:has(.sl-markdown-content)::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background:
+		linear-gradient(
+			135deg,
+			var(--light-highlight),
+			transparent 32%
+		);
+	opacity: 0.45;
 }
 
 
-.sidebar a[aria-current='page'] {
+/* =========================================================
+   03. STARLIGHT SHELL
+========================================================= */
 
-	background: var(--nug-accent-soft);
+/*
+   Header.astro replaces Starlight's visual header.
+   Keep the outer Starlight shell transparent so that the
+   NUGBASE header remains the single header UI.
+*/
 
-	color: var(--nug-accent);
+.header:has(.site-header) {
+	min-height: 0 !important;
+	padding: 0 !important;
+	background: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
+}
 
-	font-weight: 600;
+.header:has(.site-header) > * {
+	margin: 0;
+}
+
+.main-frame,
+.main-pane,
+.content-panel,
+.right-sidebar-container {
+	background: transparent !important;
+	color: var(--color-text);
+}
+
+.main-pane {
+	min-width: 0;
+}
+
+.content-panel {
+	min-width: 0;
 }
 
 
-/* ========================================
-   08. Main Content & Markdown
-======================================== */
+/* =========================================================
+   04. NUGBASE HEADER BRIDGE
+========================================================= */
+
+.site-header {
+	color: var(--color-text);
+	font-family: var(--font-sans);
+}
+
+.site-header a,
+.site-header button {
+	font-family: var(--font-sans);
+}
+
+.site-header a {
+	color: var(--color-text);
+}
+
+.site-header button {
+	border-radius: 0 !important;
+}
+
+/*
+ * The custom NUGBASE header owns the mobile controls.
+ * Starlight still injects its separate sidebar toggle from PageFrame,
+ * which otherwise appears as a second fixed button in the top-right.
+ */
+starlight-menu-button {
+	display: none !important;
+}
+
+
+/* =========================================================
+   05. MARKDOWN CONTENT
+========================================================= */
 
 .sl-markdown-content {
+	position: relative;
+	width: 100%;
+	max-width: var(--sl-content-width);
+	min-width: 0;
+	color: var(--color-text);
+	font-family: var(--font-sans);
+	font-size: 16px;
+	line-height: 1.75;
+}
 
-	max-width: 760px;
+.sl-markdown-content p {
+	color: var(--color-text);
+}
 
-	font-family: var(--nug-font);
+.sl-markdown-content strong {
+	color: var(--color-text);
+	font-weight: 800;
+}
 
-	font-size: 15.5px;
+.sl-markdown-content em {
+	color: var(--color-text-secondary);
+}
 
-	line-height: 1.8;
-
-	color: var(--nug-text);
+.sl-markdown-content small {
+	color: var(--color-text-tertiary);
 }
 
 
-/* Headings Styling */
+/* =========================================================
+   06. GENERATED PAGE TITLE + HEADINGS
+========================================================= */
+
+/*
+   Starlight automatically renders the frontmatter title.
+   Therefore Wiki Markdown files should normally contain:
+   ---
+   title: "..."
+   ---
+   and NOT another "# ..." immediately below it.
+*/
+
+.main-pane > .content-panel:first-child {
+	background: transparent !important;
+}
+
+.main-pane > .content-panel:first-child > .sl-container > h1 {
+	margin: var(--space-10) 0 var(--space-6);
+	color: var(--color-text);
+	font-family: var(--font-display);
+	font-size: clamp(32px, 5vw, 48px);
+	font-weight: 800;
+	line-height: 1.2;
+	letter-spacing: -0.025em;
+	scroll-margin-top: calc(var(--sl-nav-height) + var(--space-6));
+}
 
 .sl-markdown-content h1,
 .sl-markdown-content h2,
 .sl-markdown-content h3,
-.sl-markdown-content h4 {
-
-	color: var(--nug-text);
-
-	font-weight: 700;
-
+.sl-markdown-content h4,
+.sl-markdown-content h5,
+.sl-markdown-content h6 {
+	color: var(--color-text);
+	font-family: var(--font-display);
+	font-weight: 800;
 	letter-spacing: -0.025em;
-
-	text-wrap: balance;
+	line-height: 1.3;
+	scroll-margin-top: calc(var(--sl-nav-height) + var(--space-6));
 }
-
 
 .sl-markdown-content h1 {
-
-	margin-top: 0;
-
-	margin-bottom: 24px;
-
-	font-size: 38px;
-
-	line-height: 1.15;
-
-	letter-spacing: -0.035em;
+	margin-bottom: var(--space-6);
+	font-size: clamp(32px, 5vw, 48px);
+	line-height: 1.2;
 }
-
-
-/* H2: Left accent indicator style */
 
 .sl-markdown-content h2 {
-
+	position: relative;
 	display: flex;
-
 	align-items: center;
-
-	gap: 12px;
-
-	margin-top: 56px;
-
-	margin-bottom: 20px;
-
-	padding-bottom: 0;
-
-	font-size: 24px;
-
-	line-height: 1.3;
-
-	border-bottom: 0;
+	gap: var(--space-3);
+	margin-top: var(--space-12);
+	margin-bottom: var(--space-4);
+	padding: var(--space-1) 0;
+	border: 0;
+	font-size: clamp(24px, 3vw, 34px);
 }
-
 
 .sl-markdown-content h2::before {
-
 	content: "";
-
-	display: inline-block;
-
-	width: 4px;
-
-	height: 1em;
-
-	border-radius: var(--nug-radius-pill);
-
-	background: var(--nug-accent);
+	display: block;
+	flex: 0 0 6px;
+	width: 6px;
+	height: 1.1em;
+	background:
+		linear-gradient(
+			180deg,
+			var(--color-gold-light) 0%,
+			var(--color-gold) 42%,
+			var(--color-grass) 100%
+		);
+	box-shadow: 2px 2px 0 var(--color-border-strong);
 }
-
 
 .sl-markdown-content h3 {
+	position: relative;
+	margin-top: var(--space-8);
+	padding-left: var(--space-3);
+	font-size: clamp(20px, 2.5vw, 26px);
+}
 
-	margin-top: 36px;
+.sl-markdown-content h3::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.25em;
+	width: 3px;
+	height: 0.9em;
+	background: var(--color-grass);
+}
 
-	margin-bottom: 14px;
+.sl-markdown-content h4 {
+	font-size: 20px;
+}
 
-	font-size: 19px;
+.sl-markdown-content h5,
+.sl-markdown-content h6 {
+	color: var(--color-text-secondary);
+}
 
-	line-height: 1.4;
+.sl-markdown-content .sl-anchor-link {
+	color: var(--color-text-tertiary);
+	transition: color var(--transition-fast);
+}
+
+.sl-markdown-content .sl-anchor-link:hover {
+	color: var(--color-accent);
 }
 
 
-/* ========================================
-   09. Inline Code & Code Blocks
-======================================== */
+/* =========================================================
+   07. LINKS
+========================================================= */
 
-/* Inline Code */
+.sl-markdown-content a {
+	color: var(--color-accent);
+	text-decoration-color: color-mix(
+		in srgb,
+		var(--color-accent) 55%,
+		transparent
+	);
+	text-underline-offset: 3px;
+	transition:
+		color var(--transition-fast),
+		background-color var(--transition-fast);
+}
+
+.sl-markdown-content a:hover {
+	color: var(--color-accent-hover);
+	background: var(--color-accent-soft);
+}
+
+
+/* =========================================================
+   08. LISTS
+========================================================= */
+
+.sl-markdown-content ul,
+.sl-markdown-content ol {
+	padding-left: var(--space-8);
+}
+
+.sl-markdown-content li {
+	color: var(--color-text);
+}
+
+.sl-markdown-content li::marker {
+	color: var(--color-accent);
+	font-weight: 800;
+}
+
+.sl-markdown-content li + li {
+	margin-top: 2px;
+}
+
+
+/* =========================================================
+   09. INLINE CODE
+========================================================= */
 
 .sl-markdown-content :not(pre) > code {
-
-	display: inline-block;
-
-	padding: 0.15em 0.45em;
-
-	border: 1px solid var(--nug-border);
-
-	border-radius: var(--nug-radius-xs);
-
-	background: var(--nug-surface);
-
-	color: var(--nug-text);
-
-	font-family: var(--nug-mono);
-
-	font-size: 0.85em;
-
-	line-height: 1.45;
+	padding: 2px 6px;
+	border: 1px solid var(--color-border);
+	border-radius: 0 !important;
+	background: var(--color-surface-subtle);
+	color: var(--color-accent);
+	font-family: var(--font-mono);
+	font-size: 0.9em;
+	box-shadow: inset 0 2px 0 var(--color-surface-strong);
 }
 
 
-/* Code Blocks */
+/* =========================================================
+   10. CODE BLOCKS
+========================================================= */
+
+.sl-markdown-content pre,
+.sl-markdown-content .expressive-code {
+	overflow-x: auto;
+	margin: var(--space-6) 0;
+	border-radius: 0 !important;
+}
+
+.sl-markdown-content .expressive-code {
+	border: 1px solid var(--color-stone-dark);
+	background:
+		linear-gradient(
+			135deg,
+			#202522,
+			#161a18
+		);
+	box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.28);
+}
 
 .sl-markdown-content pre {
-
-	margin: 28px 0;
-
-	border: 1px solid var(--nug-border);
-
-	border-radius: var(--nug-radius-md);
-
-	background: var(--nug-surface-subtle) !important;
-
-	box-shadow: var(--nug-shadow-sm);
-
-	transition:
-		border-color 200ms ease;
+	border: 1px solid var(--color-stone-dark);
+	background:
+		linear-gradient(
+			135deg,
+			#202522,
+			#161a18
+		) !important;
+	color: #f1f5ef;
+	box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.28);
 }
 
-
-.sl-markdown-content pre:hover {
-
-	border-color: var(--nug-border-strong);
+html[data-theme="dark"] .sl-markdown-content pre {
+	background:
+		linear-gradient(
+			135deg,
+			#171b19,
+			#101311
+		) !important;
+	color: #edf2ee;
 }
-
 
 .sl-markdown-content pre code {
+	background: transparent !important;
+	color: inherit;
+	font-family: var(--font-mono);
+}
 
-	font-family: var(--nug-mono);
+.sl-markdown-content .copy,
+.expressive-code .copy {
+	border: 1px solid var(--color-border-strong);
+	border-radius: 0 !important;
+	background: var(--color-surface) !important;
+	color: var(--color-text);
+	box-shadow: var(--block-shadow);
+}
 
-	font-size: 0.875em;
+.sl-markdown-content .copy:hover,
+.expressive-code .copy:hover {
+	background: var(--color-surface-hover) !important;
+	border-color: var(--color-accent);
+	color: var(--color-accent);
+	transform: translateY(-1px);
+}
 
-	line-height: 1.7;
+.sl-markdown-content .copy:active,
+.expressive-code .copy:active {
+	transform: translateY(1px);
 }
 
 
-/* ========================================
-   10. Tables & Blockquotes
-======================================== */
+/* =========================================================
+   11. TABLES
+   ---------------------------------------------------------
+   Keep the TABLE formatting context intact.
+   This is important: thead/tbody/tfoot are NOT changed to
+   independent display: table elements, so columns remain
+   aligned on mobile.
+========================================================= */
 
 .sl-markdown-content table {
-
-	width: 100%;
-
-	margin: 32px 0;
-
-	border: 1px solid var(--nug-border);
-
-	border-radius: var(--nug-radius-md);
-
+	width: max-content;
+	min-width: 0;
+	max-width: 100%;
+	margin: var(--space-6) 0;
+	border: 1px solid var(--color-border);
+	border-radius: 0 !important;
 	border-collapse: separate;
-
 	border-spacing: 0;
-
-	overflow: hidden;
-
-	box-shadow: var(--nug-shadow-sm);
+	background: var(--color-surface);
+	color: var(--color-text);
+	box-shadow: var(--block-shadow);
 }
-
-
-.sl-markdown-content th {
-
-	background: var(--nug-surface);
-
-	color: var(--nug-text);
-
-	font-weight: 600;
-
-	font-size: 14px;
-
-	text-align: left;
-}
-
 
 .sl-markdown-content th,
 .sl-markdown-content td {
-
-	padding: 12px 18px;
-
-	border-bottom: 1px solid var(--nug-border);
+	padding: 12px 16px;
+	border-right: 1px solid var(--color-border);
+	border-bottom: 1px solid var(--color-border);
+	text-align: left;
+	vertical-align: top;
+	line-height: 1.55;
+	overflow-wrap: break-word;
 }
 
+.sl-markdown-content th:last-child,
+.sl-markdown-content td:last-child {
+	border-right: 0;
+}
+
+.sl-markdown-content th {
+	background:
+		linear-gradient(
+			180deg,
+			var(--color-surface-strong),
+			var(--color-surface-subtle)
+		);
+	color: var(--color-text);
+	font-weight: 800;
+	white-space: nowrap;
+}
+
+.sl-markdown-content td {
+	color: var(--color-text-secondary);
+}
 
 .sl-markdown-content tr:last-child td {
-
 	border-bottom: 0;
 }
 
+.sl-markdown-content tbody tr {
+	transition: background-color var(--transition-fast);
+}
 
-/* Blockquote */
+.sl-markdown-content tbody tr:hover {
+	background: var(--color-surface-hover);
+}
+
+.sl-markdown-content td code,
+.sl-markdown-content th code {
+	white-space: nowrap;
+}
+
+
+/* =========================================================
+   12. BLOCKQUOTE
+========================================================= */
 
 .sl-markdown-content blockquote {
+	margin: var(--space-6) 0;
+	padding: var(--space-4) var(--space-5);
+	border: 1px solid var(--color-border);
+	border-left: 4px solid var(--color-accent);
+	border-radius: 0 !important;
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-accent-soft),
+			var(--color-surface)
+		);
+	color: var(--color-text-secondary);
+	box-shadow: 2px 3px 0 var(--color-border);
+}
 
-	margin: 32px 0;
-
-	padding: 18px 22px;
-
-	border: 1px solid var(--nug-border);
-
-	border-left: 3px solid var(--nug-accent);
-
-	border-radius:
-		0
-		var(--nug-radius-md)
-		var(--nug-radius-md)
-		0;
-
-	background: var(--nug-surface-subtle);
-
-	color: var(--nug-text-secondary);
+.sl-markdown-content blockquote p {
+	color: inherit;
 }
 
 
-/* ========================================
-   11. Callouts & Starlight Asides
-======================================== */
+/* =========================================================
+   13. HORIZONTAL RULE
+========================================================= */
+
+.sl-markdown-content hr {
+	margin: var(--space-8) 0;
+	border: 0;
+	border-top: 1px solid var(--color-border-strong);
+}
+
+
+/* =========================================================
+   14. STARLIGHT ASIDES
+   note = blue
+   tip = purple
+   caution = gold
+   danger = red
+========================================================= */
 
 .sl-markdown-content .starlight-aside {
-
-	margin: 28px 0;
-
-	padding: 18px 22px;
-
-	border: 1px solid var(--nug-border);
-
-	border-left-width: 4px;
-
-	border-radius: var(--nug-radius-md);
-
-	box-shadow: var(--nug-shadow-sm);
-
+	position: relative;
+	margin: var(--space-6) 0;
+	padding: var(--space-5);
+	border: 1px solid var(--color-border);
+	border-left-width: 5px;
+	border-radius: 0 !important;
+	background: var(--color-surface);
+	color: var(--color-text);
+	box-shadow: var(--block-shadow);
 	transition:
-		transform 150ms ease,
-		box-shadow 150ms ease;
+		background-color var(--transition-fast),
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast),
+		transform var(--transition-fast);
 }
 
+.sl-markdown-content .starlight-aside::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 60%;
+	height: 2px;
+	background:
+		linear-gradient(
+			90deg,
+			var(--color-gold-light),
+			var(--color-grass-light),
+			transparent
+		);
+	pointer-events: none;
+}
 
 .sl-markdown-content .starlight-aside:hover {
-
+	background: var(--color-surface-hover);
+	box-shadow: var(--block-shadow-hover);
 	transform: translateY(-1px);
-
-	box-shadow: var(--nug-shadow-md);
 }
 
+.sl-markdown-content .starlight-aside__title {
+	position: relative;
+	margin-bottom: var(--space-2);
+	color: var(--color-text);
+	font-family: var(--font-display);
+	font-weight: 800;
+}
+
+.sl-markdown-content .starlight-aside__content {
+	color: var(--color-text);
+}
+
+.sl-markdown-content .starlight-aside__content p,
+.sl-markdown-content .starlight-aside__content li {
+	color: inherit;
+}
+
+/* Compatibility with older Starlight markup. */
+.sl-markdown-content .starlight-aside .aside-title {
+	color: var(--color-text);
+	font-family: var(--font-display);
+	font-weight: 800;
+}
 
 .sl-markdown-content .starlight-aside--note {
-
-	border-left-color: var(--nug-note);
-
-	background: var(--nug-note-bg);
+	border-left-color: var(--color-info);
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-info-soft),
+			var(--color-surface)
+		);
 }
 
+.sl-markdown-content .starlight-aside--note .starlight-aside__title,
+.sl-markdown-content .starlight-aside--note .aside-title {
+	color: var(--color-info);
+}
 
 .sl-markdown-content .starlight-aside--tip {
-
-	border-left-color: var(--nug-tip);
-
-	background: var(--nug-tip-bg);
+	border-left-color: var(--color-tip);
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-tip-soft),
+			var(--color-surface)
+		);
 }
 
+.sl-markdown-content .starlight-aside--tip .starlight-aside__title,
+.sl-markdown-content .starlight-aside--tip .aside-title {
+	color: var(--color-tip);
+}
 
 .sl-markdown-content .starlight-aside--caution {
-
-	border-left-color: var(--nug-caution);
-
-	background: var(--nug-caution-bg);
+	border-left-color: var(--color-warning);
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-warning-soft),
+			var(--color-surface)
+		);
 }
 
+.sl-markdown-content .starlight-aside--caution .starlight-aside__title,
+.sl-markdown-content .starlight-aside--caution .aside-title {
+	color: var(--color-warning);
+}
 
 .sl-markdown-content .starlight-aside--danger {
+	border-left-color: var(--color-danger);
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-danger-soft),
+			var(--color-surface)
+		);
+}
 
-	border-left-color: var(--nug-danger);
-
-	background: var(--nug-danger-bg);
+.sl-markdown-content .starlight-aside--danger .starlight-aside__title,
+.sl-markdown-content .starlight-aside--danger .aside-title {
+	color: var(--color-danger);
 }
 
 
-/* ========================================
-   12. Cards Grid & Interactive Components
-======================================== */
+/* =========================================================
+   15. STARLIGHT LINK CARDS
+========================================================= */
+
+.card-grid {
+	gap: var(--space-4);
+}
 
 .card-grid .card,
-.sl-markdown-content .card {
-
-	border: 1px solid var(--nug-border);
-
-	border-radius: var(--nug-radius-md);
-
-	background: var(--nug-surface-subtle);
-
-	padding: 24px;
-
+.sl-markdown-content .card,
+.sl-markdown-content .sl-link-card {
+	position: relative;
+	min-width: 0;
+	border: 1px solid var(--color-border) !important;
+	border-radius: 0 !important;
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-sunlight),
+			transparent 30%
+		),
+		var(--color-surface) !important;
+	color: var(--color-text) !important;
+	box-shadow: var(--block-shadow) !important;
 	transition:
-		all 200ms cubic-bezier(
-			0.16,
-			1,
-			0.3,
-			1
+		background-color var(--transition-fast),
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast),
+		transform var(--transition-fast);
+}
+
+.card-grid .card::before,
+.sl-markdown-content .card::before,
+.sl-markdown-content .sl-link-card::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 55%;
+	height: 2px;
+	background:
+		linear-gradient(
+			90deg,
+			var(--color-gold-light),
+			var(--color-grass-light),
+			transparent
 		);
 }
 
+.card-grid .card:hover,
+.sl-markdown-content .card:hover,
+.sl-markdown-content .sl-link-card:hover {
+	border-color: var(--color-border-strong) !important;
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-sunlight),
+			transparent 34%
+		),
+		var(--color-surface-hover) !important;
+	box-shadow: var(--block-shadow-hover) !important;
+	transform: translateY(-2px);
+}
 
-.card-grid .card:hover {
+.card-grid .card:active,
+.sl-markdown-content .card:active,
+.sl-markdown-content .sl-link-card:active {
+	box-shadow: var(--block-shadow-active) !important;
+	transform: translateY(2px);
+}
 
-	border-color: var(--nug-border-strong);
+.sl-markdown-content .sl-link-card .title,
+.sl-markdown-content .sl-link-card .description {
+	color: var(--color-text) !important;
+}
 
-	transform: translateY(-3px);
+.sl-markdown-content .sl-link-card .description {
+	color: var(--color-text-secondary) !important;
+}
 
-	box-shadow: var(--nug-shadow-md);
+.sl-markdown-content .sl-link-card > .icon {
+	color: var(--color-accent) !important;
 }
 
 
-/* ========================================
-   13. Pagination Links
-======================================== */
+/* =========================================================
+   16. PAGINATION
+========================================================= */
+
+.pagination-links {
+	gap: var(--space-4);
+}
 
 .pagination-links a {
-
-	border: 1px solid var(--nug-border);
-
-	border-radius: var(--nug-radius-md);
-
-	background: var(--nug-background);
-
+	border: 1px solid var(--color-border);
+	border-radius: 0 !important;
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-sunlight),
+			transparent 30%
+		),
+		var(--color-surface);
+	color: var(--color-text);
+	box-shadow: var(--block-shadow);
 	transition:
-		all 150ms cubic-bezier(
-			0.16,
-			1,
-			0.3,
-			1
-		);
+		background-color var(--transition-fast),
+		border-color var(--transition-fast),
+		transform var(--transition-fast),
+		box-shadow var(--transition-fast);
 }
-
 
 .pagination-links a:hover {
-
-	border-color: var(--nug-border-strong);
-
-	background: var(--nug-surface);
-
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-sunlight),
+			transparent 34%
+		),
+		var(--color-surface-hover);
+	border-color: var(--color-border-strong);
+	box-shadow: var(--block-shadow-hover);
 	transform: translateY(-2px);
+}
 
-	box-shadow: var(--nug-shadow-sm);
+.pagination-links a:active {
+	box-shadow: var(--block-shadow-active);
+	transform: translateY(2px);
 }
 
 
-/* ========================================
-   14. Responsive Layouts
-======================================== */
+/* =========================================================
+   17. LEFT SIDEBAR
+========================================================= */
 
-@media (max-width: 768px) {
+.sidebar-pane {
+	background:
+		linear-gradient(
+			180deg,
+			var(--color-surface),
+			var(--color-surface-subtle)
+		) !important;
+	border-inline-end: 1px solid var(--color-border);
+	color: var(--color-text);
+	box-shadow: 2px 0 0 var(--color-shadow);
+}
 
-	:root {
+.sidebar-content {
+	padding: var(--space-6) var(--space-3);
+}
 
-		--sl-nav-height: 58px;
-	}
+.sidebar details,
+.sidebar summary {
+	border-radius: 0 !important;
+}
 
+.sidebar summary {
+	color: var(--color-text) !important;
+	font-family: var(--font-display);
+	font-weight: 800;
+	transition:
+		color var(--transition-fast),
+		background-color var(--transition-fast);
+}
 
-	header.header > div {
+.sidebar summary:hover {
+	color: var(--color-accent) !important;
+	background: var(--color-accent-soft);
+}
 
-		width: calc(100% - 32px);
-	}
+.sidebar a {
+	position: relative;
+	display: flex;
+	align-items: center;
+	min-height: 38px;
+	padding: var(--space-2) var(--space-3);
+	border: 1px solid transparent;
+	border-radius: 0 !important;
+	color: var(--color-text-secondary) !important;
+	font-family: var(--font-sans);
+	font-size: 14px;
+	font-weight: 600;
+	transition:
+		background-color var(--transition-fast),
+		border-color var(--transition-fast),
+		color var(--transition-fast),
+		transform var(--transition-fast),
+		box-shadow var(--transition-fast);
+}
 
+.sidebar a:hover {
+	background: var(--color-surface-hover);
+	border-color: var(--color-border);
+	color: var(--color-text) !important;
+	transform: translateX(2px);
+}
 
-	.sl-markdown-content h1 {
+.sidebar a[aria-current="page"] {
+	background:
+		linear-gradient(
+			90deg,
+			var(--color-accent-soft),
+			transparent
+		);
+	border-color: var(--color-border-accent);
+	color: var(--color-accent) !important;
+	font-weight: 800;
+	box-shadow: inset 3px 0 0 var(--color-accent);
+}
 
-		font-size: 30px;
-	}
+.sidebar a[aria-current="page"]::after {
+	content: "";
+	position: absolute;
+	left: 3px;
+	right: 0;
+	bottom: -3px;
+	height: 3px;
+	background: var(--color-border-strong);
+	opacity: 0.65;
+}
 
+.sidebar ul ul a {
+	color: var(--color-text-secondary) !important;
+}
 
-	.sl-markdown-content h2 {
-
-		font-size: 20px;
-
-		margin-top: 40px;
-	}
-
-
-	.sidebar {
-
-		border-right: 0;
-	}
+.sidebar button {
+	border-radius: 0 !important;
 }
 
 
-/* ========================================
-   15. Wiki Mobile Sidebar Toggle
-======================================== */
+/* =========================================================
+   18. RIGHT SIDEBAR / TABLE OF CONTENTS
+========================================================= */
 
-/*
- * PCでは表示しない。
- *
- * モバイル時のみ、画面左端に
- * 小さな「›」ボタンを表示する。
- */
-
-.wiki-sidebar-toggle {
-
-	display: none;
+.right-sidebar-container {
+	min-width: 0;
 }
 
+.right-sidebar {
+	background: transparent !important;
+	border-inline-start: 1px solid var(--color-border);
+	color: var(--color-text);
+}
+
+.right-sidebar .title {
+	color: var(--color-text);
+	font-family: var(--font-display);
+	font-weight: 800;
+}
+
+.right-sidebar a {
+	position: relative;
+	color: var(--color-text-secondary) !important;
+	border-radius: 0 !important;
+	transition:
+		color var(--transition-fast),
+		background-color var(--transition-fast),
+		transform var(--transition-fast);
+}
+
+.right-sidebar a:hover {
+	color: var(--color-accent) !important;
+	background: var(--color-accent-soft);
+	transform: translateX(2px);
+}
+
+.right-sidebar a[aria-current="true"],
+.right-sidebar a[aria-current="page"] {
+	color: var(--color-accent) !important;
+	font-weight: 800;
+}
+
+.right-sidebar a[aria-current="true"]::before,
+.right-sidebar a[aria-current="page"]::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 3px;
+	background: var(--color-accent);
+}
+
+
+/* =========================================================
+   19. SEARCH
+========================================================= */
+
+[data-search-form] {
+	border: 1px solid var(--color-border) !important;
+	border-radius: 0 !important;
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-sunlight),
+			transparent 30%
+		),
+		var(--color-surface) !important;
+	box-shadow: var(--block-shadow) !important;
+	transition:
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast);
+}
+
+[data-search-form]:hover {
+	border-color: var(--color-border-strong) !important;
+}
+
+[data-search-form]:focus-within {
+	border-color: var(--color-accent) !important;
+	box-shadow:
+		0 0 0 3px var(--color-accent-soft),
+		var(--block-shadow) !important;
+}
+
+[data-search-form] input {
+	background: transparent !important;
+	color: var(--color-text) !important;
+	font-family: var(--font-sans);
+}
+
+[data-search-form] input::placeholder {
+	color: var(--color-text-tertiary);
+}
+
+[data-search-results] {
+	border: 1px solid var(--color-border) !important;
+	border-radius: 0 !important;
+	background: var(--color-surface) !important;
+	box-shadow: var(--block-shadow-hover) !important;
+}
+
+
+/* =========================================================
+   20. GLOBAL STARLIGHT CONTRAST
+========================================================= */
+
+.main-pane,
+.sidebar,
+.sidebar-pane,
+.sidebar-content,
+.right-sidebar,
+.right-sidebar-container {
+	color: var(--color-text);
+}
+
+.main-pane p,
+.main-pane li,
+.sidebar span,
+.sidebar summary {
+	color: var(--color-text);
+}
+
+.sidebar a {
+	color: var(--color-text-secondary) !important;
+}
+
+.right-sidebar a {
+	color: var(--color-text-secondary) !important;
+}
+
+.sl-markdown-content .card,
+.sl-markdown-content .card-grid a,
+.sl-markdown-content a.card {
+	color: var(--color-text) !important;
+}
+
+.sl-markdown-content .card h2,
+.sl-markdown-content .card h3,
+.sl-markdown-content .card-grid a h2,
+.sl-markdown-content .card-grid a h3 {
+	color: var(--color-text) !important;
+}
+
+.sl-markdown-content .card p,
+.sl-markdown-content .card-grid a p,
+.sl-markdown-content a.card p {
+	color: var(--color-text-secondary) !important;
+}
+
+.sl-markdown-content .card svg,
+.sl-markdown-content .card-grid a svg {
+	color: var(--color-accent);
+}
+
+
+/* =========================================================
+   21. GEOMETRY NORMALIZATION
+========================================================= */
+
+.sidebar *,
+.sidebar-pane *,
+.pagination-links *,
+.card-grid *,
+.starlight-aside,
+.sl-markdown-content table,
+.sl-markdown-content pre,
+.sl-markdown-content code,
+.sl-markdown-content blockquote,
+.sl-markdown-content .sl-link-card,
+[data-search-form],
+[data-search-results] {
+	border-radius: 0 !important;
+}
+
+
+/* =========================================================
+   22. INTERACTION
+========================================================= */
+
+.sidebar a,
+.pagination-links a,
+.card-grid .card,
+.sl-markdown-content .card,
+.sl-markdown-content .sl-link-card,
+.sl-markdown-content .starlight-aside {
+	-webkit-tap-highlight-color: transparent;
+}
+
+.sidebar a:active,
+.pagination-links a:active,
+.card-grid .card:active,
+.sl-markdown-content .card:active,
+.sl-markdown-content .sl-link-card:active,
+.sl-markdown-content .starlight-aside:active {
+	box-shadow: var(--block-shadow-active);
+}
+
+.sl-markdown-content a:not(.sl-anchor-link):active {
+	transform: translateY(1px);
+}
+
+
+/* =========================================================
+   23. FOCUS ACCESSIBILITY
+========================================================= */
+
+.sl-markdown-content a:focus-visible,
+.sidebar a:focus-visible,
+.sidebar button:focus-visible,
+.sidebar summary:focus-visible,
+.pagination-links a:focus-visible,
+.header a:focus-visible,
+.header button:focus-visible,
+.site-header a:focus-visible,
+.site-header button:focus-visible,
+.right-sidebar a:focus-visible {
+	outline: 3px solid var(--color-accent);
+	outline-offset: 3px;
+	border-radius: 0 !important;
+}
+
+
+/* =========================================================
+   24. SELECTION
+========================================================= */
+
+.sl-markdown-content ::selection,
+.sidebar ::selection,
+.right-sidebar ::selection {
+	background: var(--color-accent);
+	color: var(--color-text-inverse);
+}
+
+
+/* =========================================================
+   25. SCROLLBARS
+========================================================= */
+
+.sidebar-pane,
+.sidebar,
+.right-sidebar,
+.sl-markdown-content,
+.sl-markdown-content pre {
+	scrollbar-color:
+		var(--color-border-strong)
+		var(--color-background);
+	scrollbar-width: thin;
+}
+
+
+/* =========================================================
+   26. MOBILE / TABLET
+   ---------------------------------------------------------
+   The content itself becomes the table scroll viewport.
+   The table remains a single table formatting context.
+========================================================= */
 
 @media (max-width: 49.999rem) {
-
 	:root {
-
+		--sl-nav-height: 58px;
+		--sl-sidebar-width: 90vw;
 		--wiki-sidebar-width: 90vw;
-		--wiki-sidebar-toggle-top: 50%;
 	}
 
-	/* ----------------------------------------
-	   Toggle Button
-	---------------------------------------- */
-
-	.wiki-sidebar-toggle {
-
-		display: flex;
-
-		position: fixed;
-
-		left: 0;
-
-		top: var(--wiki-sidebar-toggle-top);
-
-		z-index: 120;
-
-		width: 24px;
-
-		height: 52px;
-
-		align-items: center;
-
-		justify-content: center;
-
-		padding: 0;
-
-		border: 1px solid var(--nug-border);
-
-		border-left: 0;
-
-		border-radius:
-			0
-			var(--nug-radius-sm)
-			var(--nug-radius-sm)
-			0;
-
-		background: var(--nug-glass);
-
-		color: var(--nug-text-secondary);
-
-		box-shadow: var(--nug-shadow-md);
-
-		backdrop-filter:
-			blur(16px)
-			saturate(180%);
-
-		-webkit-backdrop-filter:
-			blur(16px)
-			saturate(180%);
-
-		cursor: pointer;
-
-		transform: translateY(-50%);
-
-		transition:
-			left 250ms cubic-bezier(
-				0.16,
-				1,
-				0.3,
-				1
-			),
-			background 150ms ease,
-			color 150ms ease,
-			box-shadow 150ms ease;
+	body:has(.sl-markdown-content) {
+		background-attachment: scroll;
+		background-position: center, center, center center;
 	}
-
-
-	.wiki-sidebar-toggle:hover {
-
-		background: var(--nug-surface);
-
-		color: var(--nug-text);
-
-		box-shadow: var(--nug-shadow-lg);
-	}
-
-
-	.wiki-sidebar-toggle-icon {
-
-		display: block;
-
-		font-size: 24px;
-
-		font-weight: 300;
-
-		line-height: 1;
-
-		transition:
-			transform 250ms cubic-bezier(
-				0.16,
-				1,
-				0.3,
-				1
-			);
-	}
-
-
-	/* ----------------------------------------
-	   Sidebar Closed
-	---------------------------------------- */
 
 	.sidebar-pane {
-
-		width: var(--wiki-sidebar-width);
-
-		transform: translateX(-100%);
-
-		visibility: hidden;
-
-		transition:
-			transform 250ms cubic-bezier(
-				0.16,
-				1,
-				0.3,
-				1
-			);
+		background:
+			linear-gradient(
+				180deg,
+				var(--color-surface),
+				var(--color-surface-subtle)
+			) !important;
+		box-shadow: var(--shadow-deep);
 	}
 
-
-	/* ----------------------------------------
-	   Sidebar Open
-	---------------------------------------- */
-
-	.wiki-sidebar-open .sidebar-pane {
-
-		transform: translateX(0);
-
-		visibility: visible;
-
-		z-index: 110;
+	.sidebar-content {
+		padding: var(--space-5) var(--space-3);
 	}
 
-
-	/* ----------------------------------------
-	   Toggle Button Position
-	---------------------------------------- */
-
-	.wiki-sidebar-open .wiki-sidebar-toggle {
-
-		left: var(--wiki-sidebar-width);
-
-		z-index: 120;
+	.sidebar a {
+		min-height: 44px;
 	}
 
-
-	/* ----------------------------------------
-	   Backdrop
-	---------------------------------------- */
-
-	.wiki-sidebar-open::after {
-
-		content: "";
-
-		position: fixed;
-
-		inset:
-			var(--sl-nav-height)
-			0
-			0
-			0;
-
-		z-index: 90;
-
-		background: rgba(0, 0, 0, 0.18);
-
-		pointer-events: auto;
-
-		opacity: 1;
-
-		transition:
-			opacity 250ms ease;
+	.sl-markdown-content {
+		max-width: 100%;
+		font-size: 15px;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
 	}
 
+	.main-pane > .content-panel:first-child > .sl-container > h1 {
+		margin-top: var(--space-6);
+		font-size: clamp(28px, 8vw, 38px);
+	}
 
-	/* ----------------------------------------
-	   Sidebar Content
-	---------------------------------------- */
+	.sl-markdown-content h1 {
+		font-size: clamp(28px, 8vw, 38px);
+	}
 
-	.wiki-sidebar-open .sidebar-pane {
+	.sl-markdown-content h2 {
+		font-size: clamp(22px, 6vw, 30px);
+	}
 
-		box-shadow: var(--nug-shadow-lg);
+	.sl-markdown-content h3 {
+		font-size: clamp(20px, 5vw, 24px);
+	}
+
+	.sl-markdown-content table {
+		width: max-content;
+		min-width: 0;
+		max-width: none;
+		margin: var(--space-5) 0;
+	}
+
+	.sl-markdown-content th,
+	.sl-markdown-content td {
+		min-width: 0;
+		padding: 10px 12px;
+	}
+
+	.sl-markdown-content pre {
+		padding: var(--space-4);
+	}
+
+	.sl-markdown-content .starlight-aside {
+		margin: var(--space-5) 0;
+	}
+
+	.pagination-links {
+		gap: var(--space-3);
 	}
 }
 
 
-/* ========================================
-   16. Smooth Animation Standard
-======================================== */
+/* =========================================================
+   27. SMALL SCREENS
+========================================================= */
+
+@media (max-width: 480px) {
+	.sl-markdown-content {
+		font-size: 15px;
+	}
+
+	.sl-markdown-content h1,
+	.main-pane > .content-panel:first-child > .sl-container > h1 {
+		font-size: 28px;
+	}
+
+	.sl-markdown-content h2 {
+		font-size: 22px;
+	}
+
+	.sl-markdown-content h3 {
+		font-size: 20px;
+	}
+
+	.sl-markdown-content .starlight-aside {
+		padding: var(--space-4);
+	}
+
+	.pagination-links {
+		grid-template-columns: 1fr;
+	}
+
+	.sl-markdown-content th,
+	.sl-markdown-content td {
+		min-width: 110px;
+	}
+}
+
+
+/* =========================================================
+   28. HIGH CONTRAST
+========================================================= */
+
+@media (prefers-contrast: more) {
+	.sl-markdown-content,
+	.sidebar,
+	.right-sidebar {
+		--color-border: var(--color-border-strong);
+	}
+
+	.sl-markdown-content a,
+	.sidebar a,
+	.right-sidebar a {
+		text-decoration-thickness: 2px;
+	}
+
+	.sl-markdown-content .starlight-aside {
+		border-width: 2px;
+		border-left-width: 6px;
+	}
+}
+
+
+/* =========================================================
+   29. REDUCED MOTION
+========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
-	*,
-	*::before,
-	*::after {
-
-		scroll-behavior: auto !important;
-
-		transition-duration: 0.01ms !important;
-
-		animation-duration: 0.01ms !important;
-
-		animation-iteration-count: 1 !important;
-	}
-
-
-	.wiki-sidebar-toggle,
-	.wiki-sidebar-toggle-icon,
-	.sidebar-pane {
-
+	.sidebar a,
+	.pagination-links a,
+	.card-grid .card,
+	.sl-markdown-content .card,
+	.sl-markdown-content .sl-link-card,
+	.sl-markdown-content .starlight-aside,
+	.header nav a,
+	.header button,
+	.site-header nav a,
+	.site-header button {
 		transition: none !important;
 	}
+
+	.sidebar a:hover,
+	.pagination-links a:hover,
+	.card-grid .card:hover,
+	.sl-markdown-content .card:hover,
+	.sl-markdown-content .sl-link-card:hover,
+	.sl-markdown-content .starlight-aside:hover,
+	.site-header nav a:hover,
+	.header nav a:hover {
+		transform: none;
+	}
+}
+
+
+/* =========================================================
+   30. FINAL LIGHT-MODE TEXT SAFETY
+   ---------------------------------------------------------
+   Do not globally change inverse text: white text is still
+   required on dark/accent surfaces. These rules specifically
+   protect Wiki content and navigation on light surfaces.
+========================================================= */
+
+html:not([data-theme="dark"]) .sidebar,
+html:not([data-theme="dark"]) .sidebar-pane,
+html:not([data-theme="dark"]) .sidebar-content,
+html:not([data-theme="dark"]) .right-sidebar,
+html:not([data-theme="dark"]) .main-pane {
+	color: var(--color-text);
+}
+
+html:not([data-theme="dark"]) .sidebar a {
+	color: var(--color-text-secondary) !important;
+}
+
+html:not([data-theme="dark"]) .sidebar summary {
+	color: var(--color-text) !important;
+}
+
+html:not([data-theme="dark"]) .right-sidebar a {
+	color: var(--color-text-secondary) !important;
+}
+
+html:not([data-theme="dark"]) .sl-markdown-content,
+html:not([data-theme="dark"]) .sl-markdown-content p,
+html:not([data-theme="dark"]) .sl-markdown-content li,
+html:not([data-theme="dark"]) .sl-markdown-content h1,
+html:not([data-theme="dark"]) .sl-markdown-content h2,
+html:not([data-theme="dark"]) .sl-markdown-content h3,
+html:not([data-theme="dark"]) .sl-markdown-content h4 {
+	color: var(--color-text);
+}
+
+html:not([data-theme="dark"]) .main-pane > .content-panel:first-child > .sl-container > h1 {
+	color: var(--color-text);
+}
+
+html:not([data-theme="dark"]) .sl-markdown-content .card,
+html:not([data-theme="dark"]) .sl-markdown-content .sl-link-card {
+	color: var(--color-text) !important;
+}
+
+html:not([data-theme="dark"]) .sl-markdown-content .card p,
+html:not([data-theme="dark"]) .sl-markdown-content .sl-link-card .description {
+	color: var(--color-text-secondary) !important;
 }

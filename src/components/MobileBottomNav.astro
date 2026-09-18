@@ -1,0 +1,545 @@
+---
+---
+
+<nav
+	class="mobile-bottom-nav"
+	aria-label="モバイルナビゲーション"
+>
+	<a href="/" class="bottom-nav-item">
+		<svg
+			viewBox="0 0 24 24"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path d="M3 10.5 12 3l9 7.5" />
+			<path d="M5 9.5V21h14V9.5" />
+			<path d="M9 21v-6h6v6" />
+		</svg>
+
+		<span>ホーム</span>
+	</a>
+
+	<a href="/guide/" class="bottom-nav-item">
+		<svg
+			viewBox="0 0 24 24"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path d="M5 4.5h11a3 3 0 0 1 3 3V20H8a3 3 0 0 1-3-3V4.5Z" />
+			<path d="M8 7h7" />
+			<path d="M8 11h7" />
+			<path d="M8 15h5" />
+		</svg>
+
+		<span>攻略</span>
+	</a>
+
+	<a href="/docs/" class="bottom-nav-item">
+		<svg
+			viewBox="0 0 24 24"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path d="M4 5h16v14H4z" />
+			<path d="M8 9h8" />
+			<path d="M8 13h8" />
+			<path d="M8 17h5" />
+		</svg>
+
+		<span>Wiki</span>
+	</a>
+
+	<a href="/tool/" class="bottom-nav-item">
+		<svg
+			viewBox="0 0 24 24"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path d="m14.5 5.5 4 4" />
+			<path d="m13 7 4 4" />
+			<path d="m4 20 6.5-6.5" />
+			<path d="m7 21-4-4" />
+			<path d="m10 14 4-4" />
+			<path d="m14 4 2-2 6 6-2 2" />
+		</svg>
+
+		<span>ツール</span>
+	</a>
+
+	<button
+		type="button"
+		class="bottom-nav-item bottom-nav-more"
+		aria-label="その他のメニュー"
+		aria-expanded="false"
+		aria-controls="mobile-more-menu"
+	>
+		<svg
+			viewBox="0 0 24 24"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<circle cx="5" cy="12" r="1.5" />
+			<circle cx="12" cy="12" r="1.5" />
+			<circle cx="19" cy="12" r="1.5" />
+		</svg>
+
+		<span>その他</span>
+	</button>
+</nav>
+
+
+<div
+	id="mobile-more-menu"
+	class="mobile-more-menu"
+	aria-hidden="true"
+>
+	<a href="/news/">ニュース</a>
+	<a href="/about/">NUGについて</a>
+</div>
+
+
+<script>
+	const bottomNav =
+		document.querySelector<HTMLElement>(
+			".mobile-bottom-nav"
+		);
+
+	const moreMenu =
+		document.querySelector<HTMLElement>(
+			"#mobile-more-menu"
+		);
+
+	const moreButton =
+		document.querySelector<HTMLButtonElement>(
+			".bottom-nav-more"
+		);
+
+
+	/*
+	 * ========================================
+	 * Starlight対策
+	 *
+	 * MobileBottomNavはHeaderの内部ではなく、
+	 * body直下へ移動します。
+	 *
+	 * これによりposition: fixedが
+	 * Starlightのレイアウトに影響されません。
+	 * ========================================
+	 */
+
+	if (bottomNav && moreMenu) {
+		const moveToBody = (): void => {
+			if (bottomNav.parentElement !== document.body) {
+				document.body.appendChild(bottomNav);
+			}
+
+			if (moreMenu.parentElement !== document.body) {
+				document.body.appendChild(moreMenu);
+			}
+		};
+
+		moveToBody();
+	}
+
+
+	/* ========================================
+	   More Menu
+	======================================== */
+
+	if (
+		moreButton instanceof HTMLButtonElement &&
+		moreMenu instanceof HTMLElement
+	) {
+		const setMoreState = (
+			open: boolean
+		): void => {
+			moreButton.setAttribute(
+				"aria-expanded",
+				String(open)
+			);
+
+			moreMenu.setAttribute(
+				"aria-hidden",
+				String(!open)
+			);
+
+			moreMenu.classList.toggle(
+				"is-open",
+				open
+			);
+		};
+
+
+		moreButton.addEventListener(
+			"click",
+			() => {
+				const isOpen =
+					moreButton.getAttribute(
+						"aria-expanded"
+					) === "true";
+
+				setMoreState(!isOpen);
+			}
+		);
+
+
+		moreMenu
+			.querySelectorAll("a")
+			.forEach((link) => {
+				link.addEventListener(
+					"click",
+					() => {
+						setMoreState(false);
+					}
+				);
+			});
+
+
+		document.addEventListener(
+			"click",
+			(event) => {
+				if (
+					!(event.target instanceof Node)
+				) {
+					return;
+				}
+
+				if (
+					moreButton.contains(
+						event.target
+					) ||
+					moreMenu.contains(
+						event.target
+					)
+				) {
+					return;
+				}
+
+				setMoreState(false);
+			}
+		);
+
+
+		document.addEventListener(
+			"keydown",
+			(event) => {
+				if (event.key === "Escape") {
+					setMoreState(false);
+				}
+			}
+		);
+	}
+</script>
+
+
+<style>
+	.mobile-bottom-nav,
+	.mobile-more-menu {
+		display: none;
+	}
+
+
+	/* ========================================
+	   Tablet + Mobile
+	   0 - 1023px
+	======================================== */
+
+	@media (max-width: 1023px) {
+
+		.mobile-bottom-nav {
+			position: fixed !important;
+
+			left: 0 !important;
+			right: 0 !important;
+			bottom: 0 !important;
+			top: auto !important;
+
+			z-index: 10000 !important;
+
+			display: grid;
+
+			grid-template-columns:
+				repeat(5, minmax(0, 1fr));
+
+			width: 100%;
+
+			height: 68px;
+
+			padding:
+				6px
+				8px
+				calc(
+					6px +
+					env(safe-area-inset-bottom)
+				);
+
+			box-sizing: border-box;
+
+			background:
+				color-mix(
+					in srgb,
+					var(--nug-background, #ffffff) 94%,
+					transparent
+				);
+
+			border-top:
+				1px solid
+				var(--nug-border, #d8d8d8);
+
+			box-shadow:
+				0 -6px 20px
+				rgba(0, 0, 0, 0.12);
+
+			backdrop-filter:
+				blur(18px);
+
+			-webkit-backdrop-filter:
+				blur(18px);
+		}
+
+
+		.bottom-nav-item {
+			min-width: 0;
+			height: 56px;
+
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+
+			gap: 3px;
+
+			padding: 4px 2px;
+
+			border: 0;
+			border-radius: 10px;
+
+			background: transparent;
+
+			color:
+				var(--nug-text-secondary, #666666);
+
+			text-decoration: none;
+
+			font: inherit;
+			font-size: 10px;
+			font-weight: 600;
+
+			cursor: pointer;
+
+			transition:
+				background 0.18s ease,
+				color 0.18s ease,
+				transform 0.12s ease;
+		}
+
+
+		.bottom-nav-item svg {
+			width: 22px;
+			height: 22px;
+
+			flex-shrink: 0;
+
+			fill: none;
+
+			stroke:
+				currentColor;
+
+			stroke-width: 1.8;
+
+			stroke-linecap: round;
+			stroke-linejoin: round;
+		}
+
+
+		.bottom-nav-item:hover,
+		.bottom-nav-item:focus-visible {
+			color:
+				var(--nug-text, #222222);
+
+			background:
+				var(--nug-surface, #eeeeee);
+
+			outline: none;
+		}
+
+
+		.bottom-nav-item:active {
+			transform:
+				translateY(2px);
+		}
+
+
+		.bottom-nav-more svg {
+			fill: currentColor;
+			stroke: none;
+		}
+
+
+		/* ========================================
+		   More Menu
+		======================================== */
+
+		.mobile-more-menu {
+			position: fixed !important;
+
+			right: 8px !important;
+			bottom: 76px !important;
+			top: auto !important;
+			left: auto !important;
+
+			z-index: 10001 !important;
+
+			width:
+				min(
+					220px,
+					calc(100vw - 16px)
+				);
+
+			padding: 8px;
+
+			box-sizing: border-box;
+
+			background:
+				var(--nug-background, #ffffff);
+
+			border:
+				1px solid
+				var(--nug-border, #d8d8d8);
+
+			border-radius: 12px;
+
+			box-shadow:
+				0 12px 30px
+				rgba(0, 0, 0, 0.2);
+
+			opacity: 0;
+
+			transform:
+				translateY(8px);
+
+			pointer-events: none;
+
+			transition:
+				opacity 0.18s ease,
+				transform 0.18s ease;
+		}
+
+
+		.mobile-more-menu.is-open {
+			display: block;
+
+			opacity: 1;
+
+			transform:
+				translateY(0);
+
+			pointer-events: auto;
+		}
+
+
+		.mobile-more-menu a {
+			display: flex;
+			align-items: center;
+
+			min-height: 48px;
+
+			padding:
+				0 14px;
+
+			border-radius: 8px;
+
+			color:
+				var(--nug-text, #222222);
+
+			text-decoration: none;
+
+			font-size: 14px;
+			font-weight: 600;
+		}
+
+
+		.mobile-more-menu a:hover,
+		.mobile-more-menu a:focus-visible {
+			background:
+				var(--nug-surface, #eeeeee);
+
+			outline: none;
+		}
+
+
+		/*
+		 * 下部ナビ分の余白
+		 *
+		 * Starlightでも通常Astroでも
+		 * bodyに確保します。
+		 */
+
+		:global(body) {
+			padding-bottom: 68px;
+		}
+	}
+
+
+	/* ========================================
+	   Smartphone
+	   767px以下
+	======================================== */
+
+	@media (max-width: 767px) {
+
+		.mobile-bottom-nav {
+			height: 64px;
+
+			padding:
+				4px
+				6px
+				calc(
+					4px +
+					env(safe-area-inset-bottom)
+				);
+		}
+
+
+		.bottom-nav-item {
+			height: 54px;
+
+			font-size: 9px;
+		}
+
+
+		.bottom-nav-item svg {
+			width: 21px;
+			height: 21px;
+		}
+
+
+		.mobile-more-menu {
+			bottom: 70px !important;
+		}
+
+
+		:global(body) {
+			padding-bottom: 64px;
+		}
+	}
+
+
+	/* ========================================
+	   Reduced Motion
+	======================================== */
+
+	@media (prefers-reduced-motion: reduce) {
+
+		* {
+			transition-duration:
+				0.01ms !important;
+
+			animation-duration:
+				0.01ms !important;
+
+			animation-iteration-count:
+				1 !important;
+		}
+	}
+</style>

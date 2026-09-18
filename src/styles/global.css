@@ -2,10 +2,20 @@
    NUGBASE Global Design System
    Minecraft-inspired × Vibrant Visuals
    ---------------------------------------------------------
-   This file is the official visual foundation of NUGBASE.
+   Official visual foundation of NUGBASE.
+
+   Scope:
+   - Home
+   - Guide
+   - News
+   - Tool
+   - About
+
+   NOTE:
+   /docs/ is Starlight and intentionally uses starlight.css.
 
    Design principles:
-   - Fixed world background
+   - Fixed world atmosphere
    - Fixed light direction: top-left
    - Block / voxel-inspired surfaces
    - Hard contact shadows + soft atmospheric light
@@ -14,11 +24,13 @@
    - Light / dark theme
    - Accessible contrast
    - Responsive by default
+   - Mobile-first overflow control
+   - Touch-friendly interaction
 ========================================================= */
 
 
 /* =========================================================
-   Reset
+   01. Reset
 ========================================================= */
 
 *,
@@ -31,6 +43,8 @@ html,
 body {
 	margin: 0;
 	padding: 0;
+	width: 100%;
+	min-height: 100%;
 }
 
 html {
@@ -38,10 +52,15 @@ html {
 	background: var(--color-background);
 	scroll-behavior: smooth;
 	-webkit-tap-highlight-color: transparent;
+	overflow-x: hidden;
 }
 
 html[data-theme="dark"] {
 	color-scheme: dark;
+}
+
+body {
+	overflow-x: hidden;
 }
 
 h1,
@@ -93,6 +112,14 @@ a {
 	text-decoration: none;
 }
 
+button,
+a,
+input,
+textarea,
+select {
+	-webkit-tap-highlight-color: transparent;
+}
+
 ::selection {
 	background: var(--color-accent);
 	color: var(--color-text-inverse);
@@ -100,7 +127,7 @@ a {
 
 
 /* =========================================================
-   Design Tokens
+   02. Design Tokens
 ========================================================= */
 
 :root {
@@ -157,152 +184,100 @@ a {
 	   World / Minecraft-inspired palette
 	------------------------------------------------------- */
 
-	--color-grass:
-		#5f9f3a;
+	--color-grass: #5f9f3a;
+	--color-grass-dark: #477d2b;
+	--color-grass-light: #8ac95a;
 
-	--color-grass-dark:
-		#477d2b;
+	--color-dirt: #8b5e3c;
+	--color-dirt-dark: #68452d;
 
-	--color-grass-light:
-		#8ac95a;
+	--color-stone: #73777b;
+	--color-stone-dark: #4d5256;
 
-	--color-dirt:
-		#8b5e3c;
+	--color-water: #3f8fc4;
+	--color-water-dark: #286c9a;
 
-	--color-dirt-dark:
-		#68452d;
+	--color-sky: #63b3df;
 
-	--color-stone:
-		#73777b;
-
-	--color-stone-dark:
-		#4d5256;
-
-	--color-water:
-		#3f8fc4;
-
-	--color-water-dark:
-		#286c9a;
-
-	--color-sky:
-		#63b3df;
-
-	--color-gold:
-		#d9a441;
-
-	--color-gold-light:
-		#efc45d;
+	--color-gold: #d9a441;
+	--color-gold-light: #efc45d;
 
 
 	/* -------------------------------------------------------
-	   Light theme surfaces
+	   Light Theme
 	------------------------------------------------------- */
 
-	--color-background:
-		#eef2f3;
+	--color-background: #eef2f3;
+	--color-background-deep: #e1e7e9;
 
-	--color-background-deep:
-		#e1e7e9;
-
-	--color-surface:
-		#ffffff;
-
-	--color-surface-hover:
-		#f5f8f8;
-
-	--color-surface-subtle:
-		#e9eef0;
-
-	--color-surface-strong:
-		#dce3e5;
+	--color-surface: #ffffff;
+	--color-surface-hover: #f5f8f8;
+	--color-surface-subtle: #e9eef0;
+	--color-surface-strong: #dce3e5;
 
 
 	/* -------------------------------------------------------
-	   Light theme text
+	   Light Theme Text
+	   IMPORTANT:
+	   Light mode always uses dark readable text.
 	------------------------------------------------------- */
 
-	--color-text:
-		#202521;
-
-	--color-text-secondary:
-		#58615b;
-
-	--color-text-tertiary:
-		#747d77;
-
-	--color-text-inverse:
-		#ffffff;
+	--color-text: #202521;
+	--color-text-secondary: #58615b;
+	--color-text-tertiary: #747d77;
+	--color-text-inverse: #ffffff;
 
 
 	/* -------------------------------------------------------
 	   Borders
 	------------------------------------------------------- */
 
-	--color-border:
-		#cfd7d9;
-
-	--color-border-strong:
-		#abb7bb;
-
-	--color-border-accent:
-		rgba(95, 159, 58, 0.45);
+	--color-border: #cfd7d9;
+	--color-border-strong: #abb7bb;
+	--color-border-accent: rgba(95, 159, 58, 0.45);
 
 
 	/* -------------------------------------------------------
 	   Accent
 	------------------------------------------------------- */
 
-	--color-accent:
-		#4f8f32;
-
-	--color-accent-hover:
-		#3f7627;
-
-	--color-accent-soft:
-		rgba(79, 143, 50, 0.10);
+	--color-accent: #4f8f32;
+	--color-accent-hover: #3f7627;
+	--color-accent-soft: rgba(79, 143, 50, 0.10);
 
 
 	/* -------------------------------------------------------
-	   Semantic colors
+	   Semantic Colors
 	------------------------------------------------------- */
 
-	--color-info:
-		#3f8fc4;
+	--color-info: #3f8fc4;
+	--color-info-soft: rgba(63, 143, 196, 0.10);
 
-	--color-info-soft:
-		rgba(63, 143, 196, 0.10);
+	--color-success: #5f9f3a;
+	--color-success-soft: rgba(95, 159, 58, 0.10);
 
-	--color-success:
-		#5f9f3a;
+	--color-warning: #c8902e;
+	--color-warning-soft: rgba(200, 144, 46, 0.12);
 
-	--color-success-soft:
-		rgba(95, 159, 58, 0.10);
+	--color-danger: #bd5144;
+	--color-danger-soft: rgba(189, 81, 68, 0.10);
 
-	--color-warning:
-		#c8902e;
 
-	--color-warning-soft:
-		rgba(200, 144, 46, 0.12);
+	/* -------------------------------------------------------
+	   Tip / Purple
+	------------------------------------------------------- */
 
-	--color-danger:
-		#bd5144;
-
-	--color-danger-soft:
-		rgba(189, 81, 68, 0.10);
+	--color-tip: #7c4fd0;
+	--color-tip-soft: rgba(124, 79, 208, 0.10);
 
 
 	/* -------------------------------------------------------
 	   Atmosphere
 	------------------------------------------------------- */
 
-	--color-sky-atmosphere:
-		rgba(99, 179, 223, 0.12);
-
-	--color-sunlight:
-		rgba(255, 247, 214, 0.75);
-
-	--color-overlay:
-		rgba(17, 23, 22, 0.38);
+	--color-sky-atmosphere: rgba(99, 179, 223, 0.12);
+	--color-sunlight: rgba(255, 247, 214, 0.75);
+	--color-overlay: rgba(17, 23, 22, 0.38);
 
 
 	/* -------------------------------------------------------
@@ -310,7 +285,7 @@ a {
 	------------------------------------------------------- */
 
 	--world-background:
-		url("/public/images/mein.webp");
+		url("/images/mein.webp");
 
 	--world-background-position:
 		center center;
@@ -326,20 +301,13 @@ a {
 
 
 	/* -------------------------------------------------------
-	   Light direction
-	   ------------------------------------------------------
-	   All components behave as if light comes from
-	   the upper-left.
+	   Light Direction
 	------------------------------------------------------- */
 
-	--light-direction-x:
-		-1;
+	--light-direction-x: -1;
+	--light-direction-y: -1;
 
-	--light-direction-y:
-		-1;
-
-	--light-angle:
-		135deg;
+	--light-angle: 135deg;
 
 	--light-highlight:
 		rgba(255, 247, 214, 0.72);
@@ -355,8 +323,7 @@ a {
 	--color-shadow-strong:
 		rgba(25, 34, 30, 0.25);
 
-	--shadow-strength:
-		1;
+	--shadow-strength: 1;
 
 	--shadow-soft:
 		0 8px 24px rgba(35, 49, 42, 0.10);
@@ -369,7 +336,7 @@ a {
 
 
 	/* -------------------------------------------------------
-	   Block shadows
+	   Block Shadows
 	------------------------------------------------------- */
 
 	--block-shadow:
@@ -386,44 +353,28 @@ a {
 	   Borders
 	------------------------------------------------------- */
 
-	--border-width:
-		1px;
-
-	--border-width-strong:
-		2px;
+	--border-width: 1px;
+	--border-width-strong: 2px;
 
 
 	/* -------------------------------------------------------
 	   Corners
-	   ------------------------------------------------------
-	   NUGBASE uses square / block-like geometry.
 	------------------------------------------------------- */
 
-	--radius-small:
-		0px;
-
-	--radius-medium:
-		0px;
-
-	--radius-large:
-		0px;
-
-	--radius-pill:
-		0px;
+	--radius-small: 0px;
+	--radius-medium: 0px;
+	--radius-large: 0px;
+	--radius-pill: 0px;
 
 
 	/* -------------------------------------------------------
 	   Layout
 	------------------------------------------------------- */
 
-	--content-width:
-		1200px;
+	--content-width: 1200px;
+	--content-width-wide: 1400px;
 
-	--content-width-wide:
-		1400px;
-
-	--page-padding:
-		24px;
+	--page-padding: 24px;
 
 
 	/* -------------------------------------------------------
@@ -447,76 +398,33 @@ a {
 	   Z-index
 	------------------------------------------------------- */
 
-	--z-base:
-		1;
-
-	--z-world:
-		0;
-
-	--z-content:
-		1;
-
-	--z-header:
-		1000;
-
-	--z-overlay:
-		1900;
-
-	--z-modal:
-		3000;
-
+	--z-base: 1;
+	--z-world: 0;
+	--z-content: 1;
+	--z-header: 1000;
+	--z-overlay: 1900;
+	--z-modal: 3000;
 }
 
 
 /* =========================================================
-   Dark Theme
+   03. Dark Theme
 ========================================================= */
 
 html[data-theme="dark"] {
 
-	/* -------------------------------------------------------
-	   Backgrounds
-	------------------------------------------------------- */
+	--color-background: #111416;
+	--color-background-deep: #0b0e10;
 
-	--color-background:
-		#111416;
+	--color-surface: #292e32;
+	--color-surface-hover: #343a3f;
+	--color-surface-subtle: #202529;
+	--color-surface-strong: #3b4247;
 
-	--color-background-deep:
-		#0b0e10;
-
-	--color-surface:
-		#292e32;
-
-	--color-surface-hover:
-		#343a3f;
-
-	--color-surface-subtle:
-		#202529;
-
-	--color-surface-strong:
-		#3b4247;
-
-
-	/* -------------------------------------------------------
-	   Text
-	------------------------------------------------------- */
-
-	--color-text:
-		#f1f4f2;
-
-	--color-text-secondary:
-		#b2bbb7;
-
-	--color-text-tertiary:
-		#858f8b;
-
-	--color-text-inverse:
-		#111416;
-
-
-	/* -------------------------------------------------------
-	   Borders
-	------------------------------------------------------- */
+	--color-text: #f1f4f2;
+	--color-text-secondary: #b2bbb7;
+	--color-text-tertiary: #858f8b;
+	--color-text-inverse: #111416;
 
 	--color-border:
 		rgba(228, 238, 232, 0.13);
@@ -527,53 +435,30 @@ html[data-theme="dark"] {
 	--color-border-accent:
 		rgba(138, 201, 90, 0.42);
 
-
-	/* -------------------------------------------------------
-	   Accent
-	------------------------------------------------------- */
-
-	--color-accent:
-		#82bd50;
-
-	--color-accent-hover:
-		#9bd76a;
-
+	--color-accent: #82bd50;
+	--color-accent-hover: #9bd76a;
 	--color-accent-soft:
 		rgba(130, 189, 80, 0.14);
 
-
-	/* -------------------------------------------------------
-	   Semantic
-	------------------------------------------------------- */
-
-	--color-info:
-		#67b5e3;
-
+	--color-info: #67b5e3;
 	--color-info-soft:
 		rgba(103, 181, 227, 0.14);
 
-	--color-success:
-		#82bd50;
-
+	--color-success: #82bd50;
 	--color-success-soft:
 		rgba(130, 189, 80, 0.14);
 
-	--color-warning:
-		#e0b34d;
-
+	--color-warning: #e0b34d;
 	--color-warning-soft:
 		rgba(224, 179, 77, 0.15);
 
-	--color-danger:
-		#df7668;
-
+	--color-danger: #df7668;
 	--color-danger-soft:
 		rgba(223, 118, 104, 0.14);
 
-
-	/* -------------------------------------------------------
-	   Atmosphere
-	------------------------------------------------------- */
+	--color-tip: #a78bfa;
+	--color-tip-soft:
+		rgba(167, 139, 250, 0.14);
 
 	--color-sky-atmosphere:
 		rgba(80, 145, 183, 0.12);
@@ -587,18 +472,8 @@ html[data-theme="dark"] {
 	--light-highlight:
 		rgba(255, 247, 214, 0.20);
 
-
-	/* -------------------------------------------------------
-	   World Background
-	------------------------------------------------------- */
-
 	--world-background-overlay:
 		rgba(8, 11, 13, 0.58);
-
-
-	/* -------------------------------------------------------
-	   Shadows
-	------------------------------------------------------- */
 
 	--color-shadow:
 		rgba(0, 0, 0, 0.42);
@@ -615,11 +490,6 @@ html[data-theme="dark"] {
 	--shadow-deep:
 		8px 8px 0 rgba(0, 0, 0, 0.48);
 
-
-	/* -------------------------------------------------------
-	   Block shadows
-	------------------------------------------------------- */
-
 	--block-shadow:
 		0 3px 0 rgba(0, 0, 0, 0.42);
 
@@ -628,32 +498,23 @@ html[data-theme="dark"] {
 
 	--block-shadow-active:
 		0 1px 0 rgba(0, 0, 0, 0.46);
-
 }
 
 
 /* =========================================================
-   Base Body
+   04. Base Body
 ========================================================= */
 
 body {
 
-	position:
-		relative;
+	position: relative;
 
-	min-height:
-		100vh;
+	min-height: 100vh;
 
-	font-family:
-		var(--font-sans);
+	font-family: var(--font-sans);
 
 	background-color:
 		var(--color-background);
-
-	/*
-	 * The world itself lives on the body.
-	 * Content is placed above it.
-	 */
 
 	background-image:
 		var(--world-background);
@@ -688,33 +549,26 @@ body {
 	transition:
 		background-color var(--transition-theme),
 		color var(--transition-theme);
-
 }
 
 
 /* =========================================================
-   World Atmosphere
+   05. World Atmosphere
 ========================================================= */
 
 body::before {
 
-	content:
-		"";
+	content: "";
 
-	position:
-		fixed;
+	position: fixed;
 
-	inset:
-		0;
+	inset: 0;
 
-	z-index:
-		var(--z-world);
+	z-index: var(--z-world);
 
-	pointer-events:
-		none;
+	pointer-events: none;
 
 	background:
-
 		linear-gradient(
 			180deg,
 			var(--world-background-overlay),
@@ -722,7 +576,6 @@ body::before {
 			transparent 72%,
 			var(--world-background-overlay)
 		),
-
 		linear-gradient(
 			var(--light-angle),
 			var(--color-sunlight),
@@ -731,71 +584,57 @@ body::before {
 
 	opacity:
 		var(--world-background-opacity);
-
 }
 
 
 /* =========================================================
-   World Atmospheric Fog
+   06. World Atmospheric Fog
 ========================================================= */
 
 body::after {
 
-	content:
-		"";
+	content: "";
 
-	position:
-		fixed;
+	position: fixed;
 
-	inset:
-		0;
+	inset: 0;
 
-	z-index:
-		var(--z-world);
+	z-index: var(--z-world);
 
-	pointer-events:
-		none;
+	pointer-events: none;
 
 	background:
-
 		radial-gradient(
 			ellipse at 18% 20%,
 			var(--color-sky-atmosphere),
 			transparent 38%
 		),
-
 		linear-gradient(
 			180deg,
 			transparent 55%,
 			rgba(255, 255, 255, 0.08) 100%
 		);
 
-	mix-blend-mode:
-		normal;
-
 	opacity:
 		0.8;
-
 }
 
 
 /* =========================================================
-   Direct Children Above World
+   07. Direct Children Above World
 ========================================================= */
 
 body > * {
 
-	position:
-		relative;
+	position: relative;
 
 	z-index:
 		var(--z-content);
-
 }
 
 
 /* =========================================================
-   Main Container
+   08. Main Container
 ========================================================= */
 
 .astro-main {
@@ -815,12 +654,6 @@ body > * {
 	padding:
 		0 var(--page-padding);
 
-	/*
-	 * Slight transparency allows the world to remain
-	 * visually connected to the page while preserving
-	 * text readability.
-	 */
-
 	background:
 		color-mix(
 			in srgb,
@@ -829,18 +662,16 @@ body > * {
 		);
 
 	box-shadow:
+		0 0 32px rgba(0, 0, 0, 0.10),
+		0 16px 40px rgba(0, 0, 0, 0.08);
 
-		0 0 32px
-		rgba(0, 0, 0, 0.10),
-
-		0 16px 40px
-		rgba(0, 0, 0, 0.08);
-
+	overflow-x:
+		hidden;
 }
 
 
 /* =========================================================
-   Typography
+   09. Typography
 ========================================================= */
 
 h1,
@@ -865,6 +696,8 @@ h6 {
 	color:
 		var(--color-text);
 
+	overflow-wrap:
+		anywhere;
 }
 
 h1 {
@@ -888,34 +721,42 @@ h4 {
 }
 
 p {
+
 	color:
 		var(--color-text);
+
+	overflow-wrap:
+		break-word;
 }
 
 
 /* =========================================================
-   Links
+   10. Links
 ========================================================= */
 
 a {
+
+	color:
+		var(--color-text);
 
 	transition:
 		color var(--transition-fast),
 		opacity var(--transition-fast),
 		transform var(--transition-fast);
 
+	overflow-wrap:
+		break-word;
 }
 
 a:hover {
 
 	color:
 		var(--color-accent);
-
 }
 
 
 /* =========================================================
-   Inputs
+   11. Inputs
 ========================================================= */
 
 input,
@@ -925,6 +766,9 @@ select {
 	width:
 		100%;
 
+	max-width:
+		100%;
+
 	color:
 		var(--color-text);
 
@@ -932,7 +776,9 @@ select {
 		var(--color-surface);
 
 	border:
-		var(--border-width) solid var(--color-border);
+		var(--border-width)
+		solid
+		var(--color-border);
 
 	border-radius:
 		0;
@@ -945,7 +791,6 @@ select {
 		background-color var(--transition-fast),
 		box-shadow var(--transition-fast),
 		transform var(--transition-fast);
-
 }
 
 input,
@@ -953,7 +798,6 @@ select {
 
 	min-height:
 		44px;
-
 }
 
 input,
@@ -962,7 +806,15 @@ select {
 
 	padding:
 		10px 12px;
+}
 
+textarea {
+
+	resize:
+		vertical;
+
+	min-height:
+		120px;
 }
 
 input::placeholder,
@@ -970,7 +822,6 @@ textarea::placeholder {
 
 	color:
 		var(--color-text-tertiary);
-
 }
 
 input:hover,
@@ -982,7 +833,6 @@ select:hover {
 
 	background:
 		var(--color-surface-hover);
-
 }
 
 input:focus,
@@ -996,18 +846,13 @@ select:focus {
 		none;
 
 	box-shadow:
-
-		inset 0 2px 0
-		var(--color-surface-strong),
-
-		0 0 0 3px
-		var(--color-accent-soft);
-
+		inset 0 2px 0 var(--color-surface-strong),
+		0 0 0 3px var(--color-accent-soft);
 }
 
 
 /* =========================================================
-   Buttons
+   12. Buttons
 ========================================================= */
 
 button {
@@ -1018,24 +863,59 @@ button {
 	border-radius:
 		0;
 
+	transition:
+		background-color var(--transition-fast),
+		color var(--transition-fast),
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast),
+		transform var(--transition-fast);
+}
+
+button:hover {
+
+	color:
+		var(--color-accent);
 }
 
 button:active {
 
 	transform:
 		translateY(2px);
-
 }
 
 
 /* =========================================================
-   Tables
+   13. Tables
+   ---------------------------------------------------------
+   Desktop:
+   Database-style table.
+
+   Mobile:
+   The entire main content becomes the horizontal
+   scrolling viewport when a table is wider than
+   the screen.
+
+   IMPORTANT:
+   - One real table layout is preserved.
+   - thead / tbody / tfoot are NOT converted into
+     separate table layouts.
+   - Columns therefore remain aligned.
+   - Tables are never converted into cards.
 ========================================================= */
 
 table {
 
+	display:
+		table;
+
 	width:
 		100%;
+
+	max-width:
+		100%;
+
+	margin:
+		24px 0;
 
 	border-collapse:
 		separate;
@@ -1043,11 +923,10 @@ table {
 	border-spacing:
 		0;
 
-	overflow:
-		hidden;
-
 	border:
-		var(--border-width) solid var(--color-border);
+		var(--border-width)
+		solid
+		var(--color-border);
 
 	border-radius:
 		0;
@@ -1058,7 +937,17 @@ table {
 	box-shadow:
 		var(--block-shadow);
 
+	color:
+		var(--color-text);
+
+	table-layout:
+		auto;
 }
+
+
+/* ---------------------------------------------------------
+   Table Cells
+--------------------------------------------------------- */
 
 th,
 td {
@@ -1067,17 +956,57 @@ td {
 		12px 16px;
 
 	border-bottom:
-		var(--border-width) solid var(--color-border);
+		var(--border-width)
+		solid
+		var(--color-border);
+
+	border-right:
+		var(--border-width)
+		solid
+		var(--color-border);
 
 	text-align:
 		left;
 
+	vertical-align:
+		top;
+
+	line-height:
+		1.55;
+
+	overflow-wrap:
+		break-word;
+
+	word-break:
+		normal;
 }
+
+th:last-child,
+td:last-child {
+
+	border-right:
+		0;
+}
+
+tr:last-child td {
+
+	border-bottom:
+		0;
+}
+
+
+/* ---------------------------------------------------------
+   Table Header
+--------------------------------------------------------- */
 
 th {
 
 	background:
-		var(--color-surface-strong);
+		linear-gradient(
+			180deg,
+			var(--color-surface-strong),
+			var(--color-surface-subtle)
+		);
 
 	font-size:
 		13px;
@@ -1088,7 +1017,14 @@ th {
 	color:
 		var(--color-text);
 
+	white-space:
+		nowrap;
 }
+
+
+/* ---------------------------------------------------------
+   Table Body
+--------------------------------------------------------- */
 
 td {
 
@@ -1098,32 +1034,111 @@ td {
 	color:
 		var(--color-text-secondary);
 
-}
-
-tr:last-child td {
-
-	border-bottom:
-		0;
-
+	background:
+		var(--color-surface);
 }
 
 tbody tr {
 
 	transition:
 		background-color var(--transition-fast);
-
 }
 
-tbody tr:hover {
+tbody tr:hover td {
 
 	background:
 		var(--color-surface-hover);
+}
 
+
+/* ---------------------------------------------------------
+   Table Code
+--------------------------------------------------------- */
+
+td code,
+th code {
+
+	white-space:
+		nowrap;
+}
+
+
+/* ---------------------------------------------------------
+   Mobile Table
+   ---------------------------------------------------------
+   DO NOT split the table into independent
+   thead / tbody / tfoot tables.
+
+   Instead, the containing content area becomes
+   horizontally scrollable.
+--------------------------------------------------------- */
+
+@media (max-width: 768px) {
+
+	.astro-main {
+
+		overflow-x:
+			auto;
+
+		-webkit-overflow-scrolling:
+			touch;
+
+		overscroll-behavior-x:
+			contain;
+	}
+
+	table {
+
+		width:
+			max-content;
+
+		min-width:
+			100%;
+
+		max-width:
+			none;
+
+		margin:
+			20px 0;
+
+	}
+
+	th,
+	td {
+
+		min-width:
+			120px;
+
+		padding:
+			10px 12px;
+
+		font-size:
+			13px;
+	}
+
+	th {
+
+		white-space:
+			nowrap;
+	}
+
+	td {
+
+		white-space:
+			normal;
+	}
+
+	td code,
+	th code {
+
+		white-space:
+			nowrap;
+	}
 }
 
 
 /* =========================================================
-   Inline Code
+   14. Inline Code
 ========================================================= */
 
 code {
@@ -1138,7 +1153,8 @@ code {
 		3px 7px;
 
 	border:
-		1px solid var(--color-border);
+		1px solid
+		var(--color-border);
 
 	border-radius:
 		0;
@@ -1149,17 +1165,28 @@ code {
 	color:
 		var(--color-accent);
 
+	overflow-wrap:
+		break-word;
 }
 
 
 /* =========================================================
-   Code Blocks
+   15. Code Blocks
 ========================================================= */
 
 pre {
 
+	width:
+		100%;
+
+	max-width:
+		100%;
+
 	overflow-x:
 		auto;
+
+	overflow-y:
+		hidden;
 
 	margin:
 		24px 0;
@@ -1168,7 +1195,8 @@ pre {
 		20px;
 
 	border:
-		1px solid var(--color-border-strong);
+		1px solid
+		var(--color-border-strong);
 
 	border-radius:
 		0;
@@ -1182,9 +1210,23 @@ pre {
 	box-shadow:
 		4px 4px 0 rgba(0, 0, 0, 0.25);
 
+	-webkit-overflow-scrolling:
+		touch;
+
+	overscroll-behavior-x:
+		contain;
 }
 
 pre code {
+
+	display:
+		block;
+
+	width:
+		max-content;
+
+	min-width:
+		100%;
 
 	padding:
 		0;
@@ -1201,11 +1243,13 @@ pre code {
 	color:
 		inherit;
 
+	white-space:
+		pre;
 }
 
 
 /* =========================================================
-   Blockquote
+   16. Blockquote
 ========================================================= */
 
 blockquote {
@@ -1220,10 +1264,12 @@ blockquote {
 		18px 20px;
 
 	border:
-		1px solid var(--color-border);
+		1px solid
+		var(--color-border);
 
 	border-left:
-		4px solid var(--color-accent);
+		4px solid
+		var(--color-accent);
 
 	border-radius:
 		0;
@@ -1239,13 +1285,16 @@ blockquote {
 		var(--color-text-secondary);
 
 	box-shadow:
-		2px 3px 0 var(--color-border);
+		2px 3px 0
+		var(--color-border);
 
+	overflow-wrap:
+		break-word;
 }
 
 
 /* =========================================================
-   Horizontal Rule
+   17. Horizontal Rule
 ========================================================= */
 
 hr {
@@ -1257,13 +1306,13 @@ hr {
 		0;
 
 	border-top:
-		1px solid var(--color-border-strong);
-
+		1px solid
+		var(--color-border-strong);
 }
 
 
 /* =========================================================
-   Lists
+   18. Lists
 ========================================================= */
 
 ul,
@@ -1274,21 +1323,18 @@ ol {
 
 	padding-left:
 		24px;
-
 }
 
 ul {
 
 	list-style:
 		disc;
-
 }
 
 ol {
 
 	list-style:
 		decimal;
-
 }
 
 li {
@@ -1296,6 +1342,8 @@ li {
 	margin:
 		6px 0;
 
+	overflow-wrap:
+		break-word;
 }
 
 li::marker {
@@ -1305,12 +1353,57 @@ li::marker {
 
 	font-weight:
 		700;
-
 }
 
 
 /* =========================================================
-   NUGBASE Block Utility
+   19. Media
+========================================================= */
+
+img,
+video,
+iframe,
+svg,
+canvas {
+
+	max-width:
+		100%;
+}
+
+img,
+video {
+
+	height:
+		auto;
+}
+
+iframe {
+
+	border:
+		0;
+}
+
+figure {
+
+	max-width:
+		100%;
+
+	overflow:
+		hidden;
+}
+
+figure img {
+
+	width:
+		100%;
+
+	height:
+		auto;
+}
+
+
+/* =========================================================
+   20. NUGBASE Block Utility
 ========================================================= */
 
 .nug-block {
@@ -1319,13 +1412,18 @@ li::marker {
 		relative;
 
 	border:
-		var(--border-width) solid var(--color-border);
+		var(--border-width)
+		solid
+		var(--color-border);
 
 	border-radius:
 		0;
 
 	background:
 		var(--color-surface);
+
+	color:
+		var(--color-text);
 
 	box-shadow:
 		var(--block-shadow);
@@ -1335,12 +1433,11 @@ li::marker {
 		border-color var(--transition-fast),
 		box-shadow var(--transition-fast),
 		transform var(--transition-fast);
-
 }
 
 
 /* ---------------------------------------------------------
-   Top-left light
+   Top-left Light
 --------------------------------------------------------- */
 
 .nug-block::before {
@@ -1373,7 +1470,6 @@ li::marker {
 
 	pointer-events:
 		none;
-
 }
 
 
@@ -1394,7 +1490,6 @@ li::marker {
 
 	transform:
 		translateY(-1px);
-
 }
 
 
@@ -1409,45 +1504,746 @@ li::marker {
 
 	box-shadow:
 		var(--block-shadow-active);
-
 }
 
 
 /* =========================================================
-   Color Utilities
+   21. Shared NUGBASE Card System
+   ---------------------------------------------------------
+   Applies to non-Wiki pages.
+
+   Existing components:
+   - CategoryCard
+   - Server cards
+   - About panel
+   - Latest panel
+   - Guide / News / Tool cards
 ========================================================= */
 
-.nug-accent {
+.category-card,
+.server-card,
+.about-panel,
+.latest-panel,
+.guide-card,
+.news-card,
+.tool-card {
+
+	position:
+		relative;
+
+	display:
+		block;
+
+	border:
+		var(--border-width)
+		solid
+		var(--color-border);
+
+	border-radius:
+		0;
+
+	background:
+		var(--color-surface);
+
+	color:
+		var(--color-text);
+
+	box-shadow:
+		var(--block-shadow);
+
+	overflow:
+		hidden;
+
+	transition:
+		background-color var(--transition-fast),
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast),
+		transform var(--transition-fast);
+}
+
+
+/* ---------------------------------------------------------
+   Shared top-left lighting
+--------------------------------------------------------- */
+
+.category-card::before,
+.server-card::before,
+.about-panel::before,
+.latest-panel::before,
+.guide-card::before,
+.news-card::before,
+.tool-card::before {
+
+	content:
+		"";
+
+	position:
+		absolute;
+
+	top:
+		0;
+
+	left:
+		0;
+
+	width:
+		55%;
+
+	height:
+		2px;
+
+	background:
+		linear-gradient(
+			90deg,
+			var(--color-gold-light),
+			var(--color-grass-light),
+			transparent
+		);
+
+	pointer-events:
+		none;
+
+	z-index:
+		1;
+}
+
+
+/* ---------------------------------------------------------
+   Shared Hover
+--------------------------------------------------------- */
+
+.category-card:hover,
+.server-card:hover,
+.guide-card:hover,
+.news-card:hover,
+.tool-card:hover {
+
+	background:
+		var(--color-surface-hover);
+
+	border-color:
+		var(--color-border-strong);
+
+	box-shadow:
+		var(--block-shadow-hover);
+
+	transform:
+		translateY(-1px);
+}
+
+
+/* ---------------------------------------------------------
+   Panels
+--------------------------------------------------------- */
+
+.about-panel,
+.latest-panel {
+
+	padding:
+		var(--space-6);
+}
+
+
+/* ---------------------------------------------------------
+   Card Content
+--------------------------------------------------------- */
+
+.category-card .card-content,
+.server-card .server-card-content,
+.guide-card .card-content,
+.news-card .card-content,
+.tool-card .card-content {
+
+	color:
+		var(--color-text);
+}
+
+
+/* ---------------------------------------------------------
+   Card Headings
+--------------------------------------------------------- */
+
+.category-card h2,
+.category-card h3,
+.server-card h2,
+.server-card h3,
+.guide-card h2,
+.guide-card h3,
+.news-card h2,
+.news-card h3,
+.tool-card h2,
+.tool-card h3,
+.about-panel h2,
+.about-panel h3,
+.latest-panel h2,
+.latest-panel h3 {
+
+	color:
+		var(--color-text);
+}
+
+
+/* ---------------------------------------------------------
+   Card Secondary Text
+--------------------------------------------------------- */
+
+.category-card .card-description,
+.server-card .server-card-description,
+.guide-card .card-description,
+.news-card .card-description,
+.tool-card .card-description,
+.about-panel p,
+.latest-panel p {
+
+	color:
+		var(--color-text-secondary);
+}
+
+
+/* ---------------------------------------------------------
+   Card Labels
+--------------------------------------------------------- */
+
+.category-card .card-label,
+.server-card .server-slot,
+.guide-card .card-label,
+.news-card .card-label,
+.tool-card .card-label {
+
+	color:
+		var(--color-text-secondary);
+
+	background:
+		var(--color-surface-subtle);
+
+	border-color:
+		var(--color-border);
+}
+
+
+/* ---------------------------------------------------------
+   Card Icons
+--------------------------------------------------------- */
+
+.category-card .card-icon,
+.server-card .server-icon {
+
+	color:
+		var(--color-text);
+
+	background:
+		var(--color-surface-subtle);
+
+	border-color:
+		var(--color-border-strong);
+}
+
+
+/* ---------------------------------------------------------
+   Card Arrows
+--------------------------------------------------------- */
+
+.category-card .card-arrow,
+.server-card .server-arrow {
 
 	color:
 		var(--color-accent);
 
+	flex-shrink:
+		0;
+
+	transition:
+		transform var(--transition-fast),
+		color var(--transition-fast);
 }
 
-.nug-grass {
+.category-card:hover .card-arrow,
+.server-card:hover .server-arrow {
 
 	color:
-		var(--color-grass);
+		var(--color-accent-hover);
 
-}
-
-.nug-gold {
-
-	color:
-		var(--color-gold);
-
-}
-
-.nug-water {
-
-	color:
-		var(--color-water);
-
+	transform:
+		translateX(4px);
 }
 
 
 /* =========================================================
-   Inventory Label Utility
+   22. Category Cards
+========================================================= */
+
+.category-card {
+
+	height:
+		100%;
+
+	min-height:
+		132px;
+}
+
+.category-card > a {
+
+	display:
+		flex;
+
+	flex-direction:
+		column;
+
+	height:
+		100%;
+
+	padding:
+		var(--space-5);
+
+	color:
+		var(--color-text);
+}
+
+.category-card .card-top {
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	gap:
+		var(--space-3);
+
+	margin-bottom:
+		var(--space-3);
+}
+
+.category-card .card-icon {
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		center;
+
+	width:
+		48px;
+
+	height:
+		48px;
+
+	flex-shrink:
+		0;
+
+	border:
+		1px solid
+		var(--color-border-strong);
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-surface-strong),
+			var(--color-surface)
+		);
+
+	box-shadow:
+		var(--block-shadow);
+}
+
+.category-card .card-arrow {
+
+	margin-left:
+		auto;
+
+	font-size:
+		20px;
+
+	font-weight:
+		800;
+}
+
+.category-card .card-content {
+
+	flex:
+		1;
+}
+
+.category-card .card-label {
+
+	display:
+		inline-flex;
+
+	align-items:
+		center;
+
+	min-height:
+		24px;
+
+	margin-bottom:
+		6px;
+
+	padding:
+		2px 8px;
+
+	border:
+		1px solid
+		var(--color-border);
+
+	background:
+		var(--color-surface-subtle);
+
+	font-size:
+		11px;
+
+	font-weight:
+		800;
+
+	letter-spacing:
+		0.04em;
+}
+
+.category-card .card-description {
+
+	margin-top:
+		6px;
+
+	font-size:
+		14px;
+
+	line-height:
+		1.6;
+}
+
+
+/* =========================================================
+   23. Server Cards
+========================================================= */
+
+.server-card {
+
+	height:
+		100%;
+
+	min-height:
+		150px;
+}
+
+.server-card > a {
+
+	display:
+		flex;
+
+	flex-direction:
+		column;
+
+	height:
+		100%;
+
+	padding:
+		var(--space-5);
+
+	color:
+		var(--color-text);
+}
+
+.server-card-top {
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	gap:
+		var(--space-3);
+
+	margin-bottom:
+		var(--space-3);
+}
+
+.server-icon {
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		center;
+
+	width:
+		48px;
+
+	height:
+		48px;
+
+	flex-shrink:
+		0;
+
+	border:
+		1px solid
+		var(--color-border-strong);
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-surface-strong),
+			var(--color-surface)
+		);
+
+	box-shadow:
+		var(--block-shadow);
+}
+
+.server-slot {
+
+	display:
+		inline-flex;
+
+	align-items:
+		center;
+
+	min-height:
+		22px;
+
+	padding:
+		2px 8px;
+
+	border:
+		1px solid
+		var(--color-border);
+
+	background:
+		var(--color-surface-subtle);
+
+	font-family:
+		var(--font-mono);
+
+	font-size:
+		10px;
+
+	font-weight:
+		800;
+
+	color:
+		var(--color-text-secondary);
+}
+
+.server-arrow {
+
+	margin-left:
+		auto;
+
+	font-size:
+		20px;
+
+	font-weight:
+		800;
+}
+
+.server-card-content {
+
+	flex:
+		1;
+
+	color:
+		var(--color-text);
+}
+
+.server-card-content p {
+
+	color:
+		var(--color-text-secondary);
+}
+
+.server-card-footer {
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		space-between;
+
+	gap:
+		var(--space-2);
+
+	margin-top:
+		var(--space-4);
+
+	padding-top:
+		var(--space-3);
+
+	border-top:
+		1px solid
+		var(--color-border);
+
+	font-size:
+		13px;
+
+	color:
+		var(--color-text-secondary);
+}
+
+
+/* =========================================================
+   24. About / Latest Panels
+========================================================= */
+
+.about-panel,
+.latest-panel {
+
+	color:
+		var(--color-text);
+}
+
+.about-panel a,
+.latest-panel a {
+
+	color:
+		var(--color-accent);
+}
+
+.about-panel a:hover,
+.latest-panel a:hover {
+
+	color:
+		var(--color-accent-hover);
+}
+
+
+/* =========================================================
+   25. Generic Card Block
+========================================================= */
+
+.card-block {
+
+	position:
+		relative;
+
+	border:
+		var(--border-width)
+		solid
+		var(--color-border);
+
+	background:
+		var(--color-surface);
+
+	color:
+		var(--color-text);
+
+	box-shadow:
+		var(--block-shadow);
+
+	transition:
+		background-color var(--transition-fast),
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast),
+		transform var(--transition-fast);
+}
+
+.card-block:hover {
+
+	background:
+		var(--color-surface-hover);
+
+	border-color:
+		var(--color-border-strong);
+
+	box-shadow:
+		var(--block-shadow-hover);
+
+	transform:
+		translateY(-1px);
+}
+
+.card-light {
+
+	color:
+		var(--color-text);
+
+	background:
+		var(--color-surface);
+}
+
+
+/* =========================================================
+   26. Card Grid
+========================================================= */
+
+.card-grid,
+.category-grid,
+.server-grid,
+.guide-grid,
+.news-grid,
+.tool-grid {
+
+	display:
+		grid;
+
+	grid-template-columns:
+		repeat(3, minmax(0, 1fr));
+
+	gap:
+		var(--space-4);
+
+	width:
+		100%;
+}
+
+.category-grid,
+.server-grid {
+
+	align-items:
+		stretch;
+}
+
+
+/* =========================================================
+   27. Card Color Variants
+========================================================= */
+
+.category-guide {
+	--card-accent:
+		var(--color-grass);
+}
+
+.category-wiki {
+	--card-accent:
+		var(--color-water);
+}
+
+.category-news {
+	--card-accent:
+		var(--color-gold);
+}
+
+.category-tool {
+	--card-accent:
+		var(--color-dirt);
+}
+
+.category-about {
+	--card-accent:
+		var(--color-stone);
+}
+
+.category-guide,
+.category-wiki,
+.category-news,
+.category-tool,
+.category-about {
+
+	border-top:
+		2px solid
+		var(--card-accent);
+}
+
+
+/* =========================================================
+   28. Inventory Label Utility
 ========================================================= */
 
 .nug-label {
@@ -1461,11 +2257,15 @@ li::marker {
 	min-height:
 		24px;
 
+	max-width:
+		100%;
+
 	padding:
 		0 8px;
 
 	border:
-		1px solid var(--color-border);
+		1px solid
+		var(--color-border);
 
 	border-radius:
 		0;
@@ -1492,13 +2292,16 @@ li::marker {
 		var(--color-text-secondary);
 
 	box-shadow:
-		inset 0 1px 0 var(--color-surface-strong);
+		inset 0 1px 0
+		var(--color-surface-strong);
 
+	overflow-wrap:
+		break-word;
 }
 
 
 /* =========================================================
-   Voxel Slot Utility
+   29. Voxel Slot Utility
 ========================================================= */
 
 .nug-slot {
@@ -1525,7 +2328,8 @@ li::marker {
 		0;
 
 	border:
-		1px solid var(--color-border-strong);
+		1px solid
+		var(--color-border-strong);
 
 	border-radius:
 		0;
@@ -1538,49 +2342,41 @@ li::marker {
 		);
 
 	box-shadow:
-
 		inset 2px 2px 0
 		rgba(255, 255, 255, 0.20),
-
 		inset -2px -2px 0
 		rgba(0, 0, 0, 0.08),
-
 		var(--block-shadow);
-
 }
 
 html[data-theme="dark"] .nug-slot {
 
 	box-shadow:
-
 		inset 2px 2px 0
 		rgba(255, 255, 255, 0.07),
-
 		inset -2px -2px 0
 		rgba(0, 0, 0, 0.22),
-
 		var(--block-shadow);
-
 }
 
 
 /* =========================================================
-   Focus Accessibility
+   30. Focus Accessibility
 ========================================================= */
 
 :focus-visible {
 
 	outline:
-		3px solid var(--color-accent);
+		3px solid
+		var(--color-accent);
 
 	outline-offset:
 		3px;
-
 }
 
 
 /* =========================================================
-   Scrollbar
+   31. Scrollbar
 ========================================================= */
 
 html {
@@ -1588,7 +2384,6 @@ html {
 	scrollbar-color:
 		var(--color-border-strong)
 		var(--color-background);
-
 }
 
 ::-webkit-scrollbar {
@@ -1598,14 +2393,12 @@ html {
 
 	height:
 		11px;
-
 }
 
 ::-webkit-scrollbar-track {
 
 	background:
 		var(--color-background);
-
 }
 
 ::-webkit-scrollbar-thumb {
@@ -1614,34 +2407,64 @@ html {
 		var(--color-border-strong);
 
 	border:
-		3px solid var(--color-background);
+		3px solid
+		var(--color-background);
 
 	border-radius:
 		0;
-
 }
 
 ::-webkit-scrollbar-thumb:hover {
 
 	background:
 		var(--color-text-tertiary);
-
 }
 
 
 /* =========================================================
-   Responsive
+   32. Touch / Selection Improvements
 ========================================================= */
 
-@media (max-width: 768px) {
+@media (hover: none) {
+
+	.nug-block:hover,
+	.category-card:hover,
+	.server-card:hover,
+	.guide-card:hover,
+	.news-card:hover,
+	.tool-card:hover,
+	.card-block:hover {
+
+		transform:
+			none;
+	}
+
+	button:hover {
+
+		color:
+			var(--color-text);
+	}
+
+	.category-card:hover .card-arrow,
+	.server-card:hover .server-arrow {
+
+		transform:
+			none;
+	}
+}
+
+
+/* =========================================================
+   33. Responsive Layout
+========================================================= */
+
+@media (max-width: 1024px) {
 
 	:root {
 
 		--page-padding:
-			16px;
-
+			20px;
 	}
-
 
 	.astro-main {
 
@@ -1650,39 +2473,52 @@ html {
 
 		padding-right:
 			var(--page-padding);
-
 	}
 
+	.card-grid,
+	.category-grid,
+	.server-grid,
+	.guide-grid,
+	.news-grid,
+	.tool-grid {
 
-	table {
-
-		min-width:
-			640px;
-
+		grid-template-columns:
+			repeat(2, minmax(0, 1fr));
 	}
+}
 
 
-	th,
-	td {
+/* =========================================================
+   34. Tablet / Mobile
+========================================================= */
 
-		padding:
-			10px 12px;
+@media (max-width: 768px) {
 
-	}
+	:root {
 
-
-	pre {
-
-		padding:
+		--page-padding:
 			16px;
+	}
 
+	.astro-main {
+
+		width:
+			100%;
+
+		max-width:
+			100%;
+
+		padding-left:
+			var(--page-padding);
+
+		padding-right:
+			var(--page-padding);
 	}
 
 
-	/*
-	 * Fixed background attachment can behave poorly
-	 * on some mobile browsers.
-	 */
+	/* -------------------------------------------------------
+	   Mobile World
+	------------------------------------------------------- */
 
 	body {
 
@@ -1691,23 +2527,104 @@ html {
 
 		background-position:
 			center center;
-
 	}
-
 
 	body::before,
 	body::after {
 
 		position:
 			absolute;
-
 	}
 
+
+	/* -------------------------------------------------------
+	   Mobile Media
+	------------------------------------------------------- */
+
+	img,
+	svg,
+	video,
+	canvas,
+	iframe {
+
+		max-width:
+			100%;
+	}
+
+
+	/* -------------------------------------------------------
+	   Touch Controls
+	------------------------------------------------------- */
+
+	button,
+	input[type="button"],
+	input[type="submit"],
+	input[type="reset"] {
+
+		min-height:
+			44px;
+	}
+
+
+	/* -------------------------------------------------------
+	   Mobile Cards
+	------------------------------------------------------- */
+
+	.card-grid,
+	.category-grid,
+	.server-grid,
+	.guide-grid,
+	.news-grid,
+	.tool-grid {
+
+		grid-template-columns:
+			1fr;
+
+		gap:
+			var(--space-3);
+	}
+
+	.category-card,
+	.server-card,
+	.guide-card,
+	.news-card,
+	.tool-card {
+
+		width:
+			100%;
+
+		min-width:
+			0;
+	}
+
+	.category-card > a,
+	.server-card > a {
+
+		padding:
+			var(--space-4);
+	}
+
+	.category-card .card-icon,
+	.server-icon {
+
+		width:
+			44px;
+
+		height:
+			44px;
+	}
+
+	.about-panel,
+	.latest-panel {
+
+		padding:
+			var(--space-4);
+	}
 }
 
 
 /* =========================================================
-   Small Screens
+   35. Small Screens
 ========================================================= */
 
 @media (max-width: 480px) {
@@ -1716,14 +2633,325 @@ html {
 
 		--page-padding:
 			12px;
-
 	}
 
+	h1 {
+
+		font-size:
+			clamp(28px, 9vw, 36px);
+	}
+
+	h2 {
+
+		font-size:
+			clamp(22px, 7vw, 28px);
+	}
+
+	h3 {
+
+		font-size:
+			clamp(19px, 6vw, 23px);
+	}
+
+
+	/* -------------------------------------------------------
+	   Code
+	------------------------------------------------------- */
+
+	pre {
+
+		margin-top:
+			20px;
+
+		margin-bottom:
+			20px;
+
+		padding:
+			14px;
+
+		font-size:
+			13px;
+	}
+
+
+	/* -------------------------------------------------------
+	   Blockquote
+	------------------------------------------------------- */
+
+	blockquote {
+
+		padding:
+			14px 16px;
+	}
+
+
+	/* -------------------------------------------------------
+	   Tables
+	------------------------------------------------------- */
+
+	table {
+
+		margin-top:
+			16px;
+
+		margin-bottom:
+			16px;
+	}
+
+	th,
+	td {
+
+		padding:
+			9px 10px;
+
+		font-size:
+			13px;
+	}
+
+
+	/* -------------------------------------------------------
+	   Cards
+	------------------------------------------------------- */
+
+	.category-card > a,
+	.server-card > a {
+
+		padding:
+			14px;
+	}
+
+	.category-card .card-top,
+	.server-card-top {
+
+		gap:
+			var(--space-2);
+
+		margin-bottom:
+			var(--space-2);
+	}
+
+	.category-card .card-description,
+	.server-card-content p {
+
+		font-size:
+			13px;
+
+		line-height:
+			1.6;
+	}
+
+	.server-card-footer {
+
+		margin-top:
+			var(--space-3);
+
+		padding-top:
+			var(--space-2);
+	}
 }
 
 
 /* =========================================================
-   Reduced Motion
+   36. Safe Area
+========================================================= */
+
+@supports (padding: env(safe-area-inset-left)) {
+
+	body {
+
+		padding-left:
+			env(safe-area-inset-left);
+
+		padding-right:
+			env(safe-area-inset-right);
+	}
+}
+
+
+/* =========================================================
+   37. Long Content Protection
+========================================================= */
+
+p,
+li,
+td,
+th,
+blockquote,
+.nug-block,
+.nug-label,
+.category-card,
+.server-card,
+.guide-card,
+.news-card,
+.tool-card {
+
+	overflow-wrap:
+		anywhere;
+
+	word-break:
+		normal;
+}
+
+
+/* ---------------------------------------------------------
+   Preformatted content
+--------------------------------------------------------- */
+
+pre,
+pre code,
+code {
+
+	word-break:
+		normal;
+
+	overflow-wrap:
+		normal;
+}
+
+
+/* =========================================================
+   38. Light Mode Explicit Text Safety
+   ---------------------------------------------------------
+   Prevent inherited white text from old components
+   from becoming unreadable on light surfaces.
+========================================================= */
+
+html:not([data-theme="dark"]) {
+
+	color:
+		var(--color-text);
+}
+
+html:not([data-theme="dark"]) .category-card,
+html:not([data-theme="dark"]) .server-card,
+html:not([data-theme="dark"]) .guide-card,
+html:not([data-theme="dark"]) .news-card,
+html:not([data-theme="dark"]) .tool-card,
+html:not([data-theme="dark"]) .about-panel,
+html:not([data-theme="dark"]) .latest-panel,
+html:not([data-theme="dark"]) .card-block {
+
+	color:
+		#202521;
+
+	background:
+		#ffffff;
+}
+
+html:not([data-theme="dark"]) .category-card h1,
+html:not([data-theme="dark"]) .category-card h2,
+html:not([data-theme="dark"]) .category-card h3,
+html:not([data-theme="dark"]) .category-card h4,
+html:not([data-theme="dark"]) .server-card h1,
+html:not([data-theme="dark"]) .server-card h2,
+html:not([data-theme="dark"]) .server-card h3,
+html:not([data-theme="dark"]) .server-card h4,
+html:not([data-theme="dark"]) .guide-card h1,
+html:not([data-theme="dark"]) .guide-card h2,
+html:not([data-theme="dark"]) .guide-card h3,
+html:not([data-theme="dark"]) .guide-card h4,
+html:not([data-theme="dark"]) .news-card h1,
+html:not([data-theme="dark"]) .news-card h2,
+html:not([data-theme="dark"]) .news-card h3,
+html:not([data-theme="dark"]) .news-card h4,
+html:not([data-theme="dark"]) .tool-card h1,
+html:not([data-theme="dark"]) .tool-card h2,
+html:not([data-theme="dark"]) .tool-card h3,
+html:not([data-theme="dark"]) .tool-card h4,
+html:not([data-theme="dark"]) .about-panel h1,
+html:not([data-theme="dark"]) .about-panel h2,
+html:not([data-theme="dark"]) .about-panel h3,
+html:not([data-theme="dark"]) .about-panel h4,
+html:not([data-theme="dark"]) .latest-panel h1,
+html:not([data-theme="dark"]) .latest-panel h2,
+html:not([data-theme="dark"]) .latest-panel h3,
+html:not([data-theme="dark"]) .latest-panel h4 {
+
+	color:
+		#202521;
+}
+
+html:not([data-theme="dark"]) .category-card p,
+html:not([data-theme="dark"]) .server-card p,
+html:not([data-theme="dark"]) .guide-card p,
+html:not([data-theme="dark"]) .news-card p,
+html:not([data-theme="dark"]) .tool-card p,
+html:not([data-theme="dark"]) .about-panel p,
+html:not([data-theme="dark"]) .latest-panel p {
+
+	color:
+		#58615b;
+}
+
+
+/* =========================================================
+   39. Dark Mode Card Text
+========================================================= */
+
+html[data-theme="dark"] .category-card,
+html[data-theme="dark"] .server-card,
+html[data-theme="dark"] .guide-card,
+html[data-theme="dark"] .news-card,
+html[data-theme="dark"] .tool-card,
+html[data-theme="dark"] .about-panel,
+html[data-theme="dark"] .latest-panel,
+html[data-theme="dark"] .card-block {
+
+	color:
+		var(--color-text);
+
+	background:
+		var(--color-surface);
+}
+
+html[data-theme="dark"] .category-card h1,
+html[data-theme="dark"] .category-card h2,
+html[data-theme="dark"] .category-card h3,
+html[data-theme="dark"] .category-card h4,
+html[data-theme="dark"] .server-card h1,
+html[data-theme="dark"] .server-card h2,
+html[data-theme="dark"] .server-card h3,
+html[data-theme="dark"] .server-card h4,
+html[data-theme="dark"] .guide-card h1,
+html[data-theme="dark"] .guide-card h2,
+html[data-theme="dark"] .guide-card h3,
+html[data-theme="dark"] .guide-card h4,
+html[data-theme="dark"] .news-card h1,
+html[data-theme="dark"] .news-card h2,
+html[data-theme="dark"] .news-card h3,
+html[data-theme="dark"] .news-card h4,
+html[data-theme="dark"] .tool-card h1,
+html[data-theme="dark"] .tool-card h2,
+html[data-theme="dark"] .tool-card h3,
+html[data-theme="dark"] .tool-card h4,
+html[data-theme="dark"] .about-panel h1,
+html[data-theme="dark"] .about-panel h2,
+html[data-theme="dark"] .about-panel h3,
+html[data-theme="dark"] .about-panel h4,
+html[data-theme="dark"] .latest-panel h1,
+html[data-theme="dark"] .latest-panel h2,
+html[data-theme="dark"] .latest-panel h3,
+html[data-theme="dark"] .latest-panel h4 {
+
+	color:
+		var(--color-text);
+}
+
+html[data-theme="dark"] .category-card p,
+html[data-theme="dark"] .server-card p,
+html[data-theme="dark"] .guide-card p,
+html[data-theme="dark"] .news-card p,
+html[data-theme="dark"] .tool-card p,
+html[data-theme="dark"] .about-panel p,
+html[data-theme="dark"] .latest-panel p {
+
+	color:
+		var(--color-text-secondary);
+}
+
+
+/* =========================================================
+   40. Reduced Motion
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
@@ -1732,7 +2960,6 @@ html {
 
 		scroll-behavior:
 			auto;
-
 	}
 
 	*,
@@ -1747,7 +2974,5 @@ html {
 
 		animation-iteration-count:
 			1 !important;
-
 	}
-
 }

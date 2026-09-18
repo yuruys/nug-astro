@@ -1,77 +1,173 @@
-<header class="site-header">
+---
+import MobileBottomNav from "./MobileBottomNav.astro";
 
+const pathname = Astro.url.pathname;
+
+const isWiki =
+	pathname === "/docs" ||
+	pathname.startsWith("/docs/");
+
+const navItems = [
+	{ label: "攻略", href: "/guide/" },
+	{ label: "Wiki", href: "/docs/" },
+	{ label: "ニュース", href: "/news/" },
+	{ label: "ツール", href: "/tool/" },
+	{ label: "NUGについて", href: "/about/" },
+];
+
+const wikiSections = [
+	{
+		label: "サーバー",
+		items: [
+			{
+				label: "サーバー一覧",
+				href: "/docs/servers/",
+			},
+			{
+				label: "NEarth",
+				href: "/docs/servers/nearth/",
+			},
+			{
+				label: "Life",
+				href: "/docs/servers/life/",
+			},
+			{
+				label: "Cho",
+				href: "/docs/servers/cho/",
+			},
+		],
+	},
+	{
+		label: "プラグイン",
+		items: [
+			{
+				label: "Lands",
+				href: "/docs/plugins/lands/",
+			},
+			{
+				label: "QuickShop",
+				href: "/docs/plugins/quickshop/",
+			},
+			{
+				label: "Jobs",
+				href: "/docs/plugins/jobs/",
+			},
+			{
+				label: "mcMMO",
+				href: "/docs/plugins/mcmmo/",
+			},
+			{
+				label: "Bolt",
+				href: "/docs/plugins/bolt/",
+			},
+			{
+				label: "PlayerGuard",
+				href: "/docs/plugins/playerguard/",
+			},
+			{
+				label: "LWC",
+				href: "/docs/plugins/lwc/",
+			},
+		],
+	},
+	{
+		label: "Mod",
+		items: [
+			{
+				label: "使用可能なMod",
+				href: "/docs/mods/allowed-mods/",
+			},
+		],
+	},
+];
+
+const isActive = (href: string): boolean => {
+	if (href === "/") {
+		return pathname === "/";
+	}
+
+	return (
+		pathname === href ||
+		pathname.startsWith(href)
+	);
+};
+---
+
+<header
+	class:list={[
+		"site-header",
+		{ "is-wiki": isWiki },
+	]}
+>
 	<div class="header-light"></div>
 
 	<div class="header-inner">
-
-		<!-- ========================================
-		     Logo
-		======================================== -->
-
 		<a
 			href="/"
 			class="logo"
 			aria-label="NUG ホーム"
 		>
-
-			<span class="logo-main">
-				NUG
-			</span>
+			<span class="logo-main">NUG</span>
 
 			<span class="logo-sub">
 				Nekozouneko Unofficial Guide
 			</span>
-
 		</a>
-
-
-		<!-- ========================================
-		     Desktop Navigation
-		======================================== -->
 
 		<nav
 			class="desktop-nav"
 			aria-label="メインナビゲーション"
 		>
+			{navItems.map((item) => {
+				const active = isActive(item.href);
 
-			<a href="/guide/" class="nav-link">
-				<span class="nav-link-inner">
-					攻略
-				</span>
-			</a>
-
-			<a href="/docs/" class="nav-link">
-				<span class="nav-link-inner">
-					Wiki
-				</span>
-			</a>
-
-			<a href="/news/" class="nav-link">
-				<span class="nav-link-inner">
-					ニュース
-				</span>
-			</a>
-
-			<a href="/tool/" class="nav-link">
-				<span class="nav-link-inner">
-					ツール
-				</span>
-			</a>
-
-			<a href="/about/" class="nav-link">
-				<span class="nav-link-inner">
-					NUGについて
-				</span>
-			</a>
-
+				return (
+					<a
+						href={item.href}
+						class:list={[
+							"nav-link",
+							{ active },
+						]}
+						aria-current={
+							active ? "page" : undefined
+						}
+					>
+						<span class="nav-link-inner">
+							{item.label}
+						</span>
+					</a>
+				);
+			})}
 		</nav>
 
-
-		<!-- ========================================
-		     Header Actions
-		======================================== -->
-
 		<div class="header-actions">
+			<!-- ========================================
+			     Search
+			======================================== -->
+
+			<button
+				class="icon-button search-button"
+				type="button"
+				aria-label="サイト内検索を開く"
+				aria-expanded="false"
+				aria-controls="nug-search-overlay"
+			>
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+				>
+					<circle
+						cx="11"
+						cy="11"
+						r="6.5"
+					></circle>
+					<path d="M16 16L21 21"></path>
+				</svg>
+			</button>
+
+			<!-- ========================================
+			     Theme
+			======================================== -->
 
 			<button
 				class="icon-button theme-button"
@@ -79,23 +175,17 @@
 				aria-label="テーマを切り替える"
 				title="テーマを切り替える"
 			>
-
 				<svg
 					class="theme-icon theme-icon-sun"
 					viewBox="0 0 24 24"
 					aria-hidden="true"
 				>
-
 					<circle
 						cx="12"
 						cy="12"
 						r="4"
 					></circle>
-
-					<path
-						d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"
-					></path>
-
+					<path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
 				</svg>
 
 				<svg
@@ -103,88 +193,64 @@
 					viewBox="0 0 24 24"
 					aria-hidden="true"
 				>
-
-					<path
-						d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"
-					></path>
-
+					<path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5Z"></path>
 				</svg>
-
 			</button>
 
+			<!-- ========================================
+			     Wiki Navigation
+			     Wiki pages only
+			======================================== -->
 
-			<button
-				class="icon-button search-button"
-				type="button"
-				aria-label="検索"
-				aria-expanded="false"
-			>
-
-				<svg
-					viewBox="0 0 24 24"
-					aria-hidden="true"
+			{isWiki && (
+				<button
+					class="icon-button wiki-nav-button"
+					type="button"
+					aria-label="Wikiナビゲーションを開く"
+					aria-expanded="false"
+					aria-controls="nug-wiki-navigation"
 				>
-
-					<circle
-						cx="11"
-						cy="11"
-						r="6.5"
-					></circle>
-
-					<path
-						d="M16 16L21 21"
-					></path>
-
-				</svg>
-
-			</button>
-
-
-			<button
-				class="menu-button"
-				type="button"
-				aria-label="メニューを開く"
-				aria-expanded="false"
-			>
-
-				<span></span>
-				<span></span>
-				<span></span>
-
-			</button>
-
+					<svg
+						viewBox="0 0 24 24"
+						aria-hidden="true"
+					>
+						<path d="M4 6h16M4 12h16M4 18h16"></path>
+					</svg>
+				</button>
+			)}
 		</div>
-
 	</div>
 
-
-	<!-- ========================================
+	<!-- ============================================
 	     Search Overlay
-	======================================== -->
+	============================================ -->
 
 	<div
+		id="nug-search-overlay"
 		class="search-overlay"
 		aria-hidden="true"
 	>
+		<div
+			class="search-overlay-backdrop"
+			data-search-close
+		></div>
 
-		<div class="search-overlay-backdrop"></div>
-
-		<div class="search-dialog">
-
+		<div
+			class="search-dialog"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="nug-search-title"
+		>
 			<div class="search-dialog-header">
-
 				<div>
-
 					<p class="search-label">
 						SEARCH
 					</p>
 
-					<h2>
+					<h2 id="nug-search-title">
 						NUGを検索
 					</h2>
-
 				</div>
-
 
 				<button
 					class="search-close"
@@ -193,29 +259,20 @@
 				>
 					×
 				</button>
-
 			</div>
 
-
 			<div class="search-input-wrapper">
-
 				<svg
 					viewBox="0 0 24 24"
 					aria-hidden="true"
 				>
-
 					<circle
 						cx="11"
 						cy="11"
 						r="6.5"
 					></circle>
-
-					<path
-						d="M16 16L21 21"
-					></path>
-
+					<path d="M16 16L21 21"></path>
 				</svg>
-
 
 				<input
 					id="nug-search-input"
@@ -223,113 +280,150 @@
 					placeholder="攻略・プラグイン・コマンドなどを検索"
 					aria-label="サイト内検索"
 					autocomplete="off"
+					spellcheck="false"
 				/>
-
 			</div>
 
+			<div
+				class="search-status"
+				id="nug-search-status"
+				aria-live="polite"
+			></div>
 
 			<div
 				id="nug-search-results"
 				class="search-results"
+				aria-live="polite"
+			></div>
+		</div>
+	</div>
+
+	<!-- ============================================
+	     NUGBASE Wiki Navigation
+	============================================ -->
+
+	{isWiki && (
+		<div
+			id="nug-wiki-navigation"
+			class="wiki-navigation"
+			aria-hidden="true"
+		>
+			<div
+				class="wiki-navigation-backdrop"
+				data-wiki-nav-close
 			></div>
 
-		</div>
+			<div
+				class="wiki-navigation-panel"
+				role="dialog"
+				aria-modal="true"
+				aria-label="Wikiナビゲーション"
+			>
+				<div class="wiki-navigation-header">
+					<div>
+						<p class="wiki-navigation-label">
+							WIKI NAVIGATION
+						</p>
 
-	</div>
+						<h2>Wikiナビ</h2>
+					</div>
 
-
-	<!-- ========================================
-	     Mobile Menu Overlay
-	======================================== -->
-
-	<div
-		class="mobile-menu-overlay"
-		aria-hidden="true"
-	>
-
-		<div class="mobile-menu-backdrop"></div>
-
-		<nav
-			class="mobile-menu"
-			aria-label="モバイルナビゲーション"
-		>
-
-			<div class="mobile-menu-header">
-
-				<div>
-
-					<span class="mobile-menu-title">
-						NUGBASE
-					</span>
-
-					<span class="mobile-menu-subtitle">
-						MENU
-					</span>
-
+					<button
+						class="wiki-navigation-close"
+						type="button"
+						aria-label="Wikiナビゲーションを閉じる"
+					>
+						×
+					</button>
 				</div>
 
-				<button
-					class="mobile-menu-close"
-					type="button"
-					aria-label="メニューを閉じる"
+				<nav
+					class="wiki-navigation-content"
+					aria-label="Wikiナビゲーション"
 				>
-					×
-				</button>
+					{wikiSections.map((section) => (
+						<section
+							class="wiki-navigation-section"
+						>
+							<h3>{section.label}</h3>
 
+							<div class="wiki-navigation-links">
+								{section.items.map((item) => {
+									const active =
+										pathname === item.href ||
+										pathname.startsWith(
+											item.href
+										);
+
+									return (
+										<a
+											href={item.href}
+											class:list={[
+												"wiki-navigation-link",
+												{ active },
+											]}
+											aria-current={
+												active
+													? "page"
+													: undefined
+											}
+										>
+											<span>
+												{item.label}
+											</span>
+
+											<span
+												class="wiki-navigation-arrow"
+												aria-hidden="true"
+											>
+												›
+											</span>
+										</a>
+									);
+								})}
+							</div>
+						</section>
+					))}
+				</nav>
 			</div>
-
-
-			<div class="mobile-menu-links">
-
-				<a href="/guide/">
-					<span class="mobile-icon">📖</span>
-					<span>攻略</span>
-					<span class="mobile-arrow">→</span>
-				</a>
-
-				<a href="/docs/">
-					<span class="mobile-icon">📚</span>
-					<span>Wiki</span>
-					<span class="mobile-arrow">→</span>
-				</a>
-
-				<a href="/news/">
-					<span class="mobile-icon">📰</span>
-					<span>ニュース</span>
-					<span class="mobile-arrow">→</span>
-				</a>
-
-				<a href="/tool/">
-					<span class="mobile-icon">🛠</span>
-					<span>ツール</span>
-					<span class="mobile-arrow">→</span>
-				</a>
-
-				<a href="/about/">
-					<span class="mobile-icon">ℹ</span>
-					<span>NUGについて</span>
-					<span class="mobile-arrow">→</span>
-				</a>
-
-			</div>
-
-		</nav>
-
-	</div>
-
+		</div>
+	)}
 </header>
 
+<MobileBottomNav />
 
 <script>
+	type Theme = "light" | "dark";
 
-	/* ========================================
-	   Elements
-	======================================== */
+	type PagefindResultData = {
+		title?: string;
+		url?: string;
+		excerpt?: string;
+		meta?: Record<string, string>;
+	};
+
+	type PagefindSearchResult = {
+		data: () => Promise<PagefindResultData>;
+	};
+
+	type PagefindSearchResponse = {
+		results: PagefindSearchResult[];
+	};
+
+	type PagefindModule = {
+		search: (
+			query: string
+		) => Promise<PagefindSearchResponse>;
+	};
 
 	const header =
 		document.querySelector<HTMLElement>(
 			".site-header"
 		);
+
+	/* ============================================
+	   Search
+	============================================ */
 
 	const searchButton =
 		document.querySelector<HTMLButtonElement>(
@@ -338,12 +432,17 @@
 
 	const searchOverlay =
 		document.querySelector<HTMLElement>(
-			".search-overlay"
+			"#nug-search-overlay"
 		);
 
 	const searchClose =
 		document.querySelector<HTMLButtonElement>(
 			".search-close"
+		);
+
+	const searchBackdrop =
+		document.querySelector<HTMLElement>(
+			"[data-search-close]"
 		);
 
 	const searchInput =
@@ -356,54 +455,72 @@
 			"#nug-search-results"
 		);
 
-	const searchBackdrop =
+	const searchStatus =
 		document.querySelector<HTMLElement>(
-			".search-overlay-backdrop"
+			"#nug-search-status"
 		);
 
-	const menuButton =
-		document.querySelector<HTMLButtonElement>(
-			".menu-button"
-		);
+	/* ============================================
+	   Theme
+	============================================ */
 
 	const themeButton =
 		document.querySelector<HTMLButtonElement>(
 			".theme-button"
 		);
 
+	/* ============================================
+	   Wiki Navigation
+	============================================ */
+
+	const wikiNavButton =
+		document.querySelector<HTMLButtonElement>(
+			".wiki-nav-button"
+		);
+
+	const wikiNavigation =
+		document.querySelector<HTMLElement>(
+			"#nug-wiki-navigation"
+		);
+
+	const wikiNavigationClose =
+		document.querySelector<HTMLButtonElement>(
+			".wiki-navigation-close"
+		);
+
+	const wikiNavigationBackdrop =
+		document.querySelector<HTMLElement>(
+			"[data-wiki-nav-close]"
+		);
+
 	const themeStorageKey = "nug-theme";
 
+	let pagefind: PagefindModule | null = null;
+	let searchRequest = 0;
 
-	/* ========================================
-	   Theme
-	======================================== */
+	/* ============================================
+	   Theme Functions
+	============================================ */
 
-	const getTheme = (): "light" | "dark" => {
-
-		const theme =
-			document.documentElement.dataset.theme;
-
-		return theme === "dark"
-			? "dark"
-			: "light";
-
-	};
-
-
-	const getSystemTheme = (): "light" | "dark" => {
-
+	const getSystemTheme = (): Theme => {
 		return window.matchMedia(
 			"(prefers-color-scheme: dark)"
 		).matches
 			? "dark"
 			: "light";
-
 	};
 
+	const getTheme = (): Theme => {
+		return document.documentElement.dataset.theme ===
+			"dark"
+			? "dark"
+			: "light";
+	};
 
 	const updateThemeButton = (): void => {
-
-		if (!themeButton) return;
+		if (!themeButton) {
+			return;
+		}
 
 		const nextTheme =
 			getTheme() === "dark"
@@ -424,15 +541,12 @@
 			"title",
 			label
 		);
-
 	};
 
-
 	const setTheme = (
-		theme: "light" | "dark",
+		theme: Theme,
 		save = true
-	) => {
-
+	): void => {
 		document.documentElement.dataset.theme =
 			theme;
 
@@ -440,222 +554,350 @@
 			theme;
 
 		if (save) {
-
 			localStorage.setItem(
 				themeStorageKey,
 				theme
 			);
-
 		}
 
 		updateThemeButton();
-
 	};
 
+	const savedTheme =
+		localStorage.getItem(
+			themeStorageKey
+		);
+
+	if (
+		savedTheme === "light" ||
+		savedTheme === "dark"
+	) {
+		setTheme(savedTheme, false);
+	} else {
+		setTheme(getSystemTheme(), false);
+	}
 
 	themeButton?.addEventListener(
 		"click",
 		() => {
-
-			const currentTheme =
-				getTheme();
-
-			const nextTheme =
-				currentTheme === "dark"
-					? "light"
-					: "dark";
-
 			setTheme(
-				nextTheme,
+				getTheme() === "dark"
+					? "light"
+					: "dark",
 				true
 			);
-
 		}
 	);
 
+	window
+		.matchMedia("(prefers-color-scheme: dark)")
+		.addEventListener(
+			"change",
+			() => {
+				const saved =
+					localStorage.getItem(
+						themeStorageKey
+					);
 
-	const systemThemeQuery =
-		window.matchMedia(
-			"(prefers-color-scheme: dark)"
-		);
+				if (
+					saved === "light" ||
+					saved === "dark"
+				) {
+					return;
+				}
 
-
-	systemThemeQuery.addEventListener(
-		"change",
-		() => {
-
-			const savedTheme =
-				localStorage.getItem(
-					themeStorageKey
+				setTheme(
+					getSystemTheme(),
+					false
 				);
-
-			if (
-				savedTheme === "light" ||
-				savedTheme === "dark"
-			) {
-				return;
 			}
-
-			setTheme(
-				getSystemTheme(),
-				false
-			);
-
-		}
-	);
-
+		);
 
 	updateThemeButton();
 
+	/* ============================================
+	   Wiki Navigation Functions
+	============================================ */
 
-	/* ========================================
-	   Mobile Menu Elements
-	======================================== */
-
-	const mobileMenuOverlay =
-		document.querySelector<HTMLElement>(
-			".mobile-menu-overlay"
-		);
-
-	const mobileMenuClose =
-		document.querySelector<HTMLButtonElement>(
-			".mobile-menu-close"
-		);
-
-	const mobileMenuBackdrop =
-		document.querySelector<HTMLElement>(
-			".mobile-menu-backdrop"
-		);
-
-
-	/* ========================================
-	   Pagefind
-	======================================== */
-
-	type PagefindResultData = {
-		title?: string;
-		url?: string;
-		excerpt?: string;
-		meta?: Record<string, string>;
-	};
-
-
-	type PagefindSearch = {
-		results: Array<{
-			data: () => Promise<PagefindResultData>
-		}>;
-	};
-
-
-	type PagefindModule = {
-		search: (
-			query: string
-		) => Promise<PagefindSearch>;
-	};
-
-
-	let pagefind: PagefindModule | null = null;
-
-	let searchRequest = 0;
-
-
-	async function loadPagefind(): Promise<PagefindModule> {
-
-		if (!pagefind) {
-
-			const pagefindUrl =
-				new URL(
-					"/pagefind/pagefind.js",
-					window.location.origin
-				).href;
-
-
-			const loadModule =
-				new Function(
-					"url",
-					"return import(url)"
-				) as (
-					url: string
-				) => Promise<PagefindModule>;
-
-
-			pagefind =
-				await loadModule(
-					pagefindUrl
-				);
-
+	const setWikiNavigationState = (
+		isOpen: boolean
+	): void => {
+		if (
+			!wikiNavButton ||
+			!wikiNavigation
+		) {
+			return;
 		}
 
+		wikiNavigation.classList.toggle(
+			"is-open",
+			isOpen
+		);
+
+		wikiNavButton.setAttribute(
+			"aria-expanded",
+			String(isOpen)
+		);
+
+		wikiNavigation.setAttribute(
+			"aria-hidden",
+			String(!isOpen)
+		);
+
+		document.body.classList.toggle(
+			"wiki-navigation-open",
+			isOpen
+		);
+
+		if (isOpen) {
+			wikiNavigationClose?.focus();
+		}
+	};
+
+	wikiNavButton?.addEventListener(
+		"click",
+		() => {
+			const isOpen =
+				wikiNavigation?.classList.contains(
+					"is-open"
+				) ?? false;
+
+			setWikiNavigationState(
+				!isOpen
+			);
+		}
+	);
+
+	wikiNavigationClose?.addEventListener(
+		"click",
+		() => {
+			setWikiNavigationState(false);
+			wikiNavButton?.focus();
+		}
+	);
+
+	wikiNavigationBackdrop?.addEventListener(
+		"click",
+		() => {
+			setWikiNavigationState(false);
+			wikiNavButton?.focus();
+		}
+	);
+
+	/* ============================================
+	   Pagefind
+	============================================ */
+
+	async function loadPagefind(): Promise<PagefindModule> {
+		if (pagefind) {
+			return pagefind;
+		}
+
+		const pagefindUrl =
+			new URL(
+				"/pagefind/pagefind.js",
+				window.location.origin
+			).href;
+
+		const loadModule =
+			new Function(
+				"url",
+				"return import(url)"
+			) as (
+				url: string
+			) => Promise<PagefindModule>;
+
+		pagefind =
+			await loadModule(
+				pagefindUrl
+			);
 
 		return pagefind;
-
 	}
 
-
-	function getCategory(
+	const getCategory = (
 		url: string
-	): string {
-
-		if (url.startsWith("/docs/")) {
+	): string => {
+		if (
+			url === "/docs" ||
+			url.startsWith("/docs/")
+		) {
 			return "Wiki";
 		}
 
-		if (url.startsWith("/guide/")) {
+		if (
+			url === "/guide" ||
+			url.startsWith("/guide/")
+		) {
 			return "攻略";
 		}
 
-		if (url.startsWith("/news/")) {
+		if (
+			url === "/news" ||
+			url.startsWith("/news/")
+		) {
 			return "ニュース";
 		}
 
-		if (url.startsWith("/tool/")) {
+		if (
+			url === "/tool" ||
+			url.startsWith("/tool/")
+		) {
 			return "ツール";
 		}
 
+		if (
+			url === "/about" ||
+			url.startsWith("/about/")
+		) {
+			return "NUGについて";
+		}
+
 		return "サイト";
+	};
 
-	}
+	const getTitle = (
+		item: PagefindResultData
+	): string => {
+		return (
+			item.meta?.title ??
+			item.title ??
+			"無題のページ"
+		);
+	};
 
+	const getExcerptText = (
+		excerpt: string
+	): string => {
+		const parsed =
+			new DOMParser().parseFromString(
+				excerpt,
+				"text/html"
+			);
 
-	function appendText(
+		return (
+			parsed.body.textContent ??
+			""
+		).trim();
+	};
+
+	const appendText = (
 		parent: HTMLElement,
 		className: string,
 		text: string
-	): void {
-
+	): void => {
 		const element =
 			document.createElement("span");
 
-		element.className =
-			className;
+		element.className = className;
+		element.textContent = text;
 
-		element.textContent =
-			text;
+		parent.append(element);
+	};
 
-		parent.append(
-			element
-		);
-
-	}
-
-
-	function clearSearchResults(): void {
-
+	const clearSearchResults = (): void => {
 		searchResults?.replaceChildren();
 
 		searchResults?.classList.remove(
 			"has-results"
 		);
 
-	}
+		if (searchStatus) {
+			searchStatus.textContent = "";
 
+			searchStatus.classList.remove(
+				"visible",
+				"loading",
+				"error"
+			);
+		}
+	};
+
+	const setSearchStatus = (
+		text: string,
+		className = ""
+	): void => {
+		if (!searchStatus) {
+			return;
+		}
+
+		searchStatus.className =
+			`search-status visible ${className}`.trim();
+
+		searchStatus.textContent = text;
+	};
+
+	const createSearchResult = (
+		item: PagefindResultData
+	): HTMLAnchorElement => {
+		const url =
+			item.url?.startsWith("/")
+				? item.url
+				: "/";
+
+		const link =
+			document.createElement("a");
+
+		link.className =
+			"search-result";
+
+		link.href = url;
+
+		const content =
+			document.createElement("div");
+
+		content.className =
+			"search-result-content";
+
+		appendText(
+			content,
+			"search-result-category",
+			getCategory(url)
+		);
+
+		appendText(
+			content,
+			"search-result-title",
+			getTitle(item)
+		);
+
+		const excerpt =
+			document.createElement("p");
+
+		excerpt.textContent =
+			getExcerptText(
+				item.excerpt ?? ""
+			);
+
+		content.append(excerpt);
+
+		const arrow =
+			document.createElement("span");
+
+		arrow.className =
+			"search-result-arrow";
+
+		arrow.setAttribute(
+			"aria-hidden",
+			"true"
+		);
+
+		arrow.textContent = "→";
+
+		link.append(
+			content,
+			arrow
+		);
+
+		return link;
+	};
 
 	async function performSearch(
 		query: string
 	): Promise<void> {
-
-		if (!searchResults) return;
-
+		if (!searchResults) {
+			return;
+		}
 
 		const keyword =
 			query.trim();
@@ -663,35 +905,43 @@
 		const requestId =
 			++searchRequest;
 
-
 		if (!keyword) {
-
 			clearSearchResults();
-
 			return;
-
 		}
 
+		setSearchStatus(
+			"検索中…",
+			"loading"
+		);
+
+		searchResults.replaceChildren();
+
+		searchResults.classList.remove(
+			"has-results"
+		);
 
 		try {
+			const search =
+				await loadPagefind();
 
 			const result =
-				await (
-					await loadPagefind()
-				).search(
+				await search.search(
 					keyword
 				);
 
+			const total =
+				result.results.length;
 
 			const items =
 				await Promise.all(
 					result.results
-						.slice(0, 5)
+						.slice(0, 20)
 						.map(
-							(item) => item.data()
+							(item) =>
+								item.data()
 						)
 				);
-
 
 			if (
 				requestId !== searchRequest
@@ -699,11 +949,10 @@
 				return;
 			}
 
-
-			searchResults.replaceChildren();
-
-
-			if (items.length === 0) {
+			if (total === 0) {
+				setSearchStatus(
+					"検索結果がありません"
+				);
 
 				const empty =
 					document.createElement(
@@ -715,140 +964,94 @@
 
 				appendText(
 					empty,
-					"",
-					"検索結果がありません"
+					"search-empty-title",
+					"一致するページが見つかりませんでした"
+				);
+
+				appendText(
+					empty,
+					"search-empty-description",
+					"別のキーワードを試してください。"
 				);
 
 				searchResults.append(
 					empty
 				);
 
-			} else {
+				searchResults.classList.add(
+					"has-results"
+				);
 
-				for (
-					const item of items
-				) {
-
-					const url =
-						item.url ?? "/";
-
-
-					const link =
-						document.createElement(
-							"a"
-						);
-
-					link.className =
-						"search-result";
-
-					link.href =
-						url.startsWith("/")
-							? url
-							: "/";
-
-
-					const content =
-						document.createElement(
-							"div"
-						);
-
-					content.className =
-						"search-result-content";
-
-
-					appendText(
-						content,
-						"search-result-category",
-						getCategory(url)
-					);
-
-
-					appendText(
-						content,
-						"search-result-title",
-						item.meta?.title ??
-							item.title ??
-							"無題の記事"
-					);
-
-
-					const excerpt =
-						document.createElement(
-							"p"
-						);
-
-
-					const parsedExcerpt =
-						new DOMParser()
-							.parseFromString(
-								item.excerpt ?? "",
-								"text/html"
-							);
-
-
-					excerpt.textContent =
-						parsedExcerpt
-							.body
-							.textContent ?? "";
-
-
-					content.append(
-						excerpt
-					);
-
-
-					appendText(
-						link,
-						"search-result-arrow",
-						"→"
-					);
-
-
-					link.insertBefore(
-						content,
-						link.lastElementChild
-					);
-
-
-					searchResults.append(
-						link
-					);
-
-				}
-
+				return;
 			}
 
+			setSearchStatus(
+				`${total}件の検索結果`
+			);
+
+			for (const item of items) {
+				searchResults.append(
+					createSearchResult(item)
+				);
+			}
 
 			searchResults.classList.add(
 				"has-results"
 			);
-
 		} catch (error) {
-
 			if (
-				requestId === searchRequest
+				requestId !== searchRequest
 			) {
-
-				console.error(
-					"NUG Pagefind Error:",
-					error
-				);
-
+				return;
 			}
 
-		}
+			console.error(
+				"NUG Pagefind Error:",
+				error
+			);
 
+			setSearchStatus(
+				"検索を読み込めませんでした",
+				"error"
+			);
+
+			const errorElement =
+				document.createElement(
+					"div"
+				);
+
+			errorElement.className =
+				"search-empty search-error";
+
+			appendText(
+				errorElement,
+				"search-empty-title",
+				"検索に失敗しました"
+			);
+
+			appendText(
+				errorElement,
+				"search-empty-description",
+				"ページを再読み込みして、もう一度お試しください。"
+			);
+
+			searchResults.append(
+				errorElement
+			);
+
+			searchResults.classList.add(
+				"has-results"
+			);
+		}
 	}
 
-
-	/* ========================================
+	/* ============================================
 	   Search State
-	======================================== */
+	============================================ */
 
-	function setSearchState(
+	const setSearchState = (
 		isOpen: boolean
-	): void {
-
+	): void => {
 		if (
 			!header ||
 			!searchButton ||
@@ -857,1979 +1060,1087 @@
 			return;
 		}
 
-
 		header.classList.toggle(
 			"search-open",
 			isOpen
 		);
-
 
 		searchButton.setAttribute(
 			"aria-expanded",
 			String(isOpen)
 		);
 
-
 		searchOverlay.setAttribute(
 			"aria-hidden",
 			String(!isOpen)
 		);
 
-
 		if (isOpen) {
-
 			document.body.classList.add(
 				"overlay-open"
 			);
 
+			requestAnimationFrame(() => {
+				searchInput?.focus();
+			});
 
-			requestAnimationFrame(
-				() => searchInput?.focus()
-			);
-
-		} else {
-
-			document.body.classList.remove(
-				"overlay-open"
-			);
-
-
-			if (searchInput) {
-
-				searchInput.value = "";
-
-			}
-
-
-			clearSearchResults();
-
-		}
-
-	}
-
-
-	/* ========================================
-	   Menu State
-	======================================== */
-
-	function setMenuState(
-		isOpen: boolean
-	): void {
-
-		if (
-			!header ||
-			!menuButton ||
-			!mobileMenuOverlay
-		) {
 			return;
 		}
 
-
-		header.classList.toggle(
-			"menu-open",
-			isOpen
+		document.body.classList.remove(
+			"overlay-open"
 		);
 
-
-		menuButton.setAttribute(
-			"aria-expanded",
-			String(isOpen)
-		);
-
-
-		mobileMenuOverlay.setAttribute(
-			"aria-hidden",
-			String(!isOpen)
-		);
-
-
-		if (isOpen) {
-
-			document.body.classList.add(
-				"overlay-open"
-			);
-
-		} else {
-
-			document.body.classList.remove(
-				"overlay-open"
-			);
-
+		if (searchInput) {
+			searchInput.value = "";
 		}
 
-	}
-
-
-	/* ========================================
-	   Search Button
-	======================================== */
+		clearSearchResults();
+	};
 
 	searchButton?.addEventListener(
 		"click",
 		() => {
-
-			const isOpen =
-				header?.classList.contains(
-					"search-open"
-				) ?? false;
-
-
-			setMenuState(false);
-
 			setSearchState(
-				!isOpen
+				!(
+					header?.classList.contains(
+						"search-open"
+					) ?? false
+				)
 			);
-
 		}
 	);
-
-
-	/* ========================================
-	   External Search Event
-	======================================== */
-
-	document.addEventListener(
-		"nug:open-search",
-		() => {
-
-			setMenuState(false);
-
-			setSearchState(true);
-
-		}
-	);
-
-
-	/* ========================================
-	   Search Close
-	======================================== */
 
 	searchClose?.addEventListener(
 		"click",
 		() => {
-
 			setSearchState(false);
-
 			searchButton?.focus();
-
 		}
 	);
-
 
 	searchBackdrop?.addEventListener(
 		"click",
 		() => {
-
 			setSearchState(false);
-
 		}
 	);
 
-
-	/* ========================================
-	   Search Input
-	======================================== */
+	document.addEventListener(
+		"nug:open-search",
+		() => {
+			setSearchState(true);
+		}
+	);
 
 	searchInput?.addEventListener(
 		"input",
 		() => {
-
 			performSearch(
 				searchInput.value
 			);
-
 		}
 	);
-
-
-	/* ========================================
-	   Search Enter
-	======================================== */
 
 	searchInput?.addEventListener(
 		"keydown",
 		(event) => {
-
-			if (
-				event.key !== "Enter"
-			) {
+			if (event.key !== "Enter") {
 				return;
 			}
-
 
 			const firstResult =
 				searchResults?.querySelector<HTMLAnchorElement>(
 					".search-result"
 				);
 
-
-			firstResult?.click();
-
+			if (firstResult) {
+				event.preventDefault();
+				firstResult.click();
+			}
 		}
 	);
 
-
-	/* ========================================
-	   Mobile Menu
-	======================================== */
-
-	menuButton?.addEventListener(
-		"click",
-		() => {
-
-			const isOpen =
-				header?.classList.contains(
-					"menu-open"
-				) ?? false;
-
-
-			setSearchState(false);
-
-			setMenuState(
-				!isOpen
-			);
-
-		}
-	);
-
-
-	mobileMenuClose?.addEventListener(
-		"click",
-		() => {
-
-			setMenuState(false);
-
-			menuButton?.focus();
-
-		}
-	);
-
-
-	mobileMenuBackdrop?.addEventListener(
-		"click",
-		() => {
-
-			setMenuState(false);
-
-		}
-	);
-
-
-	/* ========================================
-	   Escape
-	======================================== */
+	/* ============================================
+	   Keyboard
+	============================================ */
 
 	document.addEventListener(
 		"keydown",
 		(event) => {
-
-			if (
-				event.key !== "Escape"
-			) {
+			if (event.key !== "Escape") {
 				return;
 			}
-
 
 			if (
 				header?.classList.contains(
 					"search-open"
 				)
 			) {
-
 				setSearchState(false);
-
 				searchButton?.focus();
-
 				return;
-
 			}
-
 
 			if (
-				header?.classList.contains(
-					"menu-open"
+				wikiNavigation?.classList.contains(
+					"is-open"
 				)
 			) {
-
-				setMenuState(false);
-
-				menuButton?.focus();
-
+				setWikiNavigationState(false);
+				wikiNavButton?.focus();
 			}
-
 		}
 	);
-
 </script>
 
-
 <style>
-
-	/* ========================================
-	   Base
-	======================================== */
+	/* =========================================================
+	   Header
+	========================================================= */
 
 	.site-header {
+		--header-bg: var(
+			--color-background,
+			#ffffff
+		);
 
-		position: sticky;
+		--header-surface: var(
+			--color-surface,
+			#f4f5f5
+		);
 
-		top: 0;
+		--header-surface-hover: var(
+			--color-surface-hover,
+			#e8ebeb
+		);
 
-		z-index: 1000;
+		--header-border: var(
+			--color-border,
+			#c9cecf
+		);
 
+		--header-border-strong: var(
+			--color-border-strong,
+			#8f9698
+		);
+
+		--header-text: var(
+			--color-text,
+			#1b1e20
+		);
+
+		--header-text-secondary: var(
+			--color-text-secondary,
+			#596064
+		);
+
+		--header-text-tertiary: var(
+			--color-text-tertiary,
+			#858c8f
+		);
+
+		--header-grass: var(
+			--color-grass,
+			#3f7d32
+		);
+
+		--header-grass-light: var(
+			--color-grass-light,
+			#79a94d
+		);
+
+		--header-gold-light: var(
+			--color-gold-light,
+			#f0c96b
+		);
+
+		--header-accent: var(
+			--color-accent,
+			#4d7f36
+		);
+
+		--header-accent-soft: var(
+			--color-accent-soft,
+			rgba(77, 127, 54, 0.18)
+		);
+
+		--header-shadow: var(
+			--color-shadow,
+			rgba(0, 0, 0, 0.16)
+		);
+
+		--header-shadow-strong: var(
+			--color-shadow-strong,
+			rgba(0, 0, 0, 0.28)
+		);
+
+		--header-overlay: var(
+			--color-overlay,
+			rgba(0, 0, 0, 0.58)
+		);
+
+		--header-font-display: var(
+			--font-display,
+			system-ui,
+			sans-serif
+		);
+
+		--header-transition-fast: var(
+			--transition-fast,
+			120ms ease
+		);
+
+		--header-transition-normal: var(
+			--transition-normal,
+			220ms ease
+		);
+
+		position: relative;
+		z-index: 100;
 		width: 100%;
-
-		background:
-			var(--color-background);
-
-		border-bottom:
-			2px solid var(--color-border-strong);
-
+		background: var(--header-bg);
+		color: var(--header-text);
+		border-bottom: 2px solid
+			var(--header-border-strong);
 		box-shadow:
-			0 4px 0 var(--color-shadow);
-
+			0 4px 0 var(--header-shadow);
 		isolation: isolate;
-
 	}
-
 
 	.header-light {
-
 		position: absolute;
-
 		top: 0;
-
 		left: 0;
-
 		width: 42%;
-
 		height: 2px;
-
-		background:
-			linear-gradient(
-				90deg,
-				var(--color-gold-light),
-				var(--color-grass-light),
-				transparent
-			);
-
+		background: linear-gradient(
+			90deg,
+			var(--header-gold-light),
+			var(--header-grass-light),
+			transparent
+		);
 		opacity: 0.9;
-
 		pointer-events: none;
-
 	}
-
 
 	.header-inner {
-
 		position: relative;
-
 		width: min(
-			var(--content-width),
+			1200px,
 			calc(100% - 48px)
 		);
-
 		min-height: 68px;
-
 		margin: 0 auto;
-
 		display: flex;
-
 		align-items: center;
-
 		gap: 24px;
-
 	}
 
-
-	/* ========================================
+	/* =========================================================
 	   Logo
-	======================================== */
+	========================================================= */
 
 	.logo {
-
 		position: relative;
-
 		display: flex;
-
 		align-items: baseline;
-
 		gap: 10px;
-
 		flex-shrink: 0;
-
 		padding: 6px 0;
-
+		color: inherit;
+		text-decoration: none;
 		transition:
-			opacity var(--transition-fast),
-			transform var(--transition-fast);
-
+			opacity var(--header-transition-fast),
+			transform var(--header-transition-fast);
 	}
-
 
 	.logo::before {
-
 		content: "";
-
 		position: absolute;
-
 		left: 0;
-
 		right: 0;
-
 		bottom: 0;
-
 		height: 2px;
-
-		background:
-			var(--color-grass);
-
-		transform:
-			scaleX(0);
-
+		background: var(--header-grass);
+		transform: scaleX(0);
 		transform-origin: left;
-
 		transition:
-			transform var(--transition-normal);
-
+			transform var(--header-transition-normal);
 	}
-
-
-	.logo:hover {
-
-		opacity: 1;
-
-	}
-
 
 	.logo:hover::before {
-
-		transform:
-			scaleX(1);
-
+		transform: scaleX(1);
 	}
-
 
 	.logo:active {
-
-		transform:
-			translateY(2px);
-
+		transform: translateY(2px);
 	}
-
 
 	.logo-main {
-
-		font-family:
-			var(--font-display);
-
+		font-family: var(
+			--header-font-display
+		);
 		font-size: 25px;
-
 		font-weight: 900;
-
 		letter-spacing: -0.06em;
-
-		color:
-			var(--color-text);
-
+		color: var(--header-text);
 		text-shadow:
-			1px 1px 0 var(--color-shadow);
-
+			1px 1px 0 var(--header-shadow);
 	}
-
 
 	.logo-sub {
-
 		font-size: 10px;
-
 		font-weight: 600;
-
 		letter-spacing: 0.02em;
-
-		color:
-			var(--color-text-secondary);
-
+		color: var(--header-text-secondary);
 		white-space: nowrap;
-
 	}
 
-
-	/* ========================================
+	/* =========================================================
 	   Desktop Navigation
-	======================================== */
+	========================================================= */
 
 	.desktop-nav {
-
 		display: flex;
-
 		align-items: stretch;
-
 		gap: 4px;
-
 		margin-left: auto;
-
 		height: 42px;
-
 	}
-
 
 	.nav-link {
-
 		position: relative;
-
 		display: flex;
-
 		align-items: stretch;
-
 		min-width: 64px;
-
-		border:
-			1px solid var(--color-border);
-
-		background:
-			var(--color-surface);
-
-		color:
-			var(--color-text-secondary);
-
+		border: 1px solid var(--header-border);
+		background: var(--header-surface);
+		color: var(--header-text-secondary);
+		text-decoration: none;
 		box-shadow:
-			0 3px 0 var(--color-border-strong);
-
+			0 3px 0 var(--header-border-strong);
 		transition:
-			background var(--transition-fast),
-			color var(--transition-fast),
-			border-color var(--transition-fast),
-			box-shadow var(--transition-fast),
-			transform var(--transition-fast);
-
+			background var(--header-transition-fast),
+			color var(--header-transition-fast),
+			border-color var(--header-transition-fast),
+			box-shadow var(--header-transition-fast),
+			transform var(--header-transition-fast);
 	}
-
 
 	.nav-link::before {
-
 		content: "";
-
 		position: absolute;
-
 		top: 0;
-
 		left: 0;
-
 		right: 0;
-
 		height: 2px;
-
-		background:
-			linear-gradient(
-				90deg,
-				var(--color-gold-light),
-				var(--color-grass-light)
-			);
-
+		background: linear-gradient(
+			90deg,
+			var(--header-gold-light),
+			var(--header-grass-light)
+		);
 		opacity: 0;
-
 		transition:
-			opacity var(--transition-fast);
-
+			opacity var(--header-transition-fast);
 	}
-
 
 	.nav-link-inner {
-
 		display: flex;
-
 		align-items: center;
-
 		justify-content: center;
-
-		padding:
-			0 13px;
-
+		padding: 0 13px;
 		font-size: 13px;
-
 		font-weight: 700;
-
 		white-space: nowrap;
-
 	}
 
+	.nav-link:hover,
+	.nav-link.active {
+		background: var(--header-surface-hover);
+		color: var(--header-text);
+		border-color: var(--header-border-strong);
+		box-shadow:
+			0 4px 0 var(--header-border-strong);
+	}
 
 	.nav-link:hover {
-
-		background:
-			var(--color-surface-hover);
-
-		color:
-			var(--color-text);
-
-		border-color:
-			var(--color-border-strong);
-
-		box-shadow:
-			0 4px 0 var(--color-border-strong);
-
-		transform:
-			translateY(-1px);
-
+		transform: translateY(-1px);
 	}
 
-
-	.nav-link:hover::before {
-
+	.nav-link:hover::before,
+	.nav-link.active::before {
 		opacity: 1;
-
 	}
-
 
 	.nav-link:active {
-
-		transform:
-			translateY(2px);
-
+		transform: translateY(2px);
 		box-shadow:
-			0 1px 0 var(--color-border-strong);
-
+			0 1px 0 var(--header-border-strong);
 	}
 
-
-	/* ========================================
+	/* =========================================================
 	   Header Actions
-	======================================== */
+	========================================================= */
 
 	.header-actions {
-
 		display: flex;
-
 		align-items: center;
-
 		gap: 6px;
-
 		margin-left: 4px;
-
+		flex-shrink: 0;
 	}
 
-
-	.icon-button,
-	.menu-button {
-
+	.icon-button {
 		position: relative;
-
 		display: flex;
-
 		align-items: center;
-
 		justify-content: center;
-
 		width: 40px;
-
 		height: 40px;
-
-		border:
-			1px solid var(--color-border);
-
+		padding: 0;
+		border: 1px solid var(--header-border);
 		border-radius: 0;
-
-		background:
-			var(--color-surface);
-
-		color:
-			var(--color-text);
-
+		background: var(--header-surface);
+		color: var(--header-text);
 		box-shadow:
-			0 3px 0 var(--color-border-strong);
-
+			0 3px 0 var(--header-border-strong);
+		cursor: pointer;
 		transition:
-			background var(--transition-fast),
-			border-color var(--transition-fast),
-			box-shadow var(--transition-fast),
-			transform var(--transition-fast);
-
+			background var(--header-transition-fast),
+			border-color var(--header-transition-fast),
+			box-shadow var(--header-transition-fast),
+			transform var(--header-transition-fast);
 	}
 
-
-	.icon-button::before,
-	.menu-button::before {
-
-		content: "";
-
-		position: absolute;
-
-		top: 0;
-
-		left: 0;
-
-		right: 0;
-
-		height: 2px;
-
-		background:
-			var(--color-gold-light);
-
-		opacity: 0;
-
-		transition:
-			opacity var(--transition-fast);
-
-	}
-
-
-	.icon-button:hover,
-	.menu-button:hover {
-
-		background:
-			var(--color-surface-hover);
-
-		border-color:
-			var(--color-border-strong);
-
+	.icon-button:hover {
+		background: var(--header-surface-hover);
+		border-color: var(--header-border-strong);
 		box-shadow:
-			0 4px 0 var(--color-border-strong);
-
-		transform:
-			translateY(-1px);
-
+			0 4px 0 var(--header-border-strong);
+		transform: translateY(-1px);
 	}
 
-
-	.icon-button:hover::before,
-	.menu-button:hover::before {
-
-		opacity: 1;
-
-	}
-
-
-	.icon-button:active,
-	.menu-button:active {
-
-		transform:
-			translateY(2px);
-
+	.icon-button:active {
+		transform: translateY(2px);
 		box-shadow:
-			0 1px 0 var(--color-border-strong);
-
+			0 1px 0 var(--header-border-strong);
 	}
-
 
 	.icon-button svg {
-
 		width: 19px;
-
 		height: 19px;
-
 		fill: none;
-
-		stroke:
-			currentColor;
-
+		stroke: currentColor;
 		stroke-width: 1.8;
-
 		stroke-linecap: square;
-
 		stroke-linejoin: miter;
-
 	}
 
-
-	/* ========================================
-	   Theme Icons
-	======================================== */
+	/* =========================================================
+	   Theme Icon
+	========================================================= */
 
 	.theme-icon {
-
 		position: absolute;
-
 		transition:
-			opacity var(--transition-fast),
-			transform var(--transition-normal);
-
+			opacity var(--header-transition-fast),
+			transform var(--header-transition-normal);
 	}
-
 
 	.theme-icon-sun {
-
 		opacity: 1;
-
-		transform:
-			scale(1)
-			rotate(0deg);
-
+		transform: scale(1) rotate(0deg);
 	}
-
 
 	.theme-icon-moon {
-
 		opacity: 0;
-
-		transform:
-			scale(0.7)
-			rotate(-20deg);
-
+		transform: scale(0.7) rotate(-20deg);
 	}
 
-
 	:global(html[data-theme="dark"])
-	.theme-icon-sun {
-
+		.theme-icon-sun {
 		opacity: 0;
-
-		transform:
-			scale(0.7)
-			rotate(20deg);
-
+		transform: scale(0.7) rotate(20deg);
 	}
 
-
 	:global(html[data-theme="dark"])
-	.theme-icon-moon {
-
+		.theme-icon-moon {
 		opacity: 1;
-
-		transform:
-			scale(1)
-			rotate(0deg);
-
+		transform: scale(1) rotate(0deg);
 	}
 
+	/* =========================================================
+	   Wiki Navigation Button
+	========================================================= */
 
-	/* ========================================
-	   Menu Button
-	======================================== */
-
-	.menu-button {
-
+	.wiki-nav-button {
 		display: none;
-
-		flex-direction: column;
-
-		gap: 4px;
-
 	}
 
-
-	.menu-button span {
-
-		width: 18px;
-
-		height: 2px;
-
-		background:
-			currentColor;
-
-		border-radius: 0;
-
-		transition:
-			transform var(--transition-normal),
-			opacity var(--transition-normal);
-
+	.wiki-nav-button svg {
+		width: 19px;
+		height: 19px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.8;
+		stroke-linecap: square;
+		stroke-linejoin: miter;
 	}
 
-
-	.menu-open .menu-button span:nth-child(1) {
-
-		transform:
-			translateY(6px)
-			rotate(45deg);
-
-	}
-
-
-	.menu-open .menu-button span:nth-child(2) {
-
-		opacity: 0;
-
-	}
-
-
-	.menu-open .menu-button span:nth-child(3) {
-
-		transform:
-			translateY(-6px)
-			rotate(-45deg);
-
-	}
-
-
-	/* ========================================
+	/* =========================================================
 	   Search Overlay
-	======================================== */
+	========================================================= */
 
 	.search-overlay {
-
 		position: fixed;
-
 		inset: 0;
-
 		z-index: 2000;
-
 		display: flex;
-
 		align-items: flex-start;
-
 		justify-content: center;
-
-		padding:
-			96px 24px 40px;
-
+		padding: 96px 24px 40px;
 		opacity: 0;
-
 		visibility: hidden;
-
 		pointer-events: none;
-
 		transition:
 			opacity 180ms ease,
 			visibility 180ms ease;
-
 	}
-
 
 	.search-open .search-overlay {
-
 		opacity: 1;
-
 		visibility: visible;
-
 		pointer-events: auto;
-
 	}
-
 
 	.search-overlay-backdrop {
-
 		position: absolute;
-
 		inset: 0;
-
-		background:
-			var(--color-overlay);
-
-		backdrop-filter:
-			blur(5px);
-
+		background: var(--header-overlay);
+		backdrop-filter: blur(5px);
 	}
-
 
 	.search-dialog {
-
 		position: relative;
-
 		z-index: 1;
-
-		width: min(
-			760px,
-			100%
-		);
-
-		max-height:
-			calc(100vh - 136px);
-
+		width: min(760px, 100%);
+		max-height: calc(100vh - 136px);
 		overflow-y: auto;
-
 		padding: 28px;
-
-		border:
-			2px solid var(--color-border-strong);
-
-		border-radius: 0;
-
-		background:
-			var(--color-background);
-
+		border: 2px solid var(--header-border-strong);
+		background: var(--header-bg);
+		color: var(--header-text);
 		box-shadow:
-			8px 8px 0 var(--color-shadow-strong),
-			inset 0 2px 0 var(--color-gold-light);
-
-		transform:
-			translateY(-14px);
-
+			8px 8px 0 var(--header-shadow-strong),
+			inset 0 2px 0 var(--header-gold-light);
+		transform: translateY(-14px);
 		transition:
 			transform 200ms ease;
-
 	}
-
 
 	.search-open .search-dialog {
-
-		transform:
-			translateY(0);
-
+		transform: translateY(0);
 	}
-
 
 	.search-dialog-header {
-
 		display: flex;
-
 		align-items: flex-start;
-
 		justify-content: space-between;
-
 		gap: 20px;
-
 	}
-
 
 	.search-label {
-
+		margin: 0;
 		font-size: 10px;
-
 		font-weight: 800;
-
 		letter-spacing: 0.16em;
-
-		color:
-			var(--color-grass);
-
+		color: var(--header-grass);
 	}
-
 
 	.search-dialog h2 {
-
-		margin-top: 5px;
-
-		font-family:
-			var(--font-display);
-
+		margin: 5px 0 0;
+		font-family: var(--header-font-display);
 		font-size: 25px;
-
 		font-weight: 800;
-
 		letter-spacing: -0.03em;
-
+		color: var(--header-text);
 	}
 
-
-	/* ========================================
-	   Close Buttons
-	======================================== */
-
-	.search-close,
-	.mobile-menu-close {
-
+	.search-close {
 		display: flex;
-
 		align-items: center;
-
 		justify-content: center;
-
 		width: 36px;
-
 		height: 36px;
-
 		flex-shrink: 0;
-
-		border:
-			1px solid var(--color-border);
-
-		border-radius: 0;
-
-		background:
-			var(--color-surface);
-
+		padding: 0;
+		border: 1px solid var(--header-border);
+		background: var(--header-surface);
 		font-size: 24px;
-
 		line-height: 1;
-
-		color:
-			var(--color-text-secondary);
-
+		color: var(--header-text-secondary);
+		cursor: pointer;
 		box-shadow:
-			0 2px 0 var(--color-border-strong);
-
-		transition:
-			background var(--transition-fast),
-			color var(--transition-fast),
-			transform var(--transition-fast),
-			box-shadow var(--transition-fast);
-
+			0 2px 0 var(--header-border-strong);
 	}
-
-
-	.search-close:hover,
-	.mobile-menu-close:hover {
-
-		background:
-			var(--color-surface-hover);
-
-		color:
-			var(--color-text);
-
-		transform:
-			translateY(-1px);
-
-		box-shadow:
-			0 3px 0 var(--color-border-strong);
-
-	}
-
-
-	.search-close:active,
-	.mobile-menu-close:active {
-
-		transform:
-			translateY(2px);
-
-		box-shadow:
-			0 0 0 var(--color-border-strong);
-
-	}
-
-
-	/* ========================================
-	   Search Input
-	======================================== */
 
 	.search-input-wrapper {
-
 		display: flex;
-
 		align-items: center;
-
 		gap: 12px;
-
 		margin-top: 20px;
-
-		padding:
-			0 16px;
-
+		padding: 0 16px;
 		height: 54px;
-
-		border:
-			2px solid var(--color-border-strong);
-
-		border-radius: 0;
-
-		background:
-			var(--color-surface);
-
+		border: 2px solid var(--header-border-strong);
+		background: var(--header-surface);
 		box-shadow:
-			inset 0 2px 0 var(--color-surface-strong);
-
-		transition:
-			border-color var(--transition-fast),
-			box-shadow var(--transition-fast);
-
+			inset 0 2px 0 var(--header-surface-hover);
 	}
-
 
 	.search-input-wrapper:focus-within {
-
-		border-color:
-			var(--color-accent);
-
+		border-color: var(--header-accent);
 		box-shadow:
-			inset 0 2px 0 var(--color-surface-strong),
-			0 0 0 3px var(--color-accent-soft);
-
+			inset 0 2px 0 var(--header-surface-hover),
+			0 0 0 3px var(--header-accent-soft);
 	}
-
 
 	.search-input-wrapper svg {
-
 		width: 18px;
-
 		height: 18px;
-
 		flex-shrink: 0;
-
 		fill: none;
-
-		stroke:
-			var(--color-text-secondary);
-
+		stroke: var(--header-text-secondary);
 		stroke-width: 1.8;
-
-		stroke-linecap: square;
-
-		stroke-linejoin: miter;
-
 	}
-
 
 	.search-input-wrapper input {
-
 		width: 100%;
-
+		min-width: 0;
 		border: 0;
-
 		outline: 0;
-
-		border-radius: 0;
-
 		background: transparent;
-
-		color:
-			var(--color-text);
-
+		color: var(--header-text);
 		font-size: 14px;
-
 	}
-
 
 	.search-input-wrapper input::placeholder {
-
-		color:
-			var(--color-text-tertiary);
-
+		color: var(--header-text-tertiary);
 	}
 
+	.search-status {
+		min-height: 0;
+		margin-top: 0;
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--header-text-tertiary);
+		opacity: 0;
+	}
 
-	/* ========================================
-	   Search Results
-	======================================== */
+	.search-status.visible {
+		margin-top: 12px;
+		opacity: 1;
+	}
+
+	.search-status.loading {
+		color: var(--header-grass);
+	}
+
+	.search-status.error {
+		color: #b54848;
+	}
 
 	.search-results {
-
 		max-height: 0;
-
 		overflow: hidden;
-
 		opacity: 0;
-
-		transition:
-			max-height 250ms ease,
-			opacity 180ms ease;
-
 	}
-
 
 	.search-results.has-results {
-
 		max-height: 500px;
-
-		margin-top: 16px;
-
+		margin-top: 10px;
 		opacity: 1;
-
 		overflow-y: auto;
-
 	}
-
 
 	.search-result {
-
 		position: relative;
-
 		display: flex;
-
 		align-items: center;
-
 		gap: 20px;
-
-		padding:
-			16px 18px;
-
-		border:
-			1px solid var(--color-border);
-
-		border-radius: 0;
-
-		background:
-			var(--color-surface);
-
+		padding: 16px 18px;
+		border: 1px solid var(--header-border);
+		background: var(--header-surface);
+		color: var(--header-text);
+		text-decoration: none;
 		box-shadow:
-			0 2px 0 var(--color-border);
-
-		transition:
-			transform var(--transition-fast),
-			background var(--transition-fast),
-			border-color var(--transition-fast),
-			box-shadow var(--transition-fast);
-
+			0 2px 0 var(--header-border);
 	}
-
 
 	.search-result + .search-result {
-
 		margin-top: 8px;
-
 	}
-
 
 	.search-result:hover {
-
-		transform:
-			translateY(-1px);
-
-		background:
-			var(--color-surface-hover);
-
-		border-color:
-			var(--color-border-strong);
-
-		box-shadow:
-			0 4px 0 var(--color-border-strong);
-
+		background: var(--header-surface-hover);
+		border-color: var(--header-border-strong);
 	}
-
-
-	.search-result:active {
-
-		transform:
-			translateY(2px);
-
-		box-shadow:
-			0 0 0 var(--color-border);
-
-	}
-
 
 	.search-result-content {
-
 		min-width: 0;
-
 		flex: 1;
-
 	}
-
 
 	.search-result-category {
-
 		display: inline-block;
-
 		margin-bottom: 4px;
-
-		padding:
-			2px 6px;
-
-		border:
-			1px solid var(--color-border);
-
-		border-radius: 0;
-
-		background:
-			var(--color-surface-subtle);
-
+		padding: 2px 6px;
+		border: 1px solid var(--header-border);
+		background: var(--header-surface);
 		font-size: 9px;
-
 		font-weight: 800;
-
-		letter-spacing: 0.08em;
-
-		color:
-			var(--color-grass);
-
+		color: var(--header-grass);
 	}
-
 
 	.search-result-title {
-
 		display: block;
-
 		font-size: 15px;
-
 		font-weight: 700;
-
+		color: var(--header-text);
 	}
-
 
 	.search-result p {
-
-		margin-top: 3px;
-
+		margin: 3px 0 0;
 		overflow: hidden;
-
 		font-size: 12px;
-
-		color:
-			var(--color-text-secondary);
-
+		color: var(--header-text-secondary);
 		text-overflow: ellipsis;
-
 		white-space: nowrap;
-
 	}
 
-
 	.search-result-arrow {
-
 		flex-shrink: 0;
-
-		color:
-			var(--color-text-secondary);
-
-		transition:
-			transform var(--transition-fast),
-			color var(--transition-fast);
-
+		color: var(--header-text-secondary);
 	}
-
-
-	.search-result:hover
-	.search-result-arrow {
-
-		transform:
-			translateX(4px);
-
-		color:
-			var(--color-accent);
-
-	}
-
 
 	.search-empty {
-
-		padding:
-			24px;
-
-		border:
-			1px solid var(--color-border);
-
-		background:
-			var(--color-surface);
-
+		padding: 24px;
+		border: 1px solid var(--header-border);
+		background: var(--header-surface);
 		text-align: center;
-
-		font-size: 13px;
-
-		color:
-			var(--color-text-secondary);
-
 	}
 
+	.search-empty-title {
+		display: block;
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--header-text);
+	}
 
-	/* ========================================
-	   Mobile Menu Overlay
-	======================================== */
+	.search-empty-description {
+		display: block;
+		margin-top: 6px;
+		font-size: 12px;
+		color: var(--header-text-secondary);
+	}
 
-	.mobile-menu-overlay {
+	/* =========================================================
+	   Wiki Navigation Panel
+	========================================================= */
 
+	.wiki-navigation {
 		position: fixed;
-
 		inset: 0;
-
 		z-index: 1900;
-
 		opacity: 0;
-
 		visibility: hidden;
-
 		pointer-events: none;
-
 		transition:
 			opacity 180ms ease,
 			visibility 180ms ease;
-
 	}
 
-
-	.menu-open .mobile-menu-overlay {
-
+	.wiki-navigation.is-open {
 		opacity: 1;
-
 		visibility: visible;
-
 		pointer-events: auto;
-
 	}
 
-
-	.mobile-menu-backdrop {
-
+	.wiki-navigation-backdrop {
 		position: absolute;
-
 		inset: 0;
-
-		background:
-			var(--color-overlay);
-
-		backdrop-filter:
-			blur(5px);
-
+		background: var(--header-overlay);
+		backdrop-filter: blur(5px);
 	}
 
-
-	.mobile-menu {
-
+	.wiki-navigation-panel {
 		position: absolute;
-
-		top: 76px;
-
-		right: 16px;
-
-		width: min(
-			380px,
-			calc(100% - 32px)
-		);
-
-		padding: 18px;
-
-		border:
-			2px solid var(--color-border-strong);
-
-		border-radius: 0;
-
-		background:
-			var(--color-background);
-
-		box-shadow:
-			8px 8px 0 var(--color-shadow-strong),
-			inset 0 2px 0 var(--color-gold-light);
-
-		transform:
-			translateY(-12px);
-
-		transition:
-			transform 200ms ease;
-
-	}
-
-
-	.menu-open .mobile-menu {
-
-		transform:
-			translateY(0);
-
-	}
-
-
-	/* ========================================
-	   Mobile Menu Header
-	======================================== */
-
-	.mobile-menu-header {
-
-		display: flex;
-
-		align-items: center;
-
-		justify-content: space-between;
-
-		padding:
-			2px 2px 14px;
-
-		border-bottom:
-			2px solid var(--color-border);
-
-	}
-
-
-	.mobile-menu-title {
-
-		display: block;
-
-		font-size: 14px;
-
-		font-weight: 900;
-
-		letter-spacing: 0.04em;
-
-		color:
-			var(--color-text);
-
-	}
-
-
-	.mobile-menu-subtitle {
-
-		display: block;
-
-		margin-top: 2px;
-
-		font-size: 9px;
-
-		font-weight: 800;
-
-		letter-spacing: 0.14em;
-
-		color:
-			var(--color-grass);
-
-	}
-
-
-	/* ========================================
-	   Mobile Menu Links
-	======================================== */
-
-	.mobile-menu-links {
-
-		display: grid;
-
-		grid-template-columns:
-			repeat(2, minmax(0, 1fr));
-
-		gap: 8px;
-
-		padding-top: 14px;
-
-	}
-
-
-	.mobile-menu-links a {
-
-		position: relative;
-
-		display: grid;
-
-		grid-template-columns:
-			32px minmax(0, 1fr) 18px;
-
-		align-items: center;
-
-		gap: 8px;
-
-		min-height: 58px;
-
-		padding:
-			0 12px;
-
-		border:
-			1px solid var(--color-border);
-
-		border-radius: 0;
-
-		background:
-			var(--color-surface);
-
-		box-shadow:
-			0 3px 0 var(--color-border);
-
-		font-size: 14px;
-
-		font-weight: 700;
-
-		color:
-			var(--color-text);
-
-		transition:
-			background var(--transition-fast),
-			border-color var(--transition-fast),
-			transform var(--transition-fast),
-			box-shadow var(--transition-fast);
-
-	}
-
-
-	.mobile-menu-links a::before {
-
-		content: "";
-
-		position: absolute;
-
 		top: 0;
-
-		left: 0;
-
 		right: 0;
-
-		height: 2px;
-
-		background:
-			var(--color-grass-light);
-
-		opacity: 0;
-
+		width: min(420px, 90vw);
+		height: 100%;
+		overflow-y: auto;
+		padding: 28px 24px 100px;
+		background: var(--header-bg);
+		color: var(--header-text);
+		border-left: 2px solid
+			var(--header-border-strong);
+		box-shadow:
+			-8px 0 0 var(--header-shadow-strong);
+		transform: translateX(100%);
 		transition:
-			opacity var(--transition-fast);
-
+			transform 220ms ease;
 	}
 
-
-	.mobile-menu-links a:hover {
-
-		background:
-			var(--color-surface-hover);
-
-		border-color:
-			var(--color-border-strong);
-
-		transform:
-			translateY(-1px);
-
-		box-shadow:
-			0 4px 0 var(--color-border-strong);
-
+	.wiki-navigation.is-open
+		.wiki-navigation-panel {
+		transform: translateX(0);
 	}
 
-
-	.mobile-menu-links a:hover::before {
-
-		opacity: 1;
-
-	}
-
-
-	.mobile-menu-links a:active {
-
-		transform:
-			translateY(2px);
-
-		box-shadow:
-			0 1px 0 var(--color-border);
-
-	}
-
-
-	.mobile-icon {
-
+	.wiki-navigation-header {
 		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 20px;
+		padding-bottom: 20px;
+		border-bottom: 2px solid
+			var(--header-border-strong);
+	}
 
+	.wiki-navigation-label {
+		margin: 0;
+		font-size: 10px;
+		font-weight: 800;
+		letter-spacing: 0.16em;
+		color: var(--header-grass);
+	}
+
+	.wiki-navigation-header h2 {
+		margin: 5px 0 0;
+		font-family: var(--header-font-display);
+		font-size: 24px;
+		font-weight: 800;
+		color: var(--header-text);
+	}
+
+	.wiki-navigation-close {
+		display: flex;
 		align-items: center;
-
 		justify-content: center;
-
-		width: 30px;
-
-		height: 30px;
-
-		border:
-			1px solid var(--color-border);
-
-		background:
-			var(--color-surface-subtle);
-
-		font-size: 16px;
-
+		width: 36px;
+		height: 36px;
+		flex-shrink: 0;
+		padding: 0;
+		border: 1px solid var(--header-border);
+		background: var(--header-surface);
+		color: var(--header-text);
+		font-size: 24px;
 		line-height: 1;
-
-	}
-
-
-	.mobile-arrow {
-
-		color:
-			var(--color-text-tertiary);
-
+		cursor: pointer;
+		box-shadow:
+			0 2px 0 var(--header-border-strong);
 		transition:
-			transform var(--transition-fast),
-			color var(--transition-fast);
-
+			background var(--header-transition-fast),
+			border-color var(--header-transition-fast),
+			transform var(--header-transition-fast);
 	}
 
-
-	.mobile-menu-links a:hover
-	.mobile-arrow {
-
-		transform:
-			translateX(3px);
-
-		color:
-			var(--color-accent);
-
+	.wiki-navigation-close:hover {
+		background: var(--header-surface-hover);
+		border-color: var(--header-border-strong);
+		transform: translateY(-1px);
 	}
 
+	.wiki-navigation-close:active {
+		transform: translateY(2px);
+	}
 
-	/* ========================================
-	   Body Lock
-	======================================== */
+	.wiki-navigation-content {
+		display: block;
+	}
 
-	:global(body.overlay-open) {
+	.wiki-navigation-section {
+		margin-top: 24px;
+	}
 
+	.wiki-navigation-section h3 {
+		margin: 0 0 10px;
+		font-size: 11px;
+		font-weight: 800;
+		letter-spacing: 0.08em;
+		color: var(--header-text-secondary);
+	}
+
+	.wiki-navigation-links {
+		display: grid;
+		gap: 6px;
+	}
+
+	.wiki-navigation-link {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		min-height: 44px;
+		padding: 10px 14px;
+		border: 1px solid var(--header-border);
+		background: var(--header-surface);
+		color: var(--header-text);
+		text-decoration: none;
+		box-shadow:
+			0 2px 0 var(--header-border);
+		transition:
+			background var(--header-transition-fast),
+			border-color var(--header-transition-fast),
+			transform var(--header-transition-fast),
+			box-shadow var(--header-transition-fast);
+	}
+
+	.wiki-navigation-link:hover {
+		background: var(--header-surface-hover);
+		border-color: var(--header-border-strong);
+		transform: translateX(-2px);
+	}
+
+	.wiki-navigation-link:active {
+		transform: translateX(0)
+			translateY(2px);
+	}
+
+	.wiki-navigation-link.active {
+		background: var(--header-accent-soft);
+		border-color: var(--header-grass);
+		box-shadow:
+			3px 2px 0 var(--header-grass);
+	}
+
+	.wiki-navigation-arrow {
+		flex-shrink: 0;
+		font-size: 20px;
+		line-height: 1;
+		color: var(--header-grass);
+	}
+
+	:global(body.overlay-open),
+	:global(body.wiki-navigation-open) {
 		overflow: hidden;
-
 	}
 
+	/* =========================================================
+	   Responsive
+	========================================================= */
 
-	/* ========================================
-	   Mobile Header
-	======================================== */
-
-	@media (max-width: 850px) {
-
+	@media (max-width: 1023px) {
 		.header-inner {
-
-			width:
-				calc(100% - 32px);
-
-			min-height:
-				60px;
-
+			width: calc(100% - 32px);
+			min-height: 60px;
 			gap: 12px;
-
 		}
-
 
 		.logo {
-
 			align-items: center;
-
 		}
-
 
 		.logo-sub {
-
 			display: none;
-
 		}
-
 
 		.desktop-nav {
-
 			display: none;
-
 		}
-
 
 		.header-actions {
-
 			margin-left: auto;
-
 		}
 
-
-		.menu-button {
-
+		.wiki-nav-button {
 			display: flex;
-
 		}
-
 
 		.search-overlay {
-
-			padding:
-				76px 16px 24px;
-
+			padding: 76px 16px 24px;
 		}
-
 
 		.search-dialog {
-
-			padding:
-				20px;
-
-			max-height:
-				calc(100vh - 100px);
-
+			max-height: calc(100vh - 100px);
+			padding: 20px;
 		}
-
-
-		.mobile-menu {
-
-			top: 68px;
-
-			right: 16px;
-
-		}
-
-
-		.search-result {
-
-			padding:
-				14px;
-
-		}
-
 
 		.search-result p {
-
-			white-space:
-				normal;
-
+			white-space: normal;
 		}
-
 	}
 
-
-	/* ========================================
-	   Small Mobile
-	======================================== */
-
-	@media (max-width: 560px) {
-
-		.header-inner {
-
-			width:
-				calc(100% - 24px);
-
+	@media (min-width: 1024px) {
+		.wiki-navigation {
+			display: none;
 		}
+	}
 
+	@media (max-width: 767px) {
+		.header-inner {
+			width: calc(100% - 24px);
+		}
 
 		.logo-main {
-
-			font-size:
-				22px;
-
+			font-size: 22px;
 		}
-
 
 		.header-actions {
-
 			gap: 5px;
-
 		}
 
-
-		.icon-button,
-		.menu-button {
-
+		.icon-button {
 			width: 38px;
-
 			height: 38px;
-
 		}
-
 
 		.search-overlay {
-
-			padding:
-				72px 12px 16px;
-
+			padding: 72px 12px 16px;
 		}
-
 
 		.search-dialog {
-
-			padding:
-				18px;
-
+			padding: 18px;
 		}
 
-
-		.mobile-menu {
-
-			top: 66px;
-
-			right: 12px;
-
-			width:
-				calc(100% - 24px);
-
+		.search-result {
+			padding: 14px;
 		}
 
-
-		.mobile-menu-links {
-
-			grid-template-columns:
-				1fr;
-
+		.search-result p {
+			white-space: normal;
 		}
 
+		.wiki-navigation-panel {
+			width: 90vw;
+			padding: 22px 16px 96px;
+		}
 	}
-
-
-	/* ========================================
-	   Very Small Mobile
-	======================================== */
 
 	@media (max-width: 380px) {
-
 		.header-inner {
-
-			width:
-				calc(100% - 16px);
-
+			width: calc(100% - 16px);
 		}
-
 
 		.logo-main {
-
-			font-size:
-				21px;
-
+			font-size: 21px;
 		}
 
-
-		.mobile-menu {
-
-			right: 8px;
-
-			width:
-				calc(100% - 16px);
-
+		.search-dialog {
+			padding: 16px;
 		}
-
 	}
 
+	/* =========================================================
+	   Reduced Motion
+	========================================================= */
+
+	@media (prefers-reduced-motion: reduce) {
+		* {
+			scroll-behavior: auto !important;
+			transition-duration: 0.01ms !important;
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+		}
+	}
 </style>
