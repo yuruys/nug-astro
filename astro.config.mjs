@@ -4,6 +4,8 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
 
+import remarkGuideAdmonition from './src/plugins/remark-guide-admonition.mjs';
+
 
 export default defineConfig({
 	site: 'https://nugbace.pages.dev',
@@ -12,6 +14,20 @@ export default defineConfig({
 	devToolbar: {
 		enabled: false,
 	},
+
+	// ========================================
+	// Markdown
+	// ========================================
+
+	markdown: {
+		remarkPlugins: [
+			remarkGuideAdmonition,
+		],
+	},
+
+	// ========================================
+	// Integrations
+	// ========================================
 
 	integrations: [
 		sitemap(),

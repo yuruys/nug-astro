@@ -1,420 +1,210 @@
 /* =========================================================
-   NUGBASE Starlight
-   Minecraft-inspired × NUGBASE Original UI
+   NUGBASE Starlight Integration
    ---------------------------------------------------------
-   Starlight-only visual system.
+   Starlight-specific structural styling only.
+
+   Design foundation:
+   → src/styles/global.css
 
    IMPORTANT
-   - Normal Astro pages use: src/styles/global.css
-   - Wiki pages use: src/styles/starlight.css
-   - This file intentionally does NOT style the old
-     Starlight mobile-menu-toggle.
-   - The Wiki header is NUGBASE's own Header.astro.
-   - The Starlight-generated page title is intentionally kept.
-     Do not add a second "# Title" in Markdown.
+   ---------------------------------------------------------
+   global.css is the Single Source of Truth for:
+
+   - Colors
+   - Typography
+   - Spacing
+   - Borders
+   - Radius
+   - Shadows
+   - Motion
+   - Light / Dark theme
+   - Minecraft visual language
+
+   This file intentionally does NOT redefine those systems.
+
+   This file is responsible for:
+
+   - Starlight layout
+   - Wiki structure
+   - Markdown content
+   - Sidebar
+   - Right sidebar / TOC
+   - Code blocks
+   - Tables
+   - Admonitions
+   - Link cards
+   - Pagination
+   - Starlight search UI
+   - Starlight-specific responsive behavior
+
+   Visual concept:
+   Minecraft World × Modern Information UI
+
+   2026 NUGBASE fixed design system
 ========================================================= */
 
 
 /* =========================================================
-   00. FOUNDATION
+   00. GLOBAL FOUNDATION
+========================================================= */
+
+@import "./global.css";
+
+
+/* =========================================================
+   01. STARLIGHT DESIGN TOKEN BRIDGE
 ========================================================= */
 
 :root {
-	/* Typography */
-	--font-sans:
-		-apple-system,
-		BlinkMacSystemFont,
-		"Segoe UI",
-		"Noto Sans JP",
-		"Helvetica Neue",
-		Arial,
-		sans-serif;
 
-	--font-display:
-		-apple-system,
-		BlinkMacSystemFont,
-		"Segoe UI",
-		"Noto Sans JP",
-		"Helvetica Neue",
-		Arial,
-		sans-serif;
+	/* -------------------------------------------------------
+	   Starlight layout
+	------------------------------------------------------- */
 
-	--font-mono:
-		"SFMono-Regular",
-		"JetBrains Mono",
-		"Consolas",
-		"Menlo",
-		monospace;
-
-	/* Spacing: 8px base grid */
-	--space-1: 4px;
-	--space-2: 8px;
-	--space-3: 12px;
-	--space-4: 16px;
-	--space-5: 20px;
-	--space-6: 24px;
-	--space-8: 32px;
-	--space-10: 40px;
-	--space-12: 48px;
-	--space-16: 64px;
-	--space-20: 80px;
-	--space-24: 96px;
-
-	/* World palette */
-	--color-grass: #5f9f3a;
-	--color-grass-dark: #477d2b;
-	--color-grass-light: #8ac95a;
-
-	--color-dirt: #8b5e3c;
-	--color-dirt-dark: #68452d;
-
-	--color-stone: #73777b;
-	--color-stone-dark: #4d5256;
-
-	--color-water: #3f8fc4;
-	--color-water-dark: #286c9a;
-
-	--color-sky: #63b3df;
-
-	--color-gold: #d9a441;
-	--color-gold-light: #efc45d;
-
-	/* Light theme */
-	--color-background: #eef2f3;
-	--color-background-deep: #e1e7e9;
-
-	--color-surface: #ffffff;
-	--color-surface-hover: #f5f8f8;
-	--color-surface-subtle: #e9eef0;
-	--color-surface-strong: #dce3e5;
-
-	--color-text: #202521;
-	--color-text-secondary: #58615b;
-	--color-text-tertiary: #747d77;
-	--color-text-inverse: #ffffff;
-
-	--color-border: #cfd7d9;
-	--color-border-strong: #abb7bb;
-	--color-border-accent: rgba(95, 159, 58, 0.45);
-
-	--color-accent: #4f8f32;
-	--color-accent-hover: #3f7627;
-	--color-accent-soft: rgba(79, 143, 50, 0.10);
-
-	/* Semantic colors */
-	--color-info: #3f8fc4;
-	--color-info-soft: rgba(63, 143, 196, 0.10);
-
-	--color-success: #5f9f3a;
-	--color-success-soft: rgba(95, 159, 58, 0.10);
-
-	--color-warning: #c8902e;
-	--color-warning-soft: rgba(200, 144, 46, 0.12);
-
-	--color-danger: #bd5144;
-	--color-danger-soft: rgba(189, 81, 68, 0.10);
-
-	--color-tip: #8b5cf6;
-	--color-tip-soft: rgba(139, 92, 246, 0.10);
-	--color-tip-strong: #6d3fd1;
-
-	/* Atmosphere */
-	--color-sky-atmosphere: rgba(99, 179, 223, 0.12);
-	--color-sunlight: rgba(255, 247, 214, 0.75);
-	--color-overlay: rgba(17, 23, 22, 0.38);
-
-	--world-background-position: center center;
-	--world-background-size: cover;
-	--world-background-overlay: rgba(238, 242, 243, 0.34);
-
-	--light-angle: 135deg;
-	--light-highlight: rgba(255, 247, 214, 0.72);
-
-	/* Shadows */
-	--color-shadow: rgba(35, 49, 42, 0.16);
-	--color-shadow-strong: rgba(25, 34, 30, 0.25);
-
-	--shadow-soft: 0 8px 24px rgba(35, 49, 42, 0.10);
-	--shadow-medium: 0 8px 20px rgba(35, 49, 42, 0.14);
-	--shadow-deep: 8px 8px 0 rgba(35, 49, 42, 0.18);
-
-	/* Block geometry */
-	--block-shadow: 0 3px 0 var(--color-border-strong);
-	--block-shadow-hover: 0 5px 0 var(--color-border-strong);
-	--block-shadow-active: 0 1px 0 var(--color-border-strong);
-
-	--border-width: 1px;
-	--border-width-strong: 2px;
-
-	--radius-small: 0px;
-	--radius-medium: 0px;
-	--radius-large: 0px;
-	--radius-pill: 0px;
-
-	/* Motion */
-	--transition-fast: 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
-	--transition-normal: 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
-
-	/* Starlight layout */
 	--sl-nav-height: 64px;
 	--sl-nav-pad-x: 24px;
+
 	--sl-sidebar-width: 18rem;
+
 	--sl-content-width: 48rem;
 
-	/* Starlight color bridge */
-	--sl-color-bg: var(--color-background);
-	--sl-color-bg-nav: var(--color-surface);
-	--sl-color-bg-sidebar: var(--color-surface);
 
-	--sl-color-text: var(--color-text);
-	--sl-color-text-accent: var(--color-accent);
+	/* -------------------------------------------------------
+	   Color bridge
+	------------------------------------------------------- */
 
-	--sl-color-accent-low: var(--color-accent-soft);
-	--sl-color-accent: var(--color-accent);
-	--sl-color-accent-high: var(--color-accent-hover);
+	--sl-color-bg:
+		var(--color-background);
 
-	--sl-color-white: #ffffff;
-	--sl-color-gray-1: var(--color-text);
-	--sl-color-gray-2: var(--color-text-secondary);
-	--sl-color-gray-3: var(--color-text-tertiary);
-	--sl-color-gray-4: var(--color-border-strong);
-	--sl-color-gray-5: var(--color-border);
-	--sl-color-gray-6: var(--color-surface-subtle);
-	--sl-color-black: var(--color-background);
-	--sl-color-hairline: var(--color-border);
+	--sl-color-bg-nav:
+		var(--color-surface);
 
-	--sl-font: var(--font-sans);
-	--sl-font-mono: var(--font-mono);
+	--sl-color-bg-sidebar:
+		var(--color-surface);
 
-	/* Starlight semantic aliases */
-	--sl-color-blue-low: var(--color-info-soft);
-	--sl-color-blue: var(--color-info);
-	--sl-color-blue-high: var(--color-water-dark);
+	--sl-color-text:
+		var(--color-text);
 
-	--sl-color-purple-low: var(--color-tip-soft);
-	--sl-color-purple: var(--color-tip);
-	--sl-color-purple-high: var(--color-tip-strong);
+	--sl-color-text-accent:
+		var(--color-accent);
 
-	--sl-color-orange-low: var(--color-warning-soft);
-	--sl-color-orange: var(--color-warning);
-	--sl-color-orange-high: #9d6e18;
+	--sl-color-accent-low:
+		var(--color-accent-soft);
 
-	--sl-color-red-low: var(--color-danger-soft);
-	--sl-color-red: var(--color-danger);
-	--sl-color-red-high: #963b31;
+	--sl-color-accent:
+		var(--color-accent);
+
+	--sl-color-accent-high:
+		var(--color-accent-hover);
+
+
+	/* -------------------------------------------------------
+	   Gray bridge
+	------------------------------------------------------- */
+
+	--sl-color-white:
+		var(--color-text-inverse);
+
+	--sl-color-gray-1:
+		var(--color-text);
+
+	--sl-color-gray-2:
+		var(--color-text-secondary);
+
+	--sl-color-gray-3:
+		var(--color-text-tertiary);
+
+	--sl-color-gray-4:
+		var(--color-border-strong);
+
+	--sl-color-gray-5:
+		var(--color-border);
+
+	--sl-color-gray-6:
+		var(--color-surface-subtle);
+
+	--sl-color-black:
+		var(--color-background);
+
+	--sl-color-hairline:
+		var(--color-border);
+
+
+	/* -------------------------------------------------------
+	   Typography bridge
+	------------------------------------------------------- */
+
+	--sl-font:
+		var(--font-sans);
+
+	--sl-font-mono:
+		var(--font-mono);
+
+
+	/* -------------------------------------------------------
+	   Semantic bridge
+	------------------------------------------------------- */
+
+	--sl-color-blue-low:
+		var(--color-info-soft);
+
+	--sl-color-blue:
+		var(--color-info);
+
+	--sl-color-blue-high:
+		var(--color-info);
+
+
+	--sl-color-purple-low:
+		var(--color-tip-soft);
+
+	--sl-color-purple:
+		var(--color-tip);
+
+	--sl-color-purple-high:
+		var(--color-tip);
+
+
+	--sl-color-orange-low:
+		var(--color-warning-soft);
+
+	--sl-color-orange:
+		var(--color-warning);
+
+	--sl-color-orange-high:
+		var(--color-warning);
+
+
+	--sl-color-red-low:
+		var(--color-danger-soft);
+
+	--sl-color-red:
+		var(--color-danger);
+
+	--sl-color-red-high:
+		var(--color-danger);
 }
 
 
 /* =========================================================
-   01. DARK THEME
+   02. STARLIGHT SHELL
 ========================================================= */
-
-html[data-theme="dark"] {
-	--color-background: #111416;
-	--color-background-deep: #0b0e10;
-
-	--color-surface: #292e32;
-	--color-surface-hover: #343a3f;
-	--color-surface-subtle: #202529;
-	--color-surface-strong: #3b4247;
-
-	--color-text: #f1f4f2;
-	--color-text-secondary: #b2bbb7;
-	--color-text-tertiary: #858f8b;
-	--color-text-inverse: #111416;
-
-	--color-border: rgba(228, 238, 232, 0.13);
-	--color-border-strong: rgba(228, 238, 232, 0.24);
-	--color-border-accent: rgba(138, 201, 90, 0.42);
-
-	--color-accent: #82bd50;
-	--color-accent-hover: #9bd76a;
-	--color-accent-soft: rgba(130, 189, 80, 0.14);
-
-	--color-info: #67b5e3;
-	--color-info-soft: rgba(103, 181, 227, 0.14);
-
-	--color-success: #82bd50;
-	--color-success-soft: rgba(130, 189, 80, 0.14);
-
-	--color-warning: #e0b34d;
-	--color-warning-soft: rgba(224, 179, 77, 0.15);
-
-	--color-danger: #df7668;
-	--color-danger-soft: rgba(223, 118, 104, 0.14);
-
-	--color-tip: #a78bfa;
-	--color-tip-soft: rgba(167, 139, 250, 0.14);
-	--color-tip-strong: #c0adff;
-
-	--color-sky-atmosphere: rgba(80, 145, 183, 0.12);
-	--color-sunlight: rgba(255, 247, 214, 0.18);
-	--color-overlay: rgba(0, 0, 0, 0.66);
-
-	--world-background-overlay: rgba(8, 11, 13, 0.58);
-	--light-highlight: rgba(255, 247, 214, 0.20);
-
-	--color-shadow: rgba(0, 0, 0, 0.42);
-	--color-shadow-strong: rgba(0, 0, 0, 0.62);
-
-	--shadow-soft: 0 8px 28px rgba(0, 0, 0, 0.26);
-	--shadow-medium: 0 10px 24px rgba(0, 0, 0, 0.34);
-	--shadow-deep: 8px 8px 0 rgba(0, 0, 0, 0.48);
-
-	--block-shadow: 0 3px 0 rgba(0, 0, 0, 0.42);
-	--block-shadow-hover: 0 5px 0 rgba(0, 0, 0, 0.54);
-	--block-shadow-active: 0 1px 0 rgba(0, 0, 0, 0.46);
-
-	--sl-color-bg: var(--color-background);
-	--sl-color-bg-nav: var(--color-surface);
-	--sl-color-bg-sidebar: var(--color-surface);
-
-	--sl-color-text: var(--color-text);
-	--sl-color-text-accent: var(--color-accent);
-
-	--sl-color-accent-low: var(--color-accent-soft);
-	--sl-color-accent: var(--color-accent);
-	--sl-color-accent-high: var(--color-accent-hover);
-
-	--sl-color-white: #f4f7f5;
-	--sl-color-gray-1: var(--color-text);
-	--sl-color-gray-2: var(--color-text-secondary);
-	--sl-color-gray-3: var(--color-text-tertiary);
-	--sl-color-gray-4: var(--color-border-strong);
-	--sl-color-gray-5: var(--color-border);
-	--sl-color-gray-6: var(--color-surface-subtle);
-	--sl-color-black: var(--color-background);
-	--sl-color-hairline: var(--color-border);
-
-	--sl-color-blue-low: var(--color-info-soft);
-	--sl-color-blue: var(--color-info);
-	--sl-color-blue-high: #8cccf0;
-
-	--sl-color-purple-low: var(--color-tip-soft);
-	--sl-color-purple: var(--color-tip);
-	--sl-color-purple-high: var(--color-tip-strong);
-
-	--sl-color-orange-low: var(--color-warning-soft);
-	--sl-color-orange: var(--color-warning);
-	--sl-color-orange-high: #f0c96a;
-
-	--sl-color-red-low: var(--color-danger-soft);
-	--sl-color-red: var(--color-danger);
-	--sl-color-red-high: #ef9285;
-}
-
-
-/* =========================================================
-   02. WIKI WORLD / PAGE BACKGROUND
-========================================================= */
-
-html:has(.sl-markdown-content) {
-	background: var(--color-background);
-}
-
-body:has(.sl-markdown-content) {
-	position: relative;
-	min-height: 100vh;
-	margin: 0;
-	background-color: var(--color-background);
-	background-image:
-		linear-gradient(
-			180deg,
-			var(--world-background-overlay),
-			transparent 28%,
-			transparent 72%,
-			var(--world-background-overlay)
-		),
-		linear-gradient(
-			var(--light-angle),
-			var(--color-sunlight),
-			transparent 30%
-		),
-		var(--world-background);
-	background-position:
-		center,
-		center,
-		var(--world-background-position);
-	background-size:
-		auto,
-		auto,
-		var(--world-background-size);
-	background-repeat: no-repeat;
-	background-attachment: fixed;
-	color: var(--color-text);
-	font-family: var(--font-sans);
-}
-
-body:has(.sl-markdown-content)::before {
-	content: "";
-	position: fixed;
-	inset: 0;
-	z-index: -1;
-	pointer-events: none;
-	background:
-		radial-gradient(
-			ellipse at 18% 20%,
-			var(--color-sky-atmosphere),
-			transparent 38%
-		),
-		linear-gradient(
-			180deg,
-			transparent 55%,
-			rgba(255, 255, 255, 0.08) 100%
-		);
-}
-
-html[data-theme="dark"] body:has(.sl-markdown-content)::before {
-	background:
-		radial-gradient(
-			ellipse at 18% 20%,
-			var(--color-sky-atmosphere),
-			transparent 38%
-		),
-		linear-gradient(
-			135deg,
-			var(--light-highlight),
-			transparent 30%
-		);
-}
-
-body:has(.sl-markdown-content)::after {
-	content: "";
-	position: fixed;
-	inset: 0;
-	z-index: -1;
-	pointer-events: none;
-	background:
-		linear-gradient(
-			135deg,
-			var(--light-highlight),
-			transparent 32%
-		);
-	opacity: 0.45;
-}
-
-
-/* =========================================================
-   03. STARLIGHT SHELL
-========================================================= */
-
-/*
-   Header.astro replaces Starlight's visual header.
-   Keep the outer Starlight shell transparent so that the
-   NUGBASE header remains the single header UI.
-*/
 
 .header:has(.site-header) {
 	min-height: 0 !important;
 	padding: 0 !important;
+
 	background: transparent !important;
+
 	border: 0 !important;
+
 	box-shadow: none !important;
 }
 
 .header:has(.site-header) > * {
 	margin: 0;
 }
+
 
 .main-frame,
 .main-pane,
@@ -433,8 +223,19 @@ body:has(.sl-markdown-content)::after {
 }
 
 
+/* ---------------------------------------------------------
+   Starlight generated mobile menu
+
+   NUGBASE uses its own navigation.
+--------------------------------------------------------- */
+
+starlight-menu-button {
+	display: none !important;
+}
+
+
 /* =========================================================
-   04. NUGBASE HEADER BRIDGE
+   03. NUGBASE HEADER BRIDGE
 ========================================================= */
 
 .site-header {
@@ -455,12 +256,36 @@ body:has(.sl-markdown-content)::after {
 	border-radius: 0 !important;
 }
 
-/*
- * The custom NUGBASE header owns the mobile controls.
- * Starlight still injects its separate sidebar toggle from PageFrame,
- * which otherwise appears as a second fixed button in the top-right.
- */
-starlight-menu-button {
+
+/* =========================================================
+   04. WIKI BACKGROUND
+========================================================= */
+
+html:has(.sl-markdown-content) {
+	background:
+		var(--color-background);
+}
+
+body:has(.sl-markdown-content) {
+	position: relative;
+
+	min-height: 100vh;
+
+	margin: 0;
+
+	background:
+		var(--color-background);
+
+	color:
+		var(--color-text);
+
+	font-family:
+		var(--font-sans);
+}
+
+
+body:has(.sl-markdown-content)::before,
+body:has(.sl-markdown-content)::after {
 	display: none !important;
 }
 
@@ -471,60 +296,99 @@ starlight-menu-button {
 
 .sl-markdown-content {
 	position: relative;
+
 	width: 100%;
-	max-width: var(--sl-content-width);
+
+	max-width:
+		var(--sl-content-width);
+
 	min-width: 0;
-	color: var(--color-text);
-	font-family: var(--font-sans);
-	font-size: 16px;
-	line-height: 1.75;
+
+	color:
+		var(--color-text);
+
+	font-family:
+		var(--font-sans);
+
+	font-size:
+		16px;
+
+	line-height:
+		1.75;
+
+	overflow-x:
+		visible;
 }
 
+
 .sl-markdown-content p {
-	color: var(--color-text);
+	color:
+		var(--color-text);
 }
 
 .sl-markdown-content strong {
-	color: var(--color-text);
-	font-weight: 800;
+	color:
+		var(--color-text);
+
+	font-weight:
+		800;
 }
 
 .sl-markdown-content em {
-	color: var(--color-text-secondary);
+	color:
+		var(--color-text-secondary);
 }
 
 .sl-markdown-content small {
-	color: var(--color-text-tertiary);
+	color:
+		var(--color-text-tertiary);
 }
 
 
 /* =========================================================
-   06. GENERATED PAGE TITLE + HEADINGS
+   06. PAGE TITLE
 ========================================================= */
 
-/*
-   Starlight automatically renders the frontmatter title.
-   Therefore Wiki Markdown files should normally contain:
-   ---
-   title: "..."
-   ---
-   and NOT another "# ..." immediately below it.
-*/
-
 .main-pane > .content-panel:first-child {
-	background: transparent !important;
+	background:
+		transparent !important;
 }
 
 .main-pane > .content-panel:first-child > .sl-container > h1 {
-	margin: var(--space-10) 0 var(--space-6);
-	color: var(--color-text);
-	font-family: var(--font-display);
-	font-size: clamp(32px, 5vw, 48px);
-	font-weight: 800;
-	line-height: 1.2;
-	letter-spacing: -0.025em;
-	scroll-margin-top: calc(var(--sl-nav-height) + var(--space-6));
+	margin:
+		var(--space-10)
+		0
+		var(--space-6);
+
+	color:
+		var(--color-text);
+
+	font-family:
+		var(--font-display);
+
+	font-size:
+		clamp(32px, 5vw, 48px);
+
+	font-weight:
+		800;
+
+	line-height:
+		1.2;
+
+	letter-spacing:
+		-0.025em;
+
+	scroll-margin-top:
+		calc(
+			var(--sl-nav-height) +
+			var(--space-6)
+		);
 }
+
+
+/* =========================================================
+   07. WIKI HEADINGS
+========================================================= */
 
 .sl-markdown-content h1,
 .sl-markdown-content h2,
@@ -532,38 +396,93 @@ starlight-menu-button {
 .sl-markdown-content h4,
 .sl-markdown-content h5,
 .sl-markdown-content h6 {
-	color: var(--color-text);
-	font-family: var(--font-display);
-	font-weight: 800;
-	letter-spacing: -0.025em;
-	line-height: 1.3;
-	scroll-margin-top: calc(var(--sl-nav-height) + var(--space-6));
+	color:
+		var(--color-text);
+
+	font-family:
+		var(--font-display);
+
+	font-weight:
+		800;
+
+	letter-spacing:
+		-0.025em;
+
+	line-height:
+		1.3;
+
+	/*
+	 * The custom NUGBASE header occupies the top of the
+	 * viewport. Keep headings below that visual area when
+	 * navigating and when Starlight calculates its TOC state.
+	 */
+	scroll-margin-top:
+		calc(
+			var(--sl-nav-height) +
+			var(--space-8)
+		);
 }
 
+
+/* ---------------------------------------------------------
+   H1
+--------------------------------------------------------- */
+
 .sl-markdown-content h1 {
-	margin-bottom: var(--space-6);
-	font-size: clamp(32px, 5vw, 48px);
-	line-height: 1.2;
+	margin-bottom:
+		var(--space-6);
+
+	font-size:
+		clamp(32px, 5vw, 48px);
+
+	line-height:
+		1.2;
 }
+
+
+/* ---------------------------------------------------------
+   H2
+--------------------------------------------------------- */
 
 .sl-markdown-content h2 {
 	position: relative;
+
 	display: flex;
+
 	align-items: center;
-	gap: var(--space-3);
-	margin-top: var(--space-12);
-	margin-bottom: var(--space-4);
-	padding: var(--space-1) 0;
+
+	gap:
+		var(--space-3);
+
+	margin-top:
+		var(--space-12);
+
+	margin-bottom:
+		var(--space-4);
+
+	padding:
+		var(--space-1) 0;
+
 	border: 0;
-	font-size: clamp(24px, 3vw, 34px);
+
+	font-size:
+		clamp(24px, 3vw, 34px);
 }
 
 .sl-markdown-content h2::before {
 	content: "";
+
 	display: block;
-	flex: 0 0 6px;
-	width: 6px;
-	height: 1.1em;
+
+	flex:
+		0 0 6px;
+
+	width:
+		6px;
+
+	height:
+		1.1em;
+
 	background:
 		linear-gradient(
 			180deg,
@@ -571,139 +490,230 @@ starlight-menu-button {
 			var(--color-gold) 42%,
 			var(--color-grass) 100%
 		);
-	box-shadow: 2px 2px 0 var(--color-border-strong);
+
+	box-shadow:
+		2px 2px 0 var(--color-border-strong);
 }
+
+
+/* ---------------------------------------------------------
+   H3
+--------------------------------------------------------- */
 
 .sl-markdown-content h3 {
 	position: relative;
-	margin-top: var(--space-8);
-	padding-left: var(--space-3);
-	font-size: clamp(20px, 2.5vw, 26px);
+
+	margin-top:
+		var(--space-8);
+
+	padding-left:
+		var(--space-3);
+
+	font-size:
+		clamp(20px, 2.5vw, 26px);
 }
 
 .sl-markdown-content h3::before {
 	content: "";
+
 	position: absolute;
+
 	left: 0;
-	top: 0.25em;
-	width: 3px;
-	height: 0.9em;
-	background: var(--color-grass);
+
+	top:
+		0.25em;
+
+	width:
+		3px;
+
+	height:
+		0.9em;
+
+	background:
+		var(--color-grass);
 }
 
+
+/* ---------------------------------------------------------
+   H4–H6
+--------------------------------------------------------- */
+
 .sl-markdown-content h4 {
-	font-size: 20px;
+	font-size:
+		20px;
 }
 
 .sl-markdown-content h5,
 .sl-markdown-content h6 {
-	color: var(--color-text-secondary);
+	color:
+		var(--color-text-secondary);
 }
 
+
+/* ---------------------------------------------------------
+   Heading anchors
+--------------------------------------------------------- */
+
 .sl-markdown-content .sl-anchor-link {
-	color: var(--color-text-tertiary);
-	transition: color var(--transition-fast);
+	color:
+		var(--color-text-tertiary);
+
+	transition:
+		color var(--transition-fast);
 }
 
 .sl-markdown-content .sl-anchor-link:hover {
-	color: var(--color-accent);
+	color:
+		var(--color-accent);
 }
 
 
 /* =========================================================
-   07. LINKS
+   08. LINKS
 ========================================================= */
 
 .sl-markdown-content a {
-	color: var(--color-accent);
-	text-decoration-color: color-mix(
-		in srgb,
-		var(--color-accent) 55%,
-		transparent
-	);
-	text-underline-offset: 3px;
+	color:
+		var(--color-accent);
+
+	text-decoration-color:
+		color-mix(
+			in srgb,
+			var(--color-accent) 55%,
+			transparent
+		);
+
+	text-underline-offset:
+		3px;
+
 	transition:
 		color var(--transition-fast),
 		background-color var(--transition-fast);
 }
 
 .sl-markdown-content a:hover {
-	color: var(--color-accent-hover);
-	background: var(--color-accent-soft);
+	color:
+		var(--color-accent-hover);
+
+	background:
+		var(--color-accent-soft);
 }
 
 
 /* =========================================================
-   08. LISTS
+   09. LISTS
 ========================================================= */
 
 .sl-markdown-content ul,
 .sl-markdown-content ol {
-	padding-left: var(--space-8);
+	padding-left:
+		var(--space-8);
 }
 
 .sl-markdown-content li {
-	color: var(--color-text);
+	color:
+		var(--color-text);
 }
 
 .sl-markdown-content li::marker {
-	color: var(--color-accent);
-	font-weight: 800;
+	color:
+		var(--color-accent);
+
+	font-weight:
+		800;
 }
 
 .sl-markdown-content li + li {
-	margin-top: 2px;
+	margin-top:
+		2px;
 }
 
 
 /* =========================================================
-   09. INLINE CODE
+   10. INLINE CODE
 ========================================================= */
 
 .sl-markdown-content :not(pre) > code {
-	padding: 2px 6px;
-	border: 1px solid var(--color-border);
-	border-radius: 0 !important;
-	background: var(--color-surface-subtle);
-	color: var(--color-accent);
-	font-family: var(--font-mono);
-	font-size: 0.9em;
-	box-shadow: inset 0 2px 0 var(--color-surface-strong);
+	padding:
+		2px 6px;
+
+	border:
+		1px solid var(--color-border);
+
+	border-radius:
+		0 !important;
+
+	background:
+		var(--color-surface-subtle);
+
+	color:
+		var(--color-accent);
+
+	font-family:
+		var(--font-mono);
+
+	font-size:
+		0.9em;
+
+	box-shadow:
+		inset
+		0
+		2px
+		0
+		var(--color-surface-strong);
 }
 
 
 /* =========================================================
-   10. CODE BLOCKS
+   11. CODE BLOCKS
 ========================================================= */
 
 .sl-markdown-content pre,
 .sl-markdown-content .expressive-code {
-	overflow-x: auto;
-	margin: var(--space-6) 0;
-	border-radius: 0 !important;
+	overflow-x:
+		auto;
+
+	margin:
+		var(--space-6)
+		0;
+
+	border-radius:
+		0 !important;
 }
 
+
 .sl-markdown-content .expressive-code {
-	border: 1px solid var(--color-stone-dark);
+	border:
+		1px solid var(--color-stone-dark);
+
 	background:
 		linear-gradient(
 			135deg,
 			#202522,
 			#161a18
 		);
-	box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.28);
+
+	box-shadow:
+		4px 4px 0 rgba(0, 0, 0, 0.28);
 }
 
+
 .sl-markdown-content pre {
-	border: 1px solid var(--color-stone-dark);
+	border:
+		1px solid var(--color-stone-dark);
+
 	background:
 		linear-gradient(
 			135deg,
 			#202522,
 			#161a18
 		) !important;
-	color: #f1f5ef;
-	box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.28);
+
+	color:
+		#f1f5ef;
+
+	box-shadow:
+		4px 4px 0 rgba(0, 0, 0, 0.28);
 }
 
 html[data-theme="dark"] .sl-markdown-content pre {
@@ -713,76 +723,218 @@ html[data-theme="dark"] .sl-markdown-content pre {
 			#171b19,
 			#101311
 		) !important;
-	color: #edf2ee;
+
+	color:
+		#edf2ee;
 }
 
 .sl-markdown-content pre code {
-	background: transparent !important;
-	color: inherit;
-	font-family: var(--font-mono);
+	background:
+		transparent !important;
+
+	color:
+		inherit;
+
+	font-family:
+		var(--font-mono);
 }
+
 
 .sl-markdown-content .copy,
 .expressive-code .copy {
-	border: 1px solid var(--color-border-strong);
-	border-radius: 0 !important;
-	background: var(--color-surface) !important;
-	color: var(--color-text);
-	box-shadow: var(--block-shadow);
+	border:
+		1px solid var(--color-border-strong);
+
+	border-radius:
+		0 !important;
+
+	background:
+		var(--color-surface) !important;
+
+	color:
+		var(--color-text);
+
+	box-shadow:
+		var(--block-shadow);
 }
 
 .sl-markdown-content .copy:hover,
 .expressive-code .copy:hover {
-	background: var(--color-surface-hover) !important;
-	border-color: var(--color-accent);
-	color: var(--color-accent);
-	transform: translateY(-1px);
+	background:
+		var(--color-surface-hover) !important;
+
+	border-color:
+		var(--color-accent);
+
+	color:
+		var(--color-accent);
+
+	transform:
+		translateY(-1px);
 }
 
 .sl-markdown-content .copy:active,
 .expressive-code .copy:active {
-	transform: translateY(1px);
+	transform:
+		translateY(1px);
 }
 
 
 /* =========================================================
-   11. TABLES
+   12. TABLES
    ---------------------------------------------------------
-   Keep the TABLE formatting context intact.
-   This is important: thead/tbody/tfoot are NOT changed to
-   independent display: table elements, so columns remain
-   aligned on mobile.
+   NUGBASE table sizing rule:
+
+   1. A table does NOT automatically fill the content width.
+   2. A short table remains compact.
+   3. A wide table may exceed the content width.
+   4. Only the table itself becomes horizontally scrollable.
+   5. The page itself never becomes horizontally scrollable.
 ========================================================= */
 
 .sl-markdown-content table {
-	width: max-content;
-	min-width: 0;
-	max-width: 100%;
-	margin: var(--space-6) 0;
-	border: 1px solid var(--color-border);
-	border-radius: 0 !important;
-	border-collapse: separate;
-	border-spacing: 0;
-	background: var(--color-surface);
-	color: var(--color-text);
-	box-shadow: var(--block-shadow);
+	display:
+		table;
+
+	width:
+		auto;
+
+	min-width:
+		0;
+
+	max-width:
+		none;
+
+	margin:
+		var(--space-6)
+		0;
+
+	border:
+		1px solid var(--color-border);
+
+	border-radius:
+		0 !important;
+
+	border-collapse:
+		separate;
+
+	border-spacing:
+		0;
+
+	background:
+		var(--color-surface);
+
+	color:
+		var(--color-text);
+
+	box-shadow:
+		var(--block-shadow);
+
+	/*
+	 * Keep natural table width.
+	 *
+	 * overflow cannot be applied directly to a normal table
+	 * reliably, so wide-table protection is handled by the
+	 * wrapper generated by Starlight where available.
+	 */
 }
+
+
+/* ---------------------------------------------------------
+   Starlight table wrapper
+--------------------------------------------------------- */
+
+.sl-markdown-content .table-wrapper,
+.sl-markdown-content .sl-table-wrapper {
+	width:
+		100%;
+
+	max-width:
+		100%;
+
+	margin:
+		var(--space-6)
+		0;
+
+	overflow-x:
+		auto;
+
+	overflow-y:
+		hidden;
+
+	overscroll-behavior-x:
+		contain;
+
+	scrollbar-color:
+		var(--color-border-strong)
+		var(--color-background);
+
+	scrollbar-width:
+		thin;
+}
+
+
+/*
+ * When Starlight does not provide a wrapper, allow the table
+ * itself to remain wider than the content without forcing
+ * the page to scroll.
+ */
+.sl-markdown-content table {
+	overscroll-behavior-x:
+		contain;
+}
+
+
+/* ---------------------------------------------------------
+   Table internal sizing
+--------------------------------------------------------- */
+
+.sl-markdown-content table thead,
+.sl-markdown-content table tbody,
+.sl-markdown-content table tr {
+	width:
+		auto;
+}
+
+
+/* ---------------------------------------------------------
+   Cells
+--------------------------------------------------------- */
 
 .sl-markdown-content th,
 .sl-markdown-content td {
-	padding: 12px 16px;
-	border-right: 1px solid var(--color-border);
-	border-bottom: 1px solid var(--color-border);
-	text-align: left;
-	vertical-align: top;
-	line-height: 1.55;
-	overflow-wrap: break-word;
+	padding:
+		12px 16px;
+
+	border-right:
+		1px solid var(--color-border);
+
+	border-bottom:
+		1px solid var(--color-border);
+
+	text-align:
+		left;
+
+	vertical-align:
+		top;
+
+	line-height:
+		1.55;
+
+	overflow-wrap:
+		break-word;
 }
 
 .sl-markdown-content th:last-child,
 .sl-markdown-content td:last-child {
-	border-right: 0;
+	border-right:
+		0;
 }
+
+
+/* ---------------------------------------------------------
+   Header
+--------------------------------------------------------- */
 
 .sl-markdown-content th {
 	background:
@@ -791,87 +943,140 @@ html[data-theme="dark"] .sl-markdown-content pre {
 			var(--color-surface-strong),
 			var(--color-surface-subtle)
 		);
-	color: var(--color-text);
-	font-weight: 800;
-	white-space: nowrap;
+
+	color:
+		var(--color-text);
+
+	font-weight:
+		800;
+
+	white-space:
+		nowrap;
 }
 
+
+/* ---------------------------------------------------------
+   Body
+--------------------------------------------------------- */
+
 .sl-markdown-content td {
-	color: var(--color-text-secondary);
+	color:
+		var(--color-text-secondary);
 }
 
 .sl-markdown-content tr:last-child td {
-	border-bottom: 0;
+	border-bottom:
+		0;
 }
 
 .sl-markdown-content tbody tr {
-	transition: background-color var(--transition-fast);
+	transition:
+		background-color var(--transition-fast);
 }
 
 .sl-markdown-content tbody tr:hover {
-	background: var(--color-surface-hover);
+	background:
+		var(--color-surface-hover);
 }
 
 .sl-markdown-content td code,
 .sl-markdown-content th code {
-	white-space: nowrap;
+	white-space:
+		nowrap;
 }
 
 
 /* =========================================================
-   12. BLOCKQUOTE
+   13. BLOCKQUOTE
 ========================================================= */
 
 .sl-markdown-content blockquote {
-	margin: var(--space-6) 0;
-	padding: var(--space-4) var(--space-5);
-	border: 1px solid var(--color-border);
-	border-left: 4px solid var(--color-accent);
-	border-radius: 0 !important;
+	margin:
+		var(--space-6)
+		0;
+
+	padding:
+		var(--space-4)
+		var(--space-5);
+
+	border:
+		1px solid var(--color-border);
+
+	border-left:
+		4px solid var(--color-accent);
+
+	border-radius:
+		0 !important;
+
 	background:
 		linear-gradient(
 			135deg,
 			var(--color-accent-soft),
 			var(--color-surface)
 		);
-	color: var(--color-text-secondary);
-	box-shadow: 2px 3px 0 var(--color-border);
+
+	color:
+		var(--color-text-secondary);
+
+	box-shadow:
+		2px 3px 0 var(--color-border);
 }
 
 .sl-markdown-content blockquote p {
-	color: inherit;
+	color:
+		inherit;
 }
 
 
 /* =========================================================
-   13. HORIZONTAL RULE
+   14. HORIZONTAL RULE
 ========================================================= */
 
 .sl-markdown-content hr {
-	margin: var(--space-8) 0;
-	border: 0;
-	border-top: 1px solid var(--color-border-strong);
+	margin:
+		var(--space-8)
+		0;
+
+	border:
+		0;
+
+	border-top:
+		1px solid var(--color-border-strong);
 }
 
 
 /* =========================================================
-   14. STARLIGHT ASIDES
-   note = blue
-   tip = purple
-   caution = gold
-   danger = red
+   15. STARLIGHT ASIDES
 ========================================================= */
 
 .sl-markdown-content .starlight-aside {
 	position: relative;
-	margin: var(--space-6) 0;
-	padding: var(--space-5);
-	border: 1px solid var(--color-border);
-	border-left-width: 5px;
-	border-radius: 0 !important;
-	background: var(--color-surface);
-	color: var(--color-text);
-	box-shadow: var(--block-shadow);
+
+	margin:
+		var(--space-6)
+		0;
+
+	padding:
+		var(--space-5);
+
+	border:
+		1px solid var(--color-border);
+
+	border-left-width:
+		5px;
+
+	border-radius:
+		0 !important;
+
+	background:
+		var(--color-surface);
+
+	color:
+		var(--color-text);
+
+	box-shadow:
+		var(--block-shadow);
+
 	transition:
 		background-color var(--transition-fast),
 		border-color var(--transition-fast),
@@ -879,13 +1084,21 @@ html[data-theme="dark"] .sl-markdown-content pre {
 		transform var(--transition-fast);
 }
 
+
 .sl-markdown-content .starlight-aside::before {
 	content: "";
+
 	position: absolute;
+
 	top: 0;
 	left: 0;
-	width: 60%;
-	height: 2px;
+
+	width:
+		60%;
+
+	height:
+		2px;
+
 	background:
 		linear-gradient(
 			90deg,
@@ -893,41 +1106,72 @@ html[data-theme="dark"] .sl-markdown-content pre {
 			var(--color-grass-light),
 			transparent
 		);
-	pointer-events: none;
+
+	pointer-events:
+		none;
 }
 
+
 .sl-markdown-content .starlight-aside:hover {
-	background: var(--color-surface-hover);
-	box-shadow: var(--block-shadow-hover);
-	transform: translateY(-1px);
+	background:
+		var(--color-surface-hover);
+
+	box-shadow:
+		var(--block-shadow-hover);
+
+	transform:
+		translateY(-1px);
 }
+
 
 .sl-markdown-content .starlight-aside__title {
 	position: relative;
-	margin-bottom: var(--space-2);
-	color: var(--color-text);
-	font-family: var(--font-display);
-	font-weight: 800;
+
+	margin-bottom:
+		var(--space-2);
+
+	color:
+		var(--color-text);
+
+	font-family:
+		var(--font-display);
+
+	font-weight:
+		800;
 }
 
 .sl-markdown-content .starlight-aside__content {
-	color: var(--color-text);
+	color:
+		var(--color-text);
 }
 
 .sl-markdown-content .starlight-aside__content p,
 .sl-markdown-content .starlight-aside__content li {
-	color: inherit;
+	color:
+		inherit;
 }
 
-/* Compatibility with older Starlight markup. */
+
 .sl-markdown-content .starlight-aside .aside-title {
-	color: var(--color-text);
-	font-family: var(--font-display);
-	font-weight: 800;
+	color:
+		var(--color-text);
+
+	font-family:
+		var(--font-display);
+
+	font-weight:
+		800;
 }
+
+
+/* ---------------------------------------------------------
+   Note
+--------------------------------------------------------- */
 
 .sl-markdown-content .starlight-aside--note {
-	border-left-color: var(--color-info);
+	border-left-color:
+		var(--color-info);
+
 	background:
 		linear-gradient(
 			135deg,
@@ -936,13 +1180,23 @@ html[data-theme="dark"] .sl-markdown-content pre {
 		);
 }
 
-.sl-markdown-content .starlight-aside--note .starlight-aside__title,
-.sl-markdown-content .starlight-aside--note .aside-title {
-	color: var(--color-info);
+.sl-markdown-content .starlight-aside--note
+.starlight-aside__title,
+.sl-markdown-content .starlight-aside--note
+.aside-title {
+	color:
+		var(--color-info);
 }
 
+
+/* ---------------------------------------------------------
+   Tip
+--------------------------------------------------------- */
+
 .sl-markdown-content .starlight-aside--tip {
-	border-left-color: var(--color-tip);
+	border-left-color:
+		var(--color-tip);
+
 	background:
 		linear-gradient(
 			135deg,
@@ -951,13 +1205,23 @@ html[data-theme="dark"] .sl-markdown-content pre {
 		);
 }
 
-.sl-markdown-content .starlight-aside--tip .starlight-aside__title,
-.sl-markdown-content .starlight-aside--tip .aside-title {
-	color: var(--color-tip);
+.sl-markdown-content .starlight-aside--tip
+.starlight-aside__title,
+.sl-markdown-content .starlight-aside--tip
+.aside-title {
+	color:
+		var(--color-tip);
 }
 
+
+/* ---------------------------------------------------------
+   Caution
+--------------------------------------------------------- */
+
 .sl-markdown-content .starlight-aside--caution {
-	border-left-color: var(--color-warning);
+	border-left-color:
+		var(--color-warning);
+
 	background:
 		linear-gradient(
 			135deg,
@@ -966,13 +1230,23 @@ html[data-theme="dark"] .sl-markdown-content pre {
 		);
 }
 
-.sl-markdown-content .starlight-aside--caution .starlight-aside__title,
-.sl-markdown-content .starlight-aside--caution .aside-title {
-	color: var(--color-warning);
+.sl-markdown-content .starlight-aside--caution
+.starlight-aside__title,
+.sl-markdown-content .starlight-aside--caution
+.aside-title {
+	color:
+		var(--color-warning);
 }
 
+
+/* ---------------------------------------------------------
+   Danger
+--------------------------------------------------------- */
+
 .sl-markdown-content .starlight-aside--danger {
-	border-left-color: var(--color-danger);
+	border-left-color:
+		var(--color-danger);
+
 	background:
 		linear-gradient(
 			135deg,
@@ -981,36 +1255,47 @@ html[data-theme="dark"] .sl-markdown-content pre {
 		);
 }
 
-.sl-markdown-content .starlight-aside--danger .starlight-aside__title,
-.sl-markdown-content .starlight-aside--danger .aside-title {
-	color: var(--color-danger);
+.sl-markdown-content .starlight-aside--danger
+.starlight-aside__title,
+.sl-markdown-content .starlight-aside--danger
+.aside-title {
+	color:
+		var(--color-danger);
 }
 
 
 /* =========================================================
-   15. STARLIGHT LINK CARDS
+   16. STARLIGHT LINK CARDS
 ========================================================= */
 
 .card-grid {
-	gap: var(--space-4);
+	gap:
+		var(--space-4);
 }
 
 .card-grid .card,
 .sl-markdown-content .card,
 .sl-markdown-content .sl-link-card {
 	position: relative;
-	min-width: 0;
-	border: 1px solid var(--color-border) !important;
-	border-radius: 0 !important;
+
+	min-width:
+		0;
+
+	border:
+		1px solid var(--color-border) !important;
+
+	border-radius:
+		0 !important;
+
 	background:
-		linear-gradient(
-			135deg,
-			var(--color-sunlight),
-			transparent 30%
-		),
 		var(--color-surface) !important;
-	color: var(--color-text) !important;
-	box-shadow: var(--block-shadow) !important;
+
+	color:
+		var(--color-text) !important;
+
+	box-shadow:
+		var(--block-shadow) !important;
+
 	transition:
 		background-color var(--transition-fast),
 		border-color var(--transition-fast),
@@ -1018,15 +1303,23 @@ html[data-theme="dark"] .sl-markdown-content pre {
 		transform var(--transition-fast);
 }
 
+
 .card-grid .card::before,
 .sl-markdown-content .card::before,
 .sl-markdown-content .sl-link-card::before {
 	content: "";
+
 	position: absolute;
+
 	top: 0;
 	left: 0;
-	width: 55%;
-	height: 2px;
+
+	width:
+		55%;
+
+	height:
+		2px;
+
 	background:
 		linear-gradient(
 			90deg,
@@ -1036,153 +1329,777 @@ html[data-theme="dark"] .sl-markdown-content pre {
 		);
 }
 
+
 .card-grid .card:hover,
 .sl-markdown-content .card:hover,
 .sl-markdown-content .sl-link-card:hover {
-	border-color: var(--color-border-strong) !important;
+	border-color:
+		var(--color-border-strong) !important;
+
 	background:
-		linear-gradient(
-			135deg,
-			var(--color-sunlight),
-			transparent 34%
-		),
 		var(--color-surface-hover) !important;
-	box-shadow: var(--block-shadow-hover) !important;
-	transform: translateY(-2px);
+
+	box-shadow:
+		var(--block-shadow-hover) !important;
+
+	transform:
+		translateY(-2px);
 }
+
 
 .card-grid .card:active,
 .sl-markdown-content .card:active,
 .sl-markdown-content .sl-link-card:active {
-	box-shadow: var(--block-shadow-active) !important;
-	transform: translateY(2px);
+	box-shadow:
+		var(--block-shadow-active) !important;
+
+	transform:
+		translateY(2px);
 }
+
 
 .sl-markdown-content .sl-link-card .title,
 .sl-markdown-content .sl-link-card .description {
-	color: var(--color-text) !important;
+	color:
+		var(--color-text) !important;
 }
 
 .sl-markdown-content .sl-link-card .description {
-	color: var(--color-text-secondary) !important;
+	color:
+		var(--color-text-secondary) !important;
 }
 
 .sl-markdown-content .sl-link-card > .icon {
-	color: var(--color-accent) !important;
+	color:
+		var(--color-accent) !important;
 }
 
 
 /* =========================================================
-   16. PAGINATION
+   17. PAGINATION
 ========================================================= */
 
 .pagination-links {
-	gap: var(--space-4);
+	gap:
+		var(--space-3);
 }
 
+
 .pagination-links a {
-	border: 1px solid var(--color-border);
-	border-radius: 0 !important;
+	display:
+		flex;
+
+	flex-direction:
+		column;
+
+	justify-content:
+		center;
+
+	min-height:
+		72px;
+
+	padding:
+		var(--space-3)
+		var(--space-4);
+
+	border:
+		1px solid var(--color-border-strong);
+
+	border-radius:
+		0 !important;
+
 	background:
-		linear-gradient(
-			135deg,
-			var(--color-sunlight),
-			transparent 30%
-		),
 		var(--color-surface);
-	color: var(--color-text);
-	box-shadow: var(--block-shadow);
+
+	color:
+		var(--color-text) !important;
+
+	box-shadow:
+		var(--block-shadow);
+
+	text-decoration:
+		none !important;
+
 	transition:
 		background-color var(--transition-fast),
 		border-color var(--transition-fast),
+		color var(--transition-fast),
 		transform var(--transition-fast),
 		box-shadow var(--transition-fast);
 }
 
-.pagination-links a:hover {
-	background:
-		linear-gradient(
-			135deg,
-			var(--color-sunlight),
-			transparent 34%
-		),
-		var(--color-surface-hover);
-	border-color: var(--color-border-strong);
-	box-shadow: var(--block-shadow-hover);
-	transform: translateY(-2px);
+
+.pagination-links a .pagination-links-label,
+.pagination-links a .pagination-links-label span,
+.pagination-links a small {
+	color:
+		var(--color-text-secondary) !important;
+
+	font-size:
+		12px;
+
+	font-weight:
+		700;
+
+	line-height:
+		1.3;
 }
 
+
+.pagination-links a .pagination-links-title,
+.pagination-links a strong,
+.pagination-links a span:not(.pagination-links-label) {
+	color:
+		var(--color-text) !important;
+
+	font-size:
+		14px;
+
+	font-weight:
+		800;
+
+	line-height:
+		1.4;
+}
+
+
+.pagination-links a:hover {
+	background:
+		var(--color-surface-hover);
+
+	border-color:
+		var(--color-accent);
+
+	color:
+		var(--color-accent) !important;
+
+	box-shadow:
+		var(--block-shadow-hover);
+
+	transform:
+		translateY(-1px);
+}
+
+.pagination-links a:hover strong,
+.pagination-links a:hover span,
+.pagination-links a:hover small {
+	color:
+		var(--color-accent) !important;
+}
+
+
 .pagination-links a:active {
-	box-shadow: var(--block-shadow-active);
-	transform: translateY(2px);
+	box-shadow:
+		var(--block-shadow-active);
+
+	transform:
+		translateY(2px);
+}
+
+
+.pagination-links a svg {
+	color:
+		var(--color-accent) !important;
+
+	width:
+		18px;
+
+	height:
+		18px;
 }
 
 
 /* =========================================================
-   17. LEFT SIDEBAR
+   18. LEFT SIDEBAR
+   ---------------------------------------------------------
+   NUGBASE sidebar hierarchy
+
+   Level 1 = Large category
+   --------------------------------
+   サーバー
+   プラグイン
+   MOD
+
+   Level 2 = Small category / subgroup
+   --------------------------------
+   Lands
+   QuickShop
+   Jobs
+   mcMMO
+   Bolt
+   PlayerGuard
+   LWC
+
+   Level 3 = Page
+   --------------------------------
+   概要
+   コマンド
+   権限・役職
+   外交
+   維持費
 ========================================================= */
 
 .sidebar-pane {
 	background:
-		linear-gradient(
-			180deg,
-			var(--color-surface),
-			var(--color-surface-subtle)
-		) !important;
-	border-inline-end: 1px solid var(--color-border);
-	color: var(--color-text);
-	box-shadow: 2px 0 0 var(--color-shadow);
+		var(--color-surface) !important;
+
+	border-inline-end:
+		1px solid var(--color-border);
+
+	color:
+		var(--color-text);
+
+	box-shadow:
+		2px 0 0 var(--color-shadow);
 }
 
 .sidebar-content {
-	padding: var(--space-6) var(--space-3);
+	padding:
+		var(--space-5)
+		var(--space-3);
 }
 
-.sidebar details,
-.sidebar summary {
-	border-radius: 0 !important;
+
+/* ---------------------------------------------------------
+   Remove all list markers
+--------------------------------------------------------- */
+
+.sidebar ul,
+.sidebar ol,
+.sidebar li {
+	list-style:
+		none !important;
+
+	margin:
+		0;
+
+	padding:
+		0;
 }
 
-.sidebar summary {
-	color: var(--color-text) !important;
-	font-family: var(--font-display);
-	font-weight: 800;
-	transition:
-		color var(--transition-fast),
-		background-color var(--transition-fast);
+.sidebar li::marker {
+	content:
+		"" !important;
 }
+
+
+/* ---------------------------------------------------------
+   Details base
+--------------------------------------------------------- */
+
+.sidebar details {
+	display:
+		block;
+
+	margin:
+		0;
+
+	padding:
+		0;
+
+	border:
+		0;
+
+	border-radius:
+		0 !important;
+}
+
+
+/* ---------------------------------------------------------
+   Nested groups
+   Level 1:
+   .sidebar details
+   Level 2:
+   .sidebar details details
+--------------------------------------------------------- */
+
+.sidebar details details {
+	margin:
+		var(--space-2)
+		0
+		var(--space-3);
+
+	padding:
+		0;
+
+	border-left:
+		2px solid var(--color-border);
+
+	background:
+		transparent;
+}
+
+
+/* ---------------------------------------------------------
+   Force all group content open
+--------------------------------------------------------- */
+
+.sidebar details > ul,
+.sidebar details > div,
+.sidebar details > .group-label + ul,
+.sidebar details details > ul,
+.sidebar details details > div,
+.sidebar details details > .group-label + ul {
+	display:
+		block !important;
+}
+
+
+/* =========================================================
+   18-A. LARGE CATEGORY
+========================================================= */
+
+.sidebar > details > summary,
+.sidebar details:not(details details) > summary {
+	position:
+		relative;
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		flex-start;
+
+	width:
+		100%;
+
+	min-height:
+		42px;
+
+	margin:
+		0 0
+		var(--space-2);
+
+	padding:
+		var(--space-2)
+		var(--space-3);
+
+	border:
+		0;
+
+	border-bottom:
+		2px solid var(--color-border);
+
+	border-radius:
+		0 !important;
+
+	background:
+		transparent;
+
+	color:
+		var(--color-text) !important;
+
+	font-family:
+		var(--font-display);
+
+	font-size:
+		14px;
+
+	font-weight:
+		800;
+
+	letter-spacing:
+		0.04em;
+
+	text-align:
+		left;
+
+	text-transform:
+		none;
+
+	cursor:
+		default;
+
+	pointer-events:
+		none;
+
+	box-sizing:
+		border-box;
+}
+
+
+/* ---------------------------------------------------------
+   Large category accent
+--------------------------------------------------------- */
+
+.sidebar > details > summary::before,
+.sidebar details:not(details details) > summary::before {
+	content:
+		"";
+
+	display:
+		block;
+
+	flex:
+		0 0 5px;
+
+	width:
+		5px;
+
+	height:
+		20px;
+
+	margin:
+		0 var(--space-3) 0 0;
+
+	background:
+		linear-gradient(
+			180deg,
+			var(--color-gold),
+			var(--color-grass)
+		);
+
+	box-shadow:
+		2px 2px 0 var(--color-border);
+}
+
+
+/* ---------------------------------------------------------
+   Large category marker removal
+--------------------------------------------------------- */
+
+.sidebar > details > summary::-webkit-details-marker,
+.sidebar details:not(details details) > summary::-webkit-details-marker {
+	display:
+		none;
+}
+
+.sidebar > details > summary::marker,
+.sidebar details:not(details details) > summary::marker {
+	content:
+		"";
+}
+
+.sidebar > details > summary svg,
+.sidebar > details > summary .caret,
+.sidebar > details > summary [data-icon],
+.sidebar details:not(details details) > summary svg,
+.sidebar details:not(details details) > summary .caret,
+.sidebar details:not(details details) > summary [data-icon] {
+	display:
+		none !important;
+}
+
+
+/* ---------------------------------------------------------
+   Large category spacing
+--------------------------------------------------------- */
+
+.sidebar > details {
+	margin-bottom:
+		var(--space-5);
+}
+
+.sidebar > details + details {
+	margin-top:
+		var(--space-4);
+}
+
+
+/* =========================================================
+   18-B. SMALL CATEGORY
+========================================================= */
+
+.sidebar details details > summary {
+	position:
+		relative;
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		flex-start;
+
+	width:
+		100%;
+
+	min-height:
+		34px;
+
+	margin:
+		0;
+
+	padding:
+		var(--space-2)
+		var(--space-3);
+
+	border:
+		0;
+
+	border-radius:
+		0 !important;
+
+	background:
+		transparent;
+
+	color:
+		var(--color-text) !important;
+
+	font-family:
+		var(--font-sans);
+
+	font-size:
+		13px;
+
+	font-weight:
+		750;
+
+	letter-spacing:
+		0.01em;
+
+	text-align:
+		left;
+
+	cursor:
+		default;
+
+	pointer-events:
+		none;
+
+	box-sizing:
+		border-box;
+}
+
+
+/* ---------------------------------------------------------
+   Small category marker
+--------------------------------------------------------- */
+
+.sidebar details details > summary::before {
+	content:
+		"";
+
+	display:
+		block;
+
+	flex:
+		0 0 4px;
+
+	width:
+		4px;
+
+	height:
+		14px;
+
+	margin:
+		0 var(--space-2) 0 0;
+
+	background:
+		var(--color-grass);
+
+	box-shadow:
+		1px 1px 0 var(--color-border);
+}
+
+
+/* ---------------------------------------------------------
+   Remove small category disclosure icon
+--------------------------------------------------------- */
+
+.sidebar details details > summary::-webkit-details-marker {
+	display:
+		none;
+}
+
+.sidebar details details > summary::marker {
+	content:
+		"";
+}
+
+.sidebar details details > summary svg,
+.sidebar details details > summary .caret,
+.sidebar details details > summary [data-icon] {
+	display:
+		none !important;
+}
+
+
+/* ---------------------------------------------------------
+   Small category content spacing
+--------------------------------------------------------- */
+
+.sidebar details details > ul {
+	margin:
+		0 0
+		var(--space-3);
+}
+
+
+/* =========================================================
+   18-C. CATEGORY HOVER
+========================================================= */
 
 .sidebar summary:hover {
-	color: var(--color-accent) !important;
-	background: var(--color-accent-soft);
+	background:
+		transparent;
+
+	color:
+		var(--color-text) !important;
 }
 
+
+/* =========================================================
+   18-D. PAGE LINKS
+========================================================= */
+
 .sidebar a {
-	position: relative;
-	display: flex;
-	align-items: center;
-	min-height: 38px;
-	padding: var(--space-2) var(--space-3);
-	border: 1px solid transparent;
-	border-radius: 0 !important;
-	color: var(--color-text-secondary) !important;
-	font-family: var(--font-sans);
-	font-size: 14px;
-	font-weight: 600;
+	position:
+		relative;
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		flex-start;
+
+	min-height:
+		36px;
+
+	margin:
+		2px 0;
+
+	padding:
+		var(--space-2)
+		var(--space-3)
+		var(--space-2)
+		var(--space-6);
+
+	border:
+		1px solid transparent;
+
+	border-radius:
+		0 !important;
+
+	color:
+		var(--color-text-secondary) !important;
+
+	font-family:
+		var(--font-sans);
+
+	font-size:
+		14px;
+
+	font-weight:
+		600;
+
+	text-align:
+		left;
+
+	text-decoration:
+		none;
+
 	transition:
 		background-color var(--transition-fast),
 		border-color var(--transition-fast),
 		color var(--transition-fast),
 		transform var(--transition-fast),
 		box-shadow var(--transition-fast);
+
+	box-sizing:
+		border-box;
 }
 
-.sidebar a:hover {
-	background: var(--color-surface-hover);
-	border-color: var(--color-border);
-	color: var(--color-text) !important;
-	transform: translateX(2px);
+
+/* ---------------------------------------------------------
+   Page hierarchy marker
+--------------------------------------------------------- */
+
+.sidebar a::before {
+	content:
+		"";
+
+	position:
+		absolute;
+
+	left:
+		var(--space-3);
+
+	top:
+		50%;
+
+	width:
+		5px;
+
+	height:
+		5px;
+
+	transform:
+		translateY(-50%);
+
+	background:
+		var(--color-border-strong);
 }
+
+
+/* ---------------------------------------------------------
+   Direct pages inside large categories
+--------------------------------------------------------- */
+
+.sidebar > details > ul > li > a,
+.sidebar > details > div > ul > li > a {
+	padding-left:
+		var(--space-6);
+}
+
+
+/* ---------------------------------------------------------
+   Pages belonging to small categories
+--------------------------------------------------------- */
+
+.sidebar details details a {
+	min-height:
+		34px;
+
+	padding:
+		var(--space-2)
+		var(--space-3)
+		var(--space-2)
+		var(--space-6);
+
+	font-size:
+		13px;
+
+	font-weight:
+		600;
+}
+
+
+/* ---------------------------------------------------------
+   Page hover
+--------------------------------------------------------- */
+
+.sidebar a:hover {
+	background:
+		var(--color-surface-hover);
+
+	border-color:
+		var(--color-border);
+
+	color:
+		var(--color-text) !important;
+
+	transform:
+		translateX(2px);
+}
+
+.sidebar a:hover::before {
+	background:
+		var(--color-accent);
+}
+
+
+/* ---------------------------------------------------------
+   Active sidebar item
+--------------------------------------------------------- */
 
 .sidebar a[aria-current="page"] {
 	background:
@@ -1191,56 +2108,114 @@ html[data-theme="dark"] .sl-markdown-content pre {
 			var(--color-accent-soft),
 			transparent
 		);
-	border-color: var(--color-border-accent);
-	color: var(--color-accent) !important;
-	font-weight: 800;
-	box-shadow: inset 3px 0 0 var(--color-accent);
+
+	border-color:
+		var(--color-border-accent);
+
+	color:
+		var(--color-accent) !important;
+
+	font-weight:
+		800;
+
+	box-shadow:
+		inset 3px 0 0 var(--color-accent);
 }
+
+.sidebar a[aria-current="page"]::before {
+	background:
+		var(--color-accent);
+
+	width:
+		6px;
+
+	height:
+		6px;
+}
+
 
 .sidebar a[aria-current="page"]::after {
-	content: "";
-	position: absolute;
-	left: 3px;
-	right: 0;
-	bottom: -3px;
-	height: 3px;
-	background: var(--color-border-strong);
-	opacity: 0.65;
+	display:
+		none;
 }
+
+
+/* ---------------------------------------------------------
+   Nested pages
+--------------------------------------------------------- */
 
 .sidebar ul ul a {
-	color: var(--color-text-secondary) !important;
+	padding-left:
+		var(--space-8);
+
+	color:
+		var(--color-text-secondary) !important;
 }
 
+
+/* ---------------------------------------------------------
+   Sidebar buttons
+--------------------------------------------------------- */
+
 .sidebar button {
-	border-radius: 0 !important;
+	border-radius:
+		0 !important;
 }
 
 
 /* =========================================================
-   18. RIGHT SIDEBAR / TABLE OF CONTENTS
+   19. RIGHT SIDEBAR / TABLE OF CONTENTS
 ========================================================= */
 
 .right-sidebar-container {
-	min-width: 0;
+	min-width:
+		0;
 }
 
 .right-sidebar {
-	background: transparent !important;
-	border-inline-start: 1px solid var(--color-border);
-	color: var(--color-text);
+	background:
+		transparent !important;
+
+	border-inline-start:
+		1px solid var(--color-border);
+
+	color:
+		var(--color-text);
 }
 
-.right-sidebar .title {
-	color: var(--color-text);
-	font-family: var(--font-display);
-	font-weight: 800;
+
+/* ---------------------------------------------------------
+   On this page title
+--------------------------------------------------------- */
+
+.right-sidebar .title,
+.right-sidebar h2,
+.right-sidebar nav > h2 {
+	color:
+		var(--color-text);
+
+	font-family:
+		var(--font-display);
+
+	font-weight:
+		800;
 }
+
+
+/* ---------------------------------------------------------
+   TOC links
+--------------------------------------------------------- */
 
 .right-sidebar a {
-	position: relative;
-	color: var(--color-text-secondary) !important;
-	border-radius: 0 !important;
+	position:
+		relative;
+
+	color:
+		var(--color-text-secondary) !important;
+
+	border-radius:
+		0 !important;
+
 	transition:
 		color var(--transition-fast),
 		background-color var(--transition-fast),
@@ -1248,80 +2223,146 @@ html[data-theme="dark"] .sl-markdown-content pre {
 }
 
 .right-sidebar a:hover {
-	color: var(--color-accent) !important;
-	background: var(--color-accent-soft);
-	transform: translateX(2px);
+	color:
+		var(--color-accent) !important;
+
+	background:
+		var(--color-accent-soft);
+
+	transform:
+		translateX(2px);
 }
+
+
+/* ---------------------------------------------------------
+   Active TOC item
+
+   Starlight updates aria-current according to the heading
+   currently tracked by its TOC component.
+--------------------------------------------------------- */
 
 .right-sidebar a[aria-current="true"],
 .right-sidebar a[aria-current="page"] {
-	color: var(--color-accent) !important;
-	font-weight: 800;
+	color:
+		var(--color-accent) !important;
+
+	font-weight:
+		800;
 }
 
 .right-sidebar a[aria-current="true"]::before,
 .right-sidebar a[aria-current="page"]::before {
 	content: "";
-	position: absolute;
-	left: 0;
-	top: 0;
-	bottom: 0;
-	width: 3px;
-	background: var(--color-accent);
+
+	position:
+		absolute;
+
+	left:
+		0;
+
+	top:
+		0;
+
+	bottom:
+		0;
+
+	width:
+		3px;
+
+	background:
+		var(--color-accent);
+}
+
+
+/* ---------------------------------------------------------
+   TOC scroll position normalization
+
+   The custom NUGBASE header must not cover the heading that
+   Starlight is currently tracking.
+--------------------------------------------------------- */
+
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.sl-markdown-content h4,
+.sl-markdown-content h5,
+.sl-markdown-content h6 {
+	scroll-margin-top:
+		calc(
+			var(--sl-nav-height) +
+			var(--space-8)
+		);
 }
 
 
 /* =========================================================
-   19. SEARCH
+   20. STARLIGHT SEARCH
 ========================================================= */
 
 [data-search-form] {
-	border: 1px solid var(--color-border) !important;
-	border-radius: 0 !important;
+	border:
+		1px solid var(--color-border) !important;
+
+	border-radius:
+		0 !important;
+
 	background:
-		linear-gradient(
-			135deg,
-			var(--color-sunlight),
-			transparent 30%
-		),
 		var(--color-surface) !important;
-	box-shadow: var(--block-shadow) !important;
+
+	box-shadow:
+		var(--block-shadow) !important;
+
 	transition:
 		border-color var(--transition-fast),
 		box-shadow var(--transition-fast);
 }
 
 [data-search-form]:hover {
-	border-color: var(--color-border-strong) !important;
+	border-color:
+		var(--color-border-strong) !important;
 }
 
 [data-search-form]:focus-within {
-	border-color: var(--color-accent) !important;
+	border-color:
+		var(--color-accent) !important;
+
 	box-shadow:
 		0 0 0 3px var(--color-accent-soft),
 		var(--block-shadow) !important;
 }
 
 [data-search-form] input {
-	background: transparent !important;
-	color: var(--color-text) !important;
-	font-family: var(--font-sans);
+	background:
+		transparent !important;
+
+	color:
+		var(--color-text) !important;
+
+	font-family:
+		var(--font-sans);
 }
 
 [data-search-form] input::placeholder {
-	color: var(--color-text-tertiary);
+	color:
+		var(--color-text-tertiary);
 }
 
 [data-search-results] {
-	border: 1px solid var(--color-border) !important;
-	border-radius: 0 !important;
-	background: var(--color-surface) !important;
-	box-shadow: var(--block-shadow-hover) !important;
+	border:
+		1px solid var(--color-border) !important;
+
+	border-radius:
+		0 !important;
+
+	background:
+		var(--color-surface) !important;
+
+	box-shadow:
+		var(--block-shadow-hover) !important;
 }
 
 
 /* =========================================================
-   20. GLOBAL STARLIGHT CONTRAST
+   21. GLOBAL STARLIGHT CONTRAST
 ========================================================= */
 
 .main-pane,
@@ -1330,51 +2371,64 @@ html[data-theme="dark"] .sl-markdown-content pre {
 .sidebar-content,
 .right-sidebar,
 .right-sidebar-container {
-	color: var(--color-text);
+	color:
+		var(--color-text);
 }
 
 .main-pane p,
 .main-pane li,
 .sidebar span,
 .sidebar summary {
-	color: var(--color-text);
+	color:
+		var(--color-text);
 }
 
 .sidebar a {
-	color: var(--color-text-secondary) !important;
+	color:
+		var(--color-text-secondary) !important;
 }
 
 .right-sidebar a {
-	color: var(--color-text-secondary) !important;
+	color:
+		var(--color-text-secondary) !important;
 }
+
+
+/* ---------------------------------------------------------
+   Card text safety
+--------------------------------------------------------- */
 
 .sl-markdown-content .card,
 .sl-markdown-content .card-grid a,
 .sl-markdown-content a.card {
-	color: var(--color-text) !important;
+	color:
+		var(--color-text) !important;
 }
 
 .sl-markdown-content .card h2,
 .sl-markdown-content .card h3,
 .sl-markdown-content .card-grid a h2,
 .sl-markdown-content .card-grid a h3 {
-	color: var(--color-text) !important;
+	color:
+		var(--color-text) !important;
 }
 
 .sl-markdown-content .card p,
 .sl-markdown-content .card-grid a p,
 .sl-markdown-content a.card p {
-	color: var(--color-text-secondary) !important;
+	color:
+		var(--color-text-secondary) !important;
 }
 
 .sl-markdown-content .card svg,
 .sl-markdown-content .card-grid a svg {
-	color: var(--color-accent);
+	color:
+		var(--color-accent);
 }
 
 
 /* =========================================================
-   21. GEOMETRY NORMALIZATION
+   22. GEOMETRY NORMALIZATION
 ========================================================= */
 
 .sidebar *,
@@ -1382,19 +2436,28 @@ html[data-theme="dark"] .sl-markdown-content pre {
 .pagination-links *,
 .card-grid *,
 .starlight-aside,
-.sl-markdown-content table,
 .sl-markdown-content pre,
 .sl-markdown-content code,
 .sl-markdown-content blockquote,
 .sl-markdown-content .sl-link-card,
 [data-search-form],
 [data-search-results] {
-	border-radius: 0 !important;
+	border-radius:
+		0 !important;
 }
 
 
+/*
+ * IMPORTANT:
+ * Do NOT include table here.
+ *
+ * Tables intentionally use their natural width and may
+ * exceed the content width.
+ */
+
+
 /* =========================================================
-   22. INTERACTION
+   23. INTERACTION
 ========================================================= */
 
 .sidebar a,
@@ -1403,7 +2466,8 @@ html[data-theme="dark"] .sl-markdown-content pre {
 .sl-markdown-content .card,
 .sl-markdown-content .sl-link-card,
 .sl-markdown-content .starlight-aside {
-	-webkit-tap-highlight-color: transparent;
+	-webkit-tap-highlight-color:
+		transparent;
 }
 
 .sidebar a:active,
@@ -1412,16 +2476,19 @@ html[data-theme="dark"] .sl-markdown-content pre {
 .sl-markdown-content .card:active,
 .sl-markdown-content .sl-link-card:active,
 .sl-markdown-content .starlight-aside:active {
-	box-shadow: var(--block-shadow-active);
+	box-shadow:
+		var(--block-shadow-active);
 }
 
-.sl-markdown-content a:not(.sl-anchor-link):active {
-	transform: translateY(1px);
+.sl-markdown-content
+a:not(.sl-anchor-link):active {
+	transform:
+		translateY(1px);
 }
 
 
 /* =========================================================
-   23. FOCUS ACCESSIBILITY
+   24. FOCUS ACCESSIBILITY
 ========================================================= */
 
 .sl-markdown-content a:focus-visible,
@@ -1434,194 +2501,400 @@ html[data-theme="dark"] .sl-markdown-content pre {
 .site-header a:focus-visible,
 .site-header button:focus-visible,
 .right-sidebar a:focus-visible {
-	outline: 3px solid var(--color-accent);
-	outline-offset: 3px;
-	border-radius: 0 !important;
+	outline:
+		3px solid var(--color-accent);
+
+	outline-offset:
+		3px;
+
+	border-radius:
+		0 !important;
 }
 
 
 /* =========================================================
-   24. SELECTION
+   25. SELECTION
 ========================================================= */
 
 .sl-markdown-content ::selection,
 .sidebar ::selection,
 .right-sidebar ::selection {
-	background: var(--color-accent);
-	color: var(--color-text-inverse);
+	background:
+		var(--color-accent);
+
+	color:
+		var(--color-text-inverse);
 }
 
 
 /* =========================================================
-   25. SCROLLBARS
+   26. SCROLLBARS
 ========================================================= */
 
 .sidebar-pane,
 .sidebar,
 .right-sidebar,
-.sl-markdown-content,
-.sl-markdown-content pre {
+.sl-markdown-content pre,
+.sl-markdown-content table,
+.sl-markdown-content .table-wrapper,
+.sl-markdown-content .sl-table-wrapper {
 	scrollbar-color:
 		var(--color-border-strong)
 		var(--color-background);
-	scrollbar-width: thin;
+
+	scrollbar-width:
+		thin;
 }
 
 
 /* =========================================================
-   26. MOBILE / TABLET
-   ---------------------------------------------------------
-   The content itself becomes the table scroll viewport.
-   The table remains a single table formatting context.
+   27. MOBILE / TABLET
 ========================================================= */
 
 @media (max-width: 49.999rem) {
+
 	:root {
 		--sl-nav-height: 58px;
-		--sl-sidebar-width: 90vw;
-		--wiki-sidebar-width: 90vw;
+
+		--sl-sidebar-width:
+			90vw;
+
+		--wiki-sidebar-width:
+			90vw;
 	}
 
+
 	body:has(.sl-markdown-content) {
-		background-attachment: scroll;
-		background-position: center, center, center center;
+		background:
+			var(--color-background);
 	}
+
 
 	.sidebar-pane {
 		background:
-			linear-gradient(
-				180deg,
-				var(--color-surface),
-				var(--color-surface-subtle)
-			) !important;
-		box-shadow: var(--shadow-deep);
+			var(--color-surface) !important;
+
+		box-shadow:
+			var(--shadow-deep);
 	}
 
 	.sidebar-content {
-		padding: var(--space-5) var(--space-3);
+		padding:
+			var(--space-5)
+			var(--space-3);
 	}
+
+
+	/* -------------------------------------------------------
+	   Mobile large category
+	------------------------------------------------------- */
+
+	.sidebar > details > summary,
+	.sidebar details:not(details details) > summary {
+		min-height:
+			44px;
+
+		padding:
+			var(--space-2)
+			var(--space-3);
+
+		font-size:
+			14px;
+
+		text-align:
+			left;
+	}
+
+
+	/* -------------------------------------------------------
+	   Mobile small category
+	------------------------------------------------------- */
+
+	.sidebar details details > summary {
+		min-height:
+			38px;
+
+		padding:
+			var(--space-2)
+			var(--space-3);
+
+		font-size:
+			13px;
+
+		text-align:
+			left;
+	}
+
 
 	.sidebar a {
-		min-height: 44px;
+		min-height:
+			44px;
+
+		text-align:
+			left;
 	}
+
+
+	/* -------------------------------------------------------
+	   Markdown
+	------------------------------------------------------- */
 
 	.sl-markdown-content {
-		max-width: 100%;
-		font-size: 15px;
-		overflow-x: auto;
-		overscroll-behavior-x: contain;
+		max-width:
+			100%;
+
+		font-size:
+			15px;
+
+		overflow-x:
+			visible;
+
+		overscroll-behavior-x:
+			auto;
 	}
 
-	.main-pane > .content-panel:first-child > .sl-container > h1 {
-		margin-top: var(--space-6);
-		font-size: clamp(28px, 8vw, 38px);
+
+	/* -------------------------------------------------------
+	   Page title
+	------------------------------------------------------- */
+
+	.main-pane
+	> .content-panel:first-child
+	> .sl-container
+	> h1 {
+		margin-top:
+			var(--space-6);
+
+		font-size:
+			clamp(28px, 8vw, 38px);
 	}
+
 
 	.sl-markdown-content h1 {
-		font-size: clamp(28px, 8vw, 38px);
+		font-size:
+			clamp(28px, 8vw, 38px);
 	}
 
 	.sl-markdown-content h2 {
-		font-size: clamp(22px, 6vw, 30px);
+		font-size:
+			clamp(22px, 6vw, 30px);
 	}
 
 	.sl-markdown-content h3 {
-		font-size: clamp(20px, 5vw, 24px);
+		font-size:
+			clamp(20px, 5vw, 24px);
+	}
+
+
+	/* -------------------------------------------------------
+	   Tables
+
+	   Tables stay compact when they can.
+
+	   If the table becomes wider than the available viewport,
+	   the table itself can scroll horizontally.
+	------------------------------------------------------- */
+
+	.sl-markdown-content .table-wrapper,
+	.sl-markdown-content .sl-table-wrapper {
+		width:
+			100%;
+
+		max-width:
+			100%;
+
+		overflow-x:
+			auto;
+
+		-webkit-overflow-scrolling:
+			touch;
+
+		touch-action:
+			pan-x;
+
+		overscroll-behavior-x:
+			contain;
+
+		margin:
+			var(--space-5)
+			0;
 	}
 
 	.sl-markdown-content table {
-		width: max-content;
-		min-width: 0;
-		max-width: none;
-		margin: var(--space-5) 0;
+		width:
+			auto;
+
+		min-width:
+			0;
+
+		max-width:
+			none;
+
+		margin:
+			0;
 	}
 
 	.sl-markdown-content th,
 	.sl-markdown-content td {
-		min-width: 0;
-		padding: 10px 12px;
+		padding:
+			10px 12px;
 	}
+
+
+	/* -------------------------------------------------------
+	   Code
+	------------------------------------------------------- */
 
 	.sl-markdown-content pre {
-		padding: var(--space-4);
+		padding:
+			var(--space-4);
+
+		overflow-x:
+			auto;
+
+		-webkit-overflow-scrolling:
+			touch;
 	}
+
+
+	/* -------------------------------------------------------
+	   Admonition
+	------------------------------------------------------- */
 
 	.sl-markdown-content .starlight-aside {
-		margin: var(--space-5) 0;
+		margin:
+			var(--space-5)
+			0;
 	}
 
+
+	/* -------------------------------------------------------
+	   Pagination
+	------------------------------------------------------- */
+
 	.pagination-links {
-		gap: var(--space-3);
+		gap:
+			var(--space-3);
+	}
+
+	.pagination-links a {
+		min-height:
+			64px;
+
+		padding:
+			var(--space-3);
+	}
+
+	.pagination-links a .pagination-links-label,
+	.pagination-links a small {
+		font-size:
+			11px;
+	}
+
+	.pagination-links a .pagination-links-title,
+	.pagination-links a strong {
+		font-size:
+			13px;
 	}
 }
 
 
 /* =========================================================
-   27. SMALL SCREENS
+   28. SMALL SCREENS
 ========================================================= */
 
 @media (max-width: 480px) {
+
 	.sl-markdown-content {
-		font-size: 15px;
+		font-size:
+			15px;
 	}
 
+
 	.sl-markdown-content h1,
-	.main-pane > .content-panel:first-child > .sl-container > h1 {
-		font-size: 28px;
+	.main-pane
+	> .content-panel:first-child
+	> .sl-container
+	> h1 {
+		font-size:
+			28px;
 	}
 
 	.sl-markdown-content h2 {
-		font-size: 22px;
+		font-size:
+			22px;
 	}
 
 	.sl-markdown-content h3 {
-		font-size: 20px;
+		font-size:
+			20px;
 	}
+
 
 	.sl-markdown-content .starlight-aside {
-		padding: var(--space-4);
+		padding:
+			var(--space-4);
 	}
 
+
 	.pagination-links {
-		grid-template-columns: 1fr;
+		grid-template-columns:
+			1fr;
 	}
+
+
+	.pagination-links a {
+		min-height:
+			60px;
+	}
+
 
 	.sl-markdown-content th,
 	.sl-markdown-content td {
-		min-width: 110px;
+		padding:
+			10px 12px;
 	}
 }
 
 
 /* =========================================================
-   28. HIGH CONTRAST
+   29. HIGH CONTRAST
 ========================================================= */
 
 @media (prefers-contrast: more) {
+
 	.sl-markdown-content,
 	.sidebar,
 	.right-sidebar {
-		--color-border: var(--color-border-strong);
+		--color-border:
+			var(--color-border-strong);
 	}
+
 
 	.sl-markdown-content a,
 	.sidebar a,
 	.right-sidebar a {
-		text-decoration-thickness: 2px;
+		text-decoration-thickness:
+			2px;
 	}
 
+
 	.sl-markdown-content .starlight-aside {
-		border-width: 2px;
-		border-left-width: 6px;
+		border-width:
+			2px;
+
+		border-left-width:
+			6px;
 	}
 }
 
 
 /* =========================================================
-   29. REDUCED MOTION
+   30. REDUCED MOTION
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
+
 	.sidebar a,
 	.pagination-links a,
 	.card-grid .card,
@@ -1632,8 +2905,10 @@ html[data-theme="dark"] .sl-markdown-content pre {
 	.header button,
 	.site-header nav a,
 	.site-header button {
-		transition: none !important;
+		transition:
+			none !important;
 	}
+
 
 	.sidebar a:hover,
 	.pagination-links a:hover,
@@ -1643,59 +2918,125 @@ html[data-theme="dark"] .sl-markdown-content pre {
 	.sl-markdown-content .starlight-aside:hover,
 	.site-header nav a:hover,
 	.header nav a:hover {
-		transform: none;
+		transform:
+			none;
 	}
 }
 
 
 /* =========================================================
-   30. FINAL LIGHT-MODE TEXT SAFETY
-   ---------------------------------------------------------
-   Do not globally change inverse text: white text is still
-   required on dark/accent surfaces. These rules specifically
-   protect Wiki content and navigation on light surfaces.
+   31. LIGHT MODE TEXT SAFETY
 ========================================================= */
 
-html:not([data-theme="dark"]) .sidebar,
-html:not([data-theme="dark"]) .sidebar-pane,
-html:not([data-theme="dark"]) .sidebar-content,
-html:not([data-theme="dark"]) .right-sidebar,
-html:not([data-theme="dark"]) .main-pane {
-	color: var(--color-text);
+html:not([data-theme="dark"])
+.sidebar,
+html:not([data-theme="dark"])
+.sidebar-pane,
+html:not([data-theme="dark"])
+.sidebar-content,
+html:not([data-theme="dark"])
+.right-sidebar,
+html:not([data-theme="dark"])
+.main-pane {
+	color:
+		var(--color-text);
 }
 
-html:not([data-theme="dark"]) .sidebar a {
-	color: var(--color-text-secondary) !important;
+
+html:not([data-theme="dark"])
+.sidebar a {
+	color:
+		var(--color-text-secondary) !important;
 }
 
-html:not([data-theme="dark"]) .sidebar summary {
-	color: var(--color-text) !important;
+
+html:not([data-theme="dark"])
+.sidebar summary {
+	color:
+		var(--color-text) !important;
 }
 
-html:not([data-theme="dark"]) .right-sidebar a {
-	color: var(--color-text-secondary) !important;
+
+html:not([data-theme="dark"])
+.right-sidebar a {
+	color:
+		var(--color-text-secondary) !important;
 }
 
-html:not([data-theme="dark"]) .sl-markdown-content,
-html:not([data-theme="dark"]) .sl-markdown-content p,
-html:not([data-theme="dark"]) .sl-markdown-content li,
-html:not([data-theme="dark"]) .sl-markdown-content h1,
-html:not([data-theme="dark"]) .sl-markdown-content h2,
-html:not([data-theme="dark"]) .sl-markdown-content h3,
-html:not([data-theme="dark"]) .sl-markdown-content h4 {
-	color: var(--color-text);
+
+html:not([data-theme="dark"])
+.sl-markdown-content,
+html:not([data-theme="dark"])
+.sl-markdown-content p,
+html:not([data-theme="dark"])
+.sl-markdown-content li,
+html:not([data-theme="dark"])
+.sl-markdown-content h1,
+html:not([data-theme="dark"])
+.sl-markdown-content h2,
+html:not([data-theme="dark"])
+.sl-markdown-content h3,
+html:not([data-theme="dark"])
+.sl-markdown-content h4 {
+	color:
+		var(--color-text);
 }
 
-html:not([data-theme="dark"]) .main-pane > .content-panel:first-child > .sl-container > h1 {
-	color: var(--color-text);
+
+html:not([data-theme="dark"])
+.main-pane
+> .content-panel:first-child
+> .sl-container
+> h1 {
+	color:
+		var(--color-text);
 }
 
-html:not([data-theme="dark"]) .sl-markdown-content .card,
-html:not([data-theme="dark"]) .sl-markdown-content .sl-link-card {
-	color: var(--color-text) !important;
+
+html:not([data-theme="dark"])
+.sl-markdown-content .card,
+html:not([data-theme="dark"])
+.sl-markdown-content .sl-link-card {
+	color:
+		var(--color-text) !important;
 }
 
-html:not([data-theme="dark"]) .sl-markdown-content .card p,
-html:not([data-theme="dark"]) .sl-markdown-content .sl-link-card .description {
-	color: var(--color-text-secondary) !important;
+
+html:not([data-theme="dark"])
+.sl-markdown-content .card p,
+html:not([data-theme="dark"])
+.sl-markdown-content .sl-link-card .description {
+	color:
+		var(--color-text-secondary) !important;
 }
+
+
+/* =========================================================
+   32. FINAL STARLIGHT NORMALIZATION
+========================================================= */
+
+.sl-markdown-content .starlight-aside,
+.sl-markdown-content .sl-link-card,
+.sl-markdown-content pre,
+.sl-markdown-content code,
+.sl-markdown-content blockquote,
+.card-grid .card,
+.pagination-links a,
+.sidebar a,
+[data-search-form],
+[data-search-results] {
+	border-radius:
+		0 !important;
+}
+
+
+/*
+ * Tables intentionally excluded from the global geometry
+ * normalization because their natural width is part of the
+ * NUGBASE table system.
+ */
+
+
+/* =========================================================
+   END
+========================================================= */

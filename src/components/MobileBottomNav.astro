@@ -1,112 +1,353 @@
 ---
+const pathname = Astro.url.pathname;
+
+const isHome = pathname === "/";
+const isGuide = pathname.startsWith("/guide/");
+const isWiki = pathname.startsWith("/docs/");
+const isTool = pathname.startsWith("/tool/");
+const isNews = pathname.startsWith("/news/");
+const isAbout = pathname.startsWith("/about/");
+
+const isMore = isNews || isAbout;
+
+const activeIndex = isHome
+	? 0
+	: isGuide
+		? 1
+		: isWiki
+			? 2
+			: isTool
+				? 3
+				: 4;
+
+/*
+ * 選択インジケーターの移動量。
+ *
+ * 5列なので、
+ * 1列 = 20%
+ *
+ * CSS側で複雑な計算を行わず、
+ * Astro側で値を確定させます。
+ */
+const activeOffset = `${activeIndex * 20}%`;
 ---
 
 <nav
 	class="mobile-bottom-nav"
 	aria-label="モバイルナビゲーション"
+	style={`--active-index: ${activeIndex}; --active-offset: ${activeOffset};`}
 >
-	<a href="/" class="bottom-nav-item">
-		<svg
-			viewBox="0 0 24 24"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path d="M3 10.5 12 3l9 7.5" />
-			<path d="M5 9.5V21h14V9.5" />
-			<path d="M9 21v-6h6v6" />
-		</svg>
+	<!-- ======================================================
+	     展開ツールバー
 
-		<span>ホーム</span>
-	</a>
+	     「その他」を押すと、
+	     下部バーの真上へ展開します。
 
-	<a href="/guide/" class="bottom-nav-item">
-		<svg
-			viewBox="0 0 24 24"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path d="M5 4.5h11a3 3 0 0 1 3 3V20H8a3 3 0 0 1-3-3V4.5Z" />
-			<path d="M8 7h7" />
-			<path d="M8 11h7" />
-			<path d="M8 15h5" />
-		</svg>
+	     内容：
+	     ・ニュース
+	     ・NUGについて
+	     ・× 閉じる
+	====================================================== -->
 
-		<span>攻略</span>
-	</a>
-
-	<a href="/docs/" class="bottom-nav-item">
-		<svg
-			viewBox="0 0 24 24"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path d="M4 5h16v14H4z" />
-			<path d="M8 9h8" />
-			<path d="M8 13h8" />
-			<path d="M8 17h5" />
-		</svg>
-
-		<span>Wiki</span>
-	</a>
-
-	<a href="/tool/" class="bottom-nav-item">
-		<svg
-			viewBox="0 0 24 24"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path d="m14.5 5.5 4 4" />
-			<path d="m13 7 4 4" />
-			<path d="m4 20 6.5-6.5" />
-			<path d="m7 21-4-4" />
-			<path d="m10 14 4-4" />
-			<path d="m14 4 2-2 6 6-2 2" />
-		</svg>
-
-		<span>ツール</span>
-	</a>
-
-	<button
-		type="button"
-		class="bottom-nav-item bottom-nav-more"
-		aria-label="その他のメニュー"
-		aria-expanded="false"
-		aria-controls="mobile-more-menu"
+	<div
+		id="mobile-more-panel"
+		class="mobile-more-panel"
+		aria-hidden="true"
 	>
-		<svg
-			viewBox="0 0 24 24"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<circle cx="5" cy="12" r="1.5" />
-			<circle cx="12" cy="12" r="1.5" />
-			<circle cx="19" cy="12" r="1.5" />
-		</svg>
+		<div class="mobile-more-panel-inner">
 
-		<span>その他</span>
-	</button>
+			<!-- ================================================
+			     ニュース
+			================================================ -->
+
+			<a
+				href="/news/"
+				class:list={[
+					"mobile-more-item",
+					{ "is-active": isNews },
+				]}
+				aria-current={isNews ? "page" : undefined}
+			>
+				<span class="mobile-more-item-icon">
+					<svg
+						viewBox="0 0 24 24"
+						aria-hidden="true"
+						focusable="false"
+					>
+						<path d="M4 5h16v14H4z" />
+						<path d="M8 9h8" />
+						<path d="M8 13h6" />
+						<path d="M8 17h4" />
+					</svg>
+				</span>
+
+				<span class="mobile-more-item-text">
+					<strong>ニュース</strong>
+					<small>NUGBASEの最新情報</small>
+				</span>
+
+				<svg
+					class="mobile-more-item-arrow"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<path d="m9 18 6-6-6-6" />
+				</svg>
+			</a>
+
+
+			<!-- ================================================
+			     NUGについて
+			================================================ -->
+
+			<a
+				href="/about/"
+				class:list={[
+					"mobile-more-item",
+					{ "is-active": isAbout },
+				]}
+				aria-current={isAbout ? "page" : undefined}
+			>
+				<span class="mobile-more-item-icon">
+					<svg
+						viewBox="0 0 24 24"
+						aria-hidden="true"
+						focusable="false"
+					>
+						<circle cx="12" cy="12" r="9" />
+						<path d="M12 10v6" />
+						<path d="M12 7.5h.01" />
+					</svg>
+				</span>
+
+				<span class="mobile-more-item-text">
+					<strong>NUGについて</strong>
+					<small>NUGBASEについて</small>
+				</span>
+
+				<svg
+					class="mobile-more-item-arrow"
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<path d="m9 18 6-6-6-6" />
+				</svg>
+			</a>
+
+
+			<!-- ================================================
+			     閉じる
+			================================================ -->
+
+			<button
+				type="button"
+				class="mobile-more-close"
+				aria-label="その他のメニューを閉じる"
+			>
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<path d="M6 6l12 12" />
+					<path d="M18 6 6 18" />
+				</svg>
+			</button>
+
+		</div>
+	</div>
+
+
+	<!-- ======================================================
+	     メイン下部ナビゲーション
+	====================================================== -->
+
+	<div class="mobile-bottom-nav-track">
+
+		<!-- ==================================================
+		     選択インジケーター
+		================================================== -->
+
+		<div
+			class="bottom-nav-indicator"
+			aria-hidden="true"
+		>
+			<span class="bottom-nav-indicator-shine"></span>
+		</div>
+
+
+		<!-- ==================================================
+		     ホーム
+		================================================== -->
+
+		<a
+			href="/"
+			class:list={[
+				"bottom-nav-item",
+				{ "is-active": isHome },
+			]}
+			aria-current={isHome ? "page" : undefined}
+		>
+			<span class="bottom-nav-icon">
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<path d="M3 10.5 12 3l9 7.5" />
+					<path d="M5 9.5V21h14V9.5" />
+					<path d="M9 21v-6h6v6" />
+				</svg>
+			</span>
+
+			<span class="bottom-nav-label">
+				ホーム
+			</span>
+		</a>
+
+
+		<!-- ==================================================
+		     攻略
+		================================================== -->
+
+		<a
+			href="/guide/"
+			class:list={[
+				"bottom-nav-item",
+				{ "is-active": isGuide },
+			]}
+			aria-current={isGuide ? "page" : undefined}
+		>
+			<span class="bottom-nav-icon">
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<path d="M5 4.5h11a3 3 0 0 1 3 3V20H8a3 3 0 0 1-3-3V4.5Z" />
+					<path d="M8 7h7" />
+					<path d="M8 11h7" />
+					<path d="M8 15h5" />
+				</svg>
+			</span>
+
+			<span class="bottom-nav-label">
+				攻略
+			</span>
+		</a>
+
+
+		<!-- ==================================================
+		     Wiki
+		================================================== -->
+
+		<a
+			href="/docs/"
+			class:list={[
+				"bottom-nav-item",
+				{ "is-active": isWiki },
+			]}
+			aria-current={isWiki ? "page" : undefined}
+		>
+			<span class="bottom-nav-icon">
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<path d="M4 5h16v14H4z" />
+					<path d="M8 9h8" />
+					<path d="M8 13h8" />
+					<path d="M8 17h5" />
+				</svg>
+			</span>
+
+			<span class="bottom-nav-label">
+				Wiki
+			</span>
+		</a>
+
+
+		<!-- ==================================================
+		     ツール
+		================================================== -->
+
+		<a
+			href="/tool/"
+			class:list={[
+				"bottom-nav-item",
+				{ "is-active": isTool },
+			]}
+			aria-current={isTool ? "page" : undefined}
+		>
+			<span class="bottom-nav-icon">
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<path d="m14.5 5.5 4 4" />
+					<path d="m13 7 4 4" />
+					<path d="m4 20 6.5-6.5" />
+					<path d="m7 21-4-4" />
+					<path d="m10 14 4-4" />
+					<path d="M14 4 16 2l6 6-2 2" />
+				</svg>
+			</span>
+
+			<span class="bottom-nav-label">
+				ツール
+			</span>
+		</a>
+
+
+		<!-- ==================================================
+		     その他
+		================================================== -->
+
+		<button
+			type="button"
+			class:list={[
+				"bottom-nav-item",
+				"bottom-nav-more",
+				{ "is-active": isMore },
+			]}
+			aria-label="その他のメニュー"
+			aria-expanded="false"
+			aria-controls="mobile-more-panel"
+		>
+			<span class="bottom-nav-icon">
+				<svg
+					viewBox="0 0 24 24"
+					aria-hidden="true"
+					focusable="false"
+				>
+					<circle cx="5" cy="12" r="1.5" />
+					<circle cx="12" cy="12" r="1.5" />
+					<circle cx="19" cy="12" r="1.5" />
+				</svg>
+			</span>
+
+			<span class="bottom-nav-label">
+				その他
+			</span>
+		</button>
+
+	</div>
+
 </nav>
 
 
-<div
-	id="mobile-more-menu"
-	class="mobile-more-menu"
-	aria-hidden="true"
->
-	<a href="/news/">ニュース</a>
-	<a href="/about/">NUGについて</a>
-</div>
-
-
 <script>
+	/* ========================================================
+	   Elements
+	======================================================== */
+
 	const bottomNav =
 		document.querySelector<HTMLElement>(
 			".mobile-bottom-nav"
-		);
-
-	const moreMenu =
-		document.querySelector<HTMLElement>(
-			"#mobile-more-menu"
 		);
 
 	const moreButton =
@@ -114,65 +355,92 @@
 			".bottom-nav-more"
 		);
 
+	const morePanel =
+		document.querySelector<HTMLElement>(
+			"#mobile-more-panel"
+		);
 
-	/*
-	 * ========================================
-	 * Starlight対策
-	 *
-	 * MobileBottomNavはHeaderの内部ではなく、
-	 * body直下へ移動します。
-	 *
-	 * これによりposition: fixedが
-	 * Starlightのレイアウトに影響されません。
-	 * ========================================
-	 */
+	const moreClose =
+		document.querySelector<HTMLButtonElement>(
+			".mobile-more-close"
+		);
 
-	if (bottomNav && moreMenu) {
-		const moveToBody = (): void => {
-			if (bottomNav.parentElement !== document.body) {
-				document.body.appendChild(bottomNav);
-			}
 
-			if (moreMenu.parentElement !== document.body) {
-				document.body.appendChild(moreMenu);
-			}
-		};
+	/* ========================================================
+	   Move to body
 
-		moveToBody();
+	   Starlightのレイアウトから切り離して、
+	   viewport固定ナビゲーションとして動作させます。
+	======================================================== */
+
+	if (
+		bottomNav &&
+		bottomNav.parentElement !== document.body
+	) {
+		document.body.appendChild(bottomNav);
 	}
 
 
-	/* ========================================
-	   More Menu
-	======================================== */
+	/* ========================================================
+	   More panel state
+	======================================================== */
 
-	if (
-		moreButton instanceof HTMLButtonElement &&
-		moreMenu instanceof HTMLElement
-	) {
-		const setMoreState = (
-			open: boolean
-		): void => {
+	const setMoreState =
+		(open: boolean): void => {
+
+			if (
+				!moreButton ||
+				!morePanel ||
+				!bottomNav
+			) {
+				return;
+			}
+
 			moreButton.setAttribute(
 				"aria-expanded",
 				String(open)
 			);
 
-			moreMenu.setAttribute(
+			morePanel.setAttribute(
 				"aria-hidden",
 				String(!open)
 			);
 
-			moreMenu.classList.toggle(
+			bottomNav.classList.toggle(
+				"is-more-open",
+				open
+			);
+
+			morePanel.classList.toggle(
 				"is-open",
+				open
+			);
+
+			document.documentElement.classList.toggle(
+				"nug-bottom-nav-expanded",
 				open
 			);
 		};
 
 
+	/* ========================================================
+	   More panel events
+	======================================================== */
+
+	if (
+		moreButton &&
+		morePanel &&
+		bottomNav
+	) {
+
+		/* ----------------------------------------
+		   その他ボタン
+		---------------------------------------- */
+
 		moreButton.addEventListener(
 			"click",
 			() => {
+
 				const isOpen =
 					moreButton.getAttribute(
 						"aria-expanded"
@@ -183,9 +451,27 @@
 		);
 
 
-		moreMenu
-			.querySelectorAll("a")
+		/* ----------------------------------------
+		   × ボタン
+		---------------------------------------- */
+
+		moreClose?.addEventListener(
+			"click",
+			() => {
+				setMoreState(false);
+				moreButton.focus();
+			}
+		);
+
+
+		/* ----------------------------------------
+		   ページリンクを押したら閉じる
+		---------------------------------------- */
+
+		morePanel
+			.querySelectorAll<HTMLAnchorElement>("a")
 			.forEach((link) => {
+
 				link.addEventListener(
 					"click",
 					() => {
@@ -195,58 +481,201 @@
 			});
 
 
+		/* ----------------------------------------
+		   ナビゲーション外をクリックしたら閉じる
+		---------------------------------------- */
+
 		document.addEventListener(
 			"click",
 			(event) => {
+
+				const target =
+					event.target;
+
 				if (
-					!(event.target instanceof Node)
+					!(target instanceof Node)
 				) {
 					return;
 				}
 
 				if (
-					moreButton.contains(
-						event.target
-					) ||
-					moreMenu.contains(
-						event.target
-					)
+					!bottomNav.contains(target)
 				) {
-					return;
+					setMoreState(false);
 				}
-
-				setMoreState(false);
 			}
 		);
 
 
+		/* ----------------------------------------
+		   Escape
+		---------------------------------------- */
+
 		document.addEventListener(
 			"keydown",
 			(event) => {
-				if (event.key === "Escape") {
+
+				if (
+					event.key === "Escape"
+				) {
 					setMoreState(false);
 				}
 			}
 		);
 	}
+
+
+	/* ========================================================
+	   More panel swipe
+
+	   上方向へ展開されたパネルなので、
+
+	   下方向スワイプ
+	   → 閉じる
+	======================================================== */
+
+	if (morePanel) {
+
+		let startX = 0;
+		let startY = 0;
+
+		morePanel.addEventListener(
+			"touchstart",
+			(event) => {
+
+				const touch =
+					event.touches[0];
+
+				if (!touch) {
+					return;
+				}
+
+				startX =
+					touch.clientX;
+
+				startY =
+					touch.clientY;
+			},
+			{
+				passive: true,
+			}
+		);
+
+
+		morePanel.addEventListener(
+			"touchend",
+			(event) => {
+
+				const touch =
+					event.changedTouches[0];
+
+				if (!touch) {
+					return;
+				}
+
+				const deltaX =
+					touch.clientX -
+					startX;
+
+				const deltaY =
+					touch.clientY -
+					startY;
+
+				if (
+					deltaY > 45 &&
+					Math.abs(deltaY) >
+						Math.abs(deltaX) * 1.2
+				) {
+					setMoreState(false);
+				}
+			},
+			{
+				passive: true,
+			}
+		);
+	}
+
+
+	/* ========================================================
+	   Desktop resize
+
+	   PC幅になったら
+	   「その他」を閉じます。
+	======================================================== */
+
+	const mediaQuery =
+		window.matchMedia(
+			"(min-width: 1024px)"
+		);
+
+	const handleDesktop =
+		(event: MediaQueryListEvent): void => {
+
+			if (!event.matches) {
+				return;
+			}
+
+			setMoreState(false);
+		};
+
+	mediaQuery.addEventListener(
+		"change",
+		handleDesktop
+	);
 </script>
 
 
 <style>
+	/* ========================================================
+	   NUGBASE Mobile Bottom Navigation
+	   --------------------------------------------------------
+	   Visual system:
+	   - Minecraft / BSL inspired
+	   - Square / block-like UI
+	   - No rounded UI
+	   - Global NUGBASE tokens
+	   ======================================================== */
+
+
+	/* ========================================================
+	   Global shape rule
+
+	   このコンポーネント内のUIは
+	   すべて完全な角型に統一します。
+	======================================================== */
+
 	.mobile-bottom-nav,
-	.mobile-more-menu {
+	.mobile-bottom-nav *,
+	.mobile-bottom-nav *::before,
+	.mobile-bottom-nav *::after {
+
+		border-radius: 0 !important;
+	}
+
+
+	/* ========================================================
+	   Desktop
+	======================================================== */
+
+	.mobile-bottom-nav {
 		display: none;
 	}
 
 
-	/* ========================================
-	   Tablet + Mobile
-	   0 - 1023px
-	======================================== */
+	/* ========================================================
+	   Tablet / Mobile
+	======================================================== */
 
 	@media (max-width: 1023px) {
 
+		/* ======================================================
+		   Navigation shell
+		====================================================== */
+
 		.mobile-bottom-nav {
+
+			--nav-padding: 7px;
+
 			position: fixed !important;
 
 			left: 0 !important;
@@ -256,89 +685,303 @@
 
 			z-index: 10000 !important;
 
-			display: grid;
+			display: flex;
 
-			grid-template-columns:
-				repeat(5, minmax(0, 1fr));
+			flex-direction: column;
 
 			width: 100%;
 
-			height: 68px;
+			box-sizing: border-box;
 
 			padding:
-				6px
-				8px
+				7px
+				var(--nav-padding)
 				calc(
-					6px +
+					7px +
 					env(safe-area-inset-bottom)
 				);
 
-			box-sizing: border-box;
-
 			background:
-				color-mix(
-					in srgb,
-					var(--nug-background, #ffffff) 94%,
-					transparent
+				linear-gradient(
+					180deg,
+					color-mix(
+						in srgb,
+						var(--nug-surface, #eeeeee)
+						96%,
+						var(--nug-background, #ffffff)
+					),
+					var(--nug-background, #ffffff)
 				);
 
 			border-top:
-				1px solid
-				var(--nug-border, #d8d8d8);
+				2px solid
+				color-mix(
+					in srgb,
+					var(--nug-accent, #c9962f)
+					28%,
+					var(--nug-border, #d8d8d8)
+				);
 
 			box-shadow:
-				0 -6px 20px
-				rgba(0, 0, 0, 0.12);
+				0 -4px 0
+				color-mix(
+					in srgb,
+					var(--nug-border, #d8d8d8)
+					55%,
+					transparent
+				),
+				0 -10px 28px
+				rgba(
+					0,
+					0,
+					0,
+					0.14
+				);
 
-			backdrop-filter:
-				blur(18px);
-
-			-webkit-backdrop-filter:
-				blur(18px);
+			transition:
+				padding 0.28s
+				cubic-bezier(
+					0.22,
+					1,
+					0.36,
+					1
+				);
 		}
 
 
+		/* ======================================================
+		   Main Track
+		====================================================== */
+
+		.mobile-bottom-nav-track {
+
+			position: relative;
+
+			display: grid;
+
+			grid-template-columns:
+				repeat(
+					5,
+					minmax(0, 1fr)
+				);
+
+			gap: 0;
+
+			width: 100%;
+
+			height: 58px;
+
+			box-sizing: border-box;
+		}
+
+
+		/* ======================================================
+		   Selection Indicator
+		====================================================== */
+
+		.bottom-nav-indicator {
+
+			position: absolute;
+
+			z-index: 0;
+
+			top: 0;
+			bottom: 0;
+
+			left:
+				var(--active-offset);
+
+			width:
+				20%;
+
+			box-sizing: border-box;
+
+			padding:
+				0 2px;
+
+			pointer-events: none;
+
+			transition:
+				left
+				0.30s
+				cubic-bezier(
+					0.22,
+					1,
+					0.36,
+					1
+				);
+		}
+
+
+		.bottom-nav-indicator::before {
+
+			content: "";
+
+			position: absolute;
+
+			inset:
+				0 2px;
+
+			border:
+				1px solid
+				color-mix(
+					in srgb,
+					var(--nug-accent, #c9962f)
+					40%,
+					var(--nug-border, #d8d8d8)
+				);
+
+			border-top:
+				3px solid
+				var(--nug-accent, #c9962f);
+
+			background:
+				linear-gradient(
+					180deg,
+					color-mix(
+						in srgb,
+						var(--nug-accent, #c9962f)
+						14%,
+						var(--nug-background, #ffffff)
+					),
+					color-mix(
+						in srgb,
+						var(--nug-accent, #c9962f)
+						5%,
+						var(--nug-background, #ffffff)
+					)
+				);
+
+			box-shadow:
+				0 2px 0
+				color-mix(
+					in srgb,
+					var(--nug-accent, #c9962f)
+					16%,
+					transparent
+				);
+		}
+
+
+		/* ======================================================
+		   Indicator Shine
+		====================================================== */
+
+		.bottom-nav-indicator-shine {
+
+			position: absolute;
+
+			z-index: 1;
+
+			top: 4px;
+			left: 8px;
+			right: 8px;
+
+			height: 2px;
+
+			background:
+				linear-gradient(
+					90deg,
+					transparent,
+					rgba(
+						255,
+						255,
+						255,
+						0.34
+					),
+					transparent
+				);
+		}
+
+
+		/* ======================================================
+		   Main Buttons
+		====================================================== */
+
 		.bottom-nav-item {
+
+			position: relative;
+
+			z-index: 1;
+
 			min-width: 0;
-			height: 56px;
+
+			height: 58px;
 
 			display: flex;
+
 			flex-direction: column;
+
 			align-items: center;
+
 			justify-content: center;
 
 			gap: 3px;
 
-			padding: 4px 2px;
+			box-sizing: border-box;
 
-			border: 0;
-			border-radius: 10px;
+			padding:
+				4px 2px;
 
-			background: transparent;
+			border:
+				1px solid transparent;
+
+			background:
+				transparent;
 
 			color:
-				var(--nug-text-secondary, #666666);
+				var(
+					--nug-text-secondary,
+					#666666
+				);
+
+			font: inherit;
+
+			font-size: 10px;
+
+			font-weight: 700;
+
+			line-height: 1;
 
 			text-decoration: none;
 
-			font: inherit;
-			font-size: 10px;
-			font-weight: 600;
-
 			cursor: pointer;
 
+			-webkit-tap-highlight-color:
+				transparent;
+
+			touch-action:
+				manipulation;
+
 			transition:
-				background 0.18s ease,
 				color 0.18s ease,
+				background 0.18s ease,
+				border-color 0.18s ease,
 				transform 0.12s ease;
 		}
 
 
-		.bottom-nav-item svg {
-			width: 22px;
-			height: 22px;
+		/* ======================================================
+		   Icon
+		====================================================== */
+
+		.bottom-nav-icon {
+
+			width: 23px;
+			height: 23px;
+
+			display: grid;
+
+			place-items: center;
 
 			flex-shrink: 0;
+		}
+
+
+		.bottom-nav-icon svg {
+
+			width: 22px;
+			height: 22px;
 
 			fill: none;
 
@@ -347,199 +990,924 @@
 
 			stroke-width: 1.8;
 
-			stroke-linecap: round;
-			stroke-linejoin: round;
+			stroke-linecap: square;
+			stroke-linejoin: miter;
 		}
 
 
-		.bottom-nav-item:hover,
-		.bottom-nav-item:focus-visible {
+		.bottom-nav-more .bottom-nav-icon svg {
+
+			fill:
+				currentColor;
+
+			stroke: none;
+		}
+
+
+		/* ======================================================
+		   Active
+		====================================================== */
+
+		.bottom-nav-item.is-active {
+
 			color:
-				var(--nug-text, #222222);
+				var(
+					--nug-accent,
+					#c9962f
+				);
+		}
+
+
+		.bottom-nav-item.is-active
+		.bottom-nav-icon svg {
+
+			transform:
+				translateY(-1px);
+		}
+
+
+		/* ======================================================
+		   Hover / Focus
+		====================================================== */
+
+		.bottom-nav-item:hover {
+
+			color:
+				var(
+					--nug-text,
+					#222222
+				);
 
 			background:
-				var(--nug-surface, #eeeeee);
+				color-mix(
+					in srgb,
+					var(--nug-surface, #eeeeee)
+					45%,
+					transparent
+				);
+		}
 
-			outline: none;
+
+		.bottom-nav-item:focus-visible {
+
+			outline:
+				2px solid
+				var(
+					--nug-accent,
+					#c9962f
+				);
+
+			outline-offset:
+				-2px;
 		}
 
 
 		.bottom-nav-item:active {
+
 			transform:
 				translateY(2px);
 		}
 
 
-		.bottom-nav-more svg {
-			fill: currentColor;
-			stroke: none;
+		/* ======================================================
+		   Expanded Toolbar
+		====================================================== */
+
+		.mobile-more-panel {
+
+			order: -1;
+
+			display: grid;
+
+			grid-template-rows:
+				0fr;
+
+			width: 100%;
+
+			overflow: hidden;
+
+			opacity: 0;
+
+			border-bottom:
+				0 solid
+				var(--nug-border, #d8d8d8);
+
+			transition:
+				grid-template-rows
+				0.30s
+				cubic-bezier(
+					0.22,
+					1,
+					0.36,
+					1
+				),
+				opacity
+				0.20s ease,
+				border-bottom-width
+				0.20s ease;
 		}
 
 
-		/* ========================================
-		   More Menu
-		======================================== */
+		.mobile-more-panel.is-open {
 
-		.mobile-more-menu {
-			position: fixed !important;
+			grid-template-rows:
+				1fr;
 
-			right: 8px !important;
-			bottom: 76px !important;
-			top: auto !important;
-			left: auto !important;
+			opacity: 1;
 
-			z-index: 10001 !important;
+			border-bottom-width:
+				1px;
+		}
 
-			width:
-				min(
-					220px,
-					calc(100vw - 16px)
-				);
 
-			padding: 8px;
+		/* ======================================================
+		   Expanded Panel Inner
+
+		   上下の余白を縮小。
+		   これにより、通常時に
+		   ボタン上側へ生じていた余白を減らします。
+		====================================================== */
+
+		.mobile-more-panel-inner {
+
+			min-height: 0;
+
+			display: grid;
+
+			grid-template-columns:
+				minmax(0, 1fr)
+				minmax(0, 1fr)
+				44px;
+
+			align-items: center;
+
+			gap: 5px;
+
+			padding:
+				3px 0;
 
 			box-sizing: border-box;
+		}
 
-			background:
-				var(--nug-background, #ffffff);
+
+		/* ======================================================
+		   Expanded Items
+		====================================================== */
+
+		.mobile-more-item {
+
+			min-width: 0;
+
+			height: 42px;
+
+			display: flex;
+
+			align-items: center;
+
+			gap: 7px;
+
+			padding:
+				4px 8px;
+
+			box-sizing: border-box;
 
 			border:
 				1px solid
 				var(--nug-border, #d8d8d8);
 
-			border-radius: 12px;
+			border-left:
+				3px solid
+				color-mix(
+					in srgb,
+					var(--nug-accent, #c9962f)
+					45%,
+					var(--nug-border, #d8d8d8)
+				);
 
-			box-shadow:
-				0 12px 30px
-				rgba(0, 0, 0, 0.2);
-
-			opacity: 0;
-
-			transform:
-				translateY(8px);
-
-			pointer-events: none;
-
-			transition:
-				opacity 0.18s ease,
-				transform 0.18s ease;
-		}
-
-
-		.mobile-more-menu.is-open {
-			display: block;
-
-			opacity: 1;
-
-			transform:
-				translateY(0);
-
-			pointer-events: auto;
-		}
-
-
-		.mobile-more-menu a {
-			display: flex;
-			align-items: center;
-
-			min-height: 48px;
-
-			padding:
-				0 14px;
-
-			border-radius: 8px;
+			background:
+				linear-gradient(
+					180deg,
+					color-mix(
+						in srgb,
+						var(--nug-surface, #eeeeee)
+						94%,
+						var(--nug-background, #ffffff)
+					),
+					var(--nug-background, #ffffff)
+				);
 
 			color:
 				var(--nug-text, #222222);
 
 			text-decoration: none;
 
-			font-size: 14px;
-			font-weight: 600;
+			box-shadow:
+				2px 2px 0
+				color-mix(
+					in srgb,
+					var(--nug-border, #d8d8d8)
+					55%,
+					transparent
+				);
+
+			transition:
+				background 0.18s ease,
+				border-color 0.18s ease,
+				box-shadow 0.18s ease,
+				transform 0.12s ease;
 		}
 
 
-		.mobile-more-menu a:hover,
-		.mobile-more-menu a:focus-visible {
+		.mobile-more-item.is-active {
+
+			border-left-color:
+				var(--nug-accent, #c9962f);
+
+			color:
+				var(--nug-accent, #c9962f);
+		}
+
+
+		.mobile-more-item:hover,
+		.mobile-more-item:focus-visible {
+
 			background:
-				var(--nug-surface, #eeeeee);
+				var(--nug-background, #ffffff);
+
+			border-color:
+				var(
+					--nug-accent,
+					#c9962f
+				);
 
 			outline: none;
+
+			box-shadow:
+				3px 3px 0
+				color-mix(
+					in srgb,
+					var(--nug-accent, #c9962f)
+					20%,
+					transparent
+				);
 		}
 
 
-		/*
-		 * 下部ナビ分の余白
-		 *
-		 * Starlightでも通常Astroでも
-		 * bodyに確保します。
-		 */
+		.mobile-more-item:active {
+
+			transform:
+				translate(
+					1px,
+					1px
+				);
+
+			box-shadow:
+				1px 1px 0
+				color-mix(
+					in srgb,
+					var(--nug-border, #d8d8d8)
+					55%,
+					transparent
+				);
+		}
+
+
+		/* ======================================================
+		   Expanded Item Icon
+		====================================================== */
+
+		.mobile-more-item-icon {
+
+			width: 28px;
+			height: 28px;
+
+			display: grid;
+
+			place-items: center;
+
+			flex-shrink: 0;
+
+			border:
+				1px solid
+				color-mix(
+					in srgb,
+					var(--nug-accent, #c9962f)
+					28%,
+					var(--nug-border, #d8d8d8)
+				);
+
+			background:
+				color-mix(
+					in srgb,
+					var(--nug-accent, #c9962f)
+					10%,
+					var(--nug-background, #ffffff)
+				);
+
+			color:
+				var(
+					--nug-accent,
+					#c9962f
+				);
+		}
+
+
+		.mobile-more-item-icon svg {
+
+			width: 16px;
+			height: 16px;
+
+			fill: none;
+
+			stroke:
+				currentColor;
+
+			stroke-width: 1.8;
+
+			stroke-linecap: square;
+			stroke-linejoin: miter;
+		}
+
+
+		/* ======================================================
+		   Expanded Item Text
+		====================================================== */
+
+		.mobile-more-item-text {
+
+			display: flex;
+
+			flex-direction: column;
+
+			justify-content: center;
+
+			gap: 1px;
+
+			min-width: 0;
+		}
+
+
+		.mobile-more-item-text strong {
+
+			overflow: hidden;
+
+			font-size: 11px;
+
+			font-weight: 750;
+
+			line-height: 1.2;
+
+			white-space: nowrap;
+
+			text-overflow: ellipsis;
+		}
+
+
+		.mobile-more-item-text small {
+
+			overflow: hidden;
+
+			color:
+				var(
+					--nug-text-secondary,
+					#666666
+				);
+
+			font-size: 8px;
+
+			line-height: 1.1;
+
+			white-space: nowrap;
+
+			text-overflow: ellipsis;
+		}
+
+
+		/* ======================================================
+		   Arrow
+		====================================================== */
+
+		.mobile-more-item-arrow {
+
+			width: 15px;
+			height: 15px;
+
+			margin-left: auto;
+
+			flex-shrink: 0;
+
+			fill: none;
+
+			stroke:
+				var(
+					--nug-text-secondary,
+					#666666
+				);
+
+			stroke-width: 1.8;
+
+			stroke-linecap: square;
+			stroke-linejoin: miter;
+		}
+
+
+		/* ======================================================
+		   Close Button
+
+		   ニュース / NUGについてと
+		   完全に同じ高さにします。
+		====================================================== */
+
+		.mobile-more-close {
+
+			width: 42px;
+
+			height: 42px;
+
+			min-height: 42px;
+
+			max-height: 42px;
+
+			align-self: center;
+
+			justify-self: stretch;
+
+			display: grid;
+
+			place-items: center;
+
+			box-sizing: border-box;
+
+			padding: 0;
+
+			border:
+				1px solid
+				var(--nug-border, #d8d8d8);
+
+			background:
+				linear-gradient(
+					180deg,
+					var(--nug-surface, #eeeeee),
+					var(--nug-background, #ffffff)
+				);
+
+			color:
+				var(
+					--nug-text-secondary,
+					#666666
+				);
+
+			cursor: pointer;
+
+			-webkit-tap-highlight-color:
+				transparent;
+
+			touch-action:
+				manipulation;
+
+			box-shadow:
+				2px 2px 0
+				color-mix(
+					in srgb,
+					var(--nug-border, #d8d8d8)
+					55%,
+					transparent
+				);
+
+			transition:
+				color 0.18s ease,
+				background 0.18s ease,
+				border-color 0.18s ease,
+				box-shadow 0.18s ease,
+				transform 0.12s ease;
+		}
+
+
+		.mobile-more-close:hover,
+		.mobile-more-close:focus-visible {
+
+			color:
+				var(
+					--nug-text,
+					#222222
+				);
+
+			background:
+				var(--nug-background, #ffffff);
+
+			border-color:
+				var(
+					--nug-accent,
+					#c9962f
+				);
+
+			outline: none;
+
+			box-shadow:
+				3px 3px 0
+				color-mix(
+					in srgb,
+					var(--nug-accent, #c9962f)
+					20%,
+					transparent
+				);
+		}
+
+
+		.mobile-more-close:active {
+
+			transform:
+				translate(
+					1px,
+					1px
+				);
+
+			box-shadow:
+				1px 1px 0
+				color-mix(
+					in srgb,
+					var(--nug-border, #d8d8d8)
+					55%,
+					transparent
+				);
+		}
+
+
+		.mobile-more-close svg {
+
+			width: 20px;
+			height: 20px;
+
+			fill: none;
+
+			stroke:
+				currentColor;
+
+			stroke-width: 1.9;
+
+			stroke-linecap: square;
+			stroke-linejoin: miter;
+		}
+
+
+		/* ======================================================
+		   Body Bottom Space
+		====================================================== */
 
 		:global(body) {
-			padding-bottom: 68px;
+
+			padding-bottom:
+				calc(
+					72px +
+					env(safe-area-inset-bottom)
+				);
+
+			transition:
+				padding-bottom
+				0.28s
+				cubic-bezier(
+					0.22,
+					1,
+					0.36,
+					1
+				);
+		}
+
+
+		:global(html.nug-bottom-nav-expanded body) {
+
+			padding-bottom:
+				calc(
+					124px +
+					env(safe-area-inset-bottom)
+				);
 		}
 	}
 
 
-	/* ========================================
+	/* ========================================================
 	   Smartphone
-	   767px以下
-	======================================== */
+	======================================================== */
 
 	@media (max-width: 767px) {
 
 		.mobile-bottom-nav {
-			height: 64px;
+
+			--nav-padding: 6px;
 
 			padding:
-				4px
 				6px
+				var(--nav-padding)
 				calc(
-					4px +
+					6px +
 					env(safe-area-inset-bottom)
 				);
 		}
 
 
+		.mobile-bottom-nav-track {
+
+			height: 56px;
+		}
+
+
 		.bottom-nav-item {
-			height: 54px;
+
+			height: 56px;
 
 			font-size: 9px;
 		}
 
 
-		.bottom-nav-item svg {
+		.bottom-nav-icon {
+
+			width: 22px;
+			height: 22px;
+		}
+
+
+		.bottom-nav-icon svg {
+
 			width: 21px;
 			height: 21px;
 		}
 
 
-		.mobile-more-menu {
-			bottom: 70px !important;
+		/* ----------------------------------------
+		   Expanded toolbar
+		---------------------------------------- */
+
+		.mobile-more-panel-inner {
+
+			grid-template-columns:
+				minmax(0, 1fr)
+				minmax(0, 1fr)
+				40px;
+
+			gap: 4px;
+
+			padding:
+				2px 0;
 		}
 
 
+		.mobile-more-item {
+
+			height: 40px;
+
+			padding:
+				4px 6px;
+		}
+
+
+		.mobile-more-item-text small {
+
+			display: none;
+		}
+
+
+		.mobile-more-item-icon {
+
+			width: 26px;
+			height: 26px;
+		}
+
+
+		.mobile-more-item-icon svg {
+
+			width: 15px;
+			height: 15px;
+		}
+
+
+		.mobile-more-item-arrow {
+
+			width: 14px;
+			height: 14px;
+		}
+
+
+		/* ----------------------------------------
+		   Close
+
+		   スマートフォンでも
+		   ニュース / NUGについてと
+		   完全に同じ40pxにします。
+		---------------------------------------- */
+
+		.mobile-more-close {
+
+			width: 40px;
+
+			height: 40px;
+
+			min-height: 40px;
+
+			max-height: 40px;
+		}
+
+
+		.mobile-more-close svg {
+
+			width: 19px;
+			height: 19px;
+		}
+
+
+		/* ----------------------------------------
+		   Body
+		---------------------------------------- */
+
 		:global(body) {
-			padding-bottom: 64px;
+
+			padding-bottom:
+				calc(
+					68px +
+					env(safe-area-inset-bottom)
+				);
+		}
+
+
+		:global(html.nug-bottom-nav-expanded body) {
+
+			padding-bottom:
+				calc(
+					116px +
+					env(safe-area-inset-bottom)
+				);
 		}
 	}
 
 
-	/* ========================================
+	/* ========================================================
+	   Dark Mode
+	======================================================== */
+
+	:global(html[data-theme="dark"])
+	.mobile-bottom-nav {
+
+		background:
+			linear-gradient(
+				180deg,
+				color-mix(
+					in srgb,
+					var(--nug-surface, #1b1b1b)
+					96%,
+					var(--nug-background, #111111)
+				),
+				var(--nug-background, #111111)
+			);
+
+		border-top-color:
+			color-mix(
+				in srgb,
+				var(--nug-accent, #c9962f)
+				34%,
+				var(--nug-border, #333333)
+			);
+
+		box-shadow:
+			0 -4px 0
+			color-mix(
+				in srgb,
+				var(--nug-border, #333333)
+				70%,
+				transparent
+			),
+			0 -12px 34px
+			rgba(
+				0,
+				0,
+				0,
+				0.46
+			);
+	}
+
+
+	:global(html[data-theme="dark"])
+	.bottom-nav-indicator::before {
+
+		background:
+			linear-gradient(
+				180deg,
+				color-mix(
+					in srgb,
+					var(--nug-accent, #c9962f)
+					20%,
+					var(--nug-background, #111111)
+				),
+				color-mix(
+					in srgb,
+					var(--nug-accent, #c9962f)
+					7%,
+					var(--nug-background, #111111)
+				)
+			);
+
+		border-color:
+			color-mix(
+				in srgb,
+				var(--nug-accent, #c9962f)
+				42%,
+				var(--nug-border, #333333)
+			);
+
+		border-top-color:
+			var(--nug-accent, #c9962f);
+
+		box-shadow:
+			0 2px 0
+			color-mix(
+				in srgb,
+				var(--nug-accent, #c9962f)
+				24%,
+				transparent
+			);
+	}
+
+
+	:global(html[data-theme="dark"])
+	.mobile-more-item,
+	:global(html[data-theme="dark"])
+	.mobile-more-close {
+
+		background:
+			linear-gradient(
+				180deg,
+				var(--nug-surface, #1b1b1b),
+				var(--nug-background, #111111)
+			);
+
+		border-color:
+			var(--nug-border, #333333);
+
+		color:
+			var(--nug-text, #f2f2f2);
+
+		box-shadow:
+			2px 2px 0
+			rgba(
+				0,
+				0,
+				0,
+				0.35
+			);
+	}
+
+
+	:global(html[data-theme="dark"])
+	.mobile-more-item:hover,
+	:global(html[data-theme="dark"])
+	.mobile-more-item:focus-visible,
+	:global(html[data-theme="dark"])
+	.mobile-more-close:hover,
+	:global(html[data-theme="dark"])
+	.mobile-more-close:focus-visible {
+
+		background:
+			var(--nug-background, #111111);
+
+		border-color:
+			var(--nug-accent, #c9962f);
+
+		box-shadow:
+			3px 3px 0
+			color-mix(
+				in srgb,
+				var(--nug-accent, #c9962f)
+				20%,
+				transparent
+			);
+	}
+
+
+	:global(html[data-theme="dark"])
+	.mobile-more-item-text small,
+	:global(html[data-theme="dark"])
+	.mobile-more-item-arrow {
+
+		color:
+			var(
+				--nug-text-secondary,
+				#aaaaaa
+			);
+	}
+
+
+	/* ========================================================
 	   Reduced Motion
-	======================================== */
+	======================================================== */
 
 	@media (prefers-reduced-motion: reduce) {
 
-		* {
-			transition-duration:
-				0.01ms !important;
+		.mobile-bottom-nav,
+		.bottom-nav-indicator,
+		.mobile-more-panel,
+		.bottom-nav-item,
+		.mobile-more-item,
+		.mobile-more-close {
 
-			animation-duration:
-				0.01ms !important;
-
-			animation-iteration-count:
-				1 !important;
+			transition: none !important;
 		}
 	}
 </style>

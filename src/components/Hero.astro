@@ -1,183 +1,873 @@
 <section class="hero">
-  <!-- Background -->
-  <div class="hero-background" aria-hidden="true">
-    <div class="hero-image"></div>
-    <div class="hero-noise"></div>
 
-    <div class="hero-particles">
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
-    </div>
-  </div>
+	<!-- =====================================================
+	     Background
+	===================================================== -->
 
-  <!-- Content -->
-  <div class="hero-content">
-    <p class="hero-description">
-      <strong>
-        NUGは、Nekozounekoの攻略情報をまとめた非公式ファンサイトです。
-      </strong>
-      <br />
-      サーバー別の攻略情報や、プラグインの仕様をまとめたWiki、便利なツールなどを掲載しています。
-      <br class="desktop-break" />
-      本サイトは非公式です。情報は実際のプレイをもとに検証していますが、
-      誤りがあればお知らせいただけると助かります。
-    </p>
-  </div>
+	<div
+		class="hero-background"
+		aria-hidden="true"
+	>
+
+		<div class="hero-image"></div>
+
+		<div class="hero-light"></div>
+
+		<div class="hero-vignette"></div>
+
+		<div class="hero-noise"></div>
+
+		<div class="hero-grid"></div>
+
+		<div class="hero-particles">
+
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+
+		</div>
+
+	</div>
+
+
+	<!-- =====================================================
+	     Content
+	===================================================== -->
+
+	<div class="hero-content">
+
+		<div class="hero-frame">
+
+			<p class="hero-description">
+
+				<strong>
+					NUGは、Nekozounekoの攻略情報をまとめた非公式ファンサイトです。
+				</strong>
+
+				<br />
+
+				<span>
+					サーバー別の攻略情報や、プラグインの仕様をまとめたWiki、
+					便利なツールなどを掲載しています。
+				</span>
+
+				<br class="desktop-break" />
+
+				<span>
+					本サイトは非公式です。
+					情報は実際のプレイをもとに検証していますが、
+					誤りがあればお知らせいただけると助かります。
+				</span>
+
+			</p>
+
+		</div>
+
+	</div>
+
 </section>
 
+
 <style>
-/* =========================================================
-   Hero Banner（縦幅縮小）
-========================================================= */
-.hero {
-  position: relative;
-  width: 100vw;
-  height: 180px; /* ← 260px → 180px に縮小 */
-  margin-left: calc(50% - 50vw);
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
 
 /* =========================================================
-   Background（単色）
-========================================================= */
-.hero-background {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  background: #EEF2F3;
+   NUGBASE Hero
+   ---------------------------------------------------------
+   Visual direction
+   → Minecraft / BSL-inspired environment
+   → Subtle directional light
+   → Very restrained gradients
+   → Subtle depth
+   → Block geometry
+   → Hard borders
+   → No rounded UI
+   ========================================================= */
+
+
+/* =========================================================
+   00. Radius Lock
+   ---------------------------------------------------------
+   Hero is intentionally completely square.
+   ========================================================= */
+
+.hero,
+.hero *,
+.hero *::before,
+.hero *::after {
+
+	border-radius:
+		0 !important;
+
 }
+
+
+/* =========================================================
+   01. Hero
+   ========================================================= */
+
+.hero {
+
+	position:
+		relative;
+
+	width:
+		100vw;
+
+	height:
+		180px;
+
+	margin-left:
+		calc(50% - 50vw);
+
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	overflow:
+		hidden;
+
+	isolation:
+		isolate;
+
+	border-top:
+		1px solid var(--color-border-strong);
+
+	border-bottom:
+		1px solid var(--color-border-strong);
+
+	background:
+		var(--color-background-deep);
+
+}
+
+
+/* =========================================================
+   02. Background Container
+   ========================================================= */
+
+.hero-background {
+
+	position:
+		absolute;
+
+	inset:
+		0;
+
+	overflow:
+		hidden;
+
+	pointer-events:
+		none;
+
+	background:
+		var(--color-background-deep);
+
+}
+
+
+/* =========================================================
+   03. Main Image
+   ========================================================= */
 
 .hero-image {
-  position: absolute;
-  inset: -8px; /* ← 縦幅縮小に合わせて調整 */
-  background: url("/images/main.webp") center / cover no-repeat;
-  transform: scale(1.015);
-  filter: saturate(.9) contrast(1.03) brightness(.9);
+
+	position:
+		absolute;
+
+	inset:
+		-8px;
+
+	background:
+		url("/images/main.webp")
+		center / cover
+		no-repeat;
+
+	transform:
+		scale(1.015);
+
+	filter:
+		saturate(.82)
+		contrast(1.04)
+		brightness(.78);
+
 }
 
+
 /* =========================================================
-   Noise
-========================================================= */
+   04. Directional Light
+   ---------------------------------------------------------
+   Very subtle upper-left illumination.
+   This intentionally avoids a strong gradient.
+   ========================================================= */
+
+.hero-light {
+
+	position:
+		absolute;
+
+	inset:
+		0;
+
+	background:
+		radial-gradient(
+			circle at 10% 5%,
+			rgba(255, 244, 210, .10),
+			transparent 34%
+		);
+
+	mix-blend-mode:
+		screen;
+
+	opacity:
+		.65;
+
+}
+
+
+/* =========================================================
+   05. Vignette
+   ---------------------------------------------------------
+   Kept extremely subtle.
+   The image should remain the main visual element.
+   ========================================================= */
+
+.hero-vignette {
+
+	position:
+		absolute;
+
+	inset:
+		0;
+
+	background:
+		rgba(0, 0, 0, .10);
+
+}
+
+
+/* =========================================================
+   06. Noise
+   ========================================================= */
+
 .hero-noise {
-  position: absolute;
-  inset: 0;
-  opacity: .045;
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
-  mix-blend-mode: soft-light;
+
+	position:
+		absolute;
+
+	inset:
+		0;
+
+	opacity:
+		.035;
+
+	background:
+		url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+
+	mix-blend-mode:
+		soft-light;
+
 }
 
+
 /* =========================================================
-   Particles
-========================================================= */
-.hero-particles {
-  position: absolute;
-  inset: 0;
-  opacity: .25;
+   07. Subtle Block Grid
+   ---------------------------------------------------------
+   Very low contrast.
+   It should only be visible when looking closely.
+   ========================================================= */
+
+.hero-grid {
+
+	position:
+		absolute;
+
+	inset:
+		0;
+
+	background-image:
+		linear-gradient(
+			rgba(255, 255, 255, .018) 1px,
+			transparent 1px
+		),
+		linear-gradient(
+			90deg,
+			rgba(255, 255, 255, .018) 1px,
+			transparent 1px
+		);
+
+	background-size:
+		32px 32px;
+
+	opacity:
+		.16;
+
 }
+
+
+/* =========================================================
+   08. Particles
+   ========================================================= */
+
+.hero-particles {
+
+	position:
+		absolute;
+
+	inset:
+		0;
+
+	opacity:
+		.20;
+
+}
+
+
+/* =========================================================
+   Particle
+   ========================================================= */
 
 .hero-particles span {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: rgba(220, 232, 218, .7);
-  box-shadow: 0 0 8px rgba(190, 215, 190, .35);
-  animation: particle-float 8s ease-in-out infinite;
+
+	position:
+		absolute;
+
+	width:
+		2px;
+
+	height:
+		2px;
+
+	background:
+		var(--color-gold-light);
+
+	box-shadow:
+		0 0 6px
+		rgba(230, 210, 150, .22);
+
+	animation:
+		particle-float
+		8s
+		ease-in-out
+		infinite;
+
 }
 
-/* 位置はそのまま */
-.hero-particles span:nth-child(1) { top: 20%; left: 17%; animation-delay: -1s; }
-.hero-particles span:nth-child(2) { top: 32%; left: 74%; animation-delay: -4s; }
-.hero-particles span:nth-child(3) { top: 62%; left: 14%; animation-delay: -2s; }
-.hero-particles span:nth-child(4) { top: 56%; left: 86%; animation-delay: -5s; }
-.hero-particles span:nth-child(5) { top: 18%; left: 62%; animation-delay: -3s; }
-.hero-particles span:nth-child(6) { top: 72%; left: 68%; animation-delay: -6s; }
 
 /* =========================================================
-   Content
-========================================================= */
-.hero-content {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: var(--content-width);
-  margin: auto;
-  padding: 0 var(--page-padding);
-  display: flex;
-  justify-content: center;
+   Particle Positions
+   ========================================================= */
+
+.hero-particles span:nth-child(1) {
+
+	top:
+		20%;
+
+	left:
+		17%;
+
+	animation-delay:
+		-1s;
+
 }
+
+
+.hero-particles span:nth-child(2) {
+
+	top:
+		32%;
+
+	left:
+		74%;
+
+	animation-delay:
+		-4s;
+
+}
+
+
+.hero-particles span:nth-child(3) {
+
+	top:
+		62%;
+
+	left:
+		14%;
+
+	animation-delay:
+		-2s;
+
+}
+
+
+.hero-particles span:nth-child(4) {
+
+	top:
+		56%;
+
+	left:
+		86%;
+
+	animation-delay:
+		-5s;
+
+}
+
+
+.hero-particles span:nth-child(5) {
+
+	top:
+		18%;
+
+	left:
+		62%;
+
+	animation-delay:
+		-3s;
+
+}
+
+
+.hero-particles span:nth-child(6) {
+
+	top:
+		72%;
+
+	left:
+		68%;
+
+	animation-delay:
+		-6s;
+
+}
+
+
+/* =========================================================
+   09. Content
+   ========================================================= */
+
+.hero-content {
+
+	position:
+		relative;
+
+	z-index:
+		2;
+
+	width:
+		100%;
+
+	max-width:
+		var(--content-width);
+
+	margin:
+		auto;
+
+	padding:
+		0 var(--page-padding);
+
+	display:
+		flex;
+
+	justify-content:
+		center;
+
+}
+
+
+/* =========================================================
+   10. Content Frame
+   ---------------------------------------------------------
+   Simple square information area.
+   No decorative top/bottom accent.
+   ========================================================= */
+
+.hero-frame {
+
+	position:
+		relative;
+
+	width:
+		min(100%, 960px);
+
+	padding:
+		17px 26px;
+
+	border-top:
+		1px solid
+		rgba(255, 255, 255, .18);
+
+	border-bottom:
+		1px solid
+		rgba(255, 255, 255, .12);
+
+	background:
+		rgba(8, 14, 11, .24);
+
+	box-shadow:
+		0 3px 0
+		rgba(0, 0, 0, .12);
+
+}
+
+
+/* =========================================================
+   11. Description
+   ========================================================= */
 
 .hero-description {
-  width: min(100%, 900px);
-  margin: auto;
-  text-align: center;
-  font-size: 13px; /* ← 少し縮小 */
-  font-weight: 500;
-  line-height: 1.6; /* ← 縦幅に合わせて調整 */
+
+	width:
+		100%;
+
+	margin:
+		auto;
+
+	text-align:
+		center;
+
+	font-size:
+		13px;
+
+	font-weight:
+		500;
+
+	line-height:
+		1.7;
+
+	letter-spacing:
+		.015em;
+
+	color:
+		#fff;
+
+	text-shadow:
+		1px 1px 0 rgba(0, 0, 0, .45),
+		0 2px 6px rgba(0, 0, 0, .20);
+
 }
+
+
+/* =========================================================
+   12. Strong Text
+   ========================================================= */
 
 .hero-description strong {
-  display: inline-block;
-  margin-bottom: 2px;
-  font-size: 15px; /* ← 少し縮小 */
-  font-weight: 800;
-  line-height: 1.5;
+
+	display:
+		inline-block;
+
+	margin-bottom:
+		3px;
+
+	font-size:
+		15px;
+
+	font-weight:
+		800;
+
+	line-height:
+		1.5;
+
+	letter-spacing:
+		.01em;
+
+	color:
+		#fff;
+
+	text-shadow:
+		1px 1px 0 rgba(0, 0, 0, .45),
+		0 2px 7px rgba(0, 0, 0, .22);
+
 }
 
+
 /* =========================================================
-   Light Mode（黒文字・影なし）
-========================================================= */
+   13. Small Block Marker
+   ---------------------------------------------------------
+   Minimal accent.
+   Not a border or decorative gradient.
+   ========================================================= */
+
+.hero-description strong::before {
+
+	content:
+		"";
+
+	display:
+		inline-block;
+
+	width:
+		5px;
+
+	height:
+		5px;
+
+	margin:
+		0 8px 3px 0;
+
+	background:
+		var(--color-accent);
+
+	box-shadow:
+		5px 0 0 var(--color-grass-light);
+
+}
+
+
+/* =========================================================
+   14. Light Theme
+   ---------------------------------------------------------
+   Keep the same restrained image treatment.
+   ========================================================= */
+
 @media (prefers-color-scheme: light) {
-  .hero-description,
-  .hero-description strong {
-    color: #000;
-    text-shadow: none;
-  }
+
+	.hero-description,
+	.hero-description strong {
+
+		color:
+			#fff;
+
+	}
+
 }
 
+
 /* =========================================================
-   Dark Mode（白文字・影なし）
-========================================================= */
+   15. Dark Theme
+   ========================================================= */
+
 @media (prefers-color-scheme: dark) {
-  .hero-description,
-  .hero-description strong {
-    color: #fff;
-    text-shadow: none;
-  }
+
+	.hero-description,
+	.hero-description strong {
+
+		color:
+			#fff;
+
+	}
+
 }
 
+
 /* =========================================================
-   Animation
-========================================================= */
+   16. Animation
+   ========================================================= */
+
 @keyframes particle-float {
-  0%, 100% { opacity: .15; transform: translateY(0); }
-  50% { opacity: .6; transform: translateY(-8px); }
+
+	0%,
+	100% {
+
+		opacity:
+			.10;
+
+		transform:
+			translateY(0);
+
+	}
+
+	50% {
+
+		opacity:
+			.40;
+
+		transform:
+			translateY(-6px);
+
+	}
+
 }
+
 
 /* =========================================================
-   Mobile
-========================================================= */
-@media (max-width: 768px) {
-  .hero { height: 160px; } /* ← モバイルも縮小 */
-  .hero-image { background-position: 58% center; }
+   17. Tablet / Mobile
+   ========================================================= */
 
-  .hero-description {
-    padding: 0 var(--page-padding);
-    font-size: 12px;
-    line-height: 1.55;
-  }
-  .hero-description strong {
-    font-size: 13px;
-    line-height: 1.45;
-  }
-  .desktop-break { display: none; }
+@media (max-width: 768px) {
+
+	.hero {
+
+		height:
+			160px;
+
+	}
+
+
+	.hero-image {
+
+		background-position:
+			58% center;
+
+	}
+
+
+	.hero-light {
+
+		background:
+			radial-gradient(
+				circle at 12% 8%,
+				rgba(255, 244, 210, .07),
+				transparent 32%
+			);
+
+	}
+
+
+	.hero-grid {
+
+		background-size:
+			24px 24px;
+
+		opacity:
+			.12;
+
+	}
+
+
+	.hero-content {
+
+		padding:
+			0 var(--page-padding);
+
+	}
+
+
+	.hero-frame {
+
+		padding:
+			14px 18px;
+
+		background:
+			rgba(8, 14, 11, .22);
+
+	}
+
+
+	.hero-description {
+
+		font-size:
+			12px;
+
+		line-height:
+			1.6;
+
+	}
+
+
+	.hero-description strong {
+
+		font-size:
+			13px;
+
+		line-height:
+			1.45;
+
+	}
+
+
+	.desktop-break {
+
+		display:
+			none;
+
+	}
+
 }
+
+
+/* =========================================================
+   18. Small Mobile
+   ========================================================= */
 
 @media (max-width: 480px) {
-  .hero { height: 170px; }
-  .hero-description { font-size: 11px; line-height: 1.5; }
-  .hero-description strong { font-size: 12px; }
+
+	.hero {
+
+		height:
+			170px;
+
+	}
+
+
+	.hero-image {
+
+		background-position:
+			58% center;
+
+	}
+
+
+	.hero-frame {
+
+		padding:
+			13px 12px;
+
+		background:
+			rgba(8, 14, 11, .20);
+
+	}
+
+
+	.hero-description {
+
+		font-size:
+			11px;
+
+		line-height:
+			1.55;
+
+	}
+
+
+	.hero-description strong {
+
+		font-size:
+			12px;
+
+		line-height:
+			1.45;
+
+	}
+
+
+	.hero-description strong::before {
+
+		width:
+			4px;
+
+		height:
+			4px;
+
+		margin-right:
+			6px;
+
+		box-shadow:
+			4px 0 0 var(--color-grass-light);
+
+	}
+
 }
+
+
+/* =========================================================
+   19. Reduced Motion
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+	.hero-particles span {
+
+		animation:
+			none;
+
+	}
+
+}
+
 </style>

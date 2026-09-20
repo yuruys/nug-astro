@@ -60,10 +60,15 @@ const { Content } = await render(guide);
 </Layout>
 
 <style>
+	/* =========================================================
+	   Guide Article
+	   ========================================================= */
+
 	.guide-article {
 		padding:
 			64px 0 80px;
 	}
+
 
 	.article-header {
 		max-width:
@@ -78,6 +83,7 @@ const { Content } = await render(guide);
 		border-bottom:
 			1px solid var(--color-border);
 	}
+
 
 	.article-category {
 		margin-bottom:
@@ -96,6 +102,7 @@ const { Content } = await render(guide);
 			var(--color-text-secondary);
 	}
 
+
 	.article-header h1 {
 		font-size:
 			40px;
@@ -107,6 +114,7 @@ const { Content } = await render(guide);
 			-0.04em;
 	}
 
+
 	.article-description {
 		margin-top:
 			14px;
@@ -117,6 +125,11 @@ const { Content } = await render(guide);
 		color:
 			var(--color-text-secondary);
 	}
+
+
+	/* =========================================================
+	   Article Content
+	   ========================================================= */
 
 	.article-content {
 		max-width:
@@ -132,6 +145,7 @@ const { Content } = await render(guide);
 			1.9;
 	}
 
+
 	.article-content :global(h2) {
 		margin-top:
 			48px;
@@ -145,6 +159,7 @@ const { Content } = await render(guide);
 		line-height:
 			1.4;
 	}
+
 
 	.article-content :global(h3) {
 		margin-top:
@@ -160,10 +175,12 @@ const { Content } = await render(guide);
 			1.4;
 	}
 
+
 	.article-content :global(p) {
 		margin-top:
 			16px;
 	}
+
 
 	.article-content :global(ul) {
 		margin-top:
@@ -176,6 +193,7 @@ const { Content } = await render(guide);
 			disc;
 	}
 
+
 	.article-content :global(ol) {
 		margin-top:
 			16px;
@@ -187,10 +205,12 @@ const { Content } = await render(guide);
 			decimal;
 	}
 
+
 	.article-content :global(li) {
 		margin-top:
 			6px;
 	}
+
 
 	.article-content :global(a) {
 		color:
@@ -202,6 +222,7 @@ const { Content } = await render(guide);
 		text-underline-offset:
 			3px;
 	}
+
 
 	.article-content :global(blockquote) {
 		margin:
@@ -220,6 +241,7 @@ const { Content } = await render(guide);
 			var(--color-text-secondary);
 	}
 
+
 	.article-content :global(code) {
 		padding:
 			2px 6px;
@@ -233,6 +255,7 @@ const { Content } = await render(guide);
 		font-size:
 			0.9em;
 	}
+
 
 	.article-content :global(pre) {
 		overflow-x:
@@ -251,6 +274,7 @@ const { Content } = await render(guide);
 			var(--color-surface);
 	}
 
+
 	.article-content :global(pre code) {
 		padding:
 			0;
@@ -259,21 +283,312 @@ const { Content } = await render(guide);
 			transparent;
 	}
 
+
+	/* =========================================================
+	   Guide Admonition
+	   ---------------------------------------------------------
+	   Markdown:
+	
+	   :::note[補足]
+	   内容
+	   :::
+	
+	   :::tip[おすすめ]
+	   内容
+	   :::
+	
+	   :::caution[注意]
+	   内容
+	   :::
+	
+	   :::danger[警告]
+	   内容
+	   :::
+	
+	   :::success[成功例]
+	   内容
+	   :::
+	   ========================================================= */
+
+	.article-content :global(.guide-admonition) {
+		position:
+			relative;
+
+		margin:
+			28px 0;
+
+		padding:
+			18px 20px 20px;
+
+		border:
+			1px solid var(--color-border);
+
+		border-left:
+			4px solid var(--color-text-secondary);
+
+		background:
+			var(--color-surface);
+
+		box-shadow:
+			4px 4px 0 rgba(0, 0, 0, 0.08);
+	}
+
+
+	/* =========================================================
+	   Admonition Title
+	   ========================================================= */
+
+	.article-content :global(.guide-admonition-title) {
+		display:
+			flex;
+
+		align-items:
+			center;
+
+		gap:
+			10px;
+
+		margin:
+			0 0 10px;
+
+		font-size:
+			12px;
+
+		font-weight:
+			800;
+
+		line-height:
+			1.4;
+
+		letter-spacing:
+			0.08em;
+
+		color:
+			var(--color-text);
+	}
+
+
+	/* =========================================================
+	   Admonition Type Label
+	   ========================================================= */
+
+	.article-content
+		:global(.guide-admonition-title)::before {
+		display:
+			inline-flex;
+
+		align-items:
+			center;
+
+		justify-content:
+			center;
+
+		min-width:
+			58px;
+
+		padding:
+			4px 7px;
+
+		border:
+			1px solid currentColor;
+
+		font-size:
+			9px;
+
+		font-weight:
+			800;
+
+		line-height:
+			1;
+
+		letter-spacing:
+			0.08em;
+	}
+
+
+	.article-content
+		:global(.guide-admonition-title-note)::before {
+		content:
+			"NOTE";
+	}
+
+
+	.article-content
+		:global(.guide-admonition-title-tip)::before {
+		content:
+			"TIP";
+	}
+
+
+	.article-content
+		:global(.guide-admonition-title-caution)::before {
+		content:
+			"CAUTION";
+	}
+
+
+	.article-content
+		:global(.guide-admonition-title-danger)::before {
+		content:
+			"DANGER";
+	}
+
+
+	.article-content
+		:global(.guide-admonition-title-success)::before {
+		content:
+			"SUCCESS";
+	}
+
+
+	/* =========================================================
+	   Admonition Content
+	   ========================================================= */
+
+	.article-content
+		:global(.guide-admonition p) {
+		margin-top:
+			10px;
+	}
+
+
+	.article-content
+		:global(.guide-admonition-title + p) {
+		margin-top:
+			0;
+	}
+
+
+	.article-content
+		:global(.guide-admonition p:first-child) {
+		margin-top:
+			0;
+	}
+
+
+	/* =========================================================
+	   NOTE
+	   補足・メモ
+	   ========================================================= */
+
+	.article-content
+		:global(.guide-admonition-note) {
+		border-left-color:
+			var(--color-accent);
+	}
+
+
+	.article-content
+		:global(.guide-admonition-note)
+		:global(.guide-admonition-title) {
+		color:
+			var(--color-accent);
+	}
+
+
+	/* =========================================================
+	   TIP
+	   ヒント・おすすめ
+	   ========================================================= */
+
+	.article-content
+		:global(.guide-admonition-tip) {
+		border-left-color:
+			var(--color-grass-light);
+	}
+
+
+	.article-content
+		:global(.guide-admonition-tip)
+		:global(.guide-admonition-title) {
+		color:
+			var(--color-grass-light);
+	}
+
+
+	/* =========================================================
+	   CAUTION
+	   注意
+	   ========================================================= */
+
+	.article-content
+		:global(.guide-admonition-caution) {
+		border-left-color:
+			var(--color-gold-light);
+	}
+
+
+	.article-content
+		:global(.guide-admonition-caution)
+		:global(.guide-admonition-title) {
+		color:
+			var(--color-gold-light);
+	}
+
+
+	/* =========================================================
+	   DANGER
+	   警告・危険
+	   ========================================================= */
+
+	.article-content
+		:global(.guide-admonition-danger) {
+		border-left-color:
+			#c96b5b;
+	}
+
+
+	.article-content
+		:global(.guide-admonition-danger)
+		:global(.guide-admonition-title) {
+		color:
+			#c96b5b;
+	}
+
+
+	/* =========================================================
+	   SUCCESS
+	   成功例・推奨事項
+	   ========================================================= */
+
+	.article-content
+		:global(.guide-admonition-success) {
+		border-left-color:
+			#7da66b;
+	}
+
+
+	.article-content
+		:global(.guide-admonition-success)
+		:global(.guide-admonition-title) {
+		color:
+			#7da66b;
+	}
+
+
+	/* =========================================================
+	   Mobile
+	   ========================================================= */
+
 	@media (max-width: 768px) {
+
 		.guide-article {
 			padding:
 				40px 0 60px;
 		}
+
 
 		.article-header h1 {
 			font-size:
 				32px;
 		}
 
+
 		.article-description {
 			font-size:
 				14px;
 		}
+
 
 		.article-content {
 			margin-top:
@@ -285,5 +600,36 @@ const { Content } = await render(guide);
 			line-height:
 				1.8;
 		}
+
+
+		.article-content
+			:global(.guide-admonition) {
+			margin:
+				24px 0;
+
+			padding:
+				16px 16px 18px;
+		}
+
+
+		.article-content
+			:global(.guide-admonition-title) {
+			font-size:
+				11px;
+		}
+
+
+		.article-content
+			:global(.guide-admonition-title)::before {
+			min-width:
+				54px;
+
+			padding:
+				4px 6px;
+
+			font-size:
+				8px;
+		}
+
 	}
 </style>

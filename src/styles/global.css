@@ -883,9 +883,617 @@ button:active {
 		translateY(2px);
 }
 
+/* =========================================================
+   13. ADMONITIONS
+   ---------------------------------------------------------
+   NUGBASE Shared Admonition System
+
+   Based on:
+   → src/styles/starlight.css
+
+   Used by:
+   - Starlight Wiki
+   - Guide
+   - News
+   - Tool
+
+   Supported types:
+   - note
+   - tip
+   - caution
+   - danger
+   - success
+
+   Design:
+   - semantic gradient surface
+   - gold → grass top accent
+   - thick left semantic border
+   - Minecraft block shadow
+   - square geometry
+========================================================= */
+
 
 /* =========================================================
-   13. Tables
+   Base
+========================================================= */
+
+.starlight-aside,
+.guide-admonition {
+	position: relative;
+
+	margin:
+		var(--space-6)
+		0;
+
+	padding:
+		var(--space-5);
+
+	border:
+		1px solid var(--color-border);
+
+	border-left-width:
+		5px;
+
+	border-radius:
+		0 !important;
+
+	background:
+		var(--color-surface);
+
+	color:
+		var(--color-text);
+
+	box-shadow:
+		var(--block-shadow);
+
+	transition:
+		background-color var(--transition-fast),
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast),
+		transform var(--transition-fast);
+}
+
+
+/* =========================================================
+   Gold → Grass Top Accent
+   ---------------------------------------------------------
+   This is the same visual language used by the original
+   Starlight Admonition.
+========================================================= */
+
+.starlight-aside::before,
+.guide-admonition::before {
+	content: "";
+
+	position: absolute;
+
+	top: 0;
+	left: 0;
+
+	width:
+		60%;
+
+	height:
+		2px;
+
+	background:
+		linear-gradient(
+			90deg,
+			var(--color-gold-light),
+			var(--color-grass-light),
+			transparent
+		);
+
+	pointer-events:
+		none;
+}
+
+
+/* =========================================================
+   Hover
+========================================================= */
+
+.starlight-aside:hover,
+.guide-admonition:hover {
+	background:
+		var(--color-surface-hover);
+
+	box-shadow:
+		var(--block-shadow-hover);
+
+	transform:
+		translateY(-1px);
+}
+
+
+/* =========================================================
+   Titles
+========================================================= */
+
+.starlight-aside__title,
+.starlight-aside .aside-title,
+.guide-admonition-title {
+	position: relative;
+
+	margin-bottom:
+		var(--space-2);
+
+	color:
+		var(--color-text);
+
+	font-family:
+		var(--font-display);
+
+	font-weight:
+		800;
+
+	line-height:
+		1.4;
+}
+
+
+/* =========================================================
+   Starlight Content
+========================================================= */
+
+.starlight-aside__content {
+	color:
+		var(--color-text);
+}
+
+.starlight-aside__content p,
+.starlight-aside__content li {
+	color:
+		inherit;
+}
+
+
+/* =========================================================
+   Guide / News / Tool Content
+========================================================= */
+
+.guide-admonition p,
+.guide-admonition li {
+	color:
+		inherit;
+}
+
+
+/* =========================================================
+   NOTE
+   ---------------------------------------------------------
+   Blue
+========================================================= */
+
+.starlight-aside--note,
+.guide-admonition-note {
+	border-left-color:
+		var(--color-info);
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-info-soft),
+			var(--color-surface)
+		);
+}
+
+.starlight-aside--note .starlight-aside__title,
+.starlight-aside--note .aside-title,
+.guide-admonition-note .guide-admonition-title {
+	color:
+		var(--color-info);
+}
+
+
+/* =========================================================
+   TIP
+   ---------------------------------------------------------
+   Purple
+========================================================= */
+
+.starlight-aside--tip,
+.guide-admonition-tip {
+	border-left-color:
+		var(--color-tip);
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-tip-soft),
+			var(--color-surface)
+		);
+}
+
+.starlight-aside--tip .starlight-aside__title,
+.starlight-aside--tip .aside-title,
+.guide-admonition-tip .guide-admonition-title {
+	color:
+		var(--color-tip);
+}
+
+
+/* =========================================================
+   CAUTION
+   ---------------------------------------------------------
+   Gold
+========================================================= */
+
+.starlight-aside--caution,
+.guide-admonition-caution {
+	border-left-color:
+		var(--color-warning);
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-warning-soft),
+			var(--color-surface)
+		);
+}
+
+.starlight-aside--caution .starlight-aside__title,
+.starlight-aside--caution .aside-title,
+.guide-admonition-caution .guide-admonition-title {
+	color:
+		var(--color-warning);
+}
+
+
+/* =========================================================
+   DANGER
+   ---------------------------------------------------------
+   Red
+========================================================= */
+
+.starlight-aside--danger,
+.guide-admonition-danger {
+	border-left-color:
+		var(--color-danger);
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-danger-soft),
+			var(--color-surface)
+		);
+}
+
+.starlight-aside--danger .starlight-aside__title,
+.starlight-aside--danger .aside-title,
+.guide-admonition-danger .guide-admonition-title {
+	color:
+		var(--color-danger);
+}
+
+
+/* =========================================================
+   SUCCESS
+   ---------------------------------------------------------
+   Green
+   ---------------------------------------------------------
+   Starlight本体にはありませんが、
+   NUGBASE Guide / News / Tool 用として追加。
+========================================================= */
+
+.guide-admonition-success {
+	border-left-color:
+		var(--color-success);
+
+	background:
+		linear-gradient(
+			135deg,
+			var(--color-success-soft),
+			var(--color-surface)
+		);
+}
+
+.guide-admonition-success .guide-admonition-title {
+	color:
+		var(--color-success);
+}
+
+
+/* =========================================================
+   Guide / News / Tool Admonition Title
+   ---------------------------------------------------------
+   NUGBASE独自のタイトルラベル
+========================================================= */
+
+.guide-admonition-title {
+	display:
+		flex;
+
+	align-items:
+		center;
+
+	gap:
+		10px;
+
+	margin-bottom:
+		var(--space-2);
+
+	letter-spacing:
+		0.04em;
+}
+
+
+/* =========================================================
+   Type Label
+========================================================= */
+
+.guide-admonition-title::before {
+	display:
+		inline-flex;
+
+	align-items:
+		center;
+
+	justify-content:
+		center;
+
+	min-width:
+		58px;
+
+	padding:
+		4px 7px;
+
+	border:
+		1px solid currentColor;
+
+	font-size:
+		9px;
+
+	font-weight:
+		800;
+
+	line-height:
+		1;
+
+	letter-spacing:
+		0.08em;
+
+	flex:
+		0 0 auto;
+}
+
+
+/* ---------------------------------------------------------
+   NOTE
+--------------------------------------------------------- */
+
+.guide-admonition-title-note::before {
+	content:
+		"NOTE";
+}
+
+
+/* ---------------------------------------------------------
+   TIP
+--------------------------------------------------------- */
+
+.guide-admonition-title-tip::before {
+	content:
+		"TIP";
+}
+
+
+/* ---------------------------------------------------------
+   CAUTION
+--------------------------------------------------------- */
+
+.guide-admonition-title-caution::before {
+	content:
+		"CAUTION";
+}
+
+
+/* ---------------------------------------------------------
+   DANGER
+--------------------------------------------------------- */
+
+.guide-admonition-title-danger::before {
+	content:
+		"DANGER";
+}
+
+
+/* ---------------------------------------------------------
+   SUCCESS
+--------------------------------------------------------- */
+
+.guide-admonition-title-success::before {
+	content:
+		"SUCCESS";
+}
+
+
+/* =========================================================
+   Guide Admonition Paragraph Spacing
+========================================================= */
+
+.guide-admonition p {
+	margin-top:
+		var(--space-2);
+}
+
+.guide-admonition-title + p {
+	margin-top:
+		0;
+}
+
+.guide-admonition p:first-child {
+	margin-top:
+		0;
+}
+
+
+/* =========================================================
+   Lists
+========================================================= */
+
+.starlight-aside ul,
+.starlight-aside ol,
+.guide-admonition ul,
+.guide-admonition ol {
+	margin-top:
+		var(--space-3);
+
+	padding-left:
+		var(--space-6);
+}
+
+.starlight-aside li,
+.guide-admonition li {
+	margin-top:
+		2px;
+}
+
+
+/* =========================================================
+   Links
+========================================================= */
+
+.starlight-aside a,
+.guide-admonition a {
+	color:
+		var(--color-accent);
+
+	text-decoration-color:
+		color-mix(
+			in srgb,
+			var(--color-accent) 55%,
+			transparent
+		);
+
+	text-underline-offset:
+		3px;
+}
+
+.starlight-aside a:hover,
+.guide-admonition a:hover {
+	color:
+		var(--color-accent-hover);
+
+	background:
+		var(--color-accent-soft);
+}
+
+
+/* =========================================================
+   Code
+========================================================= */
+
+.starlight-aside code,
+.guide-admonition code {
+	border-radius:
+		0 !important;
+
+	background:
+		var(--color-surface-subtle);
+
+	color:
+		var(--color-accent);
+}
+
+
+/* =========================================================
+   Small Screens
+========================================================= */
+
+@media (max-width: 768px) {
+
+	.starlight-aside,
+	.guide-admonition {
+		margin:
+			var(--space-5)
+			0;
+
+		padding:
+			var(--space-4);
+	}
+
+
+	.starlight-aside__title,
+	.starlight-aside .aside-title,
+	.guide-admonition-title {
+		font-size:
+			13px;
+	}
+
+
+	.guide-admonition-title::before {
+		min-width:
+			54px;
+
+		padding:
+			4px 6px;
+
+		font-size:
+			8px;
+	}
+
+}
+
+
+/* =========================================================
+   Small Smartphone
+========================================================= */
+
+@media (max-width: 480px) {
+
+	.starlight-aside,
+	.guide-admonition {
+		padding:
+			var(--space-4);
+	}
+
+
+	.guide-admonition-title {
+		gap:
+			8px;
+
+		font-size:
+			12px;
+	}
+
+
+	.guide-admonition-title::before {
+		min-width:
+			50px;
+
+		padding:
+			4px 5px;
+
+		font-size:
+			8px;
+	}
+
+}
+
+
+/* =========================================================
+   Reduced Motion
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+	.starlight-aside,
+	.guide-admonition {
+		transition:
+			none;
+	}
+
+	.starlight-aside:hover,
+	.guide-admonition:hover {
+		transform:
+			none;
+	}
+
+}
+
+/* =========================================================
+   14. Tables
    ---------------------------------------------------------
    Desktop:
    Database-style table.
@@ -1138,7 +1746,7 @@ th code {
 
 
 /* =========================================================
-   14. Inline Code
+   15. Inline Code
 ========================================================= */
 
 code {
@@ -1171,7 +1779,7 @@ code {
 
 
 /* =========================================================
-   15. Code Blocks
+   16. Code Blocks
 ========================================================= */
 
 pre {
@@ -1249,7 +1857,7 @@ pre code {
 
 
 /* =========================================================
-   16. Blockquote
+   17. Blockquote
 ========================================================= */
 
 blockquote {
@@ -1294,7 +1902,7 @@ blockquote {
 
 
 /* =========================================================
-   17. Horizontal Rule
+   18. Horizontal Rule
 ========================================================= */
 
 hr {
@@ -1312,7 +1920,7 @@ hr {
 
 
 /* =========================================================
-   18. Lists
+   19. Lists
 ========================================================= */
 
 ul,
@@ -1357,7 +1965,7 @@ li::marker {
 
 
 /* =========================================================
-   19. Media
+   20. Media
 ========================================================= */
 
 img,
@@ -1403,7 +2011,7 @@ figure img {
 
 
 /* =========================================================
-   20. NUGBASE Block Utility
+   21. NUGBASE Block Utility
 ========================================================= */
 
 .nug-block {
@@ -1508,7 +2116,7 @@ figure img {
 
 
 /* =========================================================
-   21. Shared NUGBASE Card System
+   22. Shared NUGBASE Card System
    ---------------------------------------------------------
    Applies to non-Wiki pages.
 
@@ -1769,7 +2377,7 @@ figure img {
 
 
 /* =========================================================
-   22. Category Cards
+   23. Category Cards
 ========================================================= */
 
 .category-card {
@@ -1915,7 +2523,7 @@ figure img {
 
 
 /* =========================================================
-   23. Server Cards
+   24. Server Cards
 ========================================================= */
 
 .server-card {
@@ -2089,7 +2697,7 @@ figure img {
 
 
 /* =========================================================
-   24. About / Latest Panels
+   25. About / Latest Panels
 ========================================================= */
 
 .about-panel,
@@ -2115,7 +2723,7 @@ figure img {
 
 
 /* =========================================================
-   25. Generic Card Block
+   26. Generic Card Block
 ========================================================= */
 
 .card-block {
@@ -2170,7 +2778,7 @@ figure img {
 
 
 /* =========================================================
-   26. Card Grid
+   27. Card Grid
 ========================================================= */
 
 .card-grid,
@@ -2202,7 +2810,7 @@ figure img {
 
 
 /* =========================================================
-   27. Card Color Variants
+   28. Card Color Variants
 ========================================================= */
 
 .category-guide {
@@ -2243,7 +2851,7 @@ figure img {
 
 
 /* =========================================================
-   28. Inventory Label Utility
+   29. Inventory Label Utility
 ========================================================= */
 
 .nug-label {
@@ -2301,7 +2909,7 @@ figure img {
 
 
 /* =========================================================
-   29. Voxel Slot Utility
+   30. Voxel Slot Utility
 ========================================================= */
 
 .nug-slot {
@@ -2361,7 +2969,7 @@ html[data-theme="dark"] .nug-slot {
 
 
 /* =========================================================
-   30. Focus Accessibility
+   31. Focus Accessibility
 ========================================================= */
 
 :focus-visible {
@@ -2376,7 +2984,7 @@ html[data-theme="dark"] .nug-slot {
 
 
 /* =========================================================
-   31. Scrollbar
+   32. Scrollbar
 ========================================================= */
 
 html {
@@ -2422,7 +3030,7 @@ html {
 
 
 /* =========================================================
-   32. Touch / Selection Improvements
+   33. Touch / Selection Improvements
 ========================================================= */
 
 @media (hover: none) {
@@ -2455,7 +3063,7 @@ html {
 
 
 /* =========================================================
-   33. Responsive Layout
+   34. Responsive Layout
 ========================================================= */
 
 @media (max-width: 1024px) {
@@ -2489,7 +3097,7 @@ html {
 
 
 /* =========================================================
-   34. Tablet / Mobile
+   35. Tablet / Mobile
 ========================================================= */
 
 @media (max-width: 768px) {
@@ -2624,7 +3232,7 @@ html {
 
 
 /* =========================================================
-   35. Small Screens
+   36. Small Screens
 ========================================================= */
 
 @media (max-width: 480px) {
@@ -2752,7 +3360,7 @@ html {
 
 
 /* =========================================================
-   36. Safe Area
+   37. Safe Area
 ========================================================= */
 
 @supports (padding: env(safe-area-inset-left)) {
@@ -2769,7 +3377,7 @@ html {
 
 
 /* =========================================================
-   37. Long Content Protection
+   38. Long Content Protection
 ========================================================= */
 
 p,
@@ -2810,7 +3418,7 @@ code {
 
 
 /* =========================================================
-   38. Light Mode Explicit Text Safety
+   39. Light Mode Explicit Text Safety
    ---------------------------------------------------------
    Prevent inherited white text from old components
    from becoming unreadable on light surfaces.
@@ -2885,7 +3493,7 @@ html:not([data-theme="dark"]) .latest-panel p {
 
 
 /* =========================================================
-   39. Dark Mode Card Text
+   40. Dark Mode Card Text
 ========================================================= */
 
 html[data-theme="dark"] .category-card,
@@ -2951,7 +3559,7 @@ html[data-theme="dark"] .latest-panel p {
 
 
 /* =========================================================
-   40. Reduced Motion
+   41. Reduced Motion
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
