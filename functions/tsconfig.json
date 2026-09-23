@@ -1,0 +1,9 @@
+﻿{
+  "compilerOptions": {
+    "types": ["./types.d.ts"]
+  },
+  "include": [
+    "./types.d.ts",
+    "./**/*.ts"
+  ]
+}

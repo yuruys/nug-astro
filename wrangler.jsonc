@@ -1,0 +1,12 @@
+{
+  "name": "nug-astro",
+  "compatibility_date": "2026-09-21",
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nugbase-db",
+      "database_id": "d6e7e462-b36e-4387-b14b-5dfa3fb2c044"
+    }
+  ]
+}

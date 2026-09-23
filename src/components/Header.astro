@@ -21,19 +21,19 @@ const wikiSections = [
 		items: [
 			{
 				label: "サーバー一覧",
-				href: "/docs/servers/",
+				href: "/docs/server/",
 			},
 			{
 				label: "NEarth",
-				href: "/docs/servers/nearth/",
+				href: "/docs/server/nearth/",
 			},
 			{
 				label: "Life",
-				href: "/docs/servers/life/",
+				href: "/docs/server/life/",
 			},
 			{
 				label: "Cho",
-				href: "/docs/servers/cho/",
+				href: "/docs/server/cho/",
 			},
 		],
 	},
@@ -42,31 +42,31 @@ const wikiSections = [
 		items: [
 			{
 				label: "Lands",
-				href: "/docs/plugins/lands/",
+				href: "/docs/plugin/lands/",
 			},
 			{
 				label: "QuickShop",
-				href: "/docs/plugins/quickshop/",
+				href: "/docs/plugin/quickshop/",
 			},
 			{
 				label: "Jobs",
-				href: "/docs/plugins/jobs/",
+				href: "/docs/plugin/jobs/",
 			},
 			{
 				label: "mcMMO",
-				href: "/docs/plugins/mcmmo/",
+				href: "/docs/plugin/mcmmo/",
 			},
 			{
 				label: "Bolt",
-				href: "/docs/plugins/bolt/",
+				href: "/docs/plugin/bolt/",
 			},
 			{
 				label: "PlayerGuard",
-				href: "/docs/plugins/playerguard/",
+				href: "/docs/plugin/playerguard/",
 			},
 			{
 				label: "LWC",
-				href: "/docs/plugins/lwc/",
+				href: "/docs/plugin/lwc/",
 			},
 		],
 	},
@@ -75,7 +75,7 @@ const wikiSections = [
 		items: [
 			{
 				label: "使用可能なMod",
-				href: "/docs/mods/allowed-mods/",
+				href: "/docs/mod/",
 			},
 		],
 	},
@@ -156,6 +156,18 @@ const isActive = (href: string): boolean => {
 		===================================================== -->
 
 		<div class="header-actions">
+			<!-- Authentication -->
+
+			<a id="nug-auth-button" class="auth-button" href="/api/auth/google" aria-label="Googleでログイン" title="Googleでログイン">
+				<span class="auth-button-icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M20 21a8 8 0 0 0-16 0" />
+						<circle cx="12" cy="7" r="4" />
+					</svg>
+				</span>
+				<span class="auth-button-label">ログイン</span>
+			</a>
+
 			<!-- Search -->
 
 			<button
@@ -431,6 +443,32 @@ const isActive = (href: string): boolean => {
 		document.querySelector<HTMLElement>(
 			".site-header"
 		);
+
+	/* =========================================================
+	   Authentication
+	========================================================= */
+
+	type AuthUser = { id?: string; display_name?: string; email?: string; avatar_url?: string; role?: string; expires_at?: string; };
+	type AuthResponse = { ok?: boolean; loggedIn?: boolean; user?: AuthUser | null; };
+	const authButton = document.querySelector<HTMLAnchorElement>("#nug-auth-button");
+	const updateAuthButton = async (): Promise<void> => {
+		if (!authButton) return;
+		try {
+			const response = await fetch("/me", { method: "GET", credentials: "same-origin", headers: { Accept: "application/json" } });
+			if (!response.ok) return;
+			const data = (await response.json()) as AuthResponse;
+			if (data.ok && data.loggedIn && data.user) {
+				const displayName = data.user.display_name || "アカウント";
+				const label = authButton.querySelector<HTMLElement>(".auth-button-label");
+				if (label) label.textContent = displayName;
+				authButton.href = "/account/";
+				authButton.setAttribute("aria-label", `${displayName}としてログイン中`);
+				authButton.setAttribute("title", `${displayName}としてログイン中`);
+				authButton.classList.add("is-logged-in");
+			}
+		} catch (error) { console.error("NUG Auth Error:", error); }
+	};
+	void updateAuthButton();
 
 	/* =========================================================
 	   Search
@@ -797,7 +835,7 @@ const isActive = (href: string): boolean => {
 		element.className = className;
 		element.textContent = text;
 
-		parent.append(element);
+		parent.appendChild(element);
 	};
 
 	const clearSearchResults = (): void => {
@@ -874,7 +912,7 @@ const isActive = (href: string): boolean => {
 				item.excerpt ?? ""
 			);
 
-		content.append(excerpt);
+		content.appendChild(excerpt);
 
 		const arrow =
 			document.createElement("span");
@@ -889,10 +927,8 @@ const isActive = (href: string): boolean => {
 
 		arrow.textContent = "→";
 
-		link.append(
-			content,
-			arrow
-		);
+		link.appendChild(content);
+		link.appendChild(arrow);
 
 		return link;
 	};
@@ -979,9 +1015,7 @@ const isActive = (href: string): boolean => {
 					"別のキーワードを試してください。"
 				);
 
-				searchResults.append(
-					empty
-				);
+				searchResults.appendChild(empty);
 
 				searchResults.classList.add(
 					"has-results"
@@ -995,9 +1029,7 @@ const isActive = (href: string): boolean => {
 			);
 
 			for (const item of items) {
-				searchResults.append(
-					createSearchResult(item)
-				);
+				searchResults.appendChild(createSearchResult(item));
 			}
 
 			searchResults.classList.add(
@@ -1040,9 +1072,7 @@ const isActive = (href: string): boolean => {
 				"ページを再読み込みして、もう一度お試しください。"
 			);
 
-			searchResults.append(
-				errorElement
-			);
+			searchResults.appendChild(errorElement);
 
 			searchResults.classList.add(
 				"has-results"
@@ -1553,6 +1583,17 @@ const isActive = (href: string): boolean => {
 		margin-left: 4px;
 		flex-shrink: 0;
 	}
+
+	.auth-button {
+		position: relative; display: flex; align-items: center; justify-content: center; gap: 7px; min-width: 92px; height: 40px; padding: 0 12px; border: 1px solid var(--header-grass); border-radius: 0; background: var(--header-accent); color: #fff; text-decoration: none; font-size: 12px; font-weight: 800; white-space: nowrap; box-shadow: 0 3px 0 var(--header-border-strong); transition: background var(--header-transition-fast), transform var(--header-transition-fast), box-shadow var(--header-transition-fast);
+	}
+	.auth-button:hover { background: var(--header-grass-light); transform: translateY(-1px); box-shadow: 0 4px 0 var(--header-border-strong); }
+	.auth-button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--header-border-strong); }
+	.auth-button:focus-visible { outline: 3px solid var(--header-gold-light); outline-offset: 2px; }
+	.auth-button.is-logged-in { background: var(--header-dirt); border-color: var(--header-dirt); }
+	.auth-button-icon { display: inline-flex; width: 18px; height: 18px; flex-shrink: 0; }
+	.auth-button-icon svg { width: 100%; height: 100%; }
+	.auth-button-label { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 	.icon-button {
 		position: relative;
@@ -2172,6 +2213,8 @@ const isActive = (href: string): boolean => {
 	========================================================= */
 
 	@media (max-width: 1023px) {
+		.auth-button-label { max-width: 90px; }
+
 		.header-inner {
 			width: calc(100% - 32px);
 			min-height: 60px;
@@ -2219,6 +2262,9 @@ const isActive = (href: string): boolean => {
 	}
 
 	@media (max-width: 767px) {
+		.auth-button { width: 38px; height: 38px; min-width: 38px; padding: 0; gap: 0; }
+		.auth-button-label { display: none; }
+
 		.header-inner {
 			width: calc(100% - 24px);
 		}

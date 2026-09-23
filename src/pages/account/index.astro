@@ -1,0 +1,1287 @@
+---
+const title = 'アカウント | NUGBASE';
+const description = 'NUGBASEのアカウント情報';
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1"
+		/>
+
+		<title>{title}</title>
+
+		<meta
+			name="description"
+			content={description}
+		/>
+
+		<style>
+			/* =========================================================
+			   NUGBASE Account
+			   ---------------------------------------------------------
+			   NUGBASE Design System
+			   - Minecraft-inspired block UI
+			   - Light / Dark
+			   - 8px grid
+			   - Hard bottom shadow
+			   - Grass-green accent
+			   ========================================================= */
+
+
+			/* =========================================================
+			   01. Design Tokens
+			   ========================================================= */
+
+			:root {
+				color-scheme: light;
+
+				--account-background: #eef2f3;
+				--account-surface: #ffffff;
+				--account-surface-soft: #f5f7f7;
+
+				--account-text: #202521;
+				--account-text-soft: #59615c;
+				--account-text-muted: #737b76;
+
+				--account-border: #cfd6d2;
+
+				--account-accent: #3f7d32;
+				--account-accent-dark: #2f6327;
+				--account-accent-soft: #e6f0e3;
+
+				--account-danger: #a9473f;
+				--account-danger-dark: #843832;
+				--account-danger-soft: #f6e7e5;
+
+				--account-shadow:
+					0 8px 0 rgba(29, 40, 32, 0.12),
+					0 16px 32px rgba(29, 40, 32, 0.10);
+
+				--account-shadow-small:
+					0 4px 0 rgba(29, 40, 32, 0.10),
+					0 10px 20px rgba(29, 40, 32, 0.08);
+
+				--account-radius: 8px;
+
+				--account-max-width: 760px;
+			}
+
+
+			/* =========================================================
+			   02. Dark Theme
+			   ========================================================= */
+
+			html[data-theme="dark"] {
+				color-scheme: dark;
+
+				--account-background: #111416;
+				--account-surface: #292e32;
+				--account-surface-soft: #33393d;
+
+				--account-text: #f1f4f2;
+				--account-text-soft: #c2cac5;
+				--account-text-muted: #9ca59f;
+
+				--account-border: #4b5357;
+
+				--account-accent: #72ad55;
+				--account-accent-dark: #5e9847;
+				--account-accent-soft: #263829;
+
+				--account-danger: #d66b61;
+				--account-danger-dark: #b8544c;
+				--account-danger-soft: #3b2827;
+
+				--account-shadow:
+					0 8px 0 rgba(0, 0, 0, 0.35),
+					0 18px 36px rgba(0, 0, 0, 0.28);
+
+				--account-shadow-small:
+					0 4px 0 rgba(0, 0, 0, 0.30),
+					0 10px 22px rgba(0, 0, 0, 0.22);
+			}
+
+
+			/* =========================================================
+			   03. Base
+			   ========================================================= */
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html {
+				min-height: 100%;
+				background: var(--account-background);
+			}
+
+			body {
+				margin: 0;
+				min-height: 100vh;
+
+				background:
+					linear-gradient(
+						180deg,
+						rgba(86, 126, 73, 0.12) 0,
+						transparent 280px
+					),
+					var(--account-background);
+
+				color: var(--account-text);
+
+				font-family:
+					system-ui,
+					-apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					"Yu Gothic",
+					"YuGothic",
+					"Hiragino Kaku Gothic ProN",
+					Meiryo,
+					sans-serif;
+
+				line-height: 1.7;
+
+				transition:
+					background-color 0.2s ease,
+					color 0.2s ease;
+			}
+
+			button,
+			a {
+				font: inherit;
+			}
+
+			button {
+				color: inherit;
+			}
+
+
+			/* =========================================================
+			   04. Page
+			   ========================================================= */
+
+			.account-page {
+				width: min(
+					calc(100% - 32px),
+					var(--account-max-width)
+				);
+
+				margin: 0 auto;
+
+				padding: 48px 0 64px;
+			}
+
+
+			/* =========================================================
+			   05. Top Navigation
+			   ========================================================= */
+
+			.account-topbar {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+
+				gap: 16px;
+
+				margin-bottom: 24px;
+			}
+
+			.back-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+
+				min-height: 40px;
+
+				padding: 8px 12px;
+
+				border: 1px solid var(--account-border);
+
+				background: var(--account-surface);
+
+				color: var(--account-text-soft);
+
+				text-decoration: none;
+
+				box-shadow: 0 3px 0 rgba(29, 40, 32, 0.08);
+
+				transition:
+					background-color 0.15s ease,
+					color 0.15s ease,
+					transform 0.15s ease,
+					box-shadow 0.15s ease;
+			}
+
+			.back-link:hover {
+				background: var(--account-accent-soft);
+				color: var(--account-accent-dark);
+
+				transform: translateY(-1px);
+
+				box-shadow:
+					0 4px 0 rgba(29, 40, 32, 0.10);
+			}
+
+			.back-link:active {
+				transform: translateY(2px);
+
+				box-shadow:
+					0 1px 0 rgba(29, 40, 32, 0.08);
+			}
+
+			.back-link-arrow {
+				font-size: 1.1rem;
+				line-height: 1;
+			}
+
+
+			/* =========================================================
+			   06. Account Card
+			   ========================================================= */
+
+			.account-card {
+				position: relative;
+
+				overflow: hidden;
+
+				border:
+					1px solid
+					var(--account-border);
+
+				border-radius: var(--account-radius);
+
+				background: var(--account-surface);
+
+				box-shadow: var(--account-shadow);
+			}
+
+			.account-card::before {
+				content: "";
+
+				position: absolute;
+
+				top: 0;
+				left: 0;
+				right: 0;
+
+				height: 6px;
+
+				background:
+					linear-gradient(
+						90deg,
+						var(--account-accent),
+						var(--account-accent-dark)
+					);
+			}
+
+			.account-card-inner {
+				padding: 40px;
+			}
+
+
+			/* =========================================================
+			   07. Heading
+			   ========================================================= */
+
+			.account-heading {
+				margin: 0 0 32px;
+			}
+
+			.account-heading-label {
+				display: inline-flex;
+				align-items: center;
+
+				min-height: 28px;
+
+				margin-bottom: 12px;
+
+				padding: 4px 10px;
+
+				border:
+					1px solid
+					color-mix(
+						in srgb,
+						var(--account-accent) 30%,
+						var(--account-border)
+					);
+
+				background: var(--account-accent-soft);
+
+				color: var(--account-accent-dark);
+
+				font-size: 0.78rem;
+				font-weight: 700;
+
+				letter-spacing: 0.08em;
+			}
+
+			.account-heading h1 {
+				margin: 0;
+
+				color: var(--account-text);
+
+				font-size: clamp(
+					1.8rem,
+					4vw,
+					2.4rem
+				);
+
+				font-weight: 800;
+
+				line-height: 1.25;
+
+				letter-spacing: -0.02em;
+			}
+
+			.account-heading p {
+				margin: 10px 0 0;
+
+				color: var(--account-text-muted);
+
+				font-size: 0.95rem;
+			}
+
+
+			/* =========================================================
+			   08. Loading / Error
+			   ========================================================= */
+
+			.account-status {
+				padding: 20px;
+
+				border:
+					1px solid
+					var(--account-border);
+
+				background: var(--account-surface-soft);
+
+				color: var(--account-text-soft);
+
+				text-align: center;
+			}
+
+			.account-error {
+				padding: 18px 20px;
+
+				border:
+					1px solid
+					var(--account-danger);
+
+				border-left:
+					5px solid
+					var(--account-danger);
+
+				background: var(--account-danger-soft);
+
+				color: var(--account-danger-dark);
+
+				line-height: 1.7;
+			}
+
+
+			/* =========================================================
+			   09. Profile
+			   ========================================================= */
+
+			.account-profile {
+				display: flex;
+				align-items: center;
+
+				gap: 20px;
+
+				padding: 24px;
+
+				border:
+					1px solid
+					var(--account-border);
+
+				background: var(--account-surface-soft);
+
+				box-shadow: var(--account-shadow-small);
+			}
+
+			.account-avatar {
+				display: block;
+
+				width: 80px;
+				height: 80px;
+
+				flex: 0 0 80px;
+
+				border:
+					3px solid
+					var(--account-accent);
+
+				border-radius: 8px;
+
+				object-fit: cover;
+
+				background:
+					linear-gradient(
+						135deg,
+						var(--account-accent-soft),
+						var(--account-surface)
+					);
+
+				box-shadow:
+					0 4px 0
+					color-mix(
+						in srgb,
+						var(--account-accent) 35%,
+						transparent
+					);
+			}
+
+			.account-info {
+				min-width: 0;
+			}
+
+			.account-info h2 {
+				margin: 0 0 4px;
+
+				color: var(--account-text);
+
+				font-size: 1.35rem;
+				font-weight: 800;
+
+				line-height: 1.4;
+
+				overflow-wrap: anywhere;
+			}
+
+			.account-info p {
+				margin: 0;
+
+				color: var(--account-text-muted);
+
+				font-size: 0.95rem;
+
+				overflow-wrap: anywhere;
+			}
+
+
+			/* =========================================================
+			   10. Account Details
+			   ========================================================= */
+
+			.account-details {
+				margin-top: 24px;
+
+				border:
+					1px solid
+					var(--account-border);
+
+				background: var(--account-surface);
+			}
+
+			.account-detail {
+				display: grid;
+
+				grid-template-columns:
+					minmax(100px, 0.35fr)
+					minmax(0, 1fr);
+
+				gap: 24px;
+
+				padding: 16px 20px;
+
+				border-bottom:
+					1px solid
+					var(--account-border);
+			}
+
+			.account-detail:last-child {
+				border-bottom: 0;
+			}
+
+			.account-detail span {
+				color: var(--account-text-muted);
+
+				font-size: 0.88rem;
+				font-weight: 600;
+			}
+
+			.account-detail strong {
+				color: var(--account-text);
+
+				font-size: 0.95rem;
+				font-weight: 700;
+
+				text-align: right;
+
+				overflow-wrap: anywhere;
+			}
+
+
+			/* =========================================================
+			   11. Actions
+			   ========================================================= */
+
+			.account-actions {
+				margin-top: 32px;
+
+				padding-top: 24px;
+
+				border-top:
+					1px solid
+					var(--account-border);
+			}
+
+			.account-actions-label {
+				margin: 0 0 12px;
+
+				color: var(--account-text-muted);
+
+				font-size: 0.82rem;
+				font-weight: 600;
+			}
+
+			.logout-button {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				width: 100%;
+
+				min-height: 48px;
+
+				padding: 12px 18px;
+
+				border:
+					1px solid
+					var(--account-danger-dark);
+
+				border-radius: 6px;
+
+				background: var(--account-danger);
+
+				color: #ffffff;
+
+				font-weight: 800;
+
+				cursor: pointer;
+
+				box-shadow:
+					0 4px 0
+					var(--account-danger-dark);
+
+				transition:
+					background-color 0.15s ease,
+					transform 0.15s ease,
+					box-shadow 0.15s ease,
+					opacity 0.15s ease;
+			}
+
+			.logout-button:hover {
+				background: var(--account-danger-dark);
+
+				transform: translateY(-1px);
+
+				box-shadow:
+					0 5px 0
+					color-mix(
+						in srgb,
+						var(--account-danger-dark) 90%,
+						#000000
+					);
+			}
+
+			.logout-button:active {
+				transform: translateY(3px);
+
+				box-shadow:
+					0 1px 0
+					var(--account-danger-dark);
+			}
+
+			.logout-button:disabled {
+				opacity: 0.65;
+
+				cursor: wait;
+
+				transform: none;
+
+				box-shadow:
+					0 2px 0
+					var(--account-danger-dark);
+			}
+
+			.logout-status {
+				margin: 12px 0 0;
+
+				color: var(--account-danger);
+
+				font-size: 0.9rem;
+
+				text-align: center;
+			}
+
+
+			/* =========================================================
+			   12. Focus
+			   ========================================================= */
+
+			a:focus-visible,
+			button:focus-visible {
+				outline:
+					3px solid
+					var(--account-accent);
+
+				outline-offset: 3px;
+			}
+
+
+			/* =========================================================
+			   13. Mobile
+			   ========================================================= */
+
+			@media (max-width: 600px) {
+				.account-page {
+					width: min(
+						calc(100% - 20px),
+						var(--account-max-width)
+					);
+
+					padding: 24px 0 40px;
+				}
+
+				.account-topbar {
+					margin-bottom: 16px;
+				}
+
+				.back-link {
+					min-height: 38px;
+
+					padding: 7px 10px;
+
+					font-size: 0.9rem;
+				}
+
+				.account-card-inner {
+					padding: 28px 18px;
+				}
+
+				.account-heading {
+					margin-bottom: 24px;
+				}
+
+				.account-heading h1 {
+					font-size: 1.8rem;
+				}
+
+				.account-heading p {
+					font-size: 0.9rem;
+				}
+
+				.account-profile {
+					align-items: flex-start;
+
+					gap: 16px;
+
+					padding: 18px;
+				}
+
+				.account-avatar {
+					width: 64px;
+					height: 64px;
+
+					flex-basis: 64px;
+				}
+
+				.account-info h2 {
+					font-size: 1.15rem;
+				}
+
+				.account-info p {
+					font-size: 0.85rem;
+				}
+
+				.account-details {
+					margin-top: 20px;
+				}
+
+				.account-detail {
+					display: flex;
+					flex-direction: column;
+
+					align-items: flex-start;
+
+					gap: 4px;
+
+					padding: 14px 16px;
+				}
+
+				.account-detail strong {
+					text-align: left;
+				}
+
+				.account-actions {
+					margin-top: 24px;
+
+					padding-top: 20px;
+				}
+			}
+
+
+			/* =========================================================
+			   14. Very Small Screens
+			   ========================================================= */
+
+			@media (max-width: 380px) {
+				.account-page {
+					width: min(
+						calc(100% - 16px),
+						var(--account-max-width)
+					);
+				}
+
+				.account-card-inner {
+					padding: 24px 14px;
+				}
+
+				.account-profile {
+					padding: 14px;
+				}
+
+				.account-avatar {
+					width: 56px;
+					height: 56px;
+
+					flex-basis: 56px;
+				}
+			}
+
+
+			/* =========================================================
+			   15. Reduced Motion
+			   ========================================================= */
+
+			@media (prefers-reduced-motion: reduce) {
+				*,
+				*::before,
+				*::after {
+					scroll-behavior: auto !important;
+
+					transition-duration: 0.01ms !important;
+					animation-duration: 0.01ms !important;
+					animation-iteration-count: 1 !important;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<main class="account-page">
+
+			<!-- =====================================================
+			     Top Navigation
+			     ===================================================== -->
+
+			<div class="account-topbar">
+				<a
+					href="/"
+					class="back-link"
+				>
+					<span
+						class="back-link-arrow"
+						aria-hidden="true"
+					>
+						←
+					</span>
+
+					<span>
+						NUGBASEへ戻る
+					</span>
+				</a>
+			</div>
+
+
+			<!-- =====================================================
+			     Account Card
+			     ===================================================== -->
+
+			<section
+				class="account-card"
+				aria-labelledby="account-title"
+			>
+				<div class="account-card-inner">
+
+					<!-- Heading -->
+
+					<header class="account-heading">
+						<div class="account-heading-label">
+							NUGBASE ACCOUNT
+						</div>
+
+						<h1 id="account-title">
+							アカウント
+						</h1>
+
+						<p>
+							NUGBASEのアカウント情報
+						</p>
+					</header>
+
+
+					<!-- Loading / Error -->
+
+					<div
+						id="account-status"
+						class="account-status"
+						role="status"
+						aria-live="polite"
+					>
+						読み込み中…
+					</div>
+
+
+					<!-- Account Content -->
+
+					<div
+						id="account-content"
+						hidden
+					>
+
+						<!-- Profile -->
+
+						<div class="account-profile">
+							<img
+								id="account-avatar"
+								class="account-avatar"
+								src=""
+								alt=""
+							/>
+
+							<div class="account-info">
+								<h2 id="account-name"></h2>
+
+								<p id="account-email"></p>
+							</div>
+						</div>
+
+
+						<!-- Details -->
+
+						<div class="account-details">
+							<div class="account-detail">
+								<span>
+									表示名
+								</span>
+
+								<strong
+									id="account-display-name"
+								></strong>
+							</div>
+
+							<div class="account-detail">
+								<span>
+									権限
+								</span>
+
+								<strong
+									id="account-role"
+								></strong>
+							</div>
+						</div>
+
+
+						<!-- Actions -->
+
+						<div class="account-actions">
+							<p class="account-actions-label">
+								アカウント操作
+							</p>
+
+							<button
+								id="logout-button"
+								class="logout-button"
+								type="button"
+							>
+								ログアウト
+							</button>
+
+							<p
+								id="logout-status"
+								class="logout-status"
+								role="status"
+								aria-live="polite"
+								hidden
+							></p>
+						</div>
+
+					</div>
+				</div>
+			</section>
+		</main>
+
+
+		<script>
+			/* =========================================================
+			   NUGBASE Theme
+			   ---------------------------------------------------------
+			   Reads the same localStorage key used by NUGBASE:
+			   nug-theme
+
+			   Supported values:
+			   - light
+			   - dark
+			   ========================================================= */
+
+			const applyTheme = (): void => {
+				const storedTheme =
+					localStorage.getItem("nug-theme");
+
+				if (
+					storedTheme === "light" ||
+					storedTheme === "dark"
+				) {
+					document.documentElement.dataset.theme =
+						storedTheme;
+
+					return;
+				}
+
+				const prefersDark =
+					window.matchMedia(
+						"(prefers-color-scheme: dark)",
+					).matches;
+
+				document.documentElement.dataset.theme =
+					prefersDark
+						? "dark"
+						: "light";
+			};
+
+			applyTheme();
+
+
+			/* =========================================================
+			   Auth Types
+			   ========================================================= */
+
+			type AuthUser = {
+				id?: string;
+				display_name?: string;
+				email?: string;
+				avatar_url?: string;
+				role?: string;
+				expires_at?: string;
+			};
+
+			type AuthResponse = {
+				ok?: boolean;
+				loggedIn?: boolean;
+				user?: AuthUser | null;
+			};
+
+
+			/* =========================================================
+			   Elements
+			   ========================================================= */
+
+			const status =
+				document.querySelector<HTMLElement>(
+					"#account-status",
+				);
+
+			const content =
+				document.querySelector<HTMLElement>(
+					"#account-content",
+				);
+
+			const avatar =
+				document.querySelector<HTMLImageElement>(
+					"#account-avatar",
+				);
+
+			const name =
+				document.querySelector<HTMLElement>(
+					"#account-name",
+				);
+
+			const email =
+				document.querySelector<HTMLElement>(
+					"#account-email",
+				);
+
+			const displayName =
+				document.querySelector<HTMLElement>(
+					"#account-display-name",
+				);
+
+			const role =
+				document.querySelector<HTMLElement>(
+					"#account-role",
+				);
+
+			const logoutButton =
+				document.querySelector<HTMLButtonElement>(
+					"#logout-button",
+				);
+
+			const logoutStatus =
+				document.querySelector<HTMLElement>(
+					"#logout-status",
+				);
+
+
+			/* =========================================================
+			   Error
+			   ========================================================= */
+
+			const showError = (
+				message: string,
+			): void => {
+				if (!status) return;
+
+				status.className =
+					"account-error";
+
+				status.textContent =
+					message;
+
+				status.hidden = false;
+			};
+
+
+			/* =========================================================
+			   Load Account
+			   ========================================================= */
+
+			const loadAccount =
+				async (): Promise<void> => {
+					try {
+						const response =
+							await fetch(
+								"/me",
+								{
+									method: "GET",
+
+									credentials:
+										"same-origin",
+
+									headers: {
+										Accept:
+											"application/json",
+									},
+								},
+							);
+
+						if (!response.ok) {
+							throw new Error(
+								`HTTP ${response.status}`,
+							);
+						}
+
+						const data =
+							(await response.json()) as AuthResponse;
+
+						if (
+							!data.ok ||
+							!data.loggedIn ||
+							!data.user
+						) {
+							window.location.href =
+								"/api/auth/google";
+
+							return;
+						}
+
+						const user =
+							data.user;
+
+						const userName =
+							user.display_name ||
+							"アカウント";
+
+
+						/* -------------------------
+						   Name
+						   ------------------------- */
+
+						if (name) {
+							name.textContent =
+								userName;
+						}
+
+
+						/* -------------------------
+						   Display Name
+						   ------------------------- */
+
+						if (displayName) {
+							displayName.textContent =
+								userName;
+						}
+
+
+						/* -------------------------
+						   Email
+						   ------------------------- */
+
+						if (email) {
+							email.textContent =
+								user.email ||
+								"";
+						}
+
+
+						/* -------------------------
+						   Role
+						   ------------------------- */
+
+						if (role) {
+							role.textContent =
+								user.role ||
+								"user";
+						}
+
+
+						/* -------------------------
+						   Avatar
+						   ------------------------- */
+
+						if (avatar) {
+							if (
+								user.avatar_url
+							) {
+								avatar.src =
+									user.avatar_url;
+
+								avatar.alt =
+									`${userName}のプロフィール画像`;
+
+								avatar.hidden =
+									false;
+							} else {
+								avatar.hidden =
+									true;
+							}
+						}
+
+
+						/* -------------------------
+						   Show Content
+						   ------------------------- */
+
+						if (status) {
+							status.hidden =
+								true;
+						}
+
+						if (content) {
+							content.hidden =
+								false;
+						}
+					} catch (error) {
+						console.error(
+							"NUG Account Error:",
+							error,
+						);
+
+						showError(
+							"アカウント情報を読み込めませんでした。",
+						);
+					}
+				};
+
+
+			/* =========================================================
+			   Logout
+			   ========================================================= */
+
+			logoutButton?.addEventListener(
+				"click",
+				async () => {
+					if (!logoutButton) {
+						return;
+					}
+
+					logoutButton.disabled =
+						true;
+
+					logoutButton.textContent =
+						"ログアウト中…";
+
+					if (logoutStatus) {
+						logoutStatus.hidden =
+							true;
+
+						logoutStatus.textContent =
+							"";
+					}
+
+					try {
+						const response =
+							await fetch(
+								"/api/auth/logout",
+								{
+									method: "POST",
+
+									credentials:
+										"same-origin",
+
+									headers: {
+										Accept:
+											"application/json",
+									},
+								},
+							);
+
+						if (!response.ok) {
+							throw new Error(
+								`HTTP ${response.status}`,
+							);
+						}
+
+						const data =
+							(await response.json()) as {
+								ok?: boolean;
+							};
+
+						if (!data.ok) {
+							throw new Error(
+								"Logout was not successful.",
+							);
+						}
+
+						window.location.href =
+							"/";
+					} catch (error) {
+						console.error(
+							"NUG Logout Error:",
+							error,
+						);
+
+						if (logoutStatus) {
+							logoutStatus.textContent =
+								"ログアウトに失敗しました。もう一度お試しください。";
+
+							logoutStatus.hidden =
+								false;
+						}
+
+						logoutButton.disabled =
+							false;
+
+						logoutButton.textContent =
+							"ログアウト";
+					}
+				},
+			);
+
+
+			/* =========================================================
+			   Initialize
+			   ========================================================= */
+
+			void loadAccount();
+		</script>
+	</body>
+</html>

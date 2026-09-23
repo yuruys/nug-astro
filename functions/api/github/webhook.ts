@@ -32,6 +32,10 @@ interface PullRequestPayload {
 	};
 }
 
+/* =========================================================
+   JSON Response
+   ========================================================= */
+
 function json(
 	data: unknown,
 	status = 200,
@@ -46,8 +50,15 @@ function json(
 	});
 }
 
+/* =========================================================
+   Hexadecimal → Uint8Array
+   ========================================================= */
+
 function hexToBytes(hex: string): Uint8Array {
-	if (!/^[0-9a-fA-F]+$/.test(hex) || hex.length % 2 !== 0) {
+	if (
+		!/^[0-9a-fA-F]+$/.test(hex) ||
+		hex.length % 2 !== 0
+	) {
 		throw new Error('Invalid hexadecimal signature.');
 	}
 
@@ -62,6 +73,10 @@ function hexToBytes(hex: string): Uint8Array {
 
 	return bytes;
 }
+
+/* =========================================================
+   Constant-Time Comparison
+   ========================================================= */
 
 function constantTimeEqual(
 	a: Uint8Array,
@@ -79,6 +94,10 @@ function constantTimeEqual(
 
 	return result === 0;
 }
+
+/* =========================================================
+   GitHub Webhook Signature Verification
+   ========================================================= */
 
 async function verifySignature(
 	payload: string,
@@ -112,11 +131,12 @@ async function verifySignature(
 		['sign'],
 	);
 
-	const expectedSignatureBuffer = await crypto.subtle.sign(
-		'HMAC',
-		key,
-		new TextEncoder().encode(payload),
-	);
+	const expectedSignatureBuffer =
+		await crypto.subtle.sign(
+			'HMAC',
+			key,
+			new TextEncoder().encode(payload),
+		);
 
 	const expectedSignature = new Uint8Array(
 		expectedSignatureBuffer,
@@ -128,6 +148,10 @@ async function verifySignature(
 	);
 }
 
+/* =========================================================
+   POST /api/github/webhook
+   ========================================================= */
+
 export const onRequestPost = async ({
 	request,
 	env,
@@ -135,25 +159,33 @@ export const onRequestPost = async ({
 	request: Request;
 	env: Env;
 }): Promise<Response> => {
-	if (!env.DB) {
+	/*
+	 * -------------------------------------------------------
+	 * 01. Webhook Secret確認
+	 * -------------------------------------------------------
+	 *
+	 * pingも署名検証が必要なので、
+	 * Secretだけは最初に確認する。
+	 *
+	 * D1はここでは確認しない。
+	 * GitHubのping処理にはD1が不要だから。
+	 */
+	if (!env.GITHUB_WEBHOOK_SECRET) {
 		return json(
 			{
 				ok: false,
-				error: 'Database is not configured',
+				error:
+					'GitHub webhook secret is not configured',
 			},
 			500,
 		);
 	}
 
-	if (!env.GITHUB_WEBHOOK_SECRET) {
-		return json(
-			{
-				ok: false,
-				error: 'GitHub webhook secret is not configured',
-			},
-			500,
-		);
-	}
+	/*
+	 * -------------------------------------------------------
+	 * 02. GitHub Signature取得
+	 * -------------------------------------------------------
+	 */
 
 	const signature = request.headers.get(
 		'x-hub-signature-256',
@@ -163,29 +195,70 @@ export const onRequestPost = async ({
 		return json(
 			{
 				ok: false,
-				error: 'Missing GitHub webhook signature',
+				error:
+					'Missing GitHub webhook signature',
 			},
 			401,
 		);
 	}
 
+	/*
+	 * -------------------------------------------------------
+	 * 03. Request Body取得
+	 * -------------------------------------------------------
+	 *
+	 * GitHub署名は生のRequest Bodyに対して計算されている。
+	 * JSON.parse()する前の文字列をそのまま使用する。
+	 */
+
 	const payloadText = await request.text();
 
-	const validSignature = await verifySignature(
-		payloadText,
-		signature,
-		env.GITHUB_WEBHOOK_SECRET,
-	);
+	/*
+	 * -------------------------------------------------------
+	 * 04. Signature検証
+	 * -------------------------------------------------------
+	 */
+
+	let validSignature = false;
+
+	try {
+		validSignature = await verifySignature(
+			payloadText,
+			signature,
+			env.GITHUB_WEBHOOK_SECRET,
+		);
+	} catch (error) {
+		console.error(
+			'GitHub webhook signature verification failed:',
+			error,
+		);
+
+		return json(
+			{
+				ok: false,
+				error:
+					'GitHub webhook signature verification failed',
+			},
+			500,
+		);
+	}
 
 	if (!validSignature) {
 		return json(
 			{
 				ok: false,
-				error: 'Invalid GitHub webhook signature',
+				error:
+					'Invalid GitHub webhook signature',
 			},
 			401,
 		);
 	}
+
+	/*
+	 * -------------------------------------------------------
+	 * 05. JSON Parse
+	 * -------------------------------------------------------
+	 */
 
 	let payload: PullRequestPayload;
 
@@ -203,71 +276,130 @@ export const onRequestPost = async ({
 		);
 	}
 
+	/*
+	 * -------------------------------------------------------
+	 * 06. GitHub Event判定
+	 * -------------------------------------------------------
+	 */
+
 	const event = request.headers.get(
 		'x-github-event',
 	);
 
 	/*
-	 * GitHub webhook registration時に送られるping。
-	 * Secretの検証まで通っていれば正常。
+	 * -------------------------------------------------------
+	 * 07. GitHub ping
+	 * -------------------------------------------------------
+	 *
+	 * Webhook登録時・再送時などにGitHubから送られる。
+	 *
+	 * ここではD1を一切使用しない。
 	 */
 	if (event === 'ping') {
 		return json({
 			ok: true,
-			message: 'GitHub webhook ping received',
+			message:
+				'GitHub webhook ping received',
 		});
 	}
 
 	/*
-	 * pull_request以外のイベントは無視。
+	 * -------------------------------------------------------
+	 * 08. pull_request以外は無視
+	 * -------------------------------------------------------
 	 */
+
 	if (event !== 'pull_request') {
 		return json({
 			ok: true,
-			message: `Ignored GitHub event: ${event ?? 'unknown'}`,
+			message:
+				`Ignored GitHub event: ${
+					event ?? 'unknown'
+				}`,
 		});
 	}
 
 	/*
-	 * PRがclosedされたイベントだけ処理。
+	 * -------------------------------------------------------
+	 * 09. pull_requestイベントではD1が必要
+	 * -------------------------------------------------------
 	 */
+
+	if (!env.DB) {
+		return json(
+			{
+				ok: false,
+				error: 'Database is not configured',
+			},
+			500,
+		);
+	}
+
+	/*
+	 * -------------------------------------------------------
+	 * 10. closedイベントだけ処理
+	 * -------------------------------------------------------
+	 */
+
 	if (payload.action !== 'closed') {
 		return json({
 			ok: true,
-			message: `Ignored pull_request action: ${
-				payload.action ?? 'unknown'
-			}`,
+			message:
+				`Ignored pull_request action: ${
+					payload.action ?? 'unknown'
+				}`,
 		});
 	}
 
 	/*
-	 * closedでもmergeされていない場合は、
-	 * D1の状態を変更しない。
+	 * -------------------------------------------------------
+	 * 11. Mergeされているか確認
+	 * -------------------------------------------------------
+	 *
+	 * closedでもmerged !== trueなら、
+	 * 単純にPRが閉じられただけなので、
+	 * D1の状態は変更しない。
 	 */
+
 	if (payload.pull_request?.merged !== true) {
 		return json({
 			ok: true,
-			message: 'Pull request was closed without being merged',
+			message:
+				'Pull request was closed without being merged',
 		});
 	}
 
 	/*
-	 * 対象リポジトリを厳密に確認。
+	 * -------------------------------------------------------
+	 * 12. Repository確認
+	 * -------------------------------------------------------
 	 */
-	const repository = payload.repository?.full_name;
-	const expectedRepository = 'yuruys/nug-astro';
+
+	const repository =
+		payload.repository?.full_name;
+
+	const expectedRepository =
+		'yuruys/nug-astro';
 
 	if (repository !== expectedRepository) {
 		return json(
 			{
 				ok: false,
-				error: 'Unexpected GitHub repository',
+				error:
+					'Unexpected GitHub repository',
 			},
 			400,
 		);
 	}
 
-	const pullRequest = payload.pull_request;
+	/*
+	 * -------------------------------------------------------
+	 * 13. Pull Request情報取得
+	 * -------------------------------------------------------
+	 */
+
+	const pullRequest =
+		payload.pull_request;
 
 	const headRepository =
 		pullRequest.head?.repo?.full_name;
@@ -282,89 +414,128 @@ export const onRequestPost = async ({
 		pullRequest.head?.ref;
 
 	/*
-	 * PRのhead側も同じリポジトリであることを確認。
+	 * -------------------------------------------------------
+	 * 14. Head Repository確認
+	 * -------------------------------------------------------
+	 *
+	 * 外部ForkからのPRを対象外にする。
 	 */
-	if (headRepository !== expectedRepository) {
+
+	if (
+		headRepository !==
+		expectedRepository
+	) {
 		return json(
 			{
 				ok: false,
-				error: 'Unexpected pull request head repository',
+				error:
+					'Unexpected pull request head repository',
 			},
 			400,
 		);
 	}
 
 	/*
-	 * mainへのmergeだけを対象にする。
+	 * -------------------------------------------------------
+	 * 15. mainへのMergeか確認
+	 * -------------------------------------------------------
 	 */
+
 	if (
-		baseRepository !== expectedRepository ||
+		baseRepository !==
+			expectedRepository ||
 		baseBranch !== 'main'
 	) {
 		return json(
 			{
 				ok: false,
-				error: 'Pull request was not merged into main',
+				error:
+					'Pull request was not merged into main',
 			},
 			400,
 		);
 	}
 
 	/*
-	 * NUGBACEのPublish APIが作成した
+	 * -------------------------------------------------------
+	 * 16. NUGBACE Publish Branch確認
+	 * -------------------------------------------------------
+	 *
+	 * Publish APIが作成するBranch:
+	 *
 	 * nugbase/publish/<editRequestId>
-	 * というブランチだけを対象にする。
+	 *
+	 * これ以外の通常のGitHub PRは無視する。
 	 */
-	if (!branchName?.startsWith('nugbase/publish/')) {
+
+	if (
+		!branchName?.startsWith(
+			'nugbase/publish/',
+		)
+	) {
 		return json({
 			ok: true,
 			message:
 				'Merged PR is not a NUGBASE publish request',
-			branch: branchName ?? null,
+			branch:
+				branchName ?? null,
 		});
 	}
 
-	const editRequestId = branchName.slice(
-		'nugbase/publish/'.length,
-	);
+	/*
+	 * -------------------------------------------------------
+	 * 17. Edit Request ID取得
+	 * -------------------------------------------------------
+	 */
+
+	const editRequestId =
+		branchName.slice(
+			'nugbase/publish/'.length,
+		);
 
 	if (!editRequestId) {
 		return json(
 			{
 				ok: false,
-				error: 'Missing edit request ID in branch name',
+				error:
+					'Missing edit request ID in branch name',
 			},
 			400,
 		);
 	}
 
 	/*
-	 * D1から対象Edit Requestを取得。
+	 * -------------------------------------------------------
+	 * 18. D1からEdit Request取得
+	 * -------------------------------------------------------
 	 */
-	const editRequest = await env.DB.prepare(
-		`
-		SELECT
-			id,
-			page_id,
-			revision_id,
-			status
-		FROM edit_requests
-		WHERE id = ?
-		`,
-	)
-		.bind(editRequestId)
-		.first<{
-			id: string;
-			page_id: string;
-			revision_id: string;
-			status: string;
-		}>();
+
+	const editRequest =
+		await env.DB.prepare(
+			`
+			SELECT
+				id,
+				page_id,
+				revision_id,
+				status
+			FROM edit_requests
+			WHERE id = ?
+			`,
+		)
+			.bind(editRequestId)
+			.first<{
+				id: string;
+				page_id: string;
+				revision_id: string;
+				status: string;
+			}>();
 
 	if (!editRequest) {
 		return json(
 			{
 				ok: false,
-				error: 'Edit request not found',
+				error:
+					'Edit request not found',
 				editRequestId,
 			},
 			404,
@@ -372,65 +543,120 @@ export const onRequestPost = async ({
 	}
 
 	/*
-	 * Webhookは再送される可能性があるため、
-	 * published済みなら成功として扱う。
+	 * -------------------------------------------------------
+	 * 19. 既にPublishedなら成功扱い
+	 * -------------------------------------------------------
+	 *
+	 * GitHub Webhookは再送される可能性がある。
+	 * そのためpublished済みなら冪等的に成功を返す。
 	 */
-	if (editRequest.status === 'published') {
+
+	if (
+		editRequest.status ===
+		'published'
+	) {
 		return json({
 			ok: true,
-			message: 'Edit request is already published',
+			message:
+				'Edit request is already published',
 			editRequestId,
 			status: 'published',
 		});
 	}
 
 	/*
-	 * Publish APIでpublishingになっているものだけ
+	 * -------------------------------------------------------
+	 * 20. publishing状態か確認
+	 * -------------------------------------------------------
+	 *
+	 * Publish APIによって
+	 *
+	 * approved → publishing
+	 *
+	 * となったEdit Requestだけを
 	 * publishedへ進める。
 	 */
-	if (editRequest.status !== 'publishing') {
+
+	if (
+		editRequest.status !==
+		'publishing'
+	) {
 		return json(
 			{
 				ok: false,
 				error:
 					'Edit request is not in publishing state',
 				editRequestId,
-				status: editRequest.status,
+				status:
+					editRequest.status,
 			},
 			409,
 		);
 	}
 
-	const now = new Date().toISOString();
+	/*
+	 * -------------------------------------------------------
+	 * 21. Audit Metadata
+	 * -------------------------------------------------------
+	 */
+
+	const now =
+		new Date().toISOString();
 
 	const pullRequestNumber =
 		pullRequest.number ?? null;
 
 	const mergeCommitSha =
-		pullRequest.merge_commit_sha ?? null;
+		pullRequest.merge_commit_sha ??
+		null;
 
-	const auditMetadata = JSON.stringify({
-		pull_request_number: pullRequestNumber,
-		merge_commit_sha: mergeCommitSha,
-		branch: branchName,
-		repository,
-	});
+	const auditMetadata =
+		JSON.stringify({
+			pull_request_number:
+				pullRequestNumber,
+
+			merge_commit_sha:
+				mergeCommitSha,
+
+			branch:
+				branchName,
+
+			repository,
+		});
 
 	/*
-	 * D1を一括更新。
+	 * -------------------------------------------------------
+	 * 22. D1 Finalize
+	 * -------------------------------------------------------
 	 *
-	 * 1. edit_request → published
-	 * 2. wiki_page → published_revision_id更新
-	 * 3. audit_logsへ記録
+	 * 1. edit_request
+	 *    publishing → published
+	 *
+	 * 2. wiki_pages
+	 *    published_revision_id更新
+	 *
+	 * 3. audit_logs
+	 *    published記録
+	 *
+	 * D1 batch()を使用するため、
+	 * これらを1つのトランザクションとして処理する。
 	 */
+
 	try {
 		await env.DB.batch([
+			/*
+			 * Edit Request
+			 */
 			env.DB.prepare(
 				`
 				UPDATE edit_requests
 				SET
 					status = 'published',
-					reviewed_at = COALESCE(reviewed_at, ?)
+					reviewed_at =
+						COALESCE(
+							reviewed_at,
+							?
+						)
 				WHERE id = ?
 				  AND status = 'publishing'
 				`,
@@ -439,6 +665,9 @@ export const onRequestPost = async ({
 				editRequestId,
 			),
 
+			/*
+			 * Wiki Page
+			 */
 			env.DB.prepare(
 				`
 				UPDATE wiki_pages
@@ -453,6 +682,9 @@ export const onRequestPost = async ({
 				editRequest.page_id,
 			),
 
+			/*
+			 * Audit Log
+			 */
 			env.DB.prepare(
 				`
 				INSERT INTO audit_logs (
@@ -464,7 +696,15 @@ export const onRequestPost = async ({
 					metadata,
 					created_at
 				)
-				VALUES (?, NULL, ?, ?, ?, ?, ?)
+				VALUES (
+					?,
+					NULL,
+					?,
+					?,
+					?,
+					?,
+					?
+				)
 				`,
 			).bind(
 				crypto.randomUUID(),
@@ -491,14 +731,29 @@ export const onRequestPost = async ({
 		);
 	}
 
+	/*
+	 * -------------------------------------------------------
+	 * 23. 完了
+	 * -------------------------------------------------------
+	 */
+
 	return json({
 		ok: true,
-		message: 'Edit request published successfully',
+		message:
+			'Edit request published successfully',
+
 		editRequestId,
+
 		status: 'published',
-		pageId: editRequest.page_id,
-		revisionId: editRequest.revision_id,
+
+		pageId:
+			editRequest.page_id,
+
+		revisionId:
+			editRequest.revision_id,
+
 		pullRequestNumber,
+
 		mergeCommitSha,
 	});
 };
