@@ -594,6 +594,29 @@ export const onRequestPost = async ({
 		);
 	}
 
+	const revision =
+		await env.DB.prepare(
+			`
+			SELECT page_id
+			FROM wiki_revisions
+			WHERE id = ?
+			LIMIT 1
+			`,
+		)
+			.bind(editRequest.revision_id)
+			.first<{ page_id: string }>();
+
+	if (!revision || revision.page_id !== editRequest.page_id) {
+		return json(
+			{
+				ok: false,
+				error: 'Edit request revision does not belong to its Wiki page',
+				editRequestId,
+			},
+			409,
+		);
+	}
+
 	/*
 	 * -------------------------------------------------------
 	 * 21. Audit Metadata
@@ -643,7 +666,7 @@ export const onRequestPost = async ({
 	 */
 
 	try {
-		await env.DB.batch([
+		const results = await env.DB.batch<D1ExecResult>([
 			/*
 			 * Edit Request
 			 */
@@ -675,6 +698,7 @@ export const onRequestPost = async ({
 					published_revision_id = ?,
 					updated_at = ?
 				WHERE id = ?
+				  AND changes() = 1
 				`,
 			).bind(
 				editRequest.revision_id,
@@ -683,20 +707,21 @@ export const onRequestPost = async ({
 			),
 
 			/*
-			 * Audit Log
+			 * Only record the audit event when this batch won
+			 * the publishing → published transition.
 			 */
 			env.DB.prepare(
 				`
 				INSERT INTO audit_logs (
 					id,
-					user_id,
-					action,
-					target_type,
-					target_id,
-					metadata,
-					created_at
+				user_id,
+				action,
+				target_type,
+				target_id,
+				metadata,
+				created_at
 				)
-				VALUES (
+				SELECT
 					?,
 					NULL,
 					?,
@@ -704,7 +729,7 @@ export const onRequestPost = async ({
 					?,
 					?,
 					?
-				)
+				WHERE changes() = 1
 				`,
 			).bind(
 				crypto.randomUUID(),
@@ -715,6 +740,15 @@ export const onRequestPost = async ({
 				now,
 			),
 		]);
+
+		if (Number(results[0]?.meta?.changes ?? 0) !== 1) {
+			return json({
+				ok: true,
+				message: 'Edit request was already finalized',
+				editRequestId,
+				status: 'published',
+			});
+		}
 	} catch (error) {
 		console.error(
 			'Failed to finalize published edit request:',

@@ -10,834 +10,2048 @@
 	<title>NUGBASE 管理画面</title>
 
 	<style>
-		:root {
-			color-scheme: dark;
+	/* =========================================================
+	   NUGBASE Admin Design System
+	   ---------------------------------------------------------
+	   Visual direction:
+	   - Minecraft-inspired original UI
+	   - Block / voxel geometry
+	   - 8px spacing grid
+	   - Grass / stone / sky inspired palette
+	   - Strong top-left light
+	   - Hard lower shadow
+	   - Minimal rounding
+	   - High readability
+	   ========================================================= */
 
-			--bg: #111315;
-			--bg-soft: #171a1d;
-			--panel: #1d2125;
-			--panel-hover: #24292e;
-			--border: #343a40;
 
-			--text: #f1f3f5;
-			--text-soft: #adb5bd;
-			--text-muted: #868e96;
+	/* =========================================================
+	   01. Design Tokens
+	   ========================================================= */
 
-			--accent: #7cc576;
-			--accent-soft: rgba(124, 197, 118, 0.12);
+	:root {
+		color-scheme: dark;
 
-			--warning: #e6b450;
-			--warning-soft: rgba(230, 180, 80, 0.12);
+		/* Background */
+		--bg: #111416;
+		--bg-soft: #181c1f;
+		--bg-elevated: #202529;
 
-			--danger: #e57373;
-			--danger-soft: rgba(229, 115, 115, 0.12);
+		/* Surface */
+		--panel: #2b3034;
+		--panel-soft: #32383c;
+		--panel-hover: #383f43;
 
-			--info: #74a9df;
-			--info-soft: rgba(116, 169, 223, 0.12);
+		/* Border */
+		--border: #4a5155;
+		--border-strong: #5b6469;
 
-			--purple: #b58de8;
-			--purple-soft: rgba(181, 141, 232, 0.12);
+		/* Text */
+		--text: #f1f4f2;
+		--text-soft: #c3cac6;
+		--text-muted: #929b96;
 
-			--radius: 8px;
-		}
+		/* NUGBASE green */
+		--accent: #72ad55;
+		--accent-dark: #568f43;
+		--accent-light: #8bc96d;
+		--accent-soft: rgba(114, 173, 85, 0.14);
 
-		* {
-			box-sizing: border-box;
-		}
+		/* Status */
+		--warning: #e2b85e;
+		--warning-dark: #ad8433;
+		--warning-soft: rgba(226, 184, 94, 0.14);
 
-		html,
-		body {
-			margin: 0;
-			min-height: 100%;
-		}
+		--danger: #dc746b;
+		--danger-dark: #a94e47;
+		--danger-soft: rgba(220, 116, 107, 0.14);
 
-		body {
-			background:
-				linear-gradient(
-					180deg,
-					#111315 0%,
-					#15181b 100%
+		--info: #7ca9d8;
+		--info-dark: #587fae;
+		--info-soft: rgba(124, 169, 216, 0.14);
+
+		--purple: #b594df;
+		--purple-dark: #8060aa;
+		--purple-soft: rgba(181, 148, 223, 0.14);
+
+		/* Geometry */
+		--radius: 6px;
+		--radius-small: 4px;
+
+		/* Shadows */
+		--shadow-block:
+			0 6px 0 rgba(0, 0, 0, 0.28),
+			0 14px 28px rgba(0, 0, 0, 0.22);
+
+		--shadow-card:
+			0 4px 0 rgba(0, 0, 0, 0.24),
+			0 10px 22px rgba(0, 0, 0, 0.18);
+
+		--shadow-small:
+			0 3px 0 rgba(0, 0, 0, 0.20);
+
+		/* Layout */
+		--content-width: 1200px;
+	}
+
+
+	/* =========================================================
+	   02. Global
+	   ========================================================= */
+
+	* {
+		box-sizing: border-box;
+	}
+
+	html,
+	body {
+		margin: 0;
+		min-height: 100%;
+	}
+
+	html {
+		background: var(--bg);
+	}
+
+	body {
+		background:
+			/* Soft Minecraft-style sky light */
+			linear-gradient(
+				180deg,
+				rgba(93, 130, 91, 0.12) 0,
+				rgba(93, 130, 91, 0.04) 240px,
+				transparent 520px
+			),
+			/* Very subtle terrain-like layers */
+			linear-gradient(
+				180deg,
+				#111416 0%,
+				#14181b 52%,
+				#101315 100%
+			);
+
+		color: var(--text);
+
+		font-family:
+			system-ui,
+			-apple-system,
+			BlinkMacSystemFont,
+			"Segoe UI",
+			"Yu Gothic",
+			"YuGothic",
+			"Hiragino Kaku Gothic ProN",
+			Meiryo,
+			sans-serif;
+
+		line-height: 1.6;
+	}
+
+	button,
+	a {
+		font: inherit;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	[hidden] {
+		display: none !important;
+	}
+
+
+	/* =========================================================
+	   03. Focus
+	   ========================================================= */
+
+	a:focus-visible,
+	button:focus-visible {
+		outline:
+			3px solid
+			var(--accent-light);
+
+		outline-offset: 3px;
+	}
+
+
+	/* =========================================================
+	   04. Layout
+	   ========================================================= */
+
+	.admin-shell {
+		min-height: 100vh;
+	}
+
+	.admin-header {
+		position: sticky;
+		top: 0;
+		z-index: 20;
+
+		border-bottom:
+			1px solid
+			var(--border);
+
+		background:
+			rgba(17, 20, 22, 0.94);
+
+		backdrop-filter: blur(14px);
+
+		box-shadow:
+			0 4px 18px rgba(0, 0, 0, 0.18);
+	}
+
+	.admin-header-inner {
+		width:
+			min(
+				var(--content-width),
+				calc(100% - 32px)
+			);
+
+		min-height: 72px;
+
+		margin: 0 auto;
+
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		gap: 24px;
+	}
+
+
+	/* =========================================================
+	   05. NUGBASE Brand
+	   ========================================================= */
+
+	.brand {
+		display: flex;
+		align-items: center;
+
+		gap: 12px;
+
+		min-width: 0;
+	}
+
+	.brand-mark {
+		position: relative;
+
+		display: grid;
+		place-items: center;
+
+		width: 42px;
+		height: 42px;
+
+		flex: 0 0 42px;
+
+		border:
+			1px solid
+			var(--accent-dark);
+
+		border-radius: var(--radius-small);
+
+		background:
+			linear-gradient(
+				145deg,
+				#6ea95a 0%,
+				#477c3b 58%,
+				#38642f 100%
+			);
+
+		color: #ffffff;
+
+		font-size: 12px;
+		font-weight: 900;
+
+		letter-spacing: 0.04em;
+
+		box-shadow:
+			inset 0 2px rgba(255, 255, 255, 0.18),
+			inset 0 -3px rgba(0, 0, 0, 0.14),
+			0 4px 0 rgba(0, 0, 0, 0.30);
+	}
+
+	.brand-mark::after {
+		content: "";
+
+		position: absolute;
+
+		top: 0;
+		left: 0;
+
+		width: 100%;
+		height: 3px;
+
+		background:
+			rgba(255, 255, 255, 0.18);
+	}
+
+	.brand-text {
+		min-width: 0;
+	}
+
+	.brand-title {
+		color: var(--text);
+
+		font-size: 15px;
+		font-weight: 850;
+
+		letter-spacing: 0.02em;
+
+		line-height: 1.3;
+	}
+
+	.brand-subtitle {
+		margin-top: 2px;
+
+		color: var(--text-muted);
+
+		font-size: 10px;
+		font-weight: 600;
+
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+
+	/* =========================================================
+	   06. Header Actions
+	   ========================================================= */
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+
+		gap: 8px;
+
+		flex-shrink: 0;
+	}
+
+	.header-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+
+		min-height: 38px;
+
+		padding:
+			0 13px;
+
+		border:
+			1px solid
+			var(--border);
+
+		border-radius:
+			var(--radius-small);
+
+		background:
+			linear-gradient(
+				180deg,
+				var(--panel-soft),
+				var(--panel)
+			);
+
+		color: var(--text-soft);
+
+		font-size: 12px;
+		font-weight: 750;
+
+		box-shadow:
+			var(--shadow-small);
+
+		transition:
+			background 0.15s ease,
+			border-color 0.15s ease,
+			color 0.15s ease,
+			transform 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.header-link:hover {
+		background:
+			var(--panel-hover);
+
+		border-color:
+			var(--border-strong);
+
+		color:
+			var(--text);
+
+		transform:
+			translateY(-1px);
+
+		box-shadow:
+			0 4px 0 rgba(0, 0, 0, 0.24);
+	}
+
+	.header-link:active {
+		transform:
+			translateY(2px);
+
+		box-shadow:
+			0 1px 0 rgba(0, 0, 0, 0.22);
+	}
+
+
+	/* =========================================================
+	   07. Main
+	   ========================================================= */
+
+	.admin-main {
+		width:
+			min(
+				var(--content-width),
+				calc(100% - 32px)
+			);
+
+		margin: 0 auto;
+
+		padding:
+			48px 0 80px;
+	}
+
+
+	/* =========================================================
+	   08. Page Heading
+	   ========================================================= */
+
+	.page-heading {
+		position: relative;
+
+		margin-bottom: 32px;
+
+		padding-left: 16px;
+	}
+
+	.page-heading::before {
+		content: "";
+
+		position: absolute;
+
+		top: 2px;
+		bottom: 2px;
+		left: 0;
+
+		width: 5px;
+
+		background:
+			linear-gradient(
+				180deg,
+				var(--accent-light),
+				var(--accent-dark)
+			);
+
+		box-shadow:
+			2px 0 0 rgba(0, 0, 0, 0.20);
+	}
+
+	.page-heading-row {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+
+		gap: 24px;
+	}
+
+	.page-heading h1 {
+		margin: 0;
+
+		color: var(--text);
+
+		font-size:
+			clamp(
+				26px,
+				4vw,
+				38px
+			);
+
+		font-weight: 900;
+
+		line-height: 1.2;
+
+		letter-spacing:
+			-0.025em;
+	}
+
+	.page-heading p {
+		margin: 8px 0 0;
+
+		color: var(--text-soft);
+
+		font-size: 13px;
+	}
+
+
+	/* =========================================================
+	   09. Refresh Button
+	   ========================================================= */
+
+	.refresh-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+
+		min-height: 40px;
+
+		padding:
+			0 14px;
+
+		border:
+			1px solid
+			var(--border);
+
+		border-radius:
+			var(--radius-small);
+
+		background:
+			var(--panel);
+
+		color:
+			var(--text-soft);
+
+		font-size: 12px;
+		font-weight: 800;
+
+		cursor: pointer;
+
+		box-shadow:
+			var(--shadow-small);
+
+		transition:
+			background 0.15s ease,
+			border-color 0.15s ease,
+			color 0.15s ease,
+			transform 0.15s ease,
+			box-shadow 0.15s ease,
+			opacity 0.15s ease;
+	}
+
+	.refresh-button:hover {
+		background:
+			var(--panel-hover);
+
+		border-color:
+			var(--border-strong);
+
+		color:
+			var(--text);
+
+		transform:
+			translateY(-1px);
+	}
+
+	.refresh-button:active {
+		transform:
+			translateY(2px);
+
+		box-shadow:
+			0 1px 0 rgba(0, 0, 0, 0.20);
+	}
+
+	.refresh-button:disabled {
+		opacity: 0.55;
+
+		cursor: wait;
+
+		transform: none;
+	}
+
+
+	/* =========================================================
+	   10. Dashboard Cards
+	   ========================================================= */
+
+	.dashboard-grid {
+		display: grid;
+
+		grid-template-columns:
+			repeat(
+				4,
+				minmax(0, 1fr)
+			);
+
+		gap: 16px;
+
+		margin-bottom: 44px;
+	}
+
+	.dashboard-card {
+		position: relative;
+
+		min-height: 156px;
+
+		padding: 20px;
+
+		overflow: hidden;
+
+		border:
+			1px solid
+			var(--border);
+
+		border-radius:
+			var(--radius);
+
+		background:
+			linear-gradient(
+				145deg,
+				rgba(255, 255, 255, 0.045),
+				rgba(255, 255, 255, 0)
+			),
+			var(--panel);
+
+		box-shadow:
+			var(--shadow-card);
+
+		transition:
+			transform 0.15s ease,
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+
+	.dashboard-card::before {
+		content: "";
+
+		position: absolute;
+
+		top: 0;
+		left: 0;
+		right: 0;
+
+		height: 4px;
+
+		background:
+			var(--border-strong);
+	}
+
+	.dashboard-card::after {
+		content: "";
+
+		position: absolute;
+
+		right: -30px;
+		bottom: -34px;
+
+		width: 100px;
+		height: 100px;
+
+		border-radius: 50%;
+
+		background:
+			rgba(255, 255, 255, 0.025);
+
+		pointer-events: none;
+	}
+
+	.dashboard-card:hover {
+		transform:
+			translateY(-2px);
+
+		border-color:
+			var(--border-strong);
+	}
+
+	.dashboard-card-label {
+		position: relative;
+		z-index: 1;
+
+		color:
+			var(--text-muted);
+
+		font-size: 11px;
+		font-weight: 800;
+
+		letter-spacing: 0.05em;
+	}
+
+	.dashboard-card-value {
+		position: relative;
+		z-index: 1;
+
+		margin-top: 12px;
+
+		font-size: 34px;
+		font-weight: 900;
+
+		line-height: 1;
+
+		letter-spacing:
+			-0.03em;
+	}
+
+	.dashboard-card-note {
+		position: relative;
+		z-index: 1;
+
+		margin-top: 12px;
+
+		color:
+			var(--text-soft);
+
+		font-size: 11px;
+
+		line-height: 1.5;
+	}
+
+
+	/* =========================================================
+	   11. Dashboard Status Colors
+	   ========================================================= */
+
+	.dashboard-card.pending {
+		border-color:
+			rgba(226, 184, 94, 0.38);
+
+		background:
+			linear-gradient(
+				145deg,
+				var(--warning-soft),
+				transparent 65%
+			),
+			var(--panel);
+	}
+
+	.dashboard-card.pending::before {
+		background:
+			var(--warning);
+	}
+
+	.dashboard-card.pending .dashboard-card-value {
+		color:
+			var(--warning);
+	}
+
+
+	.dashboard-card.approved {
+		border-color:
+			rgba(114, 173, 85, 0.36);
+
+		background:
+			linear-gradient(
+				145deg,
+				var(--accent-soft),
+				transparent 65%
+			),
+			var(--panel);
+	}
+
+	.dashboard-card.approved::before {
+		background:
+			var(--accent);
+	}
+
+	.dashboard-card.approved .dashboard-card-value {
+		color:
+			var(--accent-light);
+	}
+
+
+	.dashboard-card.publishing {
+		border-color:
+			rgba(124, 169, 216, 0.38);
+
+		background:
+			linear-gradient(
+				145deg,
+				var(--info-soft),
+				transparent 65%
+			),
+			var(--panel);
+	}
+
+	.dashboard-card.publishing::before {
+		background:
+			var(--info);
+	}
+
+	.dashboard-card.publishing .dashboard-card-value {
+		color:
+			var(--info);
+	}
+
+
+	.dashboard-card.pages {
+		border-color:
+			rgba(181, 148, 223, 0.34);
+
+		background:
+			linear-gradient(
+				145deg,
+				var(--purple-soft),
+				transparent 65%
+			),
+			var(--panel);
+	}
+
+	.dashboard-card.pages::before {
+		background:
+			var(--purple);
+	}
+
+	.dashboard-card.pages .dashboard-card-value {
+		color:
+			var(--purple);
+	}
+
+
+	/* =========================================================
+	   12. Section
+	   ========================================================= */
+
+	.section {
+		margin-top: 44px;
+	}
+
+	.section-heading {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+
+		gap: 16px;
+
+		margin-bottom: 16px;
+
+		padding-bottom: 10px;
+
+		border-bottom:
+			1px solid
+			var(--border);
+	}
+
+	.section-heading h2 {
+		position: relative;
+
+		margin: 0;
+
+		padding-left: 12px;
+
+		color: var(--text);
+
+		font-size: 19px;
+		font-weight: 850;
+
+		line-height: 1.4;
+	}
+
+	.section-heading h2::before {
+		content: "";
+
+		position: absolute;
+
+		left: 0;
+		top: 4px;
+		bottom: 4px;
+
+		width: 4px;
+
+		background:
+			var(--accent);
+
+		box-shadow:
+			2px 0 0 rgba(0, 0, 0, 0.18);
+	}
+
+	.section-heading span {
+		color:
+			var(--text-muted);
+
+		font-size: 11px;
+		font-weight: 700;
+	}
+
+
+	/* =========================================================
+	   13. Request Cards
+	   ========================================================= */
+
+	.request-list {
+		display: grid;
+
+		gap: 16px;
+	}
+
+	.request-card {
+		overflow: hidden;
+
+		border:
+			1px solid
+			var(--border);
+
+		border-radius:
+			var(--radius);
+
+		background:
+			var(--panel);
+
+		box-shadow:
+			var(--shadow-card);
+
+		transition:
+			transform 0.15s ease,
+			border-color 0.15s ease;
+	}
+
+	.request-card:hover {
+		transform:
+			translateY(-2px);
+
+		border-color:
+			var(--border-strong);
+	}
+
+	.request-main {
+		padding: 22px;
+	}
+
+	.request-top {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+
+		gap: 20px;
+	}
+
+	.request-title {
+		min-width: 0;
+	}
+
+	.request-title h3 {
+		margin: 0;
+
+		color:
+			var(--text);
+
+		font-size: 16px;
+		font-weight: 800;
+
+		line-height: 1.45;
+	}
+
+	.request-path {
+		margin-top: 6px;
+
+		color:
+			var(--text-muted);
+
+		font-family:
+			ui-monospace,
+			SFMono-Regular,
+			Menlo,
+			Monaco,
+			Consolas,
+			monospace;
+
+		font-size: 11px;
+
+		overflow-wrap: anywhere;
+	}
+
+
+	/* =========================================================
+	   14. Status Badge
+	   ========================================================= */
+
+	.status-badge {
+		flex: 0 0 auto;
+
+		display: inline-flex;
+		align-items: center;
+
+		min-height: 28px;
+
+		padding:
+			0 10px;
+
+		border:
+			1px solid
+			var(--border);
+
+		border-radius:
+			var(--radius-small);
+
+		background:
+			var(--bg-soft);
+
+		color:
+			var(--text-soft);
+
+		font-size: 10px;
+		font-weight: 850;
+
+		white-space: nowrap;
+
+		box-shadow:
+			0 2px 0 rgba(0, 0, 0, 0.16);
+	}
+
+	.status-badge.pending {
+		border-color:
+			rgba(226, 184, 94, 0.40);
+
+		background:
+			var(--warning-soft);
+
+		color:
+			var(--warning);
+	}
+
+	.status-badge.approved {
+		border-color:
+			rgba(114, 173, 85, 0.40);
+
+		background:
+			var(--accent-soft);
+
+		color:
+			var(--accent-light);
+	}
+
+	.status-badge.publishing {
+		border-color:
+			rgba(124, 169, 216, 0.40);
+
+		background:
+			var(--info-soft);
+
+		color:
+			var(--info);
+	}
+
+	.status-badge.rejected {
+		border-color:
+			rgba(220, 116, 107, 0.40);
+
+		background:
+			var(--danger-soft);
+
+		color:
+			var(--danger);
+	}
+
+	.status-badge.published {
+		border-color:
+			rgba(114, 173, 85, 0.40);
+
+		background:
+			var(--accent-soft);
+
+		color:
+			var(--accent-light);
+	}
+
+
+	/* =========================================================
+	   15. Request Metadata
+	   ========================================================= */
+
+	.request-meta {
+		display: flex;
+		flex-wrap: wrap;
+
+		gap: 8px 20px;
+
+		margin-top: 18px;
+
+		padding-top: 14px;
+
+		border-top:
+			1px solid
+			rgba(255, 255, 255, 0.06);
+
+		color:
+			var(--text-muted);
+
+		font-size: 11px;
+	}
+
+	.request-meta strong {
+		margin-left: 4px;
+
+		color:
+			var(--text-soft);
+
+		font-weight: 750;
+	}
+
+
+	/* =========================================================
+	   16. Request Message
+	   ========================================================= */
+
+	.request-message {
+		margin-top: 16px;
+
+		padding:
+			14px 16px;
+
+		border:
+			1px solid
+			var(--border);
+
+		border-left:
+			4px solid
+			var(--accent);
+
+		background:
+			rgba(255, 255, 255, 0.025);
+
+		color:
+			var(--text-soft);
+
+		font-size: 12px;
+
+		line-height: 1.7;
+
+		white-space: pre-wrap;
+
+		word-break: break-word;
+	}
+
+
+	/* =========================================================
+	   17. Request Footer
+	   ========================================================= */
+
+	.request-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+
+		gap: 16px;
+
+		padding:
+			13px 20px;
+
+		border-top:
+			1px solid
+			var(--border);
+
+		background:
+			rgba(0, 0, 0, 0.13);
+	}
+
+	.request-id {
+		min-width: 0;
+
+		color:
+			var(--text-muted);
+
+		font-family:
+			ui-monospace,
+			SFMono-Regular,
+			Menlo,
+			Monaco,
+			Consolas,
+			monospace;
+
+		font-size: 9px;
+
+		overflow: hidden;
+
+		text-overflow: ellipsis;
+
+		white-space: nowrap;
+	}
+
+	.request-actions {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+
+		flex-wrap: wrap;
+
+		gap: 8px;
+	}
+
+
+	/* =========================================================
+	   18. Buttons
+	   ========================================================= */
+
+	.primary-button,
+	.secondary-button,
+	.publish-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+
+		min-height: 38px;
+
+		padding:
+			0 14px;
+
+		border-radius:
+			var(--radius-small);
+
+		font-size: 11px;
+		font-weight: 800;
+
+		cursor: pointer;
+
+		box-shadow:
+			0 3px 0 rgba(0, 0, 0, 0.20);
+
+		transition:
+			background 0.15s ease,
+			border-color 0.15s ease,
+			color 0.15s ease,
+			transform 0.15s ease,
+			box-shadow 0.15s ease,
+			opacity 0.15s ease;
+	}
+
+	.primary-button {
+		border:
+			1px solid
+			var(--accent-dark);
+
+		background:
+			var(--accent);
+
+		color:
+			#ffffff;
+	}
+
+	.primary-button:hover {
+		background:
+			var(--accent-light);
+
+		border-color:
+			var(--accent);
+
+		transform:
+			translateY(-1px);
+	}
+
+	.primary-button:active,
+	.publish-button:active,
+	.secondary-button:active {
+		transform:
+			translateY(2px);
+
+		box-shadow:
+			0 1px 0 rgba(0, 0, 0, 0.20);
+	}
+
+	.secondary-button {
+		border:
+			1px solid
+			var(--border);
+
+		background:
+			var(--bg-soft);
+
+		color:
+			var(--text-soft);
+	}
+
+	.secondary-button:hover {
+		background:
+			var(--panel-hover);
+
+		border-color:
+			var(--border-strong);
+
+		color:
+			var(--text);
+
+		transform:
+			translateY(-1px);
+	}
+
+	.publish-button {
+		border:
+			1px solid
+			var(--info-dark);
+
+		background:
+			var(--info-dark);
+
+		color:
+			#ffffff;
+	}
+
+	.publish-button:hover {
+		background:
+			var(--info);
+
+		border-color:
+			var(--info);
+
+		transform:
+			translateY(-1px);
+	}
+
+	.publish-button:disabled,
+	.primary-button:disabled,
+	.secondary-button:disabled {
+		opacity: 0.55;
+
+		cursor: wait;
+
+		transform: none;
+	}
+
+
+	/* =========================================================
+	   19. Activity
+	   ========================================================= */
+
+	.activity-list {
+		display: grid;
+
+		gap: 10px;
+	}
+
+	.activity-card {
+		display: grid;
+
+		grid-template-columns:
+			minmax(0, 1fr)
+			auto;
+
+		gap: 20px;
+
+		padding:
+			16px 18px;
+
+		border:
+			1px solid
+			var(--border);
+
+		border-radius:
+			var(--radius);
+
+		background:
+			var(--panel);
+
+		box-shadow:
+			var(--shadow-small);
+
+		transition:
+			background 0.15s ease,
+			border-color 0.15s ease,
+			transform 0.15s ease;
+	}
+
+	.activity-card:hover {
+		background:
+			var(--panel-hover);
+
+		border-color:
+			var(--border-strong);
+
+		transform:
+			translateY(-1px);
+	}
+
+	.activity-main {
+		min-width: 0;
+	}
+
+	.activity-title {
+		color:
+			var(--text);
+
+		font-size: 13px;
+		font-weight: 800;
+	}
+
+	.activity-path {
+		margin-top: 4px;
+
+		color:
+			var(--text-muted);
+
+		font-family:
+			ui-monospace,
+			SFMono-Regular,
+			Menlo,
+			Monaco,
+			Consolas,
+			monospace;
+
+		font-size: 10px;
+
+		overflow-wrap: anywhere;
+	}
+
+	.activity-meta {
+		margin-top: 7px;
+
+		color:
+			var(--text-soft);
+
+		font-size: 10px;
+	}
+
+	.activity-action {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+
+		min-height: 34px;
+
+		padding:
+			0 12px;
+
+		border:
+			1px solid
+			var(--border);
+
+		border-radius:
+			var(--radius-small);
+
+		background:
+			var(--bg-soft);
+
+		color:
+			var(--text-soft);
+
+		font-size: 10px;
+		font-weight: 800;
+
+		box-shadow:
+			0 2px 0 rgba(0, 0, 0, 0.18);
+
+		transition:
+			background 0.15s ease,
+			border-color 0.15s ease,
+			color 0.15s ease,
+			transform 0.15s ease;
+	}
+
+	.activity-action:hover {
+		background:
+			var(--panel-hover);
+
+		border-color:
+			var(--border-strong);
+
+		color:
+			var(--text);
+
+		transform:
+			translateY(-1px);
+	}
+
+
+	/* =========================================================
+	   20. State Cards
+	   ========================================================= */
+
+	.state-card {
+		padding:
+			40px 24px;
+
+		border:
+			1px dashed
+			var(--border-strong);
+
+		border-radius:
+			var(--radius);
+
+		background:
+			rgba(255, 255, 255, 0.018);
+
+		text-align:
+			center;
+	}
+
+	.state-title {
+		color:
+			var(--text);
+
+		font-weight:
+			800;
+	}
+
+	.state-text {
+		margin-top:
+			6px;
+
+		color:
+			var(--text-muted);
+
+		font-size:
+			12px;
+	}
+
+	.error-card {
+		border-color:
+			rgba(220, 116, 107, 0.42);
+
+		border-style:
+			solid;
+
+		background:
+			var(--danger-soft);
+	}
+
+	.error-card .state-title {
+		color:
+			var(--danger);
+	}
+
+
+	/* =========================================================
+	   21. Quick Links
+	   ========================================================= */
+
+	.quick-links {
+		display: grid;
+
+		grid-template-columns:
+			repeat(
+				3,
+				minmax(0, 1fr)
+			);
+
+		gap:
+			16px;
+	}
+
+	.quick-link {
+		position: relative;
+
+		padding:
+			20px;
+
+		border:
+			1px solid
+			var(--border);
+
+		border-radius:
+			var(--radius);
+
+		background:
+			linear-gradient(
+				145deg,
+				rgba(255, 255, 255, 0.035),
+				transparent 70%
+			),
+			var(--panel);
+
+		box-shadow:
+			var(--shadow-card);
+
+		transition:
+			background 0.15s ease,
+			border-color 0.15s ease,
+			transform 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.quick-link::before {
+		content: "";
+
+		position: absolute;
+
+		top: 0;
+		left: 0;
+		right: 0;
+
+		height: 3px;
+
+		background:
+			var(--accent);
+	}
+
+	.quick-link:hover {
+		background:
+			var(--panel-hover);
+
+		border-color:
+			var(--border-strong);
+
+		transform:
+			translateY(-2px);
+
+		box-shadow:
+			0 6px 0 rgba(0, 0, 0, 0.24),
+			0 14px 26px rgba(0, 0, 0, 0.18);
+	}
+
+	.quick-link:active {
+		transform:
+			translateY(2px);
+
+		box-shadow:
+			0 2px 0 rgba(0, 0, 0, 0.20);
+	}
+
+	.quick-link-title {
+		color:
+			var(--text);
+
+		font-size:
+			14px;
+
+		font-weight:
+			850;
+	}
+
+	.quick-link-description {
+		margin-top:
+			6px;
+
+		color:
+			var(--text-muted);
+
+		font-size:
+			11px;
+
+		line-height:
+			1.6;
+	}
+
+
+	/* =========================================================
+	   22. Publish Notification
+	   ========================================================= */
+
+	.publish-notice {
+		position: fixed;
+
+		right: 24px;
+		bottom: 24px;
+
+		z-index: 100;
+
+		width:
+			min(
+				420px,
+				calc(100vw - 48px)
+			);
+
+		padding:
+			16px 18px;
+
+		border:
+			1px solid
+			var(--border);
+
+		border-radius:
+			var(--radius);
+
+		background:
+			linear-gradient(
+				145deg,
+				rgba(255, 255, 255, 0.055),
+				rgba(255, 255, 255, 0)
+			),
+			var(--panel);
+
+		box-shadow:
+			var(--shadow-block);
+
+		font-size:
+			12px;
+	}
+
+	.publish-notice::before {
+		content: "";
+
+		display: block;
+
+		width: 32px;
+		height: 3px;
+
+		margin-bottom: 10px;
+
+		background:
+			var(--accent);
+	}
+
+	.publish-notice.success {
+		border-color:
+			rgba(114, 173, 85, 0.48);
+	}
+
+	.publish-notice.success::before {
+		background:
+			var(--accent);
+	}
+
+	.publish-notice.error {
+		border-color:
+			rgba(220, 116, 107, 0.48);
+	}
+
+	.publish-notice.error::before {
+		background:
+			var(--danger);
+	}
+
+	.publish-notice-title {
+		color:
+			var(--text);
+
+		font-weight:
+			850;
+	}
+
+	.publish-notice-text {
+		margin-top:
+			5px;
+
+		color:
+			var(--text-soft);
+
+		line-height:
+			1.6;
+
+		white-space:
+			pre-wrap;
+
+		word-break:
+			break-word;
+	}
+
+
+	/* =========================================================
+	   23. Responsive - Tablet
+	   ========================================================= */
+
+	@media (max-width: 900px) {
+		.dashboard-grid {
+			grid-template-columns:
+				repeat(
+					2,
+					minmax(0, 1fr)
 				);
-
-			color: var(--text);
-
-			font-family:
-				-apple-system,
-				BlinkMacSystemFont,
-				"Segoe UI",
-				"Helvetica Neue",
-				Arial,
-				sans-serif;
-
-			line-height: 1.6;
 		}
 
-		button,
-		a {
-			font: inherit;
+		.quick-links {
+			grid-template-columns:
+				1fr;
 		}
+	}
 
-		a {
-			color: inherit;
-			text-decoration: none;
-		}
 
-		[hidden] {
-			display: none !important;
-		}
+	/* =========================================================
+	   24. Responsive - Mobile
+	   ========================================================= */
 
-		/* ========================================
-		   Layout
-		======================================== */
-
-		.admin-shell {
-			min-height: 100vh;
-		}
-
-		.admin-header {
-			position: sticky;
-			top: 0;
-			z-index: 20;
-
-			border-bottom: 1px solid var(--border);
-
-			background: rgba(17, 19, 21, 0.92);
-			backdrop-filter: blur(12px);
+	@media (max-width: 640px) {
+		.admin-header-inner,
+		.admin-main {
+			width:
+				min(
+					calc(100% - 20px),
+					var(--content-width)
+				);
 		}
 
 		.admin-header-inner {
-			width: min(1200px, calc(100% - 32px));
-			min-height: 68px;
-			margin: 0 auto;
-
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: 20px;
+			min-height:
+				64px;
 		}
 
-		.brand {
-			display: flex;
-			align-items: center;
-			gap: 12px;
-			min-width: 0;
+		.admin-main {
+			padding:
+				32px 0 64px;
 		}
 
 		.brand-mark {
-			display: grid;
-			place-items: center;
+			width:
+				38px;
 
-			width: 38px;
-			height: 38px;
+			height:
+				38px;
 
-			border: 1px solid #495057;
-			border-radius: 6px;
-
-			background:
-				linear-gradient(
-					145deg,
-					#5c8d52,
-					#3d6038
-				);
-
-			font-size: 13px;
-			font-weight: 900;
-			letter-spacing: 0.04em;
-
-			box-shadow:
-				inset 0 1px rgba(255,255,255,0.12),
-				0 3px 10px rgba(0,0,0,0.3);
-		}
-
-		.brand-text {
-			min-width: 0;
+			flex-basis:
+				38px;
 		}
 
 		.brand-title {
-			font-size: 15px;
-			font-weight: 800;
-			letter-spacing: 0.02em;
+			font-size:
+				13px;
 		}
 
 		.brand-subtitle {
-			margin-top: 1px;
-
-			color: var(--text-muted);
-			font-size: 11px;
+			display:
+				none;
 		}
 
 		.header-actions {
-			display: flex;
-			align-items: center;
-			gap: 8px;
+			gap:
+				5px;
 		}
 
 		.header-link {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
+			min-height:
+				34px;
 
-			min-height: 36px;
-			padding: 0 12px;
+			padding:
+				0 9px;
 
-			border: 1px solid var(--border);
-			border-radius: 6px;
-
-			background: var(--panel);
-
-			color: var(--text-soft);
-			font-size: 13px;
-			font-weight: 700;
-
-			transition:
-				background 0.15s ease,
-				border-color 0.15s ease,
-				color 0.15s ease;
-		}
-
-		.header-link:hover {
-			background: var(--panel-hover);
-			border-color: #495057;
-			color: var(--text);
-		}
-
-		/* ========================================
-		   Main
-		======================================== */
-
-		.admin-main {
-			width: min(1200px, calc(100% - 32px));
-			margin: 0 auto;
-			padding: 42px 0 72px;
+			font-size:
+				10px;
 		}
 
 		.page-heading {
-			margin-bottom: 30px;
+			margin-bottom:
+				24px;
+
+			padding-left:
+				12px;
 		}
 
 		.page-heading-row {
-			display: flex;
-			align-items: flex-end;
-			justify-content: space-between;
-			gap: 20px;
+			align-items:
+				flex-start;
+
+			flex-direction:
+				column;
+
+			gap:
+				14px;
 		}
 
 		.page-heading h1 {
-			margin: 0;
-
-			font-size: clamp(26px, 4vw, 36px);
-			line-height: 1.2;
-			letter-spacing: -0.02em;
+			font-size:
+				28px;
 		}
 
 		.page-heading p {
-			margin: 8px 0 0;
-
-			color: var(--text-soft);
-			font-size: 14px;
+			font-size:
+				12px;
 		}
 
 		.refresh-button {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-
-			min-height: 36px;
-			padding: 0 12px;
-
-			border: 1px solid var(--border);
-			border-radius: 6px;
-
-			background: var(--panel);
-			color: var(--text-soft);
-
-			font-size: 12px;
-			font-weight: 800;
-
-			cursor: pointer;
+			width:
+				100%;
 		}
-
-		.refresh-button:hover {
-			background: var(--panel-hover);
-			border-color: #495057;
-			color: var(--text);
-		}
-
-		/* ========================================
-		   Dashboard cards
-		======================================== */
 
 		.dashboard-grid {
-			display: grid;
-			grid-template-columns: repeat(4, minmax(0, 1fr));
-			gap: 14px;
+			grid-template-columns:
+				1fr 1fr;
 
-			margin-bottom: 42px;
+			gap:
+				10px;
+
+			margin-bottom:
+				36px;
 		}
 
 		.dashboard-card {
-			padding: 20px;
+			min-height:
+				140px;
 
-			border: 1px solid var(--border);
-			border-radius: var(--radius);
-
-			background:
-				linear-gradient(
-					145deg,
-					rgba(255,255,255,0.025),
-					rgba(255,255,255,0)
-				),
-				var(--panel);
-
-			box-shadow:
-				0 5px 18px rgba(0,0,0,0.18);
-		}
-
-		.dashboard-card-label {
-			color: var(--text-muted);
-			font-size: 12px;
-			font-weight: 700;
+			padding:
+				16px;
 		}
 
 		.dashboard-card-value {
-			margin-top: 8px;
-
-			font-size: 32px;
-			font-weight: 900;
-			line-height: 1;
+			font-size:
+				27px;
 		}
 
 		.dashboard-card-note {
-			margin-top: 9px;
-
-			color: var(--text-soft);
-			font-size: 11px;
+			font-size:
+				10px;
 		}
-
-		.dashboard-card.pending {
-			border-color: rgba(230, 180, 80, 0.35);
-
-			background:
-				linear-gradient(
-					145deg,
-					var(--warning-soft),
-					transparent
-				),
-				var(--panel);
-		}
-
-		.dashboard-card.pending .dashboard-card-value {
-			color: var(--warning);
-		}
-
-		.dashboard-card.approved {
-			border-color: rgba(124, 197, 118, 0.3);
-
-			background:
-				linear-gradient(
-					145deg,
-					var(--accent-soft),
-					transparent
-				),
-				var(--panel);
-		}
-
-		.dashboard-card.approved .dashboard-card-value {
-			color: var(--accent);
-		}
-
-		.dashboard-card.publishing {
-			border-color: rgba(116, 169, 223, 0.35);
-
-			background:
-				linear-gradient(
-					145deg,
-					var(--info-soft),
-					transparent
-				),
-				var(--panel);
-		}
-
-		.dashboard-card.publishing .dashboard-card-value {
-			color: var(--info);
-		}
-
-		.dashboard-card.pages {
-			border-color: rgba(181, 141, 232, 0.3);
-
-			background:
-				linear-gradient(
-					145deg,
-					var(--purple-soft),
-					transparent
-				),
-				var(--panel);
-		}
-
-		.dashboard-card.pages .dashboard-card-value {
-			color: var(--purple);
-		}
-
-		/* ========================================
-		   Section
-		======================================== */
 
 		.section {
-			margin-top: 38px;
+			margin-top:
+				36px;
 		}
 
 		.section-heading {
-			display: flex;
-			align-items: baseline;
-			justify-content: space-between;
-			gap: 16px;
-
-			margin-bottom: 14px;
+			align-items:
+				flex-start;
 		}
 
 		.section-heading h2 {
-			margin: 0;
-
-			font-size: 19px;
-			font-weight: 800;
-		}
-
-		.section-heading span {
-			color: var(--text-muted);
-			font-size: 12px;
-		}
-
-		/* ========================================
-		   Request cards
-		======================================== */
-
-		.request-list {
-			display: grid;
-			gap: 12px;
-		}
-
-		.request-card {
-			border: 1px solid var(--border);
-			border-radius: var(--radius);
-
-			background: var(--panel);
-
-			overflow: hidden;
+			font-size:
+				17px;
 		}
 
 		.request-main {
-			padding: 20px;
+			padding:
+				17px;
 		}
 
 		.request-top {
-			display: flex;
-			align-items: flex-start;
-			justify-content: space-between;
-			gap: 18px;
-		}
+			flex-direction:
+				column;
 
-		.request-title {
-			min-width: 0;
-		}
-
-		.request-title h3 {
-			margin: 0;
-
-			font-size: 16px;
-			line-height: 1.4;
-		}
-
-		.request-path {
-			margin-top: 4px;
-
-			color: var(--text-muted);
-
-			font-family:
-				ui-monospace,
-				SFMono-Regular,
-				Menlo,
-				Monaco,
-				Consolas,
-				monospace;
-
-			font-size: 12px;
+			gap:
+				10px;
 		}
 
 		.status-badge {
-			flex: 0 0 auto;
-
-			display: inline-flex;
-			align-items: center;
-
-			min-height: 26px;
-			padding: 0 9px;
-
-			border: 1px solid var(--border);
-			border-radius: 999px;
-
-			background: var(--bg-soft);
-			color: var(--text-soft);
-
-			font-size: 11px;
-			font-weight: 800;
-			white-space: nowrap;
-		}
-
-		.status-badge.pending {
-			border-color: rgba(230, 180, 80, 0.35);
-			background: var(--warning-soft);
-			color: var(--warning);
-		}
-
-		.status-badge.approved {
-			border-color: rgba(124, 197, 118, 0.35);
-			background: var(--accent-soft);
-			color: var(--accent);
-		}
-
-		.status-badge.publishing {
-			border-color: rgba(116, 169, 223, 0.35);
-			background: var(--info-soft);
-			color: var(--info);
-		}
-
-		.status-badge.rejected {
-			border-color: rgba(229, 115, 115, 0.35);
-			background: var(--danger-soft);
-			color: var(--danger);
-		}
-
-		.status-badge.published {
-			border-color: rgba(124, 197, 118, 0.35);
-			background: var(--accent-soft);
-			color: var(--accent);
+			align-self:
+				flex-start;
 		}
 
 		.request-meta {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 8px 18px;
+			display:
+				grid;
 
-			margin-top: 16px;
+			grid-template-columns:
+				1fr 1fr;
 
-			color: var(--text-soft);
-			font-size: 12px;
-		}
+			gap:
+				10px;
 
-		.request-meta strong {
-			color: var(--text);
-			font-weight: 700;
-		}
-
-		.request-message {
-			margin-top: 14px;
-			padding: 12px 14px;
-
-			border-left: 3px solid #495057;
-
-			background: rgba(255,255,255,0.025);
-
-			color: var(--text-soft);
-			font-size: 13px;
-
-			white-space: pre-wrap;
-			word-break: break-word;
+			margin-top:
+				16px;
 		}
 
 		.request-footer {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: 12px;
+			align-items:
+				stretch;
 
-			padding: 12px 20px;
+			flex-direction:
+				column;
 
-			border-top: 1px solid var(--border);
-
-			background: rgba(0,0,0,0.12);
+			padding:
+				13px 17px;
 		}
 
-		.request-id {
-			color: var(--text-muted);
+		.request-actions {
+			width:
+				100%;
 
-			font-family:
-				ui-monospace,
-				SFMono-Regular,
-				Menlo,
-				Monaco,
-				Consolas,
-				monospace;
-
-			font-size: 10px;
-
-			overflow: hidden;
-			text-overflow: ellipsis;
+			flex-direction:
+				column;
 		}
 
-		.primary-button {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-
-			min-height: 36px;
-			padding: 0 14px;
-
-			border: 1px solid #689d62;
-			border-radius: 6px;
-
-			background: #466c41;
-			color: #fff;
-
-			font-size: 12px;
-			font-weight: 800;
-
-			transition:
-				background 0.15s ease,
-				border-color 0.15s ease,
-				transform 0.15s ease;
+		.request-actions > * {
+			width:
+				100%;
 		}
 
-		.primary-button:hover {
-			background: #527f4c;
-			border-color: #7fba77;
-			transform: translateY(-1px);
-		}
-
-		/* ========================================
-		   Activity
-		======================================== */
-
-		.activity-list {
-			display: grid;
-			gap: 10px;
+		.primary-button,
+		.secondary-button,
+		.publish-button {
+			width:
+				100%;
 		}
 
 		.activity-card {
-			display: grid;
-			grid-template-columns: minmax(0, 1fr) auto;
-			gap: 16px;
-
-			padding: 15px 18px;
-
-			border: 1px solid var(--border);
-			border-radius: var(--radius);
-
-			background: var(--panel);
-		}
-
-		.activity-main {
-			min-width: 0;
-		}
-
-		.activity-title {
-			font-size: 14px;
-			font-weight: 800;
-		}
-
-		.activity-path {
-			margin-top: 3px;
-
-			color: var(--text-muted);
-
-			font-family:
-				ui-monospace,
-				SFMono-Regular,
-				Menlo,
-				Monaco,
-				Consolas,
-				monospace;
-
-			font-size: 11px;
-		}
-
-		.activity-meta {
-			margin-top: 6px;
-
-			color: var(--text-soft);
-			font-size: 11px;
+			grid-template-columns:
+				1fr;
 		}
 
 		.activity-action {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-
-			min-height: 34px;
-			padding: 0 12px;
-
-			border: 1px solid var(--border);
-			border-radius: 6px;
-
-			background: var(--bg-soft);
-			color: var(--text-soft);
-
-			font-size: 11px;
-			font-weight: 800;
+			width:
+				100%;
 		}
 
-		.activity-action:hover {
-			background: var(--panel-hover);
-			color: var(--text);
+		.publish-notice {
+			right:
+				10px;
+
+			bottom:
+				10px;
+
+			width:
+				calc(100vw - 20px);
+		}
+	}
+
+
+	/* =========================================================
+	   25. Responsive - Very Small
+	   ========================================================= */
+
+	@media (max-width: 420px) {
+		.header-actions {
+			flex-wrap:
+				wrap;
+
+			justify-content:
+				flex-end;
 		}
 
-		/* ========================================
-		   State
-		======================================== */
+		.header-link {
+			padding:
+				0 7px;
 
-		.state-card {
-			padding: 36px 20px;
-
-			border: 1px dashed var(--border);
-			border-radius: var(--radius);
-
-			background: rgba(255,255,255,0.015);
-
-			text-align: center;
+			font-size:
+				9px;
 		}
 
-		.state-title {
-			font-weight: 800;
+		.brand-text {
+			max-width:
+				130px;
 		}
 
-		.state-text {
-			margin-top: 6px;
+		.brand-title {
+			overflow:
+				hidden;
 
-			color: var(--text-muted);
-			font-size: 13px;
+			text-overflow:
+				ellipsis;
+
+			white-space:
+				nowrap;
 		}
 
-		.error-card {
-			border-color: rgba(229,115,115,0.35);
-			background: var(--danger-soft);
+		.dashboard-grid {
+			gap:
+				8px;
 		}
 
-		.error-card .state-title {
-			color: var(--danger);
+		.dashboard-card {
+			min-height:
+				128px;
+
+			padding:
+				14px;
 		}
 
-		/* ========================================
-		   Quick links
-		======================================== */
-
-		.quick-links {
-			display: grid;
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 12px;
+		.dashboard-card-label {
+			font-size:
+				10px;
 		}
 
-		.quick-link {
-			padding: 18px;
+		.dashboard-card-value {
+			margin-top:
+				10px;
 
-			border: 1px solid var(--border);
-			border-radius: var(--radius);
-
-			background: var(--panel);
-
-			transition:
-				background 0.15s ease,
-				border-color 0.15s ease,
-				transform 0.15s ease;
+			font-size:
+				24px;
 		}
 
-		.quick-link:hover {
-			background: var(--panel-hover);
-			border-color: #495057;
-			transform: translateY(-1px);
+		.dashboard-card-note {
+			margin-top:
+				9px;
+
+			font-size:
+				9px;
 		}
 
-		.quick-link-title {
-			font-size: 14px;
-			font-weight: 800;
+		.request-meta {
+			grid-template-columns:
+				1fr;
 		}
+	}
 
-		.quick-link-description {
-			margin-top: 4px;
 
-			color: var(--text-muted);
-			font-size: 11px;
+	/* =========================================================
+	   26. Reduced Motion
+	   ========================================================= */
+
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			scroll-behavior:
+				auto !important;
+
+			transition-duration:
+				0.01ms !important;
+
+			animation-duration:
+				0.01ms !important;
+
+			animation-iteration-count:
+				1 !important;
 		}
-
-		/* ========================================
-		   Responsive
-		======================================== */
-
-		@media (max-width: 900px) {
-			.dashboard-grid {
-				grid-template-columns: repeat(2, minmax(0, 1fr));
-			}
-
-			.quick-links {
-				grid-template-columns: 1fr;
-			}
-		}
-
-		@media (max-width: 640px) {
-			.admin-header-inner,
-			.admin-main {
-				width: min(100% - 20px, 1200px);
-			}
-
-			.admin-main {
-				padding-top: 28px;
-			}
-
-			.brand-subtitle {
-				display: none;
-			}
-
-			.header-actions {
-				gap: 5px;
-			}
-
-			.header-link {
-				padding: 0 9px;
-				font-size: 11px;
-			}
-
-			.page-heading-row {
-				align-items: flex-start;
-				flex-direction: column;
-			}
-
-			.dashboard-grid {
-				grid-template-columns: 1fr 1fr;
-				gap: 9px;
-			}
-
-			.dashboard-card {
-				padding: 15px;
-			}
-
-			.dashboard-card-value {
-				font-size: 26px;
-			}
-
-			.request-main {
-				padding: 16px;
-			}
-
-			.request-top {
-				flex-direction: column;
-				gap: 10px;
-			}
-
-			.request-footer {
-				align-items: stretch;
-				flex-direction: column;
-			}
-
-			.primary-button {
-				width: 100%;
-			}
-
-			.activity-card {
-				grid-template-columns: 1fr;
-			}
-
-			.activity-action {
-				width: 100%;
-			}
-		}
+	}
 	</style>
 </head>
 
@@ -916,10 +2130,6 @@
 				</div>
 			</section>
 
-
-			<!-- ========================================
-			     Dashboard
-			======================================== -->
 
 			<section
 				class="dashboard-grid"
@@ -1000,10 +2210,6 @@
 			</section>
 
 
-			<!-- ========================================
-			     Loading / Error
-			======================================== -->
-
 			<div
 				id="loading-state"
 				class="state-card"
@@ -1038,10 +2244,6 @@
 
 			<div id="dashboard-content" hidden>
 
-				<!-- ========================================
-				     Pending Reviews
-				======================================== -->
-
 				<section class="section">
 
 					<div class="section-heading">
@@ -1074,10 +2276,6 @@
 
 				</section>
 
-
-				<!-- ========================================
-				     Approved
-				======================================== -->
 
 				<section class="section">
 
@@ -1112,10 +2310,6 @@
 				</section>
 
 
-				<!-- ========================================
-				     Publishing
-				======================================== -->
-
 				<section class="section">
 
 					<div class="section-heading">
@@ -1149,10 +2343,6 @@
 				</section>
 
 
-				<!-- ========================================
-				     Recent Activity
-				======================================== -->
-
 				<section class="section">
 
 					<div class="section-heading">
@@ -1185,10 +2375,6 @@
 
 				</section>
 
-
-				<!-- ========================================
-				     Quick Links
-				======================================== -->
 
 				<section class="section">
 
@@ -1250,13 +2436,40 @@
 	</div>
 
 
+	<div
+		id="publish-notice"
+		class="publish-notice"
+		hidden
+	>
+		<div
+			id="publish-notice-title"
+			class="publish-notice-title"
+		>
+			公開処理
+		</div>
+
+		<div
+			id="publish-notice-text"
+			class="publish-notice-text"
+		></div>
+	</div>
+
+
 	<script>
+		type EditRequestStatus =
+			| 'draft'
+			| 'pending'
+			| 'approved'
+			| 'publishing'
+			| 'published'
+			| 'rejected';
+
 		type EditRequest = {
 			id: string;
 			page_title?: string | null;
 			page_path?: string | null;
 			revision_number?: number | null;
-			status: string;
+			status: EditRequestStatus | string;
 			message?: string | null;
 			created_at?: string | null;
 			reviewed_at?: string | null;
@@ -1277,126 +2490,207 @@
 			error?: string;
 		};
 
+		type PublishResponse = {
+			ok?: boolean;
+			error?: string;
+			editRequest?: unknown;
+			github?: {
+				pullRequest?: {
+					number?: number;
+					html_url?: string;
+				};
+			};
+		};
+
+
+		/* ========================================
+		   DOM helper
+		======================================== */
+
+		function getElement<T extends Element>(
+			selector: string
+		): T {
+			const element =
+				document.querySelector<T>(
+					selector
+				);
+
+			if (!element) {
+				throw new Error(
+					`管理画面の要素が見つかりません: ${selector}`
+				);
+			}
+
+			return element;
+		}
+
+
+		/* ========================================
+		   DOM
+		======================================== */
 
 		const refreshButton =
-			document.querySelector<HTMLButtonElement>(
+			getElement<HTMLButtonElement>(
 				'#refresh-button'
-			)!;
+			);
 
 		const pendingCount =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#pending-count'
-			)!;
+			);
 
 		const approvedCount =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#approved-count'
-			)!;
+			);
 
 		const publishingCount =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#publishing-count'
-			)!;
+			);
 
 		const pageCount =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#page-count'
-			)!;
+			);
 
 		const pendingLabel =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#pending-label'
-			)!;
+			);
 
 		const approvedLabel =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#approved-label'
-			)!;
+			);
 
 		const publishingLabel =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#publishing-label'
-			)!;
+			);
 
 		const loadingState =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#loading-state'
-			)!;
+			);
 
 		const errorState =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#error-state'
-			)!;
+			);
 
 		const errorMessage =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#error-message'
-			)!;
+			);
 
 		const dashboardContent =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#dashboard-content'
-			)!;
+			);
 
 		const pendingEmpty =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#pending-empty'
-			)!;
+			);
 
 		const approvedEmpty =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#approved-empty'
-			)!;
+			);
 
 		const publishingEmpty =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#publishing-empty'
-			)!;
+			);
 
 		const activityEmpty =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#activity-empty'
-			)!;
+			);
 
 		const pendingList =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#pending-list'
-			)!;
+			);
 
 		const approvedList =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#approved-list'
-			)!;
+			);
 
 		const publishingList =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#publishing-list'
-			)!;
+			);
 
 		const activityList =
-			document.querySelector<HTMLElement>(
+			getElement<HTMLElement>(
 				'#activity-list'
-			)!;
+			);
+
+		const publishNotice =
+			getElement<HTMLElement>(
+				'#publish-notice'
+			);
+
+		const publishNoticeTitle =
+			getElement<HTMLElement>(
+				'#publish-notice-title'
+			);
+
+		const publishNoticeText =
+			getElement<HTMLElement>(
+				'#publish-notice-text'
+			);
 
 
-		function escapeHtml(value: unknown) {
+		/* ========================================
+		   Helpers
+		======================================== */
+
+		function escapeHtml(
+			value: unknown
+		): string {
 			return String(value ?? '')
-				.replaceAll('&', '&amp;')
-				.replaceAll('<', '&lt;')
-				.replaceAll('>', '&gt;')
-				.replaceAll('"', '&quot;')
-				.replaceAll("'", '&#039;');
+				.replaceAll(
+					'&',
+					'&amp;'
+				)
+				.replaceAll(
+					'<',
+					'&lt;'
+				)
+				.replaceAll(
+					'>',
+					'&gt;'
+				)
+				.replaceAll(
+					'"',
+					'&quot;'
+				)
+				.replaceAll(
+					"'",
+					'&#039;'
+				);
 		}
 
 
 		function formatDate(
 			value: string | null | undefined
-		) {
-			if (!value) return '—';
+		): string {
+			if (!value) {
+				return '—';
+			}
 
-			const date = new Date(value);
+			const date =
+				new Date(value);
 
-			if (Number.isNaN(date.getTime())) {
+			if (
+				Number.isNaN(
+					date.getTime()
+				)
+			) {
 				return value;
 			}
 
@@ -1413,11 +2707,19 @@
 		function getRequests(
 			data: RequestsResponse
 		): EditRequest[] {
-			if (Array.isArray(data.editRequests)) {
+			if (
+				Array.isArray(
+					data.editRequests
+				)
+			) {
 				return data.editRequests;
 			}
 
-			if (Array.isArray(data.requests)) {
+			if (
+				Array.isArray(
+					data.requests
+				)
+			) {
 				return data.requests;
 			}
 
@@ -1427,7 +2729,7 @@
 
 		function getStatusLabel(
 			status: string
-		) {
+		): string {
 			switch (status) {
 				case 'draft':
 					return '下書き';
@@ -1453,19 +2755,214 @@
 		}
 
 
+		function showPublishNotice(
+			type: 'success' | 'error',
+			title: string,
+			message: string
+		): void {
+			publishNotice.classList.remove(
+				'success',
+				'error'
+			);
+
+			publishNotice.classList.add(
+				type
+			);
+
+			publishNoticeTitle.textContent =
+				title;
+
+			publishNoticeText.textContent =
+				message;
+
+			publishNotice.hidden = false;
+
+			window.setTimeout(
+				() => {
+					publishNotice.hidden = true;
+				},
+				7000
+			);
+		}
+
+
+		/* ========================================
+		   Publish
+		======================================== */
+
+		async function publishRequest(
+			requestId: string,
+			button: HTMLButtonElement
+		): Promise<void> {
+			const confirmed =
+				window.confirm(
+					'この編集申請をGitHubへ公開処理します。\n\n' +
+					'承認済みのRevisionをGitHubへ反映するためのPRを作成します。\n\n' +
+					'公開処理を開始しますか？'
+				);
+
+			if (!confirmed) {
+				return;
+			}
+
+
+			button.disabled = true;
+
+			const originalText =
+				button.textContent ||
+				'公開する';
+
+			button.textContent =
+				'公開処理を開始しています…';
+
+
+			try {
+				const response =
+					await fetch(
+						`/api/wiki/edit-requests/${encodeURIComponent(requestId)}/publish`,
+						{
+							method: 'POST',
+							credentials: 'include',
+							headers: {
+								'Content-Type':
+									'application/json',
+							},
+						}
+					);
+
+
+				let data:
+					PublishResponse = {};
+
+
+				try {
+					data =
+						await response.json();
+				} catch {
+					data = {};
+				}
+
+
+				if (
+					!response.ok ||
+					data.ok !== true
+				) {
+					const message =
+						data.error ||
+						`公開処理に失敗しました。HTTP ${response.status}`;
+
+					throw new Error(
+						message
+					);
+				}
+
+
+				const details: string[] =
+					[];
+
+
+				if (
+					typeof data.github?.pullRequest?.number ===
+					'number'
+				) {
+					details.push(
+						`PR #${data.github.pullRequest.number}`
+					);
+				}
+
+
+				if (
+					typeof data.github?.pullRequest?.html_url ===
+					'string' &&
+					data.github.pullRequest.html_url.length > 0
+				) {
+					details.push(
+						data.github.pullRequest.html_url
+					);
+				}
+
+
+				showPublishNotice(
+					'success',
+					'公開処理を開始しました',
+					details.length > 0
+						? details.join('\n')
+						: 'GitHubへの公開処理を開始しました。'
+				);
+
+
+				await loadDashboard();
+
+			} catch (error: unknown) {
+				console.error(
+					'Publish request error:',
+					error
+				);
+
+
+				showPublishNotice(
+					'error',
+					'公開処理に失敗しました',
+					error instanceof Error
+						? error.message
+						: '公開処理中にエラーが発生しました。'
+				);
+
+
+				button.disabled = false;
+
+				button.textContent =
+					originalText;
+			}
+		}
+
+
+		/* ========================================
+		   Request card
+		======================================== */
+
 		function renderRequestCard(
 			request: EditRequest
-		) {
-			const statusClass =
-				[
+		): string {
+			const validStatusClasses:
+				string[] = [
 					'pending',
 					'approved',
 					'publishing',
 					'rejected',
 					'published',
-				].includes(request.status)
+				];
+
+
+			const statusClass =
+				validStatusClasses.includes(
+					request.status
+				)
 					? request.status
 					: '';
+
+
+			const detailUrl =
+				`/wiki/edit-request/?id=${encodeURIComponent(
+					request.id
+				)}`;
+
+
+			const publishButton =
+				request.status === 'approved'
+					? `
+						<button
+							type="button"
+							class="publish-button"
+							data-publish-id="${escapeHtml(
+								request.id
+							)}"
+						>
+							公開する
+						</button>
+					`
+					: '';
+
 
 			return `
 				<article class="request-card">
@@ -1576,17 +3073,28 @@
 
 						<div
 							class="request-id"
-							title="${escapeHtml(request.id)}"
+							title="${escapeHtml(
+								request.id
+							)}"
 						>
-							ID: ${escapeHtml(request.id)}
+							ID: ${escapeHtml(
+								request.id
+							)}
 						</div>
 
-						<a
-							class="primary-button"
-							href="/wiki/edit-request/?id=${encodeURIComponent(request.id)}"
-						>
-							詳細を見る
-						</a>
+
+						<div class="request-actions">
+
+							<a
+								class="secondary-button"
+								href="${detailUrl}"
+							>
+								詳細を見る
+							</a>
+
+							${publishButton}
+
+						</div>
 
 					</div>
 
@@ -1595,46 +3103,122 @@
 		}
 
 
+		/* ========================================
+		   Publish button events
+		======================================== */
+
+		function bindPublishButtons(
+			container: HTMLElement
+		): void {
+			const buttons =
+				container.querySelectorAll<HTMLButtonElement>(
+					'[data-publish-id]'
+				);
+
+
+			buttons.forEach(
+				(
+					button: HTMLButtonElement
+				): void => {
+					button.addEventListener(
+						'click',
+						(): void => {
+							const requestId =
+								button.dataset.publishId;
+
+							if (
+								!requestId
+							) {
+								return;
+							}
+
+							void publishRequest(
+								requestId,
+								button
+							);
+						}
+					);
+				}
+			);
+		}
+
+
+		/* ========================================
+		   Status section
+		======================================== */
+
 		function renderStatusSection(
 			requests: EditRequest[],
 			status: string,
 			listElement: HTMLElement,
 			emptyElement: HTMLElement,
 			labelElement: HTMLElement
-		) {
+		): void {
 			const filtered =
 				requests.filter(
-					(request) =>
-						request.status === status
+					(
+						request: EditRequest
+					): boolean =>
+						request.status ===
+						status
 				);
+
 
 			labelElement.textContent =
 				`${filtered.length}件`;
 
-			if (filtered.length === 0) {
+
+			if (
+				filtered.length === 0
+			) {
 				listElement.hidden = true;
 				emptyElement.hidden = false;
 				listElement.innerHTML = '';
+
 				return;
 			}
+
 
 			emptyElement.hidden = true;
 			listElement.hidden = false;
 
+
 			listElement.innerHTML =
 				filtered
-					.map(renderRequestCard)
+					.map(
+						(
+							request: EditRequest
+						): string =>
+							renderRequestCard(
+								request
+							)
+					)
 					.join('');
+
+
+			if (
+				status === 'approved'
+			) {
+				bindPublishButtons(
+					listElement
+				);
+			}
 		}
 
 
+		/* ========================================
+		   Activity
+		======================================== */
+
 		function renderActivity(
 			requests: EditRequest[]
-		) {
+		): void {
 			const processed =
 				requests
 					.filter(
-						(request) =>
+						(
+							request: EditRequest
+						): boolean =>
 							[
 								'rejected',
 								'published',
@@ -1643,7 +3227,10 @@
 							)
 					)
 					.sort(
-						(a, b) =>
+						(
+							a: EditRequest,
+							b: EditRequest
+						): number =>
 							new Date(
 								b.reviewed_at ||
 								b.created_at ||
@@ -1655,13 +3242,19 @@
 								0
 							).getTime()
 					)
-					.slice(0, 10);
+					.slice(
+						0,
+						10
+					);
 
 
-			if (processed.length === 0) {
+			if (
+				processed.length === 0
+			) {
 				activityList.hidden = true;
 				activityEmpty.hidden = false;
 				activityList.innerHTML = '';
+
 				return;
 			}
 
@@ -1673,7 +3266,9 @@
 			activityList.innerHTML =
 				processed
 					.map(
-						(request) => `
+						(
+							request: EditRequest
+						): string => `
 							<article class="activity-card">
 
 								<div class="activity-main">
@@ -1717,7 +3312,9 @@
 
 								<a
 									class="activity-action"
-									href="/wiki/edit-request/?id=${encodeURIComponent(request.id)}"
+									href="/wiki/edit-request/?id=${encodeURIComponent(
+										request.id
+									)}"
 								>
 									詳細を見る
 								</a>
@@ -1729,40 +3326,63 @@
 		}
 
 
+		/* ========================================
+		   Dashboard
+		======================================== */
+
 		function renderDashboard(
 			requests: EditRequest[],
 			pages: unknown[]
-		) {
+		): void {
 			const pending =
 				requests.filter(
-					(request) =>
-						request.status === 'pending'
+					(
+						request: EditRequest
+					): boolean =>
+						request.status ===
+						'pending'
 				);
+
 
 			const approved =
 				requests.filter(
-					(request) =>
-						request.status === 'approved'
+					(
+						request: EditRequest
+					): boolean =>
+						request.status ===
+						'approved'
 				);
+
 
 			const publishing =
 				requests.filter(
-					(request) =>
-						request.status === 'publishing'
+					(
+						request: EditRequest
+					): boolean =>
+						request.status ===
+						'publishing'
 				);
 
 
 			pendingCount.textContent =
-				String(pending.length);
+				String(
+					pending.length
+				);
 
 			approvedCount.textContent =
-				String(approved.length);
+				String(
+					approved.length
+				);
 
 			publishingCount.textContent =
-				String(publishing.length);
+				String(
+					publishing.length
+				);
 
 			pageCount.textContent =
-				String(pages.length);
+				String(
+					pages.length
+				);
 
 
 			renderStatusSection(
@@ -1773,6 +3393,7 @@
 				pendingLabel
 			);
 
+
 			renderStatusSection(
 				requests,
 				'approved',
@@ -1780,6 +3401,7 @@
 				approvedEmpty,
 				approvedLabel
 			);
+
 
 			renderStatusSection(
 				requests,
@@ -1789,18 +3411,29 @@
 				publishingLabel
 			);
 
-			renderActivity(requests);
+
+			renderActivity(
+				requests
+			);
 		}
 
 
-		async function loadDashboard() {
+		/* ========================================
+		   Load dashboard
+		======================================== */
 
+		async function loadDashboard(): Promise<void> {
 			loadingState.hidden = false;
 			errorState.hidden = true;
 			dashboardContent.hidden = true;
 
-			try {
 
+			refreshButton.disabled = true;
+			refreshButton.textContent =
+				'読み込み中…';
+
+
+			try {
 				const meResponse =
 					await fetch(
 						'/me',
@@ -1809,14 +3442,22 @@
 						}
 					);
 
-				if (!meResponse.ok) {
+
+				if (
+					!meResponse.ok
+				) {
 					throw new Error(
 						'ログイン状態を確認できませんでした。'
 					);
 				}
 
 
-				const me =
+				const me: {
+					loggedIn?: boolean;
+					user?: {
+						role?: string;
+					} | null;
+				} =
 					await meResponse.json();
 
 
@@ -1835,24 +3476,29 @@
 				const [
 					requestResponse,
 					pageResponse,
-				] = await Promise.all([
-					fetch(
-						'/api/wiki/edit-requests',
-						{
-							credentials: 'include',
-						}
-					),
+				] =
+					await Promise.all([
+						fetch(
+							'/api/wiki/edit-requests',
+							{
+								credentials:
+									'include',
+							}
+						),
 
-					fetch(
-						'/api/wiki/pages',
-						{
-							credentials: 'include',
-						}
-					),
-				]);
+						fetch(
+							'/api/wiki/pages',
+							{
+								credentials:
+									'include',
+							}
+						),
+					]);
 
 
-				if (!requestResponse.ok) {
+				if (
+					!requestResponse.ok
+				) {
 					throw new Error(
 						'編集申請を取得できませんでした。'
 					);
@@ -1865,17 +3511,22 @@
 
 
 				const requests =
-					getRequests(requestData);
+					getRequests(
+						requestData
+					);
 
 
-				let pages: unknown[] = [];
+				let pages:
+					unknown[] = [];
 
 
-				if (pageResponse.ok) {
-
+				if (
+					pageResponse.ok
+				) {
 					const pageData:
 						PagesResponse =
 						await pageResponse.json();
+
 
 					if (
 						Array.isArray(
@@ -1894,38 +3545,62 @@
 				);
 
 
-				loadingState.hidden = true;
-				errorState.hidden = true;
-				dashboardContent.hidden = false;
+				loadingState.hidden =
+					true;
 
-			} catch (error) {
+				errorState.hidden =
+					true;
 
+				dashboardContent.hidden =
+					false;
+
+			} catch (
+				error: unknown
+			) {
 				console.error(
 					'Admin dashboard error:',
 					error
 				);
 
-				loadingState.hidden = true;
-				dashboardContent.hidden = true;
-				errorState.hidden = false;
+
+				loadingState.hidden =
+					true;
+
+				dashboardContent.hidden =
+					true;
+
+				errorState.hidden =
+					false;
+
 
 				errorMessage.textContent =
 					error instanceof Error
 						? error.message
 						: '管理情報を取得できませんでした。';
+
+			} finally {
+				refreshButton.disabled =
+					false;
+
+				refreshButton.textContent =
+					'再読み込み';
 			}
 		}
 
 
+		/* ========================================
+		   Events
+		======================================== */
+
 		refreshButton.addEventListener(
 			'click',
-			() => {
-				loadDashboard();
+			(): void => {
+				void loadDashboard();
 			}
 		);
 
 
-		loadDashboard();
+		void loadDashboard();
 	</script>
 </body>
 </html>

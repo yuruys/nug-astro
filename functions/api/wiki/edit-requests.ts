@@ -369,6 +369,15 @@ export const onRequestPost: PagesFunction<Env> = async ({
  * 例:
  * GET /api/wiki/edit-requests
  * GET /api/wiki/edit-requests?status=draft
+ * GET /api/wiki/edit-requests?status=draft&pagePath=/docs/
+ *
+ * pagePathを指定した場合:
+ * - 現在ログイン中のユーザー自身のリクエストだけを対象にする
+ * - 指定されたWikiページだけを対象にする
+ * - 最新の1件だけを返す
+ *
+ * これはWiki編集画面を再度開いた際に、
+ * 保存済みのdraftを復元するために使用する。
  */
 export const onRequestGet: PagesFunction<Env> = async ({
 	env,
@@ -401,7 +410,10 @@ export const onRequestGet: PagesFunction<Env> = async ({
 		}
 
 		const url = new URL(request.url);
+
 		const status = url.searchParams.get('status');
+		const pagePath =
+			url.searchParams.get('pagePath')?.trim() || null;
 
 		if (
 			status &&
@@ -419,6 +431,9 @@ export const onRequestGet: PagesFunction<Env> = async ({
 			);
 		}
 
+		/**
+		 * 基本クエリ
+		 */
 		let query = `
 			SELECT
 				er.id,
@@ -450,6 +465,7 @@ export const onRequestGet: PagesFunction<Env> = async ({
 
 			INNER JOIN wiki_revisions r
 				ON r.id = er.revision_id
+				AND r.page_id = er.page_id
 
 			INNER JOIN users editor
 				ON editor.id = er.user_id
@@ -458,19 +474,69 @@ export const onRequestGet: PagesFunction<Env> = async ({
 				ON reviewer.id = er.reviewer_id
 		`;
 
+		const conditions: string[] = [];
 		const params: string[] = [];
 
+		/**
+		 * status指定
+		 */
 		if (status) {
-			query += `
-				WHERE er.status = ?
-			`;
+			conditions.push(`
+				er.status = ?
+			`);
 
 			params.push(status);
 		}
 
+		/**
+		 * pagePath指定
+		 *
+		 * pagePathを指定する用途は、
+		 * Wiki編集画面から自分のdraftを探す場合。
+		 *
+		 * そのため必ず現在ログイン中のユーザー自身に限定する。
+		 */
+		if (pagePath) {
+			conditions.push(`
+				er.user_id = ?
+			`);
+
+			params.push(user.user_id);
+
+			conditions.push(`
+				p.path = ?
+			`);
+
+			params.push(pagePath);
+		}
+
+		/**
+		 * WHERE句
+		 */
+		if (conditions.length > 0) {
+			query += `
+				WHERE ${conditions.join('\nAND ')}
+			`;
+		}
+
+		/**
+		 * 新しいものから取得
+		 */
 		query += `
 			ORDER BY er.created_at DESC
 		`;
+
+		/**
+		 * pagePath指定時は最新の1件だけ取得
+		 *
+		 * 同じページに古いdraftが残っていた場合でも、
+		 * 最新のdraftを復元できるようにする。
+		 */
+		if (pagePath) {
+			query += `
+				LIMIT 1
+			`;
+		}
 
 		const result =
 			params.length > 0

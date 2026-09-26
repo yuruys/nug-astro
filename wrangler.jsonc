@@ -6,7 +6,8 @@
     {
       "binding": "DB",
       "database_name": "nugbase-db",
-      "database_id": "d6e7e462-b36e-4387-b14b-5dfa3fb2c044"
+      "database_id": "d6e7e462-b36e-4387-b14b-5dfa3fb2c044",
+      "remote": true
     }
   ]
 }

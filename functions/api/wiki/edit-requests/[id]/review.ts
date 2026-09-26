@@ -273,7 +273,7 @@ export const onRequestPost: PagesFunction<Env> =
 			 * ========================================
 			 */
 
-			await env.DB.prepare(`
+			const updateResult = await env.DB.prepare(`
 				UPDATE edit_requests
 				SET
 					status = ?,
@@ -281,6 +281,7 @@ export const onRequestPost: PagesFunction<Env> =
 					review_comment = ?,
 					reviewed_at = ?
 				WHERE id = ?
+					AND status = 'pending'
 			`)
 				.bind(
 					status,
@@ -290,6 +291,16 @@ export const onRequestPost: PagesFunction<Env> =
 					editRequestId
 				)
 				.run();
+
+			if (updateResult.meta?.changes !== 1) {
+				return json(
+					{
+						ok: false,
+						error: 'Edit request is no longer pending',
+					},
+					409
+				);
+			}
 
 			/*
 			 * ========================================

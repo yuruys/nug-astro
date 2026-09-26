@@ -581,10 +581,12 @@ export const onRequestPost =
 							created_at
 						FROM wiki_revisions
 						WHERE id = ?
+						  AND page_id = ?
 						LIMIT 1
 					`)
 						.bind(
 							editRequest.published_revision_id,
+							editRequest.page_id,
 						)
 						.first<RevisionRow>();
 			}

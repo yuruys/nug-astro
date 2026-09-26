@@ -480,6 +480,8 @@ const isActive = (href: string): boolean => {
 		document.querySelector<HTMLElement>(
 			".site-header"
 		);
+	const isWikiPage =
+		header?.classList.contains("is-wiki") ?? false;
 
 	/* =========================================================
 	   Authentication
@@ -497,7 +499,7 @@ const isActive = (href: string): boolean => {
 	========================================================= */
 
 	const addWikiEditButton = (): void => {
-		if (!isWiki) {
+		if (!isWikiPage) {
 			return;
 		}
 
@@ -578,7 +580,7 @@ const isActive = (href: string): boolean => {
 			"nug-wiki-edit-button";
 
 		editButton.href =
-			`/wiki/edit?path=${encodeURIComponent(
+			`/wiki/edit/?path=${encodeURIComponent(
 				currentPath
 			)}`;
 

@@ -190,6 +190,19 @@ export const onRequestGet: PagesFunction<Env> = async ({
 			);
 		}
 
+		if (
+			editRequest.user_id !== user.user_id &&
+			user.role !== 'admin'
+		) {
+			return json(
+				{
+					ok: false,
+					error: 'You can only view your own edit requests',
+				},
+				403
+			);
+		}
+
 		/**
 		 * 編集者が作成したRevision
 		 */
@@ -212,10 +225,11 @@ export const onRequestGet: PagesFunction<Env> = async ({
 					ON editor.id = r.editor_id
 
 				WHERE r.id = ?
+					AND r.page_id = ?
 
 				LIMIT 1
 			`)
-				.bind(editRequest.revision_id)
+				.bind(editRequest.revision_id, editRequest.page_id)
 				.first();
 
 		/**
@@ -243,11 +257,13 @@ export const onRequestGet: PagesFunction<Env> = async ({
 						ON editor.id = r.editor_id
 
 					WHERE r.id = ?
+						AND r.page_id = ?
 
 					LIMIT 1
 				`)
 					.bind(
-						editRequest.base_revision_id
+						editRequest.base_revision_id,
+						editRequest.page_id
 					)
 					.first();
 		}
@@ -277,11 +293,13 @@ export const onRequestGet: PagesFunction<Env> = async ({
 						ON editor.id = r.editor_id
 
 					WHERE r.id = ?
+						AND r.page_id = ?
 
 					LIMIT 1
 				`)
 					.bind(
-						editRequest.published_revision_id
+						editRequest.published_revision_id,
+						editRequest.page_id
 					)
 					.first();
 		}
@@ -583,19 +601,32 @@ export const onRequestPut: PagesFunction<Env> = async ({
 		/**
 		 * 編集リクエストを新Revisionへ更新
 		 */
-		await env.DB.prepare(`
+		const updateResult = await env.DB.prepare(`
 			UPDATE edit_requests
 			SET
 				revision_id = ?,
 				message = ?
 			WHERE id = ?
+				AND status = 'draft'
+				AND revision_id = ?
 		`)
 			.bind(
 				revisionId,
 				message,
-				editRequestId
+				editRequestId,
+				editRequest.revision_id
 			)
 			.run();
+
+		if (updateResult.meta?.changes !== 1) {
+			return json(
+				{
+					ok: false,
+					error: 'Draft changed while it was being saved. Reload and try again.',
+				},
+				409
+			);
+		}
 
 		/**
 		 * 監査ログ

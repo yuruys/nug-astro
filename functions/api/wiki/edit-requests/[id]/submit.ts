@@ -205,14 +205,25 @@ export const onRequestPost: PagesFunction<Env> = async ({
 		/**
 		 * draft → pending
 		 */
-		await env.DB.prepare(`
+		const updateResult = await env.DB.prepare(`
 			UPDATE edit_requests
 			SET
 				status = 'pending'
 			WHERE id = ?
+				AND status = 'draft'
 		`)
 			.bind(editRequestId)
 			.run();
+
+		if (updateResult.meta?.changes !== 1) {
+			return json(
+				{
+					ok: false,
+					error: 'Edit request is no longer in draft state',
+				},
+				409
+			);
+		}
 
 		/**
 		 * 監査ログ

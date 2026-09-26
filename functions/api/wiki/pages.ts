@@ -22,6 +22,7 @@ export const onRequestGet: PagesFunction<Env> = async ({
 				FROM wiki_pages p
 				LEFT JOIN wiki_revisions r
 					ON r.id = p.published_revision_id
+					AND r.page_id = p.id
 				WHERE p.path = ?
 				LIMIT 1
 			`)
@@ -54,6 +55,7 @@ export const onRequestGet: PagesFunction<Env> = async ({
 			FROM wiki_pages p
 			LEFT JOIN wiki_revisions r
 				ON r.id = p.published_revision_id
+				AND r.page_id = p.id
 			ORDER BY p.path ASC
 		`).all();
 
