@@ -1,0 +1,1931 @@
+---
+---
+
+<!doctype html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<title>NUGBASE 管理画面</title>
+
+	<style>
+		:root {
+			color-scheme: dark;
+
+			--bg: #111315;
+			--bg-soft: #171a1d;
+			--panel: #1d2125;
+			--panel-hover: #24292e;
+			--border: #343a40;
+
+			--text: #f1f3f5;
+			--text-soft: #adb5bd;
+			--text-muted: #868e96;
+
+			--accent: #7cc576;
+			--accent-soft: rgba(124, 197, 118, 0.12);
+
+			--warning: #e6b450;
+			--warning-soft: rgba(230, 180, 80, 0.12);
+
+			--danger: #e57373;
+			--danger-soft: rgba(229, 115, 115, 0.12);
+
+			--info: #74a9df;
+			--info-soft: rgba(116, 169, 223, 0.12);
+
+			--purple: #b58de8;
+			--purple-soft: rgba(181, 141, 232, 0.12);
+
+			--radius: 8px;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			min-height: 100%;
+		}
+
+		body {
+			background:
+				linear-gradient(
+					180deg,
+					#111315 0%,
+					#15181b 100%
+				);
+
+			color: var(--text);
+
+			font-family:
+				-apple-system,
+				BlinkMacSystemFont,
+				"Segoe UI",
+				"Helvetica Neue",
+				Arial,
+				sans-serif;
+
+			line-height: 1.6;
+		}
+
+		button,
+		a {
+			font: inherit;
+		}
+
+		a {
+			color: inherit;
+			text-decoration: none;
+		}
+
+		[hidden] {
+			display: none !important;
+		}
+
+		/* ========================================
+		   Layout
+		======================================== */
+
+		.admin-shell {
+			min-height: 100vh;
+		}
+
+		.admin-header {
+			position: sticky;
+			top: 0;
+			z-index: 20;
+
+			border-bottom: 1px solid var(--border);
+
+			background: rgba(17, 19, 21, 0.92);
+			backdrop-filter: blur(12px);
+		}
+
+		.admin-header-inner {
+			width: min(1200px, calc(100% - 32px));
+			min-height: 68px;
+			margin: 0 auto;
+
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 20px;
+		}
+
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			min-width: 0;
+		}
+
+		.brand-mark {
+			display: grid;
+			place-items: center;
+
+			width: 38px;
+			height: 38px;
+
+			border: 1px solid #495057;
+			border-radius: 6px;
+
+			background:
+				linear-gradient(
+					145deg,
+					#5c8d52,
+					#3d6038
+				);
+
+			font-size: 13px;
+			font-weight: 900;
+			letter-spacing: 0.04em;
+
+			box-shadow:
+				inset 0 1px rgba(255,255,255,0.12),
+				0 3px 10px rgba(0,0,0,0.3);
+		}
+
+		.brand-text {
+			min-width: 0;
+		}
+
+		.brand-title {
+			font-size: 15px;
+			font-weight: 800;
+			letter-spacing: 0.02em;
+		}
+
+		.brand-subtitle {
+			margin-top: 1px;
+
+			color: var(--text-muted);
+			font-size: 11px;
+		}
+
+		.header-actions {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.header-link {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+
+			min-height: 36px;
+			padding: 0 12px;
+
+			border: 1px solid var(--border);
+			border-radius: 6px;
+
+			background: var(--panel);
+
+			color: var(--text-soft);
+			font-size: 13px;
+			font-weight: 700;
+
+			transition:
+				background 0.15s ease,
+				border-color 0.15s ease,
+				color 0.15s ease;
+		}
+
+		.header-link:hover {
+			background: var(--panel-hover);
+			border-color: #495057;
+			color: var(--text);
+		}
+
+		/* ========================================
+		   Main
+		======================================== */
+
+		.admin-main {
+			width: min(1200px, calc(100% - 32px));
+			margin: 0 auto;
+			padding: 42px 0 72px;
+		}
+
+		.page-heading {
+			margin-bottom: 30px;
+		}
+
+		.page-heading-row {
+			display: flex;
+			align-items: flex-end;
+			justify-content: space-between;
+			gap: 20px;
+		}
+
+		.page-heading h1 {
+			margin: 0;
+
+			font-size: clamp(26px, 4vw, 36px);
+			line-height: 1.2;
+			letter-spacing: -0.02em;
+		}
+
+		.page-heading p {
+			margin: 8px 0 0;
+
+			color: var(--text-soft);
+			font-size: 14px;
+		}
+
+		.refresh-button {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+
+			min-height: 36px;
+			padding: 0 12px;
+
+			border: 1px solid var(--border);
+			border-radius: 6px;
+
+			background: var(--panel);
+			color: var(--text-soft);
+
+			font-size: 12px;
+			font-weight: 800;
+
+			cursor: pointer;
+		}
+
+		.refresh-button:hover {
+			background: var(--panel-hover);
+			border-color: #495057;
+			color: var(--text);
+		}
+
+		/* ========================================
+		   Dashboard cards
+		======================================== */
+
+		.dashboard-grid {
+			display: grid;
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 14px;
+
+			margin-bottom: 42px;
+		}
+
+		.dashboard-card {
+			padding: 20px;
+
+			border: 1px solid var(--border);
+			border-radius: var(--radius);
+
+			background:
+				linear-gradient(
+					145deg,
+					rgba(255,255,255,0.025),
+					rgba(255,255,255,0)
+				),
+				var(--panel);
+
+			box-shadow:
+				0 5px 18px rgba(0,0,0,0.18);
+		}
+
+		.dashboard-card-label {
+			color: var(--text-muted);
+			font-size: 12px;
+			font-weight: 700;
+		}
+
+		.dashboard-card-value {
+			margin-top: 8px;
+
+			font-size: 32px;
+			font-weight: 900;
+			line-height: 1;
+		}
+
+		.dashboard-card-note {
+			margin-top: 9px;
+
+			color: var(--text-soft);
+			font-size: 11px;
+		}
+
+		.dashboard-card.pending {
+			border-color: rgba(230, 180, 80, 0.35);
+
+			background:
+				linear-gradient(
+					145deg,
+					var(--warning-soft),
+					transparent
+				),
+				var(--panel);
+		}
+
+		.dashboard-card.pending .dashboard-card-value {
+			color: var(--warning);
+		}
+
+		.dashboard-card.approved {
+			border-color: rgba(124, 197, 118, 0.3);
+
+			background:
+				linear-gradient(
+					145deg,
+					var(--accent-soft),
+					transparent
+				),
+				var(--panel);
+		}
+
+		.dashboard-card.approved .dashboard-card-value {
+			color: var(--accent);
+		}
+
+		.dashboard-card.publishing {
+			border-color: rgba(116, 169, 223, 0.35);
+
+			background:
+				linear-gradient(
+					145deg,
+					var(--info-soft),
+					transparent
+				),
+				var(--panel);
+		}
+
+		.dashboard-card.publishing .dashboard-card-value {
+			color: var(--info);
+		}
+
+		.dashboard-card.pages {
+			border-color: rgba(181, 141, 232, 0.3);
+
+			background:
+				linear-gradient(
+					145deg,
+					var(--purple-soft),
+					transparent
+				),
+				var(--panel);
+		}
+
+		.dashboard-card.pages .dashboard-card-value {
+			color: var(--purple);
+		}
+
+		/* ========================================
+		   Section
+		======================================== */
+
+		.section {
+			margin-top: 38px;
+		}
+
+		.section-heading {
+			display: flex;
+			align-items: baseline;
+			justify-content: space-between;
+			gap: 16px;
+
+			margin-bottom: 14px;
+		}
+
+		.section-heading h2 {
+			margin: 0;
+
+			font-size: 19px;
+			font-weight: 800;
+		}
+
+		.section-heading span {
+			color: var(--text-muted);
+			font-size: 12px;
+		}
+
+		/* ========================================
+		   Request cards
+		======================================== */
+
+		.request-list {
+			display: grid;
+			gap: 12px;
+		}
+
+		.request-card {
+			border: 1px solid var(--border);
+			border-radius: var(--radius);
+
+			background: var(--panel);
+
+			overflow: hidden;
+		}
+
+		.request-main {
+			padding: 20px;
+		}
+
+		.request-top {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 18px;
+		}
+
+		.request-title {
+			min-width: 0;
+		}
+
+		.request-title h3 {
+			margin: 0;
+
+			font-size: 16px;
+			line-height: 1.4;
+		}
+
+		.request-path {
+			margin-top: 4px;
+
+			color: var(--text-muted);
+
+			font-family:
+				ui-monospace,
+				SFMono-Regular,
+				Menlo,
+				Monaco,
+				Consolas,
+				monospace;
+
+			font-size: 12px;
+		}
+
+		.status-badge {
+			flex: 0 0 auto;
+
+			display: inline-flex;
+			align-items: center;
+
+			min-height: 26px;
+			padding: 0 9px;
+
+			border: 1px solid var(--border);
+			border-radius: 999px;
+
+			background: var(--bg-soft);
+			color: var(--text-soft);
+
+			font-size: 11px;
+			font-weight: 800;
+			white-space: nowrap;
+		}
+
+		.status-badge.pending {
+			border-color: rgba(230, 180, 80, 0.35);
+			background: var(--warning-soft);
+			color: var(--warning);
+		}
+
+		.status-badge.approved {
+			border-color: rgba(124, 197, 118, 0.35);
+			background: var(--accent-soft);
+			color: var(--accent);
+		}
+
+		.status-badge.publishing {
+			border-color: rgba(116, 169, 223, 0.35);
+			background: var(--info-soft);
+			color: var(--info);
+		}
+
+		.status-badge.rejected {
+			border-color: rgba(229, 115, 115, 0.35);
+			background: var(--danger-soft);
+			color: var(--danger);
+		}
+
+		.status-badge.published {
+			border-color: rgba(124, 197, 118, 0.35);
+			background: var(--accent-soft);
+			color: var(--accent);
+		}
+
+		.request-meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px 18px;
+
+			margin-top: 16px;
+
+			color: var(--text-soft);
+			font-size: 12px;
+		}
+
+		.request-meta strong {
+			color: var(--text);
+			font-weight: 700;
+		}
+
+		.request-message {
+			margin-top: 14px;
+			padding: 12px 14px;
+
+			border-left: 3px solid #495057;
+
+			background: rgba(255,255,255,0.025);
+
+			color: var(--text-soft);
+			font-size: 13px;
+
+			white-space: pre-wrap;
+			word-break: break-word;
+		}
+
+		.request-footer {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+
+			padding: 12px 20px;
+
+			border-top: 1px solid var(--border);
+
+			background: rgba(0,0,0,0.12);
+		}
+
+		.request-id {
+			color: var(--text-muted);
+
+			font-family:
+				ui-monospace,
+				SFMono-Regular,
+				Menlo,
+				Monaco,
+				Consolas,
+				monospace;
+
+			font-size: 10px;
+
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.primary-button {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+
+			min-height: 36px;
+			padding: 0 14px;
+
+			border: 1px solid #689d62;
+			border-radius: 6px;
+
+			background: #466c41;
+			color: #fff;
+
+			font-size: 12px;
+			font-weight: 800;
+
+			transition:
+				background 0.15s ease,
+				border-color 0.15s ease,
+				transform 0.15s ease;
+		}
+
+		.primary-button:hover {
+			background: #527f4c;
+			border-color: #7fba77;
+			transform: translateY(-1px);
+		}
+
+		/* ========================================
+		   Activity
+		======================================== */
+
+		.activity-list {
+			display: grid;
+			gap: 10px;
+		}
+
+		.activity-card {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			gap: 16px;
+
+			padding: 15px 18px;
+
+			border: 1px solid var(--border);
+			border-radius: var(--radius);
+
+			background: var(--panel);
+		}
+
+		.activity-main {
+			min-width: 0;
+		}
+
+		.activity-title {
+			font-size: 14px;
+			font-weight: 800;
+		}
+
+		.activity-path {
+			margin-top: 3px;
+
+			color: var(--text-muted);
+
+			font-family:
+				ui-monospace,
+				SFMono-Regular,
+				Menlo,
+				Monaco,
+				Consolas,
+				monospace;
+
+			font-size: 11px;
+		}
+
+		.activity-meta {
+			margin-top: 6px;
+
+			color: var(--text-soft);
+			font-size: 11px;
+		}
+
+		.activity-action {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+
+			min-height: 34px;
+			padding: 0 12px;
+
+			border: 1px solid var(--border);
+			border-radius: 6px;
+
+			background: var(--bg-soft);
+			color: var(--text-soft);
+
+			font-size: 11px;
+			font-weight: 800;
+		}
+
+		.activity-action:hover {
+			background: var(--panel-hover);
+			color: var(--text);
+		}
+
+		/* ========================================
+		   State
+		======================================== */
+
+		.state-card {
+			padding: 36px 20px;
+
+			border: 1px dashed var(--border);
+			border-radius: var(--radius);
+
+			background: rgba(255,255,255,0.015);
+
+			text-align: center;
+		}
+
+		.state-title {
+			font-weight: 800;
+		}
+
+		.state-text {
+			margin-top: 6px;
+
+			color: var(--text-muted);
+			font-size: 13px;
+		}
+
+		.error-card {
+			border-color: rgba(229,115,115,0.35);
+			background: var(--danger-soft);
+		}
+
+		.error-card .state-title {
+			color: var(--danger);
+		}
+
+		/* ========================================
+		   Quick links
+		======================================== */
+
+		.quick-links {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.quick-link {
+			padding: 18px;
+
+			border: 1px solid var(--border);
+			border-radius: var(--radius);
+
+			background: var(--panel);
+
+			transition:
+				background 0.15s ease,
+				border-color 0.15s ease,
+				transform 0.15s ease;
+		}
+
+		.quick-link:hover {
+			background: var(--panel-hover);
+			border-color: #495057;
+			transform: translateY(-1px);
+		}
+
+		.quick-link-title {
+			font-size: 14px;
+			font-weight: 800;
+		}
+
+		.quick-link-description {
+			margin-top: 4px;
+
+			color: var(--text-muted);
+			font-size: 11px;
+		}
+
+		/* ========================================
+		   Responsive
+		======================================== */
+
+		@media (max-width: 900px) {
+			.dashboard-grid {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+
+			.quick-links {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		@media (max-width: 640px) {
+			.admin-header-inner,
+			.admin-main {
+				width: min(100% - 20px, 1200px);
+			}
+
+			.admin-main {
+				padding-top: 28px;
+			}
+
+			.brand-subtitle {
+				display: none;
+			}
+
+			.header-actions {
+				gap: 5px;
+			}
+
+			.header-link {
+				padding: 0 9px;
+				font-size: 11px;
+			}
+
+			.page-heading-row {
+				align-items: flex-start;
+				flex-direction: column;
+			}
+
+			.dashboard-grid {
+				grid-template-columns: 1fr 1fr;
+				gap: 9px;
+			}
+
+			.dashboard-card {
+				padding: 15px;
+			}
+
+			.dashboard-card-value {
+				font-size: 26px;
+			}
+
+			.request-main {
+				padding: 16px;
+			}
+
+			.request-top {
+				flex-direction: column;
+				gap: 10px;
+			}
+
+			.request-footer {
+				align-items: stretch;
+				flex-direction: column;
+			}
+
+			.primary-button {
+				width: 100%;
+			}
+
+			.activity-card {
+				grid-template-columns: 1fr;
+			}
+
+			.activity-action {
+				width: 100%;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="admin-shell">
+
+		<header class="admin-header">
+			<div class="admin-header-inner">
+
+				<a
+					href="/admin/"
+					class="brand"
+					aria-label="NUGBASE 管理画面"
+				>
+					<div class="brand-mark">NUG</div>
+
+					<div class="brand-text">
+						<div class="brand-title">
+							NUGBASE 管理画面
+						</div>
+
+						<div class="brand-subtitle">
+							Wiki Management
+						</div>
+					</div>
+				</a>
+
+				<nav class="header-actions">
+					<a
+						href="/wiki/requests/"
+						class="header-link"
+					>
+						自分の申請
+					</a>
+
+					<a
+						href="/docs/"
+						class="header-link"
+					>
+						Wikiを見る
+					</a>
+
+					<a
+						href="/account/"
+						class="header-link"
+					>
+						アカウント
+					</a>
+				</nav>
+
+			</div>
+		</header>
+
+
+		<main class="admin-main">
+
+			<section class="page-heading">
+				<div class="page-heading-row">
+
+					<div>
+						<h1>管理ダッシュボード</h1>
+
+						<p>
+							NUGBASE Wikiの編集・レビュー・公開状況を管理します。
+						</p>
+					</div>
+
+					<button
+						id="refresh-button"
+						class="refresh-button"
+						type="button"
+					>
+						再読み込み
+					</button>
+
+				</div>
+			</section>
+
+
+			<!-- ========================================
+			     Dashboard
+			======================================== -->
+
+			<section
+				class="dashboard-grid"
+				aria-label="Wiki管理状況"
+			>
+
+				<div class="dashboard-card pending">
+					<div class="dashboard-card-label">
+						レビュー待ち
+					</div>
+
+					<div
+						class="dashboard-card-value"
+						id="pending-count"
+					>
+						—
+					</div>
+
+					<div class="dashboard-card-note">
+						承認・却下が必要な申請
+					</div>
+				</div>
+
+
+				<div class="dashboard-card approved">
+					<div class="dashboard-card-label">
+						承認済み
+					</div>
+
+					<div
+						class="dashboard-card-value"
+						id="approved-count"
+					>
+						—
+					</div>
+
+					<div class="dashboard-card-note">
+						公開待ちの申請
+					</div>
+				</div>
+
+
+				<div class="dashboard-card publishing">
+					<div class="dashboard-card-label">
+						公開処理中
+					</div>
+
+					<div
+						class="dashboard-card-value"
+						id="publishing-count"
+					>
+						—
+					</div>
+
+					<div class="dashboard-card-note">
+						GitHub公開処理中の申請
+					</div>
+				</div>
+
+
+				<div class="dashboard-card pages">
+					<div class="dashboard-card-label">
+						Wikiページ
+					</div>
+
+					<div
+						class="dashboard-card-value"
+						id="page-count"
+					>
+						—
+					</div>
+
+					<div class="dashboard-card-note">
+						登録されているWikiページ
+					</div>
+				</div>
+
+			</section>
+
+
+			<!-- ========================================
+			     Loading / Error
+			======================================== -->
+
+			<div
+				id="loading-state"
+				class="state-card"
+			>
+				<div class="state-title">
+					管理情報を読み込んでいます
+				</div>
+
+				<div class="state-text">
+					しばらくお待ちください。
+				</div>
+			</div>
+
+
+			<div
+				id="error-state"
+				class="state-card error-card"
+				hidden
+			>
+				<div class="state-title">
+					読み込みに失敗しました
+				</div>
+
+				<div
+					class="state-text"
+					id="error-message"
+				>
+					管理情報を取得できませんでした。
+				</div>
+			</div>
+
+
+			<div id="dashboard-content" hidden>
+
+				<!-- ========================================
+				     Pending Reviews
+				======================================== -->
+
+				<section class="section">
+
+					<div class="section-heading">
+						<h2>レビュー申請</h2>
+
+						<span id="pending-label">
+							0件
+						</span>
+					</div>
+
+					<div
+						id="pending-empty"
+						class="state-card"
+						hidden
+					>
+						<div class="state-title">
+							レビュー待ちの申請はありません
+						</div>
+
+						<div class="state-text">
+							現在、管理者による確認が必要な申請はありません。
+						</div>
+					</div>
+
+					<div
+						id="pending-list"
+						class="request-list"
+						hidden
+					></div>
+
+				</section>
+
+
+				<!-- ========================================
+				     Approved
+				======================================== -->
+
+				<section class="section">
+
+					<div class="section-heading">
+						<h2>公開待ち</h2>
+
+						<span id="approved-label">
+							0件
+						</span>
+					</div>
+
+					<div
+						id="approved-empty"
+						class="state-card"
+						hidden
+					>
+						<div class="state-title">
+							公開待ちの申請はありません
+						</div>
+
+						<div class="state-text">
+							承認済みで公開処理を待っている申請はありません。
+						</div>
+					</div>
+
+					<div
+						id="approved-list"
+						class="request-list"
+						hidden
+					></div>
+
+				</section>
+
+
+				<!-- ========================================
+				     Publishing
+				======================================== -->
+
+				<section class="section">
+
+					<div class="section-heading">
+						<h2>公開処理中</h2>
+
+						<span id="publishing-label">
+							0件
+						</span>
+					</div>
+
+					<div
+						id="publishing-empty"
+						class="state-card"
+						hidden
+					>
+						<div class="state-title">
+							公開処理中の申請はありません
+						</div>
+
+						<div class="state-text">
+							現在、GitHubへの公開処理を実行している申請はありません。
+						</div>
+					</div>
+
+					<div
+						id="publishing-list"
+						class="request-list"
+						hidden
+					></div>
+
+				</section>
+
+
+				<!-- ========================================
+				     Recent Activity
+				======================================== -->
+
+				<section class="section">
+
+					<div class="section-heading">
+						<h2>最近の申請</h2>
+
+						<span>
+							処理済みの履歴
+						</span>
+					</div>
+
+					<div
+						id="activity-empty"
+						class="state-card"
+						hidden
+					>
+						<div class="state-title">
+							履歴はありません
+						</div>
+
+						<div class="state-text">
+							処理済みの申請はまだありません。
+						</div>
+					</div>
+
+					<div
+						id="activity-list"
+						class="activity-list"
+						hidden
+					></div>
+
+				</section>
+
+
+				<!-- ========================================
+				     Quick Links
+				======================================== -->
+
+				<section class="section">
+
+					<div class="section-heading">
+						<h2>管理メニュー</h2>
+					</div>
+
+					<div class="quick-links">
+
+						<a
+							href="/docs/"
+							class="quick-link"
+						>
+							<div class="quick-link-title">
+								Wikiを見る
+							</div>
+
+							<div class="quick-link-description">
+								現在公開されているWikiを確認します。
+							</div>
+						</a>
+
+
+						<a
+							href="/wiki/requests/"
+							class="quick-link"
+						>
+							<div class="quick-link-title">
+								自分の申請
+							</div>
+
+							<div class="quick-link-description">
+								自分が作成した下書き・レビュー申請を確認します。
+							</div>
+						</a>
+
+
+						<a
+							href="/account/"
+							class="quick-link"
+						>
+							<div class="quick-link-title">
+								アカウント
+							</div>
+
+							<div class="quick-link-description">
+								アカウント情報と権限を確認します。
+							</div>
+						</a>
+
+					</div>
+
+				</section>
+
+			</div>
+
+		</main>
+
+	</div>
+
+
+	<script>
+		type EditRequest = {
+			id: string;
+			page_title?: string | null;
+			page_path?: string | null;
+			revision_number?: number | null;
+			status: string;
+			message?: string | null;
+			created_at?: string | null;
+			reviewed_at?: string | null;
+			user_display_name?: string | null;
+			user_id?: string | null;
+		};
+
+		type RequestsResponse = {
+			ok?: boolean;
+			editRequests?: EditRequest[];
+			requests?: EditRequest[];
+			error?: string;
+		};
+
+		type PagesResponse = {
+			ok?: boolean;
+			pages?: unknown[];
+			error?: string;
+		};
+
+
+		const refreshButton =
+			document.querySelector<HTMLButtonElement>(
+				'#refresh-button'
+			)!;
+
+		const pendingCount =
+			document.querySelector<HTMLElement>(
+				'#pending-count'
+			)!;
+
+		const approvedCount =
+			document.querySelector<HTMLElement>(
+				'#approved-count'
+			)!;
+
+		const publishingCount =
+			document.querySelector<HTMLElement>(
+				'#publishing-count'
+			)!;
+
+		const pageCount =
+			document.querySelector<HTMLElement>(
+				'#page-count'
+			)!;
+
+		const pendingLabel =
+			document.querySelector<HTMLElement>(
+				'#pending-label'
+			)!;
+
+		const approvedLabel =
+			document.querySelector<HTMLElement>(
+				'#approved-label'
+			)!;
+
+		const publishingLabel =
+			document.querySelector<HTMLElement>(
+				'#publishing-label'
+			)!;
+
+		const loadingState =
+			document.querySelector<HTMLElement>(
+				'#loading-state'
+			)!;
+
+		const errorState =
+			document.querySelector<HTMLElement>(
+				'#error-state'
+			)!;
+
+		const errorMessage =
+			document.querySelector<HTMLElement>(
+				'#error-message'
+			)!;
+
+		const dashboardContent =
+			document.querySelector<HTMLElement>(
+				'#dashboard-content'
+			)!;
+
+		const pendingEmpty =
+			document.querySelector<HTMLElement>(
+				'#pending-empty'
+			)!;
+
+		const approvedEmpty =
+			document.querySelector<HTMLElement>(
+				'#approved-empty'
+			)!;
+
+		const publishingEmpty =
+			document.querySelector<HTMLElement>(
+				'#publishing-empty'
+			)!;
+
+		const activityEmpty =
+			document.querySelector<HTMLElement>(
+				'#activity-empty'
+			)!;
+
+		const pendingList =
+			document.querySelector<HTMLElement>(
+				'#pending-list'
+			)!;
+
+		const approvedList =
+			document.querySelector<HTMLElement>(
+				'#approved-list'
+			)!;
+
+		const publishingList =
+			document.querySelector<HTMLElement>(
+				'#publishing-list'
+			)!;
+
+		const activityList =
+			document.querySelector<HTMLElement>(
+				'#activity-list'
+			)!;
+
+
+		function escapeHtml(value: unknown) {
+			return String(value ?? '')
+				.replaceAll('&', '&amp;')
+				.replaceAll('<', '&lt;')
+				.replaceAll('>', '&gt;')
+				.replaceAll('"', '&quot;')
+				.replaceAll("'", '&#039;');
+		}
+
+
+		function formatDate(
+			value: string | null | undefined
+		) {
+			if (!value) return '—';
+
+			const date = new Date(value);
+
+			if (Number.isNaN(date.getTime())) {
+				return value;
+			}
+
+			return new Intl.DateTimeFormat(
+				'ja-JP',
+				{
+					dateStyle: 'medium',
+					timeStyle: 'short',
+				}
+			).format(date);
+		}
+
+
+		function getRequests(
+			data: RequestsResponse
+		): EditRequest[] {
+			if (Array.isArray(data.editRequests)) {
+				return data.editRequests;
+			}
+
+			if (Array.isArray(data.requests)) {
+				return data.requests;
+			}
+
+			return [];
+		}
+
+
+		function getStatusLabel(
+			status: string
+		) {
+			switch (status) {
+				case 'draft':
+					return '下書き';
+
+				case 'pending':
+					return 'レビュー申請中';
+
+				case 'approved':
+					return '承認済み';
+
+				case 'publishing':
+					return '公開処理中';
+
+				case 'published':
+					return '公開済み';
+
+				case 'rejected':
+					return '却下';
+
+				default:
+					return status;
+			}
+		}
+
+
+		function renderRequestCard(
+			request: EditRequest
+		) {
+			const statusClass =
+				[
+					'pending',
+					'approved',
+					'publishing',
+					'rejected',
+					'published',
+				].includes(request.status)
+					? request.status
+					: '';
+
+			return `
+				<article class="request-card">
+
+					<div class="request-main">
+
+						<div class="request-top">
+
+							<div class="request-title">
+
+								<h3>
+									${escapeHtml(
+										request.page_title ||
+										'Wikiページ'
+									)}
+								</h3>
+
+								<div class="request-path">
+									${escapeHtml(
+										request.page_path ||
+										'—'
+									)}
+								</div>
+
+							</div>
+
+							<div class="status-badge ${statusClass}">
+								${escapeHtml(
+									getStatusLabel(
+										request.status
+									)
+								)}
+							</div>
+
+						</div>
+
+
+						<div class="request-meta">
+
+							<span>
+								Revision
+								<strong>
+									${escapeHtml(
+										request.revision_number ??
+										'—'
+									)}
+								</strong>
+							</span>
+
+							<span>
+								申請者
+								<strong>
+									${escapeHtml(
+										request.user_display_name ||
+										request.user_id ||
+										'—'
+									)}
+								</strong>
+							</span>
+
+							<span>
+								申請日時
+								<strong>
+									${escapeHtml(
+										formatDate(
+											request.created_at
+										)
+									)}
+								</strong>
+							</span>
+
+							${
+								request.reviewed_at
+									? `
+										<span>
+											レビュー日時
+											<strong>
+												${escapeHtml(
+													formatDate(
+														request.reviewed_at
+													)
+												)}
+											</strong>
+										</span>
+									`
+									: ''
+							}
+
+						</div>
+
+
+						${
+							request.message
+								? `
+									<div class="request-message">
+										${escapeHtml(
+											request.message
+										)}
+									</div>
+								`
+								: ''
+						}
+
+					</div>
+
+
+					<div class="request-footer">
+
+						<div
+							class="request-id"
+							title="${escapeHtml(request.id)}"
+						>
+							ID: ${escapeHtml(request.id)}
+						</div>
+
+						<a
+							class="primary-button"
+							href="/wiki/edit-request/?id=${encodeURIComponent(request.id)}"
+						>
+							詳細を見る
+						</a>
+
+					</div>
+
+				</article>
+			`;
+		}
+
+
+		function renderStatusSection(
+			requests: EditRequest[],
+			status: string,
+			listElement: HTMLElement,
+			emptyElement: HTMLElement,
+			labelElement: HTMLElement
+		) {
+			const filtered =
+				requests.filter(
+					(request) =>
+						request.status === status
+				);
+
+			labelElement.textContent =
+				`${filtered.length}件`;
+
+			if (filtered.length === 0) {
+				listElement.hidden = true;
+				emptyElement.hidden = false;
+				listElement.innerHTML = '';
+				return;
+			}
+
+			emptyElement.hidden = true;
+			listElement.hidden = false;
+
+			listElement.innerHTML =
+				filtered
+					.map(renderRequestCard)
+					.join('');
+		}
+
+
+		function renderActivity(
+			requests: EditRequest[]
+		) {
+			const processed =
+				requests
+					.filter(
+						(request) =>
+							[
+								'rejected',
+								'published',
+							].includes(
+								request.status
+							)
+					)
+					.sort(
+						(a, b) =>
+							new Date(
+								b.reviewed_at ||
+								b.created_at ||
+								0
+							).getTime() -
+							new Date(
+								a.reviewed_at ||
+								a.created_at ||
+								0
+							).getTime()
+					)
+					.slice(0, 10);
+
+
+			if (processed.length === 0) {
+				activityList.hidden = true;
+				activityEmpty.hidden = false;
+				activityList.innerHTML = '';
+				return;
+			}
+
+
+			activityEmpty.hidden = true;
+			activityList.hidden = false;
+
+
+			activityList.innerHTML =
+				processed
+					.map(
+						(request) => `
+							<article class="activity-card">
+
+								<div class="activity-main">
+
+									<div class="activity-title">
+										${escapeHtml(
+											request.page_title ||
+											'Wikiページ'
+										)}
+									</div>
+
+									<div class="activity-path">
+										${escapeHtml(
+											request.page_path ||
+											'—'
+										)}
+									</div>
+
+									<div class="activity-meta">
+										${escapeHtml(
+											getStatusLabel(
+												request.status
+											)
+										)}
+										・
+										Revision
+										${escapeHtml(
+											request.revision_number ??
+											'—'
+										)}
+										・
+										${escapeHtml(
+											formatDate(
+												request.reviewed_at ||
+												request.created_at
+											)
+										)}
+									</div>
+
+								</div>
+
+								<a
+									class="activity-action"
+									href="/wiki/edit-request/?id=${encodeURIComponent(request.id)}"
+								>
+									詳細を見る
+								</a>
+
+							</article>
+						`
+					)
+					.join('');
+		}
+
+
+		function renderDashboard(
+			requests: EditRequest[],
+			pages: unknown[]
+		) {
+			const pending =
+				requests.filter(
+					(request) =>
+						request.status === 'pending'
+				);
+
+			const approved =
+				requests.filter(
+					(request) =>
+						request.status === 'approved'
+				);
+
+			const publishing =
+				requests.filter(
+					(request) =>
+						request.status === 'publishing'
+				);
+
+
+			pendingCount.textContent =
+				String(pending.length);
+
+			approvedCount.textContent =
+				String(approved.length);
+
+			publishingCount.textContent =
+				String(publishing.length);
+
+			pageCount.textContent =
+				String(pages.length);
+
+
+			renderStatusSection(
+				requests,
+				'pending',
+				pendingList,
+				pendingEmpty,
+				pendingLabel
+			);
+
+			renderStatusSection(
+				requests,
+				'approved',
+				approvedList,
+				approvedEmpty,
+				approvedLabel
+			);
+
+			renderStatusSection(
+				requests,
+				'publishing',
+				publishingList,
+				publishingEmpty,
+				publishingLabel
+			);
+
+			renderActivity(requests);
+		}
+
+
+		async function loadDashboard() {
+
+			loadingState.hidden = false;
+			errorState.hidden = true;
+			dashboardContent.hidden = true;
+
+			try {
+
+				const meResponse =
+					await fetch(
+						'/me',
+						{
+							credentials: 'include',
+						}
+					);
+
+				if (!meResponse.ok) {
+					throw new Error(
+						'ログイン状態を確認できませんでした。'
+					);
+				}
+
+
+				const me =
+					await meResponse.json();
+
+
+				if (
+					!me.loggedIn ||
+					!me.user ||
+					me.user.role !== 'admin'
+				) {
+					window.location.href =
+						'/account/';
+
+					return;
+				}
+
+
+				const [
+					requestResponse,
+					pageResponse,
+				] = await Promise.all([
+					fetch(
+						'/api/wiki/edit-requests',
+						{
+							credentials: 'include',
+						}
+					),
+
+					fetch(
+						'/api/wiki/pages',
+						{
+							credentials: 'include',
+						}
+					),
+				]);
+
+
+				if (!requestResponse.ok) {
+					throw new Error(
+						'編集申請を取得できませんでした。'
+					);
+				}
+
+
+				const requestData:
+					RequestsResponse =
+					await requestResponse.json();
+
+
+				const requests =
+					getRequests(requestData);
+
+
+				let pages: unknown[] = [];
+
+
+				if (pageResponse.ok) {
+
+					const pageData:
+						PagesResponse =
+						await pageResponse.json();
+
+					if (
+						Array.isArray(
+							pageData.pages
+						)
+					) {
+						pages =
+							pageData.pages;
+					}
+				}
+
+
+				renderDashboard(
+					requests,
+					pages
+				);
+
+
+				loadingState.hidden = true;
+				errorState.hidden = true;
+				dashboardContent.hidden = false;
+
+			} catch (error) {
+
+				console.error(
+					'Admin dashboard error:',
+					error
+				);
+
+				loadingState.hidden = true;
+				dashboardContent.hidden = true;
+				errorState.hidden = false;
+
+				errorMessage.textContent =
+					error instanceof Error
+						? error.message
+						: '管理情報を取得できませんでした。';
+			}
+		}
+
+
+		refreshButton.addEventListener(
+			'click',
+			() => {
+				loadDashboard();
+			}
+		);
+
+
+		loadDashboard();
+	</script>
+</body>
+</html>

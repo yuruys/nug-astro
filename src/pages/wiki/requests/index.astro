@@ -1,0 +1,1945 @@
+---
+const title = 'Wiki編集申請 | NUGBASE';
+const description = 'NUGBASE Wikiの下書き・編集申請を管理します。';
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1"
+		/>
+
+		<title>{title}</title>
+
+		<meta
+			name="description"
+			content={description}
+		/>
+
+		<style>
+			/* =========================================================
+			   NUGBASE Wiki Requests
+			   ========================================================= */
+
+			:root {
+				color-scheme: light;
+
+				--page-bg: #eef2f3;
+				--surface: #ffffff;
+				--surface-soft: #f5f7f7;
+
+				--text: #202521;
+				--text-soft: #59615c;
+				--text-muted: #737b76;
+
+				--border: #cfd6d2;
+
+				--accent: #3f7d32;
+				--accent-dark: #2f6327;
+				--accent-soft: #e6f0e3;
+
+				--warning: #9a741d;
+				--warning-soft: #f7f0dc;
+
+				--danger: #a9473f;
+				--danger-dark: #843832;
+				--danger-soft: #f6e7e5;
+
+				--info: #3c6d91;
+				--info-soft: #e5eef5;
+
+				--shadow:
+					0 8px 0 rgba(29, 40, 32, 0.12),
+					0 16px 32px rgba(29, 40, 32, 0.10);
+
+				--shadow-small:
+					0 4px 0 rgba(29, 40, 32, 0.10),
+					0 10px 20px rgba(29, 40, 32, 0.08);
+
+				--radius: 8px;
+
+				--max-width: 900px;
+			}
+
+			html[data-theme="dark"] {
+				color-scheme: dark;
+
+				--page-bg: #111416;
+				--surface: #292e32;
+				--surface-soft: #33393d;
+
+				--text: #f1f4f2;
+				--text-soft: #c2cac5;
+				--text-muted: #9ca59f;
+
+				--border: #4b5357;
+
+				--accent: #72ad55;
+				--accent-dark: #5e9847;
+				--accent-soft: #263829;
+
+				--warning: #d2ac4d;
+				--warning-soft: #3a3321;
+
+				--danger: #d66b61;
+				--danger-dark: #b8544c;
+				--danger-soft: #3b2827;
+
+				--info: #78a9cc;
+				--info-soft: #27343e;
+
+				--shadow:
+					0 8px 0 rgba(0, 0, 0, 0.35),
+					0 18px 36px rgba(0, 0, 0, 0.28);
+
+				--shadow-small:
+					0 4px 0 rgba(0, 0, 0, 0.30),
+					0 10px 22px rgba(0, 0, 0, 0.22);
+			}
+
+
+			/* =========================================================
+			   Base
+			   ========================================================= */
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html {
+				min-height: 100%;
+				background: var(--page-bg);
+			}
+
+			body {
+				margin: 0;
+				min-height: 100vh;
+
+				background:
+					linear-gradient(
+						180deg,
+						rgba(86, 126, 73, 0.12) 0,
+						transparent 280px
+					),
+					var(--page-bg);
+
+				color: var(--text);
+
+				font-family:
+					system-ui,
+					-apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					"Yu Gothic",
+					"YuGothic",
+					"Hiragino Kaku Gothic ProN",
+					Meiryo,
+					sans-serif;
+
+				line-height: 1.7;
+			}
+
+			a,
+			button {
+				font: inherit;
+			}
+
+			a:focus-visible,
+			button:focus-visible {
+				outline:
+					3px solid
+					var(--accent);
+
+				outline-offset: 3px;
+			}
+
+
+			/* =========================================================
+			   Page
+			   ========================================================= */
+
+			.requests-page {
+				width: min(
+					calc(100% - 32px),
+					var(--max-width)
+				);
+
+				margin: 0 auto;
+
+				padding: 48px 0 64px;
+			}
+
+
+			/* =========================================================
+			   Topbar
+			   ========================================================= */
+
+			.topbar {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+
+				gap: 16px;
+
+				margin-bottom: 24px;
+			}
+
+			.back-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+
+				min-height: 40px;
+
+				padding: 8px 12px;
+
+				border:
+					1px solid
+					var(--border);
+
+				background: var(--surface);
+
+				color: var(--text-soft);
+
+				text-decoration: none;
+
+				box-shadow:
+					0 3px 0
+					rgba(29, 40, 32, 0.08);
+
+				transition:
+					background-color 0.15s ease,
+					color 0.15s ease,
+					transform 0.15s ease;
+			}
+
+			.back-link:hover {
+				background: var(--accent-soft);
+
+				color: var(--accent-dark);
+
+				transform: translateY(-1px);
+			}
+
+
+			/* =========================================================
+			   Main Card
+			   ========================================================= */
+
+			.main-card {
+				position: relative;
+
+				overflow: hidden;
+
+				border:
+					1px solid
+					var(--border);
+
+				border-radius: var(--radius);
+
+				background: var(--surface);
+
+				box-shadow: var(--shadow);
+			}
+
+			.main-card::before {
+				content: "";
+
+				position: absolute;
+
+				top: 0;
+				left: 0;
+				right: 0;
+
+				height: 6px;
+
+				background:
+					linear-gradient(
+						90deg,
+						var(--accent),
+						var(--accent-dark)
+					);
+			}
+
+			.main-card-inner {
+				padding: 40px;
+			}
+
+
+			/* =========================================================
+			   Heading
+			   ========================================================= */
+
+			.page-heading {
+				margin-bottom: 28px;
+			}
+
+			.page-heading-label {
+				display: inline-flex;
+				align-items: center;
+
+				min-height: 28px;
+
+				margin-bottom: 12px;
+
+				padding: 4px 10px;
+
+				border:
+					1px solid
+					color-mix(
+						in srgb,
+						var(--accent) 30%,
+						var(--border)
+					);
+
+				background: var(--accent-soft);
+
+				color: var(--accent-dark);
+
+				font-size: 0.78rem;
+				font-weight: 800;
+
+				letter-spacing: 0.08em;
+			}
+
+			.page-heading h1 {
+				margin: 0;
+
+				font-size: clamp(
+					1.7rem,
+					4vw,
+					2.3rem
+				);
+
+				font-weight: 800;
+
+				line-height: 1.25;
+			}
+
+			.page-heading p {
+				margin: 10px 0 0;
+
+				color: var(--text-muted);
+
+				font-size: 0.95rem;
+			}
+
+
+			/* =========================================================
+			   Loading / Error
+			   ========================================================= */
+
+			.loading {
+				padding: 24px;
+
+				border:
+					1px solid
+					var(--border);
+
+				background: var(--surface-soft);
+
+				color: var(--text-muted);
+
+				text-align: center;
+			}
+
+			.error {
+				padding: 18px 20px;
+
+				border:
+					1px solid
+					var(--danger);
+
+				border-left:
+					5px solid
+					var(--danger);
+
+				background: var(--danger-soft);
+
+				color: var(--danger-dark);
+			}
+
+
+			/* =========================================================
+			   Status Summary
+			   ========================================================= */
+
+			.status-summary {
+				display: grid;
+
+				grid-template-columns:
+					repeat(4, minmax(0, 1fr));
+
+				gap: 12px;
+
+				margin-bottom: 28px;
+			}
+
+			.summary-item {
+				padding: 16px;
+
+				border:
+					1px solid
+					var(--border);
+
+				background: var(--surface-soft);
+
+				text-align: center;
+			}
+
+			.summary-number {
+				display: block;
+
+				color: var(--text);
+
+				font-size: 1.6rem;
+				font-weight: 800;
+
+				line-height: 1.2;
+			}
+
+			.summary-label {
+				display: block;
+
+				margin-top: 4px;
+
+				color: var(--text-muted);
+
+				font-size: 0.78rem;
+				font-weight: 700;
+			}
+
+
+			/* =========================================================
+			   Section
+			   ========================================================= */
+
+			.request-section {
+				margin-top: 28px;
+			}
+
+			.request-section:first-of-type {
+				margin-top: 0;
+			}
+
+			.section-heading {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+
+				gap: 12px;
+
+				margin-bottom: 12px;
+			}
+
+			.section-heading h2 {
+				margin: 0;
+
+				font-size: 1.1rem;
+				font-weight: 800;
+			}
+
+			.section-count {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+
+				min-width: 28px;
+				height: 28px;
+
+				padding: 2px 8px;
+
+				border:
+					1px solid
+					var(--border);
+
+				background: var(--surface-soft);
+
+				color: var(--text-muted);
+
+				font-size: 0.78rem;
+				font-weight: 800;
+			}
+
+
+			/* =========================================================
+			   Request Card
+			   ========================================================= */
+
+			.request-list {
+				display: grid;
+
+				gap: 12px;
+			}
+
+			.request-card {
+				border:
+					1px solid
+					var(--border);
+
+				background: var(--surface);
+
+				box-shadow: var(--shadow-small);
+			}
+
+			.request-card-main {
+				padding: 18px 20px;
+			}
+
+			.request-card-top {
+				display: flex;
+				align-items: flex-start;
+				justify-content: space-between;
+
+				gap: 16px;
+			}
+
+			.request-title {
+				margin: 0;
+
+				color: var(--text);
+
+				font-size: 1rem;
+				font-weight: 800;
+
+				line-height: 1.5;
+			}
+
+			.request-path {
+				margin: 4px 0 0;
+
+				color: var(--text-muted);
+
+				font-family:
+					ui-monospace,
+					SFMono-Regular,
+					Menlo,
+					Monaco,
+					Consolas,
+					"Liberation Mono",
+					monospace;
+
+				font-size: 0.78rem;
+
+				overflow-wrap: anywhere;
+			}
+
+
+			/* =========================================================
+			   Status Badge
+			   ========================================================= */
+
+			.status-badge {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+
+				flex: 0 0 auto;
+
+				min-height: 30px;
+
+				padding: 4px 10px;
+
+				border:
+					1px solid
+					var(--border);
+
+				background: var(--surface-soft);
+
+				color: var(--text-soft);
+
+				font-size: 0.75rem;
+				font-weight: 800;
+
+				white-space: nowrap;
+			}
+
+			.status-badge.draft {
+				border-color:
+					var(--border);
+
+				background:
+					var(--surface-soft);
+
+				color:
+					var(--text-soft);
+			}
+
+			.status-badge.pending {
+				border-color:
+					var(--warning);
+
+				background:
+					var(--warning-soft);
+
+				color:
+					var(--warning);
+			}
+
+			.status-badge.approved {
+				border-color:
+					var(--info);
+
+				background:
+					var(--info-soft);
+
+				color:
+					var(--info);
+			}
+
+			.status-badge.rejected {
+				border-color:
+					var(--danger);
+
+				background:
+					var(--danger-soft);
+
+				color:
+					var(--danger);
+			}
+
+			.status-badge.publishing {
+				border-color:
+					var(--info);
+
+				background:
+					var(--info-soft);
+
+				color:
+					var(--info);
+			}
+
+			.status-badge.published {
+				border-color:
+					var(--accent);
+
+				background:
+					var(--accent-soft);
+
+				color:
+					var(--accent-dark);
+			}
+
+
+			/* =========================================================
+			   Request Meta
+			   ========================================================= */
+
+			.request-meta {
+				display: flex;
+				flex-wrap: wrap;
+
+				gap: 8px 16px;
+
+				margin-top: 12px;
+
+				color: var(--text-muted);
+
+				font-size: 0.8rem;
+			}
+
+
+			/* =========================================================
+			   Request Message
+			   ========================================================= */
+
+			.request-message {
+				margin: 14px 0 0;
+
+				padding: 10px 12px;
+
+				border-left:
+					3px solid
+					var(--border);
+
+				background: var(--surface-soft);
+
+				color: var(--text-soft);
+
+				font-size: 0.85rem;
+			}
+
+
+			/* =========================================================
+			   Request Actions
+			   ========================================================= */
+
+			.request-actions {
+				display: flex;
+				flex-wrap: wrap;
+
+				gap: 8px;
+
+				margin-top: 16px;
+			}
+
+			.request-action {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+
+				min-height: 40px;
+
+				padding: 8px 14px;
+
+				border:
+					1px solid
+					var(--border);
+
+				background: var(--surface);
+
+				color: var(--text-soft);
+
+				font-size: 0.84rem;
+				font-weight: 700;
+
+				text-decoration: none;
+
+				box-shadow:
+					0 3px 0
+					rgba(29, 40, 32, 0.08);
+
+				transition:
+					background-color 0.15s ease,
+					color 0.15s ease,
+					transform 0.15s ease;
+			}
+
+			.request-action:hover {
+				background: var(--accent-soft);
+
+				color: var(--accent-dark);
+
+				transform: translateY(-1px);
+			}
+
+			.request-action.primary {
+				border-color:
+					var(--accent-dark);
+
+				background:
+					var(--accent);
+
+				color: #ffffff;
+
+				box-shadow:
+					0 3px 0
+					var(--accent-dark);
+			}
+
+			.request-action.primary:hover {
+				background:
+					var(--accent-dark);
+
+				color: #ffffff;
+			}
+
+
+			/* =========================================================
+			   Empty
+			   ========================================================= */
+
+			.empty {
+				padding: 20px;
+
+				border:
+					1px dashed
+					var(--border);
+
+				background: var(--surface-soft);
+
+				color: var(--text-muted);
+
+				font-size: 0.88rem;
+
+				text-align: center;
+			}
+
+
+			/* =========================================================
+			   Bottom Actions
+			   ========================================================= */
+
+			.bottom-actions {
+				display: grid;
+
+				grid-template-columns:
+					repeat(2, minmax(0, 1fr));
+
+				gap: 12px;
+
+				margin-top: 32px;
+
+				padding-top: 24px;
+
+				border-top:
+					1px solid
+					var(--border);
+			}
+
+			.bottom-action {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				min-height: 46px;
+
+				padding: 10px 16px;
+
+				border:
+					1px solid
+					var(--border);
+
+				background: var(--surface);
+
+				color: var(--text-soft);
+
+				font-weight: 700;
+
+				text-decoration: none;
+			}
+
+			.bottom-action:hover {
+				background: var(--accent-soft);
+
+				color: var(--accent-dark);
+			}
+
+
+			/* =========================================================
+			   Mobile
+			   ========================================================= */
+
+			@media (max-width: 650px) {
+				.requests-page {
+					width: min(
+						calc(100% - 20px),
+						var(--max-width)
+					);
+
+					padding: 24px 0 40px;
+				}
+
+				.main-card-inner {
+					padding: 28px 18px;
+				}
+
+				.status-summary {
+					grid-template-columns:
+						repeat(2, minmax(0, 1fr));
+				}
+
+				.request-card-top {
+					flex-direction: column;
+				}
+
+				.status-badge {
+					align-self: flex-start;
+				}
+
+				.bottom-actions {
+					grid-template-columns: 1fr;
+				}
+			}
+
+
+			@media (max-width: 380px) {
+				.requests-page {
+					width: min(
+						calc(100% - 16px),
+						var(--max-width)
+					);
+				}
+
+				.main-card-inner {
+					padding: 24px 14px;
+				}
+
+				.request-card-main {
+					padding: 16px;
+				}
+			}
+
+
+			@media (prefers-reduced-motion: reduce) {
+				*,
+				*::before,
+				*::after {
+					transition-duration: 0.01ms !important;
+					animation-duration: 0.01ms !important;
+					animation-iteration-count: 1 !important;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<main class="requests-page">
+
+			<!-- =====================================================
+			     Topbar
+			     ===================================================== -->
+
+			<div class="topbar">
+				<a
+					href="/account/"
+					class="back-link"
+				>
+					<span aria-hidden="true">
+						←
+					</span>
+
+					<span>
+						アカウントへ戻る
+					</span>
+				</a>
+			</div>
+
+
+			<!-- =====================================================
+			     Main
+			     ===================================================== -->
+
+			<section
+				class="main-card"
+				aria-labelledby="page-title"
+			>
+				<div class="main-card-inner">
+
+					<header class="page-heading">
+						<div class="page-heading-label">
+							WIKI EDITING
+						</div>
+
+						<h1 id="page-title">
+							自分の下書き・申請
+						</h1>
+
+						<p>
+							自分が作成したWiki編集の下書きとレビュー申請を確認できます。
+						</p>
+					</header>
+
+
+					<!-- =================================================
+					     Loading
+					     ================================================= -->
+
+					<div
+						id="loading"
+						class="loading"
+						role="status"
+						aria-live="polite"
+					>
+						申請情報を読み込んでいます…
+					</div>
+
+
+					<!-- =================================================
+					     Error
+					     ================================================= -->
+
+					<div
+						id="error"
+						class="error"
+						role="alert"
+						hidden
+					></div>
+
+
+					<!-- =================================================
+					     Content
+					     ================================================= -->
+
+					<div
+						id="content"
+						hidden
+					>
+
+						<!-- Summary -->
+
+						<div class="status-summary">
+							<div class="summary-item">
+								<span
+									id="summary-draft"
+									class="summary-number"
+								>
+									0
+								</span>
+
+								<span class="summary-label">
+									下書き
+								</span>
+							</div>
+
+							<div class="summary-item">
+								<span
+									id="summary-pending"
+									class="summary-number"
+								>
+									0
+								</span>
+
+								<span class="summary-label">
+									レビュー申請中
+								</span>
+							</div>
+
+							<div class="summary-item">
+								<span
+									id="summary-rejected"
+									class="summary-number"
+								>
+									0
+								</span>
+
+								<span class="summary-label">
+									却下
+								</span>
+							</div>
+
+							<div class="summary-item">
+								<span
+									id="summary-published"
+									class="summary-number"
+								>
+									0
+								</span>
+
+								<span class="summary-label">
+									公開済み
+								</span>
+							</div>
+						</div>
+
+
+						<!-- Draft -->
+
+						<section class="request-section">
+							<div class="section-heading">
+								<h2>
+									下書き
+								</h2>
+
+								<span
+									id="count-draft"
+									class="section-count"
+								>
+									0
+								</span>
+							</div>
+
+							<div
+								id="list-draft"
+								class="request-list"
+							></div>
+						</section>
+
+
+						<!-- Pending -->
+
+						<section class="request-section">
+							<div class="section-heading">
+								<h2>
+									レビュー申請中
+								</h2>
+
+								<span
+									id="count-pending"
+									class="section-count"
+								>
+									0
+								</span>
+							</div>
+
+							<div
+								id="list-pending"
+								class="request-list"
+							></div>
+						</section>
+
+
+						<!-- Approved -->
+
+						<section class="request-section">
+							<div class="section-heading">
+								<h2>
+									承認済み
+								</h2>
+
+								<span
+									id="count-approved"
+									class="section-count"
+								>
+									0
+								</span>
+							</div>
+
+							<div
+								id="list-approved"
+								class="request-list"
+							></div>
+						</section>
+
+
+						<!-- Rejected -->
+
+						<section class="request-section">
+							<div class="section-heading">
+								<h2>
+									却下
+								</h2>
+
+								<span
+									id="count-rejected"
+									class="section-count"
+								>
+									0
+								</span>
+							</div>
+
+							<div
+								id="list-rejected"
+								class="request-list"
+							></div>
+						</section>
+
+
+						<!-- Publishing -->
+
+						<section class="request-section">
+							<div class="section-heading">
+								<h2>
+									公開処理中
+								</h2>
+
+								<span
+									id="count-publishing"
+									class="section-count"
+								>
+									0
+								</span>
+							</div>
+
+							<div
+								id="list-publishing"
+								class="request-list"
+							></div>
+						</section>
+
+
+						<!-- Published -->
+
+						<section class="request-section">
+							<div class="section-heading">
+								<h2>
+									公開済み
+								</h2>
+
+								<span
+									id="count-published"
+									class="section-count"
+								>
+									0
+								</span>
+							</div>
+
+							<div
+								id="list-published"
+								class="request-list"
+							></div>
+						</section>
+
+
+						<!-- Bottom Actions -->
+
+						<div class="bottom-actions">
+							<a
+								href="/docs/"
+								class="bottom-action"
+							>
+								Wikiを見る
+							</a>
+
+							<a
+								href="/account/"
+								class="bottom-action"
+							>
+								アカウントへ戻る
+							</a>
+						</div>
+
+					</div>
+				</div>
+			</section>
+		</main>
+
+
+		<script>
+			/* =========================================================
+			   Theme
+			   ========================================================= */
+
+			const applyTheme = (): void => {
+				const storedTheme =
+					localStorage.getItem("nug-theme");
+
+				if (
+					storedTheme === "light" ||
+					storedTheme === "dark"
+				) {
+					document.documentElement.dataset.theme =
+						storedTheme;
+
+					return;
+				}
+
+				const prefersDark =
+					window.matchMedia(
+						"(prefers-color-scheme: dark)",
+					).matches;
+
+				document.documentElement.dataset.theme =
+					prefersDark
+						? "dark"
+						: "light";
+			};
+
+			applyTheme();
+
+
+			/* =========================================================
+			   Types
+			   ========================================================= */
+
+			type User = {
+				id?: string;
+				role?: string;
+			};
+
+			type MeResponse = {
+				ok?: boolean;
+				loggedIn?: boolean;
+				user?: User | null;
+			};
+
+			type EditRequest = {
+				id?: string;
+				page_id?: string;
+				page_path?: string;
+				page_title?: string;
+
+				revision_id?: string;
+				revision_number?: number;
+
+				base_revision_id?: string | null;
+
+				status?: string;
+				message?: string | null;
+
+				user_id?: string;
+
+				created_at?: string;
+				reviewed_at?: string | null;
+
+				review_comment?: string | null;
+			};
+
+			type RequestsResponse = {
+				ok?: boolean;
+				editRequests?: EditRequest[];
+				requests?: EditRequest[];
+				error?: string;
+			};
+
+
+			/* =========================================================
+			   Elements
+			   ========================================================= */
+
+			const loading =
+				document.querySelector<HTMLElement>(
+					"#loading",
+				);
+
+			const errorElement =
+				document.querySelector<HTMLElement>(
+					"#error",
+				);
+
+			const content =
+				document.querySelector<HTMLElement>(
+					"#content",
+				);
+
+
+			/* =========================================================
+			   Status configuration
+			   ========================================================= */
+
+			const statusConfig: Record<
+				string,
+				{
+					label: string;
+					className: string;
+					listId: string;
+					countId: string;
+				}
+			> = {
+				draft: {
+					label: "下書き",
+					className: "draft",
+					listId: "list-draft",
+					countId: "count-draft",
+				},
+
+				pending: {
+					label: "レビュー申請中",
+					className: "pending",
+					listId: "list-pending",
+					countId: "count-pending",
+				},
+
+				approved: {
+					label: "承認済み",
+					className: "approved",
+					listId: "list-approved",
+					countId: "count-approved",
+				},
+
+				rejected: {
+					label: "却下",
+					className: "rejected",
+					listId: "list-rejected",
+					countId: "count-rejected",
+				},
+
+				publishing: {
+					label: "公開処理中",
+					className: "publishing",
+					listId: "list-publishing",
+					countId: "count-publishing",
+				},
+
+				published: {
+					label: "公開済み",
+					className: "published",
+					listId: "list-published",
+					countId: "count-published",
+				},
+			};
+
+
+			/* =========================================================
+			   Helpers
+			   ========================================================= */
+
+			const escapeHtml = (
+				value: string,
+			): string => {
+				return value
+					.replaceAll("&", "&amp;")
+					.replaceAll("<", "&lt;")
+					.replaceAll(">", "&gt;")
+					.replaceAll('"', "&quot;")
+					.replaceAll("'", "&#039;");
+			};
+
+
+			const formatDate = (
+				value?: string,
+			): string => {
+				if (!value) {
+					return "日時不明";
+				}
+
+				const date =
+					new Date(value);
+
+				if (
+					Number.isNaN(
+						date.getTime(),
+					)
+				) {
+					return "日時不明";
+				}
+
+				return new Intl.DateTimeFormat(
+					"ja-JP",
+					{
+						year: "numeric",
+						month: "numeric",
+						day: "numeric",
+						hour: "2-digit",
+						minute: "2-digit",
+					},
+				).format(date);
+			};
+
+
+			const getRequests =
+				(
+					data: RequestsResponse,
+				): EditRequest[] => {
+					if (
+						Array.isArray(
+							data.editRequests,
+						)
+					) {
+						return data.editRequests;
+					}
+
+					if (
+						Array.isArray(
+							data.requests,
+						)
+					) {
+						return data.requests;
+					}
+
+					return [];
+				};
+
+
+			/* =========================================================
+			   Empty
+			   ========================================================= */
+
+			const renderEmpty = (
+				container: HTMLElement,
+				message: string,
+			): void => {
+				container.innerHTML = "";
+
+				const element =
+					document.createElement("div");
+
+				element.className =
+					"empty";
+
+				element.textContent =
+					message;
+
+				container.appendChild(
+					element,
+				);
+			};
+
+
+			/* =========================================================
+			   Request Card
+			   ========================================================= */
+
+			const createRequestCard = (
+				request: EditRequest,
+			): HTMLElement => {
+				const card =
+					document.createElement("article");
+
+				card.className =
+					"request-card";
+
+
+				const status =
+					request.status || "draft";
+
+				const config =
+					statusConfig[status] ||
+					statusConfig.draft;
+
+
+				const pageTitle =
+					request.page_title ||
+					"無題のWikiページ";
+
+				const pagePath =
+					request.page_path ||
+					"パス不明";
+
+				const revisionNumber =
+					request.revision_number ??
+					"-";
+
+
+				let actionHtml = "";
+
+				if (request.id) {
+					const requestId =
+						encodeURIComponent(
+							request.id,
+						);
+
+					if (
+						status === "draft"
+					) {
+						actionHtml += `
+							<a
+								class="request-action primary"
+								href="/wiki/edit-request/?id=${requestId}"
+							>
+								編集する
+							</a>
+						`;
+					} else {
+						actionHtml += `
+							<a
+								class="request-action"
+								href="/wiki/edit-request/?id=${requestId}"
+							>
+								詳細を見る
+							</a>
+						`;
+					}
+				}
+
+
+				if (
+					status === "rejected" &&
+					request.review_comment
+				) {
+					actionHtml += `
+						<div class="request-message">
+							<strong>却下理由：</strong>
+							${escapeHtml(
+								request.review_comment,
+							)}
+						</div>
+					`;
+				} else if (
+					request.message
+				) {
+					actionHtml += `
+						<div class="request-message">
+							<strong>メッセージ：</strong>
+							${escapeHtml(
+								request.message,
+							)}
+						</div>
+					`;
+				}
+
+
+				card.innerHTML = `
+					<div class="request-card-main">
+
+						<div class="request-card-top">
+
+							<div>
+								<h3 class="request-title">
+									${escapeHtml(
+										pageTitle,
+									)}
+								</h3>
+
+								<p class="request-path">
+									${escapeHtml(
+										pagePath,
+									)}
+								</p>
+							</div>
+
+							<span
+								class="status-badge ${config.className}"
+							>
+								${config.label}
+							</span>
+
+						</div>
+
+						<div class="request-meta">
+							<span>
+								Revision ${escapeHtml(
+									String(
+										revisionNumber,
+									),
+								)}
+							</span>
+
+							<span>
+								作成：
+								${escapeHtml(
+									formatDate(
+										request.created_at,
+									),
+								)}
+							</span>
+
+							${
+								request.reviewed_at
+									? `
+										<span>
+											確認：
+											${escapeHtml(
+												formatDate(
+													request.reviewed_at,
+												),
+											)}
+										</span>
+									`
+									: ""
+							}
+						</div>
+
+						${
+							actionHtml
+								? `
+									<div class="request-actions">
+										${actionHtml}
+									</div>
+								`
+								: ""
+						}
+
+					</div>
+				`;
+
+				return card;
+			};
+
+
+			/* =========================================================
+			   Render
+			   ========================================================= */
+
+			const renderRequests = (
+				requests: EditRequest[],
+			): void => {
+				const grouped: Record<
+					string,
+					EditRequest[]
+				> = {
+					draft: [],
+					pending: [],
+					approved: [],
+					rejected: [],
+					publishing: [],
+					published: [],
+				};
+
+
+				for (const request of requests) {
+					const status =
+						request.status ||
+						"draft";
+
+					if (
+						grouped[status]
+					) {
+						grouped[status].push(
+							request,
+						);
+					}
+				}
+
+
+				/* -------------------------
+				   Lists
+				   ------------------------- */
+
+				for (
+					const [
+						status,
+						items,
+					] of Object.entries(grouped)
+				) {
+					const config =
+						statusConfig[status];
+
+					if (!config) {
+						continue;
+					}
+
+					const list =
+						document.querySelector<HTMLElement>(
+							`#${config.listId}`,
+						);
+
+					const count =
+						document.querySelector<HTMLElement>(
+							`#${config.countId}`,
+						);
+
+					if (!list) {
+						continue;
+					}
+
+					if (count) {
+						count.textContent =
+							String(items.length);
+					}
+
+					if (
+						items.length === 0
+					) {
+						renderEmpty(
+							list,
+							"現在ありません。",
+						);
+
+						continue;
+					}
+
+					list.innerHTML = "";
+
+					for (
+						const request of items
+					) {
+						list.appendChild(
+							createRequestCard(
+								request,
+							),
+						);
+					}
+				}
+
+
+				/* -------------------------
+				   Summary
+				   ------------------------- */
+
+				const summaryDraft =
+					document.querySelector<HTMLElement>(
+						"#summary-draft",
+					);
+
+				const summaryPending =
+					document.querySelector<HTMLElement>(
+						"#summary-pending",
+					);
+
+				const summaryRejected =
+					document.querySelector<HTMLElement>(
+						"#summary-rejected",
+					);
+
+				const summaryPublished =
+					document.querySelector<HTMLElement>(
+						"#summary-published",
+					);
+
+				if (summaryDraft) {
+					summaryDraft.textContent =
+						String(
+							grouped.draft.length,
+						);
+				}
+
+				if (summaryPending) {
+					summaryPending.textContent =
+						String(
+							grouped.pending.length,
+						);
+				}
+
+				if (summaryRejected) {
+					summaryRejected.textContent =
+						String(
+							grouped.rejected.length,
+						);
+				}
+
+				if (summaryPublished) {
+					summaryPublished.textContent =
+						String(
+							grouped.published.length,
+						);
+				}
+			};
+
+
+			/* =========================================================
+			   Error
+			   ========================================================= */
+
+			const showError = (
+				message: string,
+			): void => {
+				if (loading) {
+					loading.hidden =
+						true;
+				}
+
+				if (content) {
+					content.hidden =
+						true;
+				}
+
+				if (errorElement) {
+					errorElement.textContent =
+						message;
+
+					errorElement.hidden =
+						false;
+				}
+			};
+
+
+			/* =========================================================
+			   Load
+			   ========================================================= */
+
+			const loadPage =
+				async (): Promise<void> => {
+					try {
+						/* -------------------------
+						   Authentication
+						   ------------------------- */
+
+						const meResponse =
+							await fetch(
+								"/me",
+								{
+									credentials:
+										"same-origin",
+
+									headers: {
+										Accept:
+											"application/json",
+									},
+								},
+							);
+
+						if (
+							!meResponse.ok
+						) {
+							throw new Error(
+								`認証情報の取得に失敗しました（HTTP ${meResponse.status}）。`,
+							);
+						}
+
+						const me =
+							(await meResponse.json()) as MeResponse;
+
+						if (
+							!me.ok ||
+							!me.loggedIn ||
+							!me.user
+						) {
+							window.location.href =
+								"/api/auth/google";
+
+							return;
+						}
+
+
+						/* -------------------------
+						   Permission
+						   ------------------------- */
+
+						if (
+							me.user.role !==
+								"editor" &&
+							me.user.role !==
+								"admin"
+						) {
+							showError(
+								"このページはWiki編集者以上のみ利用できます。",
+							);
+
+							return;
+						}
+
+
+						/* -------------------------
+						   Requests
+						   ------------------------- */
+
+						const response =
+							await fetch(
+								"/api/wiki/edit-requests",
+								{
+									credentials:
+										"same-origin",
+
+									headers: {
+										Accept:
+											"application/json",
+									},
+								},
+							);
+
+						if (
+							!response.ok
+						) {
+							throw new Error(
+								`編集申請の取得に失敗しました（HTTP ${response.status}）。`,
+							);
+						}
+
+						const data =
+							(await response.json()) as RequestsResponse;
+
+						if (
+							data.ok === false
+						) {
+							throw new Error(
+								data.error ||
+								"編集申請を取得できませんでした。",
+							);
+						}
+
+						let requests =
+							getRequests(data);
+
+
+						/* -------------------------
+						   Own requests only
+						   ------------------------- */
+
+						if (
+							me.user.id
+						) {
+							requests =
+								requests.filter(
+									(request) =>
+										request.user_id ===
+										me.user?.id,
+								);
+						}
+
+
+						/* -------------------------
+						   Render
+						   ------------------------- */
+
+						renderRequests(
+							requests,
+						);
+
+						if (loading) {
+							loading.hidden =
+								true;
+						}
+
+						if (errorElement) {
+							errorElement.hidden =
+								true;
+						}
+
+						if (content) {
+							content.hidden =
+								false;
+						}
+					} catch (error) {
+						console.error(
+							"NUG Wiki Requests Error:",
+							error,
+						);
+
+						showError(
+							error instanceof Error
+								? error.message
+								: "編集申請を読み込めませんでした。",
+						);
+					}
+				};
+
+
+			void loadPage();
+		</script>
+	</body>
+</html>

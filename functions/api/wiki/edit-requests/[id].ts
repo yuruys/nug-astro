@@ -135,9 +135,6 @@ export const onRequestGet: PagesFunction<Env> = async ({
 
 		/**
 		 * 編集リクエストを取得
-		 *
-		 * review_comment を含めて、
-		 * 承認・却下時のレビュー情報も返す。
 		 */
 		const editRequest =
 			await env.DB.prepare(`
@@ -289,9 +286,6 @@ export const onRequestGet: PagesFunction<Env> = async ({
 					.first();
 		}
 
-		/**
-		 * レスポンス
-		 */
 		return json({
 			ok: true,
 			editRequest,
@@ -302,6 +296,373 @@ export const onRequestGet: PagesFunction<Env> = async ({
 	} catch (error) {
 		console.error(
 			'Wiki edit request detail GET error:',
+			error
+		);
+
+		return json(
+			{
+				ok: false,
+				error: 'Internal server error',
+			},
+			500
+		);
+	}
+};
+
+/**
+ * PUT
+ *
+ * draft状態の編集リクエストを更新する
+ *
+ * URL:
+ * /api/wiki/edit-requests/:id
+ *
+ * Body:
+ * {
+ *   "content": "...",
+ *   "message": "..."
+ * }
+ *
+ * draft以外の編集リクエストは更新できない。
+ */
+export const onRequestPut: PagesFunction<Env> = async ({
+	env,
+	request,
+	params,
+}) => {
+	try {
+		/**
+		 * 認証
+		 */
+		const user = await getSessionUser(request, env);
+
+		if (!user) {
+			return json(
+				{
+					ok: false,
+					error: 'Unauthorized',
+				},
+				401
+			);
+		}
+
+		/**
+		 * editor / admin のみ許可
+		 */
+		if (
+			user.role !== 'editor' &&
+			user.role !== 'admin'
+		) {
+			return json(
+				{
+					ok: false,
+					error: 'Forbidden',
+				},
+				403
+			);
+		}
+
+		/**
+		 * [id] パラメータ
+		 */
+		const editRequestId =
+			typeof params.id === 'string'
+				? params.id
+				: null;
+
+		if (!editRequestId) {
+			return json(
+				{
+					ok: false,
+					error: 'Edit request ID is required',
+				},
+				400
+			);
+		}
+
+		/**
+		 * JSONを取得
+		 */
+		let body: {
+			content?: unknown;
+			message?: unknown;
+		};
+
+		try {
+			body = await request.json();
+		} catch {
+			return json(
+				{
+					ok: false,
+					error: 'Invalid JSON',
+				},
+				400
+			);
+		}
+
+		/**
+		 * contentの確認
+		 */
+		if (typeof body.content !== 'string') {
+			return json(
+				{
+					ok: false,
+					error: 'content is required',
+				},
+				400
+			);
+		}
+
+		const content = body.content;
+		const message =
+			typeof body.message === 'string'
+				? body.message.trim() || null
+				: null;
+
+		/**
+		 * 編集リクエストを取得
+		 */
+		const editRequest =
+			await env.DB.prepare(`
+				SELECT
+					id,
+					page_id,
+					revision_id,
+					base_revision_id,
+					user_id,
+					status,
+					message,
+					created_at
+				FROM edit_requests
+				WHERE id = ?
+				LIMIT 1
+			`)
+				.bind(editRequestId)
+				.first();
+
+		if (!editRequest) {
+			return json(
+				{
+					ok: false,
+					error: 'Edit request not found',
+				},
+				404
+			);
+		}
+
+		/**
+		 * draftのみ更新可能
+		 */
+		if (editRequest.status !== 'draft') {
+			return json(
+				{
+					ok: false,
+					error:
+						'Only draft edit requests can be updated',
+					status: editRequest.status,
+				},
+				400
+			);
+		}
+
+		/**
+		 * 編集者本人のdraftか確認
+		 *
+		 * adminは他ユーザーのdraftも更新可能
+		 */
+		if (
+			editRequest.user_id !== user.user_id &&
+			user.role !== 'admin'
+		) {
+			return json(
+				{
+					ok: false,
+					error:
+						'You can only update your own edit requests',
+				},
+				403
+			);
+		}
+
+		/**
+		 * 現在のRevisionを取得
+		 */
+		const currentRevision =
+			await env.DB.prepare(`
+				SELECT
+					id,
+					page_id,
+					revision_number,
+					content
+				FROM wiki_revisions
+				WHERE id = ?
+				LIMIT 1
+			`)
+				.bind(editRequest.revision_id)
+				.first();
+
+		if (!currentRevision) {
+			return json(
+				{
+					ok: false,
+					error: 'Current revision not found',
+				},
+				404
+			);
+		}
+
+		/**
+		 * 内容もメッセージも変更されていない場合
+		 */
+		const currentMessage =
+			editRequest.message ?? null;
+
+		if (
+			currentRevision.content === content &&
+			currentMessage === message
+		) {
+			return json(
+				{
+					ok: true,
+					changed: false,
+					editRequest: {
+						id: editRequest.id,
+						status: editRequest.status,
+						revisionId:
+							editRequest.revision_id,
+					},
+				}
+			);
+		}
+
+		/**
+		 * 次のRevision番号を取得
+		 */
+		const revisionResult =
+			await env.DB.prepare(`
+				SELECT
+					COALESCE(MAX(revision_number), 0) + 1 AS next_revision_number
+				FROM wiki_revisions
+				WHERE page_id = ?
+			`)
+				.bind(editRequest.page_id)
+				.first();
+
+		const nextRevisionNumber =
+			Number(
+				revisionResult?.next_revision_number ?? 1
+			);
+
+		const revisionId = crypto.randomUUID();
+		const now = new Date().toISOString();
+
+		/**
+		 * 新しいRevisionを作成
+		 */
+		await env.DB.prepare(`
+			INSERT INTO wiki_revisions (
+				id,
+				page_id,
+				revision_number,
+				content,
+				editor_id,
+				created_at
+			)
+			VALUES (?, ?, ?, ?, ?, ?)
+		`)
+			.bind(
+				revisionId,
+				editRequest.page_id,
+				nextRevisionNumber,
+				content,
+				user.user_id,
+				now
+			)
+			.run();
+
+		/**
+		 * 編集リクエストを新Revisionへ更新
+		 */
+		await env.DB.prepare(`
+			UPDATE edit_requests
+			SET
+				revision_id = ?,
+				message = ?
+			WHERE id = ?
+		`)
+			.bind(
+				revisionId,
+				message,
+				editRequestId
+			)
+			.run();
+
+		/**
+		 * 監査ログ
+		 */
+		await env.DB.prepare(`
+			INSERT INTO audit_logs (
+				id,
+				user_id,
+				action,
+				target_type,
+				target_id,
+				metadata,
+				created_at
+			)
+			VALUES (?, ?, ?, ?, ?, ?, ?)
+		`)
+			.bind(
+				crypto.randomUUID(),
+				user.user_id,
+				'wiki.edit_request.update',
+				'edit_request',
+				editRequestId,
+				JSON.stringify({
+					previousRevisionId:
+						editRequest.revision_id,
+					newRevisionId: revisionId,
+					revisionNumber:
+						nextRevisionNumber,
+				}),
+				now
+			)
+			.run();
+
+		/**
+		 * 更新後の編集リクエストを取得
+		 */
+		const updated =
+			await env.DB.prepare(`
+				SELECT
+					id,
+					page_id,
+					revision_id,
+					base_revision_id,
+					user_id,
+					status,
+					message,
+					created_at
+				FROM edit_requests
+				WHERE id = ?
+				LIMIT 1
+			`)
+				.bind(editRequestId)
+				.first();
+
+		return json({
+			ok: true,
+			changed: true,
+			editRequest: updated,
+			revision: {
+				id: revisionId,
+				pageId: editRequest.page_id,
+				revisionNumber: nextRevisionNumber,
+			},
+		});
+	} catch (error) {
+		console.error(
+			'Wiki edit request PUT error:',
 			error
 		);
 

@@ -158,14 +158,33 @@ const isActive = (href: string): boolean => {
 		<div class="header-actions">
 			<!-- Authentication -->
 
-			<a id="nug-auth-button" class="auth-button" href="/api/auth/google" aria-label="Googleでログイン" title="Googleでログイン">
-				<span class="auth-button-icon" aria-hidden="true">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<a
+				id="nug-auth-button"
+				class="auth-button"
+				href="/api/auth/google"
+				aria-label="Googleでログイン"
+				title="Googleでログイン"
+			>
+				<span
+					class="auth-button-icon"
+					aria-hidden="true"
+				>
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
 						<path d="M20 21a8 8 0 0 0-16 0" />
 						<circle cx="12" cy="7" r="4" />
 					</svg>
 				</span>
-				<span class="auth-button-label">ログイン</span>
+
+				<span class="auth-button-label">
+					ログイン
+				</span>
 			</a>
 
 			<!-- Search -->
@@ -186,6 +205,7 @@ const isActive = (href: string): boolean => {
 						cy="11"
 						r="6.5"
 					></circle>
+
 					<path d="M16 16L21 21"></path>
 				</svg>
 			</button>
@@ -208,6 +228,7 @@ const isActive = (href: string): boolean => {
 						cy="12"
 						r="4"
 					></circle>
+
 					<path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
 				</svg>
 
@@ -291,6 +312,7 @@ const isActive = (href: string): boolean => {
 						cy="11"
 						r="6.5"
 					></circle>
+
 					<path d="M16 16L21 21"></path>
 				</svg>
 
@@ -439,6 +461,21 @@ const isActive = (href: string): boolean => {
 		) => Promise<PagefindSearchResponse>;
 	};
 
+	type AuthUser = {
+		id?: string;
+		display_name?: string;
+		email?: string;
+		avatar_url?: string;
+		role?: string;
+		expires_at?: string;
+	};
+
+	type AuthResponse = {
+		ok?: boolean;
+		loggedIn?: boolean;
+		user?: AuthUser | null;
+	};
+
 	const header =
 		document.querySelector<HTMLElement>(
 			".site-header"
@@ -448,26 +485,209 @@ const isActive = (href: string): boolean => {
 	   Authentication
 	========================================================= */
 
-	type AuthUser = { id?: string; display_name?: string; email?: string; avatar_url?: string; role?: string; expires_at?: string; };
-	type AuthResponse = { ok?: boolean; loggedIn?: boolean; user?: AuthUser | null; };
-	const authButton = document.querySelector<HTMLAnchorElement>("#nug-auth-button");
-	const updateAuthButton = async (): Promise<void> => {
-		if (!authButton) return;
-		try {
-			const response = await fetch("/me", { method: "GET", credentials: "same-origin", headers: { Accept: "application/json" } });
-			if (!response.ok) return;
-			const data = (await response.json()) as AuthResponse;
-			if (data.ok && data.loggedIn && data.user) {
-				const displayName = data.user.display_name || "アカウント";
-				const label = authButton.querySelector<HTMLElement>(".auth-button-label");
-				if (label) label.textContent = displayName;
-				authButton.href = "/account/";
-				authButton.setAttribute("aria-label", `${displayName}としてログイン中`);
-				authButton.setAttribute("title", `${displayName}としてログイン中`);
-				authButton.classList.add("is-logged-in");
-			}
-		} catch (error) { console.error("NUG Auth Error:", error); }
+	const authButton =
+		document.querySelector<HTMLAnchorElement>(
+			"#nug-auth-button"
+		);
+
+	let currentAuthUser: AuthUser | null = null;
+
+	/* =========================================================
+	   Wiki Edit Button
+	========================================================= */
+
+	const addWikiEditButton = (): void => {
+		if (!isWiki) {
+			return;
+		}
+
+		if (!currentAuthUser) {
+			return;
+		}
+
+		const role =
+			currentAuthUser.role;
+
+		/*
+		 * Wiki編集が可能なのは editor / admin のみ。
+		 */
+		if (
+			role !== "editor" &&
+			role !== "admin"
+		) {
+			return;
+		}
+
+		/*
+		 * StarlightのWiki本文にある
+		 * ページタイトルを取得する。
+		 */
+		const title =
+			document.querySelector<HTMLElement>(
+				"main h1"
+			);
+
+		if (!title) {
+			return;
+		}
+
+		/*
+		 * すでにボタンがある場合は
+		 * 二重生成しない。
+		 */
+		if (
+			document.querySelector(
+				".nug-wiki-edit-button"
+			)
+		) {
+			return;
+		}
+
+		const titleParent =
+			title.parentElement;
+
+		if (!titleParent) {
+			return;
+		}
+
+		/*
+		 * タイトルと編集ボタンを
+		 * 横並びにする。
+		 */
+		titleParent.classList.add(
+			"nug-wiki-title-row"
+		);
+
+		/*
+		 * 現在のWikiページURLを取得。
+		 *
+		 * 例:
+		 * /docs/plugin/lands/
+		 *
+		 * ↓
+		 *
+		 * /wiki/edit?path=%2Fdocs%2Fplugin%2Flands%2F
+		 */
+		const currentPath =
+			window.location.pathname;
+
+		const editButton =
+			document.createElement("a");
+
+		editButton.className =
+			"nug-wiki-edit-button";
+
+		editButton.href =
+			`/wiki/edit?path=${encodeURIComponent(
+				currentPath
+			)}`;
+
+		editButton.setAttribute(
+			"aria-label",
+			"このWikiページを編集"
+		);
+
+		editButton.title =
+			"このWikiページを編集";
+
+		editButton.innerHTML = `
+			<svg
+				viewBox="0 0 24 24"
+				aria-hidden="true"
+			>
+				<path d="M12 20h9"></path>
+				<path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"></path>
+			</svg>
+
+			<span>編集</span>
+		`;
+
+		titleParent.appendChild(
+			editButton
+		);
 	};
+
+	const updateAuthButton =
+		async (): Promise<void> => {
+			if (!authButton) {
+				return;
+			}
+
+			try {
+				const response =
+					await fetch("/me", {
+						method: "GET",
+						credentials:
+							"same-origin",
+						headers: {
+							Accept:
+								"application/json",
+						},
+					});
+
+				if (!response.ok) {
+					return;
+				}
+
+				const data =
+					(await response.json()) as AuthResponse;
+
+				if (
+					data.ok &&
+					data.loggedIn &&
+					data.user
+				) {
+					currentAuthUser =
+						data.user;
+
+					const displayName =
+						data.user.display_name ||
+						"アカウント";
+
+					const label =
+						authButton.querySelector<HTMLElement>(
+							".auth-button-label"
+						);
+
+					if (label) {
+						label.textContent =
+							displayName;
+					}
+
+					authButton.href =
+						"/account/";
+
+					authButton.setAttribute(
+						"aria-label",
+						`${displayName}としてログイン中`
+					);
+
+					authButton.setAttribute(
+						"title",
+						`${displayName}としてログイン中`
+					);
+
+					authButton.classList.add(
+						"is-logged-in"
+					);
+
+					/*
+					 * 認証情報を取得した後で
+					 * Wiki編集ボタンを生成する。
+					 */
+					addWikiEditButton();
+				}
+			} catch (error) {
+				console.error(
+					"NUG Auth Error:",
+					error
+				);
+			}
+		};
+
+	/*
+	 * 認証状態の取得開始。
+	 */
 	void updateAuthButton();
 
 	/* =========================================================
@@ -518,71 +738,78 @@ const isActive = (href: string): boolean => {
 			".theme-button"
 		);
 
-	const themeStorageKey = "nug-theme";
+	const themeStorageKey =
+		"nug-theme";
 
-	let pagefind: PagefindModule | null = null;
+	let pagefind: PagefindModule | null =
+		null;
+
 	let searchRequest = 0;
 
-	const getSystemTheme = (): Theme => {
-		return window.matchMedia(
-			"(prefers-color-scheme: dark)"
-		).matches
-			? "dark"
-			: "light";
-	};
+	const getSystemTheme =
+		(): Theme => {
+			return window.matchMedia(
+				"(prefers-color-scheme: dark)"
+			).matches
+				? "dark"
+				: "light";
+		};
 
-	const getTheme = (): Theme => {
-		return document.documentElement.dataset.theme ===
-			"dark"
-			? "dark"
-			: "light";
-	};
+	const getTheme =
+		(): Theme => {
+			return document.documentElement
+				.dataset.theme === "dark"
+				? "dark"
+				: "light";
+		};
 
-	const updateThemeButton = (): void => {
-		if (!themeButton) {
-			return;
-		}
+	const updateThemeButton =
+		(): void => {
+			if (!themeButton) {
+				return;
+			}
 
-		const nextTheme =
-			getTheme() === "dark"
-				? "light"
-				: "dark";
+			const nextTheme =
+				getTheme() === "dark"
+					? "light"
+					: "dark";
 
-		const label =
-			nextTheme === "dark"
-				? "ダークモードに切り替える"
-				: "ライトモードに切り替える";
+			const label =
+				nextTheme === "dark"
+					? "ダークモードに切り替える"
+					: "ライトモードに切り替える";
 
-		themeButton.setAttribute(
-			"aria-label",
-			label
-		);
-
-		themeButton.setAttribute(
-			"title",
-			label
-		);
-	};
-
-	const setTheme = (
-		theme: Theme,
-		save = true
-	): void => {
-		document.documentElement.dataset.theme =
-			theme;
-
-		document.documentElement.style.colorScheme =
-			theme;
-
-		if (save) {
-			localStorage.setItem(
-				themeStorageKey,
-				theme
+			themeButton.setAttribute(
+				"aria-label",
+				label
 			);
-		}
 
-		updateThemeButton();
-	};
+			themeButton.setAttribute(
+				"title",
+				label
+			);
+		};
+
+	const setTheme =
+		(
+			theme: Theme,
+			save = true
+		): void => {
+			document.documentElement
+				.dataset.theme = theme;
+
+			document.documentElement.style
+				.colorScheme = theme;
+
+			if (save) {
+				localStorage.setItem(
+					themeStorageKey,
+					theme
+				);
+			}
+
+			updateThemeButton();
+		};
 
 	const savedTheme =
 		localStorage.getItem(
@@ -593,9 +820,15 @@ const isActive = (href: string): boolean => {
 		savedTheme === "light" ||
 		savedTheme === "dark"
 	) {
-		setTheme(savedTheme, false);
+		setTheme(
+			savedTheme,
+			false
+		);
 	} else {
-		setTheme(getSystemTheme(), false);
+		setTheme(
+			getSystemTheme(),
+			false
+		);
 	}
 
 	themeButton?.addEventListener(
@@ -611,7 +844,9 @@ const isActive = (href: string): boolean => {
 	);
 
 	window
-		.matchMedia("(prefers-color-scheme: dark)")
+		.matchMedia(
+			"(prefers-color-scheme: dark)"
+		)
 		.addEventListener(
 			"change",
 			() => {
@@ -660,42 +895,45 @@ const isActive = (href: string): boolean => {
 			"[data-wiki-nav-close]"
 		);
 
-	const setWikiNavigationState = (
-		isOpen: boolean
-	): void => {
-		if (
-			!wikiNavButton ||
-			!wikiNavigation
-		) {
-			return;
-		}
+	const setWikiNavigationState =
+		(
+			isOpen: boolean
+		): void => {
+			if (
+				!wikiNavButton ||
+				!wikiNavigation
+			) {
+				return;
+			}
 
-		wikiNavigation.classList.toggle(
-			"is-open",
-			isOpen
-		);
+			wikiNavigation.classList.toggle(
+				"is-open",
+				isOpen
+			);
 
-		wikiNavButton.setAttribute(
-			"aria-expanded",
-			String(isOpen)
-		);
+			wikiNavButton.setAttribute(
+				"aria-expanded",
+				String(isOpen)
+			);
 
-		wikiNavigation.setAttribute(
-			"aria-hidden",
-			String(!isOpen)
-		);
+			wikiNavigation.setAttribute(
+				"aria-hidden",
+				String(!isOpen)
+			);
 
-		document.body.classList.toggle(
-			"wiki-navigation-open",
-			isOpen
-		);
+			document.body.classList.toggle(
+				"wiki-navigation-open",
+				isOpen
+			);
 
-		if (isOpen) {
-			requestAnimationFrame(() => {
-				wikiNavigationClose?.focus();
-			});
-		}
-	};
+			if (isOpen) {
+				requestAnimationFrame(
+					() => {
+						wikiNavigationClose?.focus();
+					}
+				);
+			}
+		};
 
 	wikiNavButton?.addEventListener(
 		"click",
@@ -714,7 +952,10 @@ const isActive = (href: string): boolean => {
 	wikiNavigationClose?.addEventListener(
 		"click",
 		() => {
-			setWikiNavigationState(false);
+			setWikiNavigationState(
+				false
+			);
+
 			wikiNavButton?.focus();
 		}
 	);
@@ -722,7 +963,10 @@ const isActive = (href: string): boolean => {
 	wikiNavigationBackdrop?.addEventListener(
 		"click",
 		() => {
-			setWikiNavigationState(false);
+			setWikiNavigationState(
+				false
+			);
+
 			wikiNavButton?.focus();
 		}
 	);
@@ -758,180 +1002,212 @@ const isActive = (href: string): boolean => {
 		return pagefind;
 	}
 
-	const getCategory = (
-		url: string
-	): string => {
-		if (
-			url === "/docs" ||
-			url.startsWith("/docs/")
-		) {
-			return "Wiki";
-		}
+	const getCategory =
+		(
+			url: string
+		): string => {
+			if (
+				url === "/docs" ||
+				url.startsWith("/docs/")
+			) {
+				return "Wiki";
+			}
 
-		if (
-			url === "/guide" ||
-			url.startsWith("/guide/")
-		) {
-			return "攻略";
-		}
+			if (
+				url === "/guide" ||
+				url.startsWith("/guide/")
+			) {
+				return "攻略";
+			}
 
-		if (
-			url === "/news" ||
-			url.startsWith("/news/")
-		) {
-			return "ニュース";
-		}
+			if (
+				url === "/news" ||
+				url.startsWith("/news/")
+			) {
+				return "ニュース";
+			}
 
-		if (
-			url === "/tool" ||
-			url.startsWith("/tool/")
-		) {
-			return "ツール";
-		}
+			if (
+				url === "/tool" ||
+				url.startsWith("/tool/")
+			) {
+				return "ツール";
+			}
 
-		if (
-			url === "/about" ||
-			url.startsWith("/about/")
-		) {
-			return "NUGについて";
-		}
+			if (
+				url === "/about" ||
+				url.startsWith("/about/")
+			) {
+				return "NUGについて";
+			}
 
-		return "サイト";
-	};
+			return "サイト";
+		};
 
-	const getTitle = (
-		item: PagefindResultData
-	): string => {
-		return (
-			item.meta?.title ??
-			item.title ??
-			"無題のページ"
-		);
-	};
+	const getTitle =
+		(
+			item: PagefindResultData
+		): string => {
+			return (
+				item.meta?.title ??
+				item.title ??
+				"無題のページ"
+			);
+		};
 
-	const getExcerptText = (
-		excerpt: string
-	): string => {
-		const parsed =
-			new DOMParser().parseFromString(
-				excerpt,
-				"text/html"
+	const getExcerptText =
+		(
+			excerpt: string
+		): string => {
+			const parsed =
+				new DOMParser().parseFromString(
+					excerpt,
+					"text/html"
+				);
+
+			return (
+				parsed.body.textContent ??
+				""
+			).trim();
+		};
+
+	const appendText =
+		(
+			parent: HTMLElement,
+			className: string,
+			text: string
+		): void => {
+			const element =
+				document.createElement(
+					"span"
+				);
+
+			element.className =
+				className;
+
+			element.textContent =
+				text;
+
+			parent.appendChild(
+				element
+			);
+		};
+
+	const clearSearchResults =
+		(): void => {
+			searchResults?.replaceChildren();
+
+			searchResults?.classList.remove(
+				"has-results"
 			);
 
-		return (
-			parsed.body.textContent ??
-			""
-		).trim();
-	};
+			if (searchStatus) {
+				searchStatus.textContent =
+					"";
 
-	const appendText = (
-		parent: HTMLElement,
-		className: string,
-		text: string
-	): void => {
-		const element =
-			document.createElement("span");
+				searchStatus.classList.remove(
+					"visible",
+					"loading",
+					"error"
+				);
+			}
+		};
 
-		element.className = className;
-		element.textContent = text;
+	const setSearchStatus =
+		(
+			text: string,
+			className = ""
+		): void => {
+			if (!searchStatus) {
+				return;
+			}
 
-		parent.appendChild(element);
-	};
+			searchStatus.className =
+				`search-status visible ${className}`.trim();
 
-	const clearSearchResults = (): void => {
-		searchResults?.replaceChildren();
+			searchStatus.textContent =
+				text;
+		};
 
-		searchResults?.classList.remove(
-			"has-results"
-		);
+	const createSearchResult =
+		(
+			item: PagefindResultData
+		): HTMLAnchorElement => {
+			const url =
+				item.url?.startsWith("/")
+					? item.url
+					: "/";
 
-		if (searchStatus) {
-			searchStatus.textContent = "";
+			const link =
+				document.createElement(
+					"a"
+				);
 
-			searchStatus.classList.remove(
-				"visible",
-				"loading",
-				"error"
-			);
-		}
-	};
+			link.className =
+				"search-result";
 
-	const setSearchStatus = (
-		text: string,
-		className = ""
-	): void => {
-		if (!searchStatus) {
-			return;
-		}
+			link.href = url;
 
-		searchStatus.className =
-			`search-status visible ${className}`.trim();
+			const content =
+				document.createElement(
+					"div"
+				);
 
-		searchStatus.textContent = text;
-	};
+			content.className =
+				"search-result-content";
 
-	const createSearchResult = (
-		item: PagefindResultData
-	): HTMLAnchorElement => {
-		const url =
-			item.url?.startsWith("/")
-				? item.url
-				: "/";
-
-		const link =
-			document.createElement("a");
-
-		link.className =
-			"search-result";
-
-		link.href = url;
-
-		const content =
-			document.createElement("div");
-
-		content.className =
-			"search-result-content";
-
-		appendText(
-			content,
-			"search-result-category",
-			getCategory(url)
-		);
-
-		appendText(
-			content,
-			"search-result-title",
-			getTitle(item)
-		);
-
-		const excerpt =
-			document.createElement("p");
-
-		excerpt.textContent =
-			getExcerptText(
-				item.excerpt ?? ""
+			appendText(
+				content,
+				"search-result-category",
+				getCategory(url)
 			);
 
-		content.appendChild(excerpt);
+			appendText(
+				content,
+				"search-result-title",
+				getTitle(item)
+			);
 
-		const arrow =
-			document.createElement("span");
+			const excerpt =
+				document.createElement(
+					"p"
+				);
 
-		arrow.className =
-			"search-result-arrow";
+			excerpt.textContent =
+				getExcerptText(
+					item.excerpt ?? ""
+				);
 
-		arrow.setAttribute(
-			"aria-hidden",
-			"true"
-		);
+			content.appendChild(
+				excerpt
+			);
 
-		arrow.textContent = "→";
+			const arrow =
+				document.createElement(
+					"span"
+				);
 
-		link.appendChild(content);
-		link.appendChild(arrow);
+			arrow.className =
+				"search-result-arrow";
 
-		return link;
-	};
+			arrow.setAttribute(
+				"aria-hidden",
+				"true"
+			);
+
+			arrow.textContent =
+				"→";
+
+			link.appendChild(
+				content
+			);
+
+			link.appendChild(
+				arrow
+			);
+
+			return link;
+		};
 
 	async function performSearch(
 		query: string
@@ -985,7 +1261,8 @@ const isActive = (href: string): boolean => {
 				);
 
 			if (
-				requestId !== searchRequest
+				requestId !==
+				searchRequest
 			) {
 				return;
 			}
@@ -1015,7 +1292,9 @@ const isActive = (href: string): boolean => {
 					"別のキーワードを試してください。"
 				);
 
-				searchResults.appendChild(empty);
+				searchResults.appendChild(
+					empty
+				);
 
 				searchResults.classList.add(
 					"has-results"
@@ -1028,8 +1307,14 @@ const isActive = (href: string): boolean => {
 				`${total}件の検索結果`
 			);
 
-			for (const item of items) {
-				searchResults.appendChild(createSearchResult(item));
+			for (
+				const item of items
+			) {
+				searchResults.appendChild(
+					createSearchResult(
+						item
+					)
+				);
 			}
 
 			searchResults.classList.add(
@@ -1037,7 +1322,8 @@ const isActive = (href: string): boolean => {
 			);
 		} catch (error) {
 			if (
-				requestId !== searchRequest
+				requestId !==
+				searchRequest
 			) {
 				return;
 			}
@@ -1072,7 +1358,9 @@ const isActive = (href: string): boolean => {
 				"ページを再読み込みして、もう一度お試しください。"
 			);
 
-			searchResults.appendChild(errorElement);
+			searchResults.appendChild(
+				errorElement
+			);
 
 			searchResults.classList.add(
 				"has-results"
@@ -1084,54 +1372,58 @@ const isActive = (href: string): boolean => {
 	   Search State
 	========================================================= */
 
-	const setSearchState = (
-		isOpen: boolean
-	): void => {
-		if (
-			!header ||
-			!searchButton ||
-			!searchOverlay
-		) {
-			return;
-		}
+	const setSearchState =
+		(
+			isOpen: boolean
+		): void => {
+			if (
+				!header ||
+				!searchButton ||
+				!searchOverlay
+			) {
+				return;
+			}
 
-		header.classList.toggle(
-			"search-open",
-			isOpen
-		);
+			header.classList.toggle(
+				"search-open",
+				isOpen
+			);
 
-		searchButton.setAttribute(
-			"aria-expanded",
-			String(isOpen)
-		);
+			searchButton.setAttribute(
+				"aria-expanded",
+				String(isOpen)
+			);
 
-		searchOverlay.setAttribute(
-			"aria-hidden",
-			String(!isOpen)
-		);
+			searchOverlay.setAttribute(
+				"aria-hidden",
+				String(!isOpen)
+			);
 
-		if (isOpen) {
-			document.body.classList.add(
+			if (isOpen) {
+				document.body.classList.add(
+					"overlay-open"
+				);
+
+				requestAnimationFrame(
+					() => {
+						searchInput?.focus();
+					}
+				);
+
+				return;
+			}
+
+			document.body.classList.remove(
 				"overlay-open"
 			);
 
-			requestAnimationFrame(() => {
-				searchInput?.focus();
-			});
+			if (searchInput) {
+				searchInput.value =
+					"";
+			}
 
-			return;
-		}
-
-		document.body.classList.remove(
-			"overlay-open"
-		);
-
-		if (searchInput) {
-			searchInput.value = "";
-		}
-
-		clearSearchResults();
-	};
+			clearSearchResults();
+		};
 
 	searchButton?.addEventListener(
 		"click",
@@ -1149,7 +1441,10 @@ const isActive = (href: string): boolean => {
 	searchClose?.addEventListener(
 		"click",
 		() => {
-			setSearchState(false);
+			setSearchState(
+				false
+			);
+
 			searchButton?.focus();
 		}
 	);
@@ -1157,14 +1452,18 @@ const isActive = (href: string): boolean => {
 	searchBackdrop?.addEventListener(
 		"click",
 		() => {
-			setSearchState(false);
+			setSearchState(
+				false
+			);
 		}
 	);
 
 	document.addEventListener(
 		"nug:open-search",
 		() => {
-			setSearchState(true);
+			setSearchState(
+				true
+			);
 		}
 	);
 
@@ -1180,7 +1479,9 @@ const isActive = (href: string): boolean => {
 	searchInput?.addEventListener(
 		"keydown",
 		(event) => {
-			if (event.key !== "Enter") {
+			if (
+				event.key !== "Enter"
+			) {
 				return;
 			}
 
@@ -1191,6 +1492,7 @@ const isActive = (href: string): boolean => {
 
 			if (firstResult) {
 				event.preventDefault();
+
 				firstResult.click();
 			}
 		}
@@ -1203,7 +1505,9 @@ const isActive = (href: string): boolean => {
 	document.addEventListener(
 		"keydown",
 		(event) => {
-			if (event.key !== "Escape") {
+			if (
+				event.key !== "Escape"
+			) {
 				return;
 			}
 
@@ -1212,8 +1516,12 @@ const isActive = (href: string): boolean => {
 					"search-open"
 				)
 			) {
-				setSearchState(false);
+				setSearchState(
+					false
+				);
+
 				searchButton?.focus();
+
 				return;
 			}
 
@@ -1222,7 +1530,10 @@ const isActive = (href: string): boolean => {
 					"is-open"
 				)
 			) {
-				setWikiNavigationState(false);
+				setWikiNavigationState(
+					false
+				);
+
 				wikiNavButton?.focus();
 			}
 		}
@@ -1585,15 +1896,71 @@ const isActive = (href: string): boolean => {
 	}
 
 	.auth-button {
-		position: relative; display: flex; align-items: center; justify-content: center; gap: 7px; min-width: 92px; height: 40px; padding: 0 12px; border: 1px solid var(--header-grass); border-radius: 0; background: var(--header-accent); color: #fff; text-decoration: none; font-size: 12px; font-weight: 800; white-space: nowrap; box-shadow: 0 3px 0 var(--header-border-strong); transition: background var(--header-transition-fast), transform var(--header-transition-fast), box-shadow var(--header-transition-fast);
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 7px;
+		min-width: 92px;
+		height: 40px;
+		padding: 0 12px;
+		border: 1px solid var(--header-grass);
+		border-radius: 0;
+		background: var(--header-accent);
+		color: #fff;
+		text-decoration: none;
+		font-size: 12px;
+		font-weight: 800;
+		white-space: nowrap;
+		box-shadow:
+			0 3px 0 var(--header-border-strong);
+		transition:
+			background var(--header-transition-fast),
+			transform var(--header-transition-fast),
+			box-shadow var(--header-transition-fast);
 	}
-	.auth-button:hover { background: var(--header-grass-light); transform: translateY(-1px); box-shadow: 0 4px 0 var(--header-border-strong); }
-	.auth-button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--header-border-strong); }
-	.auth-button:focus-visible { outline: 3px solid var(--header-gold-light); outline-offset: 2px; }
-	.auth-button.is-logged-in { background: var(--header-dirt); border-color: var(--header-dirt); }
-	.auth-button-icon { display: inline-flex; width: 18px; height: 18px; flex-shrink: 0; }
-	.auth-button-icon svg { width: 100%; height: 100%; }
-	.auth-button-label { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+	.auth-button:hover {
+		background: var(--header-grass-light);
+		transform: translateY(-1px);
+		box-shadow:
+			0 4px 0 var(--header-border-strong);
+	}
+
+	.auth-button:active {
+		transform: translateY(2px);
+		box-shadow:
+			0 1px 0 var(--header-border-strong);
+	}
+
+	.auth-button:focus-visible {
+		outline: 3px solid var(--header-gold-light);
+		outline-offset: 2px;
+	}
+
+	.auth-button.is-logged-in {
+		background: var(--header-dirt);
+		border-color: var(--header-dirt);
+	}
+
+	.auth-button-icon {
+		display: inline-flex;
+		width: 18px;
+		height: 18px;
+		flex-shrink: 0;
+	}
+
+	.auth-button-icon svg {
+		width: 100%;
+		height: 100%;
+	}
+
+	.auth-button-label {
+		max-width: 130px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 
 	.icon-button {
 		position: relative;
@@ -1685,6 +2052,72 @@ const isActive = (href: string): boolean => {
 	.wiki-nav-button svg {
 		width: 19px;
 		height: 19px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.8;
+		stroke-linecap: square;
+		stroke-linejoin: miter;
+	}
+
+	/* =========================================================
+	   Wiki Edit Button
+	========================================================= */
+
+	:global(.nug-wiki-title-row) {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 20px;
+		width: 100%;
+	}
+
+	:global(.nug-wiki-edit-button) {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 7px;
+		flex-shrink: 0;
+		min-height: 38px;
+		padding: 0 13px;
+		border: 1px solid var(--header-grass);
+		border-radius: 0;
+		background: var(--header-accent);
+		color: #fff;
+		text-decoration: none;
+		font-size: 12px;
+		font-weight: 800;
+		line-height: 1;
+		box-shadow:
+			0 3px 0 var(--header-border-strong);
+		transition:
+			background var(--header-transition-fast),
+			border-color var(--header-transition-fast),
+			transform var(--header-transition-fast),
+			box-shadow var(--header-transition-fast);
+	}
+
+	:global(.nug-wiki-edit-button:hover) {
+		background: var(--header-grass-light);
+		border-color: var(--header-grass-light);
+		transform: translateY(-1px);
+		box-shadow:
+			0 4px 0 var(--header-border-strong);
+	}
+
+	:global(.nug-wiki-edit-button:active) {
+		transform: translateY(2px);
+		box-shadow:
+			0 1px 0 var(--header-border-strong);
+	}
+
+	:global(.nug-wiki-edit-button:focus-visible) {
+		outline: 3px solid var(--header-gold-light);
+		outline-offset: 2px;
+	}
+
+	:global(.nug-wiki-edit-button svg) {
+		width: 16px;
+		height: 16px;
 		fill: none;
 		stroke: currentColor;
 		stroke-width: 1.8;
@@ -2213,7 +2646,9 @@ const isActive = (href: string): boolean => {
 	========================================================= */
 
 	@media (max-width: 1023px) {
-		.auth-button-label { max-width: 90px; }
+		.auth-button-label {
+			max-width: 90px;
+		}
 
 		.header-inner {
 			width: calc(100% - 32px);
@@ -2262,8 +2697,17 @@ const isActive = (href: string): boolean => {
 	}
 
 	@media (max-width: 767px) {
-		.auth-button { width: 38px; height: 38px; min-width: 38px; padding: 0; gap: 0; }
-		.auth-button-label { display: none; }
+		.auth-button {
+			width: 38px;
+			height: 38px;
+			min-width: 38px;
+			padding: 0;
+			gap: 0;
+		}
+
+		.auth-button-label {
+			display: none;
+		}
 
 		.header-inner {
 			width: calc(100% - 24px);
@@ -2309,6 +2753,31 @@ const isActive = (href: string): boolean => {
 
 		.wiki-navigation-link {
 			min-height: 46px;
+		}
+
+		/* =====================================================
+		   Wiki Edit Button - Mobile
+		===================================================== */
+
+		:global(.nug-wiki-title-row) {
+			align-items: flex-start;
+			gap: 12px;
+		}
+
+		:global(.nug-wiki-edit-button) {
+			min-height: 36px;
+			padding: 0 11px;
+		}
+
+		:global(.nug-wiki-edit-button span) {
+			display: none;
+		}
+	}
+
+	@media (max-width: 480px) {
+		:global(.nug-wiki-edit-button) {
+			width: 36px;
+			padding: 0;
 		}
 	}
 

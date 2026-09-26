@@ -520,7 +520,361 @@ const description = 'NUGBASEのアカウント情報';
 
 
 			/* =========================================================
-			   11. Actions
+			   11. Wiki Editor
+			   ========================================================= */
+
+			.wiki-editor-card {
+				margin-top: 24px;
+
+				padding: 24px;
+
+				border:
+					1px solid
+					var(--account-border);
+
+				background: var(--account-surface-soft);
+
+				box-shadow: var(--account-shadow-small);
+			}
+
+			.wiki-editor-heading {
+				display: flex;
+				align-items: flex-start;
+				justify-content: space-between;
+
+				gap: 16px;
+			}
+
+			.wiki-editor-heading-text {
+				min-width: 0;
+			}
+
+			.wiki-editor-heading h2 {
+				margin: 0;
+
+				color: var(--account-text);
+
+				font-size: 1.15rem;
+				font-weight: 800;
+
+				line-height: 1.4;
+			}
+
+			.wiki-editor-heading p {
+				margin: 6px 0 0;
+
+				color: var(--account-text-muted);
+
+				font-size: 0.88rem;
+
+				line-height: 1.7;
+			}
+
+			.wiki-editor-badge {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+
+				flex: 0 0 auto;
+
+				min-height: 30px;
+
+				padding: 4px 10px;
+
+				border:
+					1px solid
+					color-mix(
+						in srgb,
+						var(--account-accent) 35%,
+						var(--account-border)
+					);
+
+				background: var(--account-accent-soft);
+
+				color: var(--account-accent-dark);
+
+				font-size: 0.75rem;
+				font-weight: 800;
+
+				white-space: nowrap;
+			}
+
+			.wiki-editor-description {
+				margin: 18px 0 0;
+
+				color: var(--account-text-soft);
+
+				font-size: 0.9rem;
+			}
+
+
+			/* =========================================================
+			   12. Wiki Editor Buttons
+			   ========================================================= */
+
+			.wiki-editor-actions {
+				display: grid;
+
+				grid-template-columns:
+					repeat(2, minmax(0, 1fr));
+
+				gap: 12px;
+
+				margin-top: 18px;
+			}
+
+			.wiki-editor-button {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				width: 100%;
+
+				min-height: 48px;
+
+				padding: 12px 18px;
+
+				border:
+					1px solid
+					var(--account-accent-dark);
+
+				border-radius: 6px;
+
+				background: var(--account-accent);
+
+				color: #ffffff;
+
+				font-weight: 800;
+
+				text-decoration: none;
+
+				cursor: pointer;
+
+				box-shadow:
+					0 4px 0
+					var(--account-accent-dark);
+
+				transition:
+					background-color 0.15s ease,
+					transform 0.15s ease,
+					box-shadow 0.15s ease,
+					opacity 0.15s ease;
+			}
+
+			.wiki-editor-button:hover {
+				background: var(--account-accent-dark);
+
+				transform: translateY(-1px);
+
+				box-shadow:
+					0 5px 0
+					color-mix(
+						in srgb,
+						var(--account-accent-dark) 90%,
+						#000000
+					);
+			}
+
+			.wiki-editor-button:active {
+				transform: translateY(3px);
+
+				box-shadow:
+					0 1px 0
+					var(--account-accent-dark);
+			}
+
+			.wiki-editor-button.secondary {
+				border-color:
+					var(--account-border);
+
+				background:
+					var(--account-surface);
+
+				color:
+					var(--account-text-soft);
+
+				box-shadow:
+					0 4px 0
+					rgba(29, 40, 32, 0.10);
+			}
+
+			.wiki-editor-button.secondary:hover {
+				background:
+					var(--account-accent-soft);
+
+				color:
+					var(--account-accent-dark);
+
+				box-shadow:
+					0 5px 0
+					rgba(29, 40, 32, 0.12);
+			}
+
+			.wiki-editor-button:disabled {
+				opacity: 0.65;
+
+				cursor: wait;
+
+				transform: none;
+
+				box-shadow:
+					0 2px 0
+					var(--account-accent-dark);
+			}
+
+			.wiki-editor-status {
+				margin: 12px 0 0;
+
+				color: var(--account-text-muted);
+
+				font-size: 0.85rem;
+
+				text-align: center;
+			}
+
+			.wiki-editor-status.error {
+				color: var(--account-danger);
+			}
+
+			.wiki-editor-link {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+
+				width: 100%;
+
+				min-height: 44px;
+
+				margin-top: 18px;
+
+				padding: 10px 16px;
+
+				border:
+					1px solid
+					var(--account-border);
+
+				border-radius: 6px;
+
+				background: var(--account-surface);
+
+				color: var(--account-text-soft);
+
+				font-weight: 700;
+
+				text-decoration: none;
+
+				box-shadow:
+					0 3px 0
+					rgba(29, 40, 32, 0.08);
+
+				transition:
+					background-color 0.15s ease,
+					color 0.15s ease,
+					transform 0.15s ease,
+					box-shadow 0.15s ease;
+			}
+
+			.wiki-editor-link:hover {
+				background: var(--account-accent-soft);
+
+				color: var(--account-accent-dark);
+
+				transform: translateY(-1px);
+
+				box-shadow:
+					0 4px 0
+					rgba(29, 40, 32, 0.10);
+			}
+
+
+			/* =========================================================
+			   13. Admin
+			   ========================================================= */
+
+			.wiki-admin-section {
+				margin-top: 24px;
+
+				padding-top: 24px;
+
+				border-top:
+					1px solid
+					var(--account-border);
+			}
+
+			.wiki-admin-label {
+				margin: 0;
+
+				color: var(--account-text-muted);
+
+				font-size: 0.82rem;
+				font-weight: 700;
+			}
+
+			.wiki-admin-button {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				width: 100%;
+
+				min-height: 48px;
+
+				margin-top: 12px;
+
+				padding: 12px 18px;
+
+				border:
+					1px solid
+					var(--account-border);
+
+				border-radius: 6px;
+
+				background:
+					var(--account-surface);
+
+				color:
+					var(--account-text);
+
+				font-weight: 800;
+
+				text-decoration: none;
+
+				box-shadow:
+					0 4px 0
+					rgba(29, 40, 32, 0.10);
+
+				transition:
+					background-color 0.15s ease,
+					color 0.15s ease,
+					transform 0.15s ease,
+					box-shadow 0.15s ease;
+			}
+
+			.wiki-admin-button:hover {
+				background:
+					var(--account-accent-soft);
+
+				color:
+					var(--account-accent-dark);
+
+				transform: translateY(-1px);
+
+				box-shadow:
+					0 5px 0
+					rgba(29, 40, 32, 0.12);
+			}
+
+			.wiki-admin-button:active {
+				transform: translateY(3px);
+
+				box-shadow:
+					0 1px 0
+					rgba(29, 40, 32, 0.08);
+			}
+
+
+			/* =========================================================
+			   14. Actions
 			   ========================================================= */
 
 			.account-actions {
@@ -624,7 +978,7 @@ const description = 'NUGBASEのアカウント情報';
 
 
 			/* =========================================================
-			   12. Focus
+			   15. Focus
 			   ========================================================= */
 
 			a:focus-visible,
@@ -638,7 +992,7 @@ const description = 'NUGBASEのアカウント情報';
 
 
 			/* =========================================================
-			   13. Mobile
+			   16. Mobile
 			   ========================================================= */
 
 			@media (max-width: 600px) {
@@ -721,6 +1075,32 @@ const description = 'NUGBASEのアカウント情報';
 					text-align: left;
 				}
 
+				.wiki-editor-card {
+					margin-top: 20px;
+
+					padding: 18px;
+				}
+
+				.wiki-editor-heading {
+					flex-direction: column;
+
+					gap: 10px;
+				}
+
+				.wiki-editor-badge {
+					align-self: flex-start;
+				}
+
+				.wiki-editor-actions {
+					grid-template-columns: 1fr;
+				}
+
+				.wiki-admin-section {
+					margin-top: 20px;
+
+					padding-top: 20px;
+				}
+
 				.account-actions {
 					margin-top: 24px;
 
@@ -730,7 +1110,7 @@ const description = 'NUGBASEのアカウント情報';
 
 
 			/* =========================================================
-			   14. Very Small Screens
+			   17. Very Small Screens
 			   ========================================================= */
 
 			@media (max-width: 380px) {
@@ -755,11 +1135,15 @@ const description = 'NUGBASEのアカウント情報';
 
 					flex-basis: 56px;
 				}
+
+				.wiki-editor-card {
+					padding: 14px;
+				}
 			}
 
 
 			/* =========================================================
-			   15. Reduced Motion
+			   18. Reduced Motion
 			   ========================================================= */
 
 			@media (prefers-reduced-motion: reduce) {
@@ -891,6 +1275,123 @@ const description = 'NUGBASEのアカウント情報';
 						</div>
 
 
+						<!-- =================================================
+						     Wiki Editor
+						     ================================================= -->
+
+						<section
+							id="wiki-editor-card"
+							class="wiki-editor-card"
+							aria-labelledby="wiki-editor-title"
+						>
+							<div class="wiki-editor-heading">
+
+								<div class="wiki-editor-heading-text">
+									<h2 id="wiki-editor-title">
+										Wiki編集
+									</h2>
+
+									<p id="wiki-editor-description">
+										NUGBASE Wikiの記事を編集できます。
+									</p>
+								</div>
+
+								<span
+									id="wiki-editor-badge"
+									class="wiki-editor-badge"
+								>
+									確認中
+								</span>
+							</div>
+
+
+							<p
+								id="wiki-editor-message"
+								class="wiki-editor-description"
+							>
+								Wiki編集権限を確認しています。
+							</p>
+
+
+							<!-- General User -->
+
+							<button
+								id="wiki-editor-register-button"
+								class="wiki-editor-button"
+								type="button"
+								hidden
+							>
+								Wiki編集者になる
+							</button>
+
+
+							<!-- Editor / Admin -->
+
+							<div
+								id="wiki-editor-actions"
+								class="wiki-editor-actions"
+								hidden
+							>
+								<a
+									id="wiki-editor-edit-link"
+									class="wiki-editor-button"
+									href="/docs/"
+								>
+									Wikiを編集
+								</a>
+
+								<a
+									id="wiki-editor-requests-link"
+									class="wiki-editor-button secondary"
+									href="/wiki/requests/"
+								>
+									自分の下書き・申請
+								</a>
+							</div>
+
+
+							<!-- Wiki -->
+
+							<a
+								id="wiki-editor-link"
+								class="wiki-editor-link"
+								href="/docs/"
+								hidden
+							>
+								Wikiを見る
+							</a>
+
+
+							<p
+								id="wiki-editor-status"
+								class="wiki-editor-status"
+								role="status"
+								aria-live="polite"
+								hidden
+							></p>
+
+
+							<!-- Admin -->
+
+							<div
+								id="wiki-admin-section"
+								class="wiki-admin-section"
+								hidden
+							>
+								<p class="wiki-admin-label">
+									管理者メニュー
+								</p>
+
+								<a
+									class="wiki-admin-button"
+									href="/admin/"
+								>
+									Wiki管理画面
+								</a>
+							</div>
+						</section>
+
+
 						<!-- Actions -->
 
 						<div class="account-actions">
@@ -924,13 +1425,6 @@ const description = 'NUGBASEのアカウント情報';
 		<script>
 			/* =========================================================
 			   NUGBASE Theme
-			   ---------------------------------------------------------
-			   Reads the same localStorage key used by NUGBASE:
-			   nug-theme
-
-			   Supported values:
-			   - light
-			   - dark
 			   ========================================================= */
 
 			const applyTheme = (): void => {
@@ -977,6 +1471,13 @@ const description = 'NUGBASEのアカウント情報';
 			type AuthResponse = {
 				ok?: boolean;
 				loggedIn?: boolean;
+				user?: AuthUser | null;
+			};
+
+			type EditorRegistrationResponse = {
+				ok?: boolean;
+				alreadyEditor?: boolean;
+				error?: string;
 				user?: AuthUser | null;
 			};
 
@@ -1032,6 +1533,46 @@ const description = 'NUGBASEのアカウント情報';
 
 
 			/* =========================================================
+			   Wiki Editor Elements
+			   ========================================================= */
+
+			const wikiEditorBadge =
+				document.querySelector<HTMLElement>(
+					"#wiki-editor-badge",
+				);
+
+			const wikiEditorMessage =
+				document.querySelector<HTMLElement>(
+					"#wiki-editor-message",
+				);
+
+			const wikiEditorRegisterButton =
+				document.querySelector<HTMLButtonElement>(
+					"#wiki-editor-register-button",
+				);
+
+			const wikiEditorActions =
+				document.querySelector<HTMLElement>(
+					"#wiki-editor-actions",
+				);
+
+			const wikiEditorLink =
+				document.querySelector<HTMLAnchorElement>(
+					"#wiki-editor-link",
+				);
+
+			const wikiEditorStatus =
+				document.querySelector<HTMLElement>(
+					"#wiki-editor-status",
+				);
+
+			const wikiAdminSection =
+				document.querySelector<HTMLElement>(
+					"#wiki-admin-section",
+				);
+
+
+			/* =========================================================
 			   Error
 			   ========================================================= */
 
@@ -1048,6 +1589,249 @@ const description = 'NUGBASEのアカウント情報';
 
 				status.hidden = false;
 			};
+
+
+			/* =========================================================
+			   Wiki Editor UI
+			   ========================================================= */
+
+			const updateWikiEditorUI = (
+				user: AuthUser,
+			): void => {
+				const userRole =
+					user.role || "user";
+
+
+				/* -------------------------
+				   Reset
+				   ------------------------- */
+
+				if (wikiEditorRegisterButton) {
+					wikiEditorRegisterButton.hidden =
+						true;
+				}
+
+				if (wikiEditorActions) {
+					wikiEditorActions.hidden =
+						true;
+				}
+
+				if (wikiEditorLink) {
+					wikiEditorLink.hidden =
+						false;
+				}
+
+				if (wikiAdminSection) {
+					wikiAdminSection.hidden =
+						true;
+				}
+
+
+				/* -------------------------
+				   user
+				   ------------------------- */
+
+				if (userRole === "user") {
+					if (wikiEditorBadge) {
+						wikiEditorBadge.textContent =
+							"一般ユーザー";
+					}
+
+					if (wikiEditorMessage) {
+						wikiEditorMessage.textContent =
+							"Wiki編集者になると、Wikiの記事を編集してレビュー申請できるようになります。";
+					}
+
+					if (wikiEditorRegisterButton) {
+						wikiEditorRegisterButton.hidden =
+							false;
+					}
+
+					return;
+				}
+
+
+				/* -------------------------
+				   editor
+				   ------------------------- */
+
+				if (userRole === "editor") {
+					if (wikiEditorBadge) {
+						wikiEditorBadge.textContent =
+							"Wiki編集者";
+					}
+
+					if (wikiEditorMessage) {
+						wikiEditorMessage.textContent =
+							"Wikiの記事を編集し、下書き保存やレビュー申請を行えます。";
+					}
+
+					if (wikiEditorActions) {
+						wikiEditorActions.hidden =
+							false;
+					}
+
+					return;
+				}
+
+
+				/* -------------------------
+				   admin
+				   ------------------------- */
+
+				if (userRole === "admin") {
+					if (wikiEditorBadge) {
+						wikiEditorBadge.textContent =
+							"管理者";
+					}
+
+					if (wikiEditorMessage) {
+						wikiEditorMessage.textContent =
+							"Wikiの編集・レビュー・公開を管理できます。";
+					}
+
+					if (wikiEditorActions) {
+						wikiEditorActions.hidden =
+							false;
+					}
+
+					if (wikiAdminSection) {
+						wikiAdminSection.hidden =
+							false;
+					}
+
+					return;
+				}
+
+
+				/* -------------------------
+				   Unknown role
+				   ------------------------- */
+
+				if (wikiEditorBadge) {
+					wikiEditorBadge.textContent =
+						"権限未確認";
+				}
+
+				if (wikiEditorMessage) {
+					wikiEditorMessage.textContent =
+						"Wiki編集権限を確認できませんでした。";
+				}
+
+				if (wikiEditorActions) {
+					wikiEditorActions.hidden =
+						true;
+				}
+
+				if (wikiEditorLink) {
+					wikiEditorLink.hidden =
+						true;
+				}
+			};
+
+
+			/* =========================================================
+			   Register Wiki Editor
+			   ========================================================= */
+
+			const registerWikiEditor =
+				async (): Promise<void> => {
+					if (!wikiEditorRegisterButton) {
+						return;
+					}
+
+					wikiEditorRegisterButton.disabled =
+						true;
+
+					wikiEditorRegisterButton.textContent =
+						"登録中…";
+
+					if (wikiEditorStatus) {
+						wikiEditorStatus.hidden =
+							false;
+
+						wikiEditorStatus.className =
+							"wiki-editor-status";
+
+						wikiEditorStatus.textContent =
+							"Wiki編集者として登録しています…";
+					}
+
+					try {
+						const response =
+							await fetch(
+								"/api/wiki/editor",
+								{
+									method: "POST",
+
+									credentials:
+										"same-origin",
+
+									headers: {
+										Accept:
+											"application/json",
+									},
+								},
+							);
+
+						const data =
+							(await response.json()) as
+								EditorRegistrationResponse;
+
+						if (
+							!response.ok ||
+							!data.ok
+						) {
+							throw new Error(
+								data.error ||
+								`HTTP ${response.status}`,
+							);
+						}
+
+						await loadAccount();
+
+						if (wikiEditorStatus) {
+							wikiEditorStatus.hidden =
+								false;
+
+							wikiEditorStatus.className =
+								"wiki-editor-status";
+
+							wikiEditorStatus.textContent =
+								"Wiki編集者として登録されました。";
+						}
+					} catch (error) {
+						console.error(
+							"NUG Wiki Editor Registration Error:",
+							error,
+						);
+
+						if (wikiEditorStatus) {
+							wikiEditorStatus.hidden =
+								false;
+
+							wikiEditorStatus.className =
+								"wiki-editor-status error";
+
+							wikiEditorStatus.textContent =
+								"Wiki編集者の登録に失敗しました。もう一度お試しください。";
+						}
+
+						wikiEditorRegisterButton.disabled =
+							false;
+
+						wikiEditorRegisterButton.textContent =
+							"Wiki編集者になる";
+					}
+				};
+
+
+			wikiEditorRegisterButton?.addEventListener(
+				"click",
+				() => {
+					void registerWikiEditor();
+				},
+			);
 
 
 			/* =========================================================
@@ -1141,6 +1925,15 @@ const description = 'NUGBASEのアカウント情報';
 								user.role ||
 								"user";
 						}
+
+
+						/* -------------------------
+						   Wiki Editor
+						   ------------------------- */
+
+						updateWikiEditorUI(
+							user,
+						);
 
 
 						/* -------------------------

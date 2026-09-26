@@ -16,7 +16,9 @@
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
     "@astrojs/starlight": "^0.41.10",
-    "astro": "^7.2.5"
+    "astro": "^7.2.5",
+    "dompurify": "^3.4.16",
+    "marked": "^18.0.14"
   },
   "allowScripts": {
     "esbuild": true

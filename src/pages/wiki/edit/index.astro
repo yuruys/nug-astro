@@ -1,0 +1,3134 @@
+---
+const pagePath = Astro.url.searchParams.get('path') ?? '';
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<title>Wiki編集 | NUGBASE</title>
+		<meta
+			name="description"
+			content="NUGBASE Wikiの編集画面"
+		/>
+	</head>
+
+	<body>
+		<main class="editor-page">
+			<div class="editor-shell">
+
+				<!-- ========================================
+				     Header
+				======================================== -->
+
+				<header class="editor-header">
+					<div>
+						<a href="/docs/" class="back-link">
+							← Wikiへ戻る
+						</a>
+
+						<p class="eyebrow">
+							NUGBASE WIKI
+						</p>
+
+						<h1>Wiki編集</h1>
+
+						<p class="description">
+							Wikiページの内容を編集し、プレビューを確認してから下書き保存・レビュー申請できます。
+						</p>
+					</div>
+
+					<div class="header-actions">
+						<a
+							id="preview-link"
+							class="button button-secondary"
+							href="/docs/"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							公開ページを見る
+						</a>
+					</div>
+				</header>
+
+
+				<!-- ========================================
+				     Loading
+				======================================== -->
+
+				<section
+					id="loading-state"
+					class="state-card"
+					aria-live="polite"
+				>
+					<div class="spinner"></div>
+
+					<p>
+						Wikiページを読み込んでいます…
+					</p>
+				</section>
+
+
+				<!-- ========================================
+				     Error
+				======================================== -->
+
+				<section
+					id="error-state"
+					class="state-card state-error"
+					hidden
+					aria-live="assertive"
+				>
+					<div class="state-icon">
+						!
+					</div>
+
+					<h2>
+						読み込みに失敗しました
+					</h2>
+
+					<p id="error-message">
+						Wikiページを読み込めませんでした。
+					</p>
+
+					<div class="state-actions">
+						<a
+							href="/docs/"
+							class="button button-secondary"
+						>
+							Wikiへ戻る
+						</a>
+					</div>
+				</section>
+
+
+				<!-- ========================================
+				     Editor
+				======================================== -->
+
+				<section
+					id="editor-state"
+					hidden
+				>
+
+					<!-- ====================================
+					     Status
+					==================================== -->
+
+					<section
+						class="status-card"
+						aria-label="編集ステータス"
+					>
+						<div class="status-heading">
+							<div>
+								<span class="info-label">
+									編集ステータス
+								</span>
+
+								<strong id="status-text">
+									編集前
+								</strong>
+							</div>
+
+							<span
+								id="dirty-indicator"
+								class="dirty-indicator"
+								hidden
+							>
+								● 未保存の変更
+							</span>
+						</div>
+
+						<div class="status-stepper">
+
+							<div
+								class="status-step active"
+								data-status-step="draft"
+							>
+								<span class="status-dot">
+									●
+								</span>
+
+								<span>
+									編集・下書き
+								</span>
+							</div>
+
+							<div class="status-line"></div>
+
+							<div
+								class="status-step"
+								data-status-step="pending"
+							>
+								<span class="status-dot">
+									○
+								</span>
+
+								<span>
+									レビュー申請済み
+								</span>
+							</div>
+
+							<div class="status-line"></div>
+
+							<div
+								class="status-step"
+								data-status-step="approved"
+							>
+								<span class="status-dot">
+									○
+								</span>
+
+								<span>
+									承認
+								</span>
+							</div>
+
+							<div class="status-line"></div>
+
+							<div
+								class="status-step"
+								data-status-step="published"
+							>
+								<span class="status-dot">
+									○
+								</span>
+
+								<span>
+									公開
+								</span>
+							</div>
+
+						</div>
+					</section>
+
+
+					<!-- ====================================
+					     Page information
+					==================================== -->
+
+					<div class="page-info-card">
+						<div class="page-info-main">
+
+							<span class="info-label">
+								編集対象
+							</span>
+
+							<h2 id="page-title">
+								Wikiページ
+							</h2>
+
+							<code id="page-path"></code>
+
+						</div>
+
+						<div class="revision-info">
+
+							<span class="info-label">
+								公開Revision
+							</span>
+
+							<strong id="revision-number">
+								-
+							</strong>
+
+						</div>
+					</div>
+
+
+					<!-- ====================================
+					     Editor form
+					==================================== -->
+
+					<form id="editor-form">
+
+						<!-- ==================================
+						     Content heading
+						================================== -->
+
+						<div class="content-toolbar">
+
+							<div>
+								<label for="content">
+									本文
+								</label>
+
+								<span
+									id="content-status"
+									class="content-status"
+								>
+									MDX
+								</span>
+							</div>
+
+							<div class="editor-meta">
+								<span id="character-count">
+									0文字
+								</span>
+
+								<span
+									id="live-status"
+									class="live-status"
+								>
+									プレビュー
+								</span>
+							</div>
+
+						</div>
+
+
+						<!-- ==================================
+						     Mobile tabs
+						================================== -->
+
+						<div
+							class="mobile-view-tabs"
+							role="tablist"
+							aria-label="編集画面表示"
+						>
+							<button
+								type="button"
+								class="mobile-view-tab active"
+								id="edit-tab"
+								role="tab"
+								aria-selected="true"
+								data-view="edit"
+							>
+								編集
+							</button>
+
+							<button
+								type="button"
+								class="mobile-view-tab"
+								id="preview-tab"
+								role="tab"
+								aria-selected="false"
+								data-view="preview"
+							>
+								プレビュー
+							</button>
+						</div>
+
+
+						<!-- ==================================
+						     Editor / Preview
+						================================== -->
+
+						<div
+							id="content-workspace"
+							class="content-workspace"
+						>
+
+							<!-- Markdown -->
+
+							<div
+								class="editor-pane"
+								data-pane="edit"
+							>
+								<div class="pane-header">
+									<span>
+										Markdown / MDX
+									</span>
+
+									<span>
+										編集
+									</span>
+								</div>
+
+								<textarea
+									id="content"
+									name="content"
+									spellcheck="false"
+									autocomplete="off"
+									aria-label="Wiki本文"
+									placeholder="Wiki本文を入力してください"
+								></textarea>
+							</div>
+
+
+							<!-- Preview -->
+
+							<div
+								class="preview-pane"
+								data-pane="preview"
+							>
+								<div class="pane-header">
+									<span>
+										プレビュー
+									</span>
+
+									<span id="preview-state">
+										リアルタイム
+									</span>
+								</div>
+
+								<article
+									id="markdown-preview"
+									class="markdown-preview"
+									aria-label="Markdownプレビュー"
+								>
+									<p class="preview-placeholder">
+										本文を入力するとここにプレビューが表示されます。
+									</p>
+								</article>
+							</div>
+
+						</div>
+
+
+						<p class="field-help">
+							Markdown / MDX形式で編集します。プレビューでは基本的なMarkdown記法を確認できます。
+							Starlight固有の記法は公開ページで最終確認してください。
+						</p>
+
+
+						<!-- ==================================
+						     Edit message
+						================================== -->
+
+						<div class="field-group">
+
+							<div class="field-heading">
+
+								<label for="message">
+									編集メッセージ
+								</label>
+
+								<span>
+									任意
+								</span>
+
+							</div>
+
+							<input
+								id="message"
+								name="message"
+								type="text"
+								maxlength="500"
+								placeholder="例：Landsのコマンド一覧を更新しました"
+							/>
+
+							<p class="field-help">
+								レビュー担当者に伝えたい変更内容を入力できます。
+							</p>
+
+						</div>
+
+
+						<!-- ==================================
+						     Action message
+						================================== -->
+
+						<div
+							id="action-message"
+							class="action-message"
+							hidden
+							role="status"
+							aria-live="polite"
+						></div>
+
+
+						<!-- ==================================
+						     Buttons
+						================================== -->
+
+						<div class="form-actions">
+
+							<button
+								type="button"
+								id="save-draft"
+								class="button button-secondary button-large"
+							>
+								<span class="button-label">
+									下書き保存
+								</span>
+
+								<span
+									class="button-loading"
+									hidden
+								>
+									保存中…
+								</span>
+							</button>
+
+
+							<button
+								type="button"
+								id="submit-review"
+								class="button button-primary button-large"
+							>
+								<span class="button-label">
+									レビュー申請
+								</span>
+
+								<span
+									class="button-loading"
+									hidden
+								>
+									申請中…
+								</span>
+							</button>
+
+						</div>
+
+					</form>
+				</section>
+
+			</div>
+		</main>
+
+
+		<!-- ========================================
+		     JavaScript
+		======================================== -->
+
+		<script>
+			import { marked } from 'marked';
+			import DOMPurify from 'dompurify';
+
+
+			/* ========================================
+			   Types
+			======================================== */
+
+			type EditRequestStatus =
+				| 'draft'
+				| 'pending'
+				| 'approved'
+				| 'rejected'
+				| 'publishing'
+				| 'published';
+
+			interface WikiPage {
+				title?: string;
+				path?: string;
+				revision_number?: number | null;
+				content?: string | null;
+			}
+
+			interface WikiPageResponse {
+				ok: boolean;
+				error?: string;
+				page?: WikiPage;
+			}
+
+			interface EditRequest {
+				id: string;
+				status: EditRequestStatus;
+			}
+
+			interface EditRequestResponse {
+				ok: boolean;
+				error?: string;
+				changed?: boolean;
+				editRequest?: EditRequest;
+			}
+
+
+			/* ========================================
+			   URL
+			======================================== */
+
+			const pagePath =
+				new URLSearchParams(
+					window.location.search
+				).get('path') || '';
+
+
+			/* ========================================
+			   DOM
+			======================================== */
+
+			const loadingState =
+				document.querySelector<HTMLElement>(
+					'#loading-state'
+				)!;
+
+			const errorState =
+				document.querySelector<HTMLElement>(
+					'#error-state'
+				)!;
+
+			const editorState =
+				document.querySelector<HTMLElement>(
+					'#editor-state'
+				)!;
+
+			const errorMessage =
+				document.querySelector<HTMLElement>(
+					'#error-message'
+				)!;
+
+			const pageTitle =
+				document.querySelector<HTMLElement>(
+					'#page-title'
+				)!;
+
+			const pagePathElement =
+				document.querySelector<HTMLElement>(
+					'#page-path'
+				)!;
+
+			const revisionNumber =
+				document.querySelector<HTMLElement>(
+					'#revision-number'
+				)!;
+
+			const content =
+				document.querySelector<HTMLTextAreaElement>(
+					'#content'
+				)!;
+
+			const message =
+				document.querySelector<HTMLInputElement>(
+					'#message'
+				)!;
+
+			const previewLink =
+				document.querySelector<HTMLAnchorElement>(
+					'#preview-link'
+				)!;
+
+			const saveDraftButton =
+				document.querySelector<HTMLButtonElement>(
+					'#save-draft'
+				)!;
+
+			const submitReviewButton =
+				document.querySelector<HTMLButtonElement>(
+					'#submit-review'
+				)!;
+
+			const actionMessage =
+				document.querySelector<HTMLElement>(
+					'#action-message'
+				)!;
+
+			const liveStatus =
+				document.querySelector<HTMLElement>(
+					'#live-status'
+				)!;
+			const markdownPreview =
+				document.querySelector<HTMLElement>(
+					'#markdown-preview'
+				)!;
+
+			const characterCount =
+				document.querySelector<HTMLElement>(
+					'#character-count'
+				)!;
+
+			const dirtyIndicator =
+				document.querySelector<HTMLElement>(
+					'#dirty-indicator'
+				)!;
+
+			const statusText =
+				document.querySelector<HTMLElement>(
+					'#status-text'
+				)!;
+
+			const previewState =
+				document.querySelector<HTMLElement>(
+					'#preview-state'
+				)!;
+
+
+			/* ========================================
+			   State
+			======================================== */
+
+			let editRequestId: string | null = null;
+
+			let currentStatus:
+				EditRequestStatus | null = null;
+
+			let originalContent = '';
+
+			let originalMessage = '';
+
+			let isSaving = false;
+
+
+			/* ========================================
+			   Status labels
+			======================================== */
+
+			const statusLabels:
+				Record<EditRequestStatus, string> = {
+					draft:
+						'編集中・下書き',
+
+					pending:
+						'レビュー申請済み',
+
+					approved:
+						'承認済み',
+
+					publishing:
+						'公開処理中',
+
+					published:
+						'公開済み',
+
+					rejected:
+						'差し戻し',
+				};
+
+
+			/* ========================================
+			   State display
+			======================================== */
+
+			function showError(
+				text: string
+			): void {
+				loadingState.hidden = true;
+				editorState.hidden = true;
+				errorState.hidden = false;
+
+				errorMessage.textContent = text;
+			}
+
+
+			function showEditor(): void {
+				loadingState.hidden = true;
+				errorState.hidden = true;
+				editorState.hidden = false;
+			}
+
+
+			/* ========================================
+			   Action message
+			======================================== */
+
+			function setActionMessage(
+				text: string,
+				type:
+					| 'success'
+					| 'error'
+					| 'info' = 'success'
+			): void {
+				actionMessage.textContent = text;
+
+				actionMessage.className =
+					`action-message ${type}`;
+
+				actionMessage.hidden = false;
+			}
+
+
+			function clearActionMessage(): void {
+				actionMessage.hidden = true;
+				actionMessage.textContent = '';
+				actionMessage.className =
+					'action-message';
+			}
+
+
+			/* ========================================
+			   Button loading
+			======================================== */
+
+			function setButtonLoading(
+				button: HTMLButtonElement,
+				loading: boolean
+			): void {
+				const label =
+					button.querySelector<HTMLElement>(
+						'.button-label'
+					);
+
+				const loadingLabel =
+					button.querySelector<HTMLElement>(
+						'.button-loading'
+					);
+
+				button.disabled = loading;
+
+				if (label) {
+					label.hidden = loading;
+				}
+
+				if (loadingLabel) {
+					loadingLabel.hidden = !loading;
+				}
+			}
+
+
+			/* ========================================
+			   Form disabled
+			======================================== */
+
+			function setFormDisabled(
+				disabled: boolean
+			): void {
+				content.disabled = disabled;
+				message.disabled = disabled;
+
+				saveDraftButton.disabled =
+					disabled;
+
+				submitReviewButton.disabled =
+					disabled;
+			}
+
+
+			/* ========================================
+			   Dirty state
+			======================================== */
+
+			function updateDirtyState(): void {
+				const dirty =
+					content.value !== originalContent ||
+					message.value !== originalMessage;
+
+				dirtyIndicator.hidden = !dirty;
+
+				if (dirty) {
+					liveStatus.textContent =
+						'未保存';
+				} else {
+					liveStatus.textContent =
+						'プレビュー';
+				}
+			}
+
+
+			/* ========================================
+			   Status stepper
+			======================================== */
+
+			function updateStatus(
+				status: EditRequestStatus | null
+			): void {
+
+				const normalized =
+					status ?? 'draft';
+
+				currentStatus =
+					status;
+
+
+				statusText.textContent =
+					statusLabels[normalized];
+
+
+				const order:
+					EditRequestStatus[] = [
+						'draft',
+						'pending',
+						'approved',
+						'published',
+					];
+
+
+				const statusIndex =
+					normalized === 'rejected'
+						? 0
+						: normalized === 'publishing'
+							? 2
+							: order.indexOf(
+								normalized
+							);
+
+
+				document
+					.querySelectorAll<HTMLElement>(
+						'[data-status-step]'
+					)
+					.forEach((step) => {
+
+						const stepStatus =
+							step.dataset.statusStep as
+								EditRequestStatus;
+
+						const stepIndex =
+							order.indexOf(
+								stepStatus
+							);
+
+
+						step.classList.toggle(
+							'completed',
+							stepIndex <
+								statusIndex
+						);
+
+
+						step.classList.toggle(
+							'active',
+							stepIndex ===
+								statusIndex
+						);
+
+
+						const dot =
+							step.querySelector<HTMLElement>(
+								'.status-dot'
+							);
+
+
+						if (!dot) {
+							return;
+						}
+
+
+						if (
+							stepIndex <
+							statusIndex
+						) {
+							dot.textContent = '✓';
+
+						} else if (
+							stepIndex ===
+							statusIndex
+						) {
+							dot.textContent = '●';
+
+						} else {
+							dot.textContent = '○';
+						}
+					});
+
+
+				if (
+					normalized ===
+					'rejected'
+				) {
+					statusText.textContent =
+						'差し戻し';
+				}
+			}
+
+
+			/* ========================================
+			   Markdown preview
+			======================================== */
+
+			async function updateMarkdownPreview():
+				Promise<void> {
+
+				const source =
+					content.value;
+
+
+				if (!source.trim()) {
+					markdownPreview.innerHTML = `
+						<p class="preview-placeholder">
+							本文を入力するとここにプレビューが表示されます。
+						</p>
+					`;
+
+					previewState.textContent =
+						'リアルタイム';
+
+					return;
+				}
+
+
+				try {
+
+					const html =
+						await marked.parse(
+							source,
+							{
+								gfm: true,
+								breaks: false,
+							}
+						);
+
+
+					markdownPreview.innerHTML =
+						DOMPurify.sanitize(
+							html
+						);
+
+
+					previewState.textContent =
+						'リアルタイム';
+
+				} catch (error) {
+
+					console.error(
+						'Markdown preview error:',
+						error
+					);
+
+
+					markdownPreview.innerHTML = `
+						<div class="preview-error">
+							<p>
+								プレビューを生成できませんでした。
+							</p>
+						</div>
+					`;
+
+					previewState.textContent =
+						'エラー';
+				}
+			}
+
+
+			/* ========================================
+			   Character count
+			======================================== */
+
+			function updateCharacterCount(): void {
+				characterCount.textContent =
+					`${content.value.length.toLocaleString()}文字`;
+			}
+
+
+			/* ========================================
+			   Preview link
+			======================================== */
+
+			function updatePreviewLink(
+				path: string
+			): void {
+				if (!path) {
+					return;
+				}
+
+				previewLink.href = path;
+			}
+
+
+			/* ========================================
+			   Mobile view
+			======================================== */
+
+			function setMobileView(
+				view: 'edit' | 'preview'
+			): void {
+
+				const editPane =
+					document.querySelector<HTMLElement>(
+						'[data-pane="edit"]'
+					)!;
+
+				const previewPane =
+					document.querySelector<HTMLElement>(
+						'[data-pane="preview"]'
+					)!;
+
+				const editTab =
+					document.querySelector<HTMLButtonElement>(
+						'#edit-tab'
+					)!;
+
+				const previewTab =
+					document.querySelector<HTMLButtonElement>(
+						'#preview-tab'
+					)!;
+
+
+				const isEdit =
+					view === 'edit';
+
+
+				editPane.classList.toggle(
+					'mobile-active',
+					isEdit
+				);
+
+				previewPane.classList.toggle(
+					'mobile-active',
+					!isEdit
+				);
+
+
+				editTab.classList.toggle(
+					'active',
+					isEdit
+				);
+
+				previewTab.classList.toggle(
+					'active',
+					!isEdit
+				);
+
+
+				editTab.setAttribute(
+					'aria-selected',
+					String(isEdit)
+				);
+
+				previewTab.setAttribute(
+					'aria-selected',
+					String(!isEdit)
+				);
+			}
+
+
+			/* ========================================
+			   Load published Wiki page
+			======================================== */
+
+			async function loadPage(): Promise<void> {
+				if (!pagePath) {
+					showError(
+						'編集するWikiページのpathが指定されていません。'
+					);
+
+					return;
+				}
+
+				try {
+					const response =
+						await fetch(
+							`/api/wiki/pages?path=${encodeURIComponent(
+								pagePath
+							)}`,
+							{
+								credentials:
+									'same-origin',
+							}
+						);
+
+					const data =
+						await response.json() as
+							WikiPageResponse;
+
+					if (
+						!response.ok ||
+						!data.ok ||
+						!data.page
+					) {
+						throw new Error(
+							data.error ||
+								'Wikiページを取得できませんでした。'
+						);
+					}
+
+					const page =
+						data.page;
+
+
+					/* Page title */
+
+					pageTitle.textContent =
+						page.title ||
+						'Wikiページ';
+
+
+					/* Page path */
+
+					pagePathElement.textContent =
+						page.path ||
+						pagePath;
+
+
+					/* Revision */
+
+					revisionNumber.textContent =
+						page.revision_number
+							? `Revision ${page.revision_number}`
+							: '未公開';
+
+
+					/* Content */
+
+					content.value =
+						typeof page.content === 'string'
+							? page.content
+							: '';
+
+
+					originalContent =
+						content.value;
+
+
+					originalMessage =
+						message.value;
+
+
+					/* Preview */
+
+					updatePreviewLink(
+						page.path ||
+						pagePath
+					);
+
+
+					/* UI */
+
+					updateCharacterCount();
+
+					updateDirtyState();
+
+					await updateMarkdownPreview();
+
+					updateStatus(
+						'draft'
+					);
+
+
+					/* Show editor */
+
+					showEditor();
+
+				} catch (error) {
+
+					console.error(
+						'Wiki editor page load error:',
+						error
+					);
+
+					showError(
+						error instanceof Error
+							? error.message
+							: 'Wikiページを読み込めませんでした。'
+					);
+				}
+			}
+
+
+			/* ========================================
+			   Create draft
+			======================================== */
+
+			async function createDraft():
+				Promise<EditRequestResponse> {
+
+				const response =
+					await fetch(
+						'/api/wiki/edit-requests',
+						{
+							method: 'POST',
+
+							headers: {
+								'Content-Type':
+									'application/json',
+							},
+
+							credentials:
+								'same-origin',
+
+							body:
+								JSON.stringify({
+									pagePath,
+
+									content:
+										content.value,
+
+									message:
+										message.value.trim() ||
+										null,
+								}),
+						}
+					);
+
+
+				const data =
+					await response.json() as
+						EditRequestResponse;
+
+
+				if (
+					!response.ok ||
+					!data.ok ||
+					!data.editRequest
+				) {
+					throw new Error(
+						data.error ||
+							'下書きの保存に失敗しました。'
+					);
+				}
+
+
+				editRequestId =
+					data.editRequest.id;
+
+				currentStatus =
+					data.editRequest.status;
+
+
+				updateStatus(
+					currentStatus
+				);
+
+
+				originalContent =
+					content.value;
+
+				originalMessage =
+					message.value;
+
+
+				updateDirtyState();
+
+
+				return data;
+			}
+
+
+			/* ========================================
+			   Update draft
+			======================================== */
+
+			async function updateDraft():
+				Promise<EditRequestResponse> {
+
+				if (!editRequestId) {
+					return createDraft();
+				}
+
+
+				const response =
+					await fetch(
+						`/api/wiki/edit-requests/${encodeURIComponent(
+							editRequestId
+						)}`,
+						{
+							method: 'PUT',
+
+							headers: {
+								'Content-Type':
+									'application/json',
+							},
+
+							credentials:
+								'same-origin',
+
+							body:
+								JSON.stringify({
+									content:
+										content.value,
+
+									message:
+										message.value.trim() ||
+										null,
+								}),
+						}
+					);
+
+
+				const data =
+					await response.json() as
+						EditRequestResponse;
+
+
+				if (
+					!response.ok ||
+					!data.ok
+				) {
+					throw new Error(
+						data.error ||
+							'下書きの更新に失敗しました。'
+					);
+				}
+
+
+				currentStatus =
+					data.editRequest?.status ??
+					currentStatus;
+
+
+				originalContent =
+					content.value;
+
+				originalMessage =
+					message.value;
+
+
+				updateStatus(
+					currentStatus
+				);
+
+				updateDirtyState();
+
+
+				return data;
+			}
+
+
+			/* ========================================
+			   Save draft
+			======================================== */
+
+			async function saveDraft():
+				Promise<void> {
+
+				if (isSaving) {
+					return;
+				}
+
+
+				clearActionMessage();
+
+
+				isSaving = true;
+
+
+				setButtonLoading(
+					saveDraftButton,
+					true
+				);
+
+
+				setFormDisabled(true);
+
+
+				try {
+
+					if (
+						currentStatus &&
+						currentStatus !== 'draft'
+					) {
+						throw new Error(
+							`この編集リクエストは現在「${currentStatus}」のため更新できません。`
+						);
+					}
+
+
+					const data =
+						await updateDraft();
+
+
+					if (
+						data.changed === false
+					) {
+
+						setActionMessage(
+							'変更はありません。現在の下書きが保存されています。',
+							'info'
+						);
+
+					} else {
+
+						setActionMessage(
+							'下書きを保存しました。',
+							'success'
+						);
+					}
+
+				} catch (error) {
+
+					console.error(
+						'Save draft error:',
+						error
+					);
+
+
+					setActionMessage(
+						error instanceof Error
+							? error.message
+							: '下書きの保存に失敗しました。',
+						'error'
+					);
+
+				} finally {
+
+					setButtonLoading(
+						saveDraftButton,
+						false
+					);
+
+
+					setFormDisabled(false);
+
+					isSaving = false;
+				}
+			}
+
+
+			/* ========================================
+			   Submit review
+			======================================== */
+
+			async function submitReview():
+				Promise<void> {
+
+				clearActionMessage();
+
+
+				const confirmed =
+					window.confirm(
+						'現在の内容をレビュー申請します。\n\n申請後はこの下書きを編集できなくなります。\n\nレビュー申請しますか？'
+					);
+
+
+				if (!confirmed) {
+					return;
+				}
+
+
+				isSaving = true;
+
+
+				setButtonLoading(
+					submitReviewButton,
+					true
+				);
+
+
+				setFormDisabled(true);
+
+
+				try {
+
+					/*
+					 * Draftがまだ存在しない場合
+					 */
+
+					if (!editRequestId) {
+
+						await createDraft();
+
+					} else if (
+						currentStatus !== 'draft'
+					) {
+
+						throw new Error(
+							`この編集リクエストは現在「${currentStatus}」のため申請できません。`
+						);
+
+					} else {
+
+						/*
+						 * 最新内容を保存
+						 */
+
+						await updateDraft();
+					}
+
+
+					/*
+					 * editRequestId が存在することを
+					 * TypeScriptにも明示
+					 */
+
+					if (!editRequestId) {
+						throw new Error(
+							'編集リクエストIDを取得できませんでした。'
+						);
+					}
+
+
+					/* Submit */
+
+					const response =
+						await fetch(
+							`/api/wiki/edit-requests/${encodeURIComponent(
+								editRequestId
+							)}/submit`,
+							{
+								method: 'POST',
+
+								credentials:
+									'same-origin',
+							}
+						);
+
+
+					const data =
+						await response.json() as
+							EditRequestResponse;
+
+
+					if (
+						!response.ok ||
+						!data.ok
+					) {
+						throw new Error(
+							data.error ||
+								'レビュー申請に失敗しました。'
+						);
+					}
+
+
+					currentStatus =
+						'pending';
+
+
+					updateStatus(
+						'pending'
+					);
+
+
+					originalContent =
+						content.value;
+
+					originalMessage =
+						message.value;
+
+
+					updateDirtyState();
+
+
+					setActionMessage(
+						'レビュー申請しました。管理者による確認をお待ちください。',
+						'success'
+					);
+
+
+					/*
+					 * 申請後は編集不可
+					 */
+
+					content.disabled = true;
+					message.disabled = true;
+
+					saveDraftButton.disabled =
+						true;
+
+					submitReviewButton.disabled =
+						true;
+
+
+				} catch (error) {
+
+					console.error(
+						'Submit review error:',
+						error
+					);
+
+
+					setActionMessage(
+						error instanceof Error
+							? error.message
+							: 'レビュー申請に失敗しました。',
+						'error'
+					);
+
+
+					setFormDisabled(false);
+
+				} finally {
+
+					setButtonLoading(
+						submitReviewButton,
+						false
+					);
+
+					isSaving = false;
+				}
+			}
+
+
+			/* ========================================
+			   Events
+			======================================== */
+
+			saveDraftButton.addEventListener(
+				'click',
+				saveDraft
+			);
+
+
+			submitReviewButton.addEventListener(
+				'click',
+				submitReview
+			);
+
+
+			content.addEventListener(
+				'input',
+				() => {
+
+					updateCharacterCount();
+
+					updateDirtyState();
+
+					void updateMarkdownPreview();
+				}
+			);
+
+
+			message.addEventListener(
+				'input',
+				updateDirtyState
+			);
+
+
+			window.addEventListener(
+				'beforeunload',
+				(event) => {
+
+					const dirty =
+						content.value !== originalContent ||
+						message.value !== originalMessage;
+
+
+					if (
+						dirty &&
+						!isSaving
+					) {
+						event.preventDefault();
+						event.returnValue = '';
+					}
+				}
+			);
+
+
+			document
+				.querySelector<HTMLButtonElement>(
+					'#edit-tab'
+				)!
+				.addEventListener(
+					'click',
+					() => setMobileView('edit')
+				);
+
+
+			document
+				.querySelector<HTMLButtonElement>(
+					'#preview-tab'
+				)!
+				.addEventListener(
+					'click',
+					() => setMobileView('preview')
+				);
+
+
+			/* ========================================
+			   Initial load
+			======================================== */
+
+			setMobileView('edit');
+
+			loadPage();
+		</script>
+
+
+		<!-- ========================================
+		     CSS
+		======================================== -->
+
+		<style>
+			:root {
+				color-scheme: dark;
+
+				--nug-bg: #111814;
+				--nug-panel: #18221c;
+				--nug-panel-light: #1f2b23;
+				--nug-border: #344438;
+
+				--nug-text: #edf4ee;
+				--nug-muted: #aab8ad;
+
+				--nug-green: #72d572;
+				--nug-green-dark: #397a3d;
+
+				--nug-gold: #e3c66a;
+
+				--nug-danger: #e57979;
+				--nug-info: #75bce8;
+
+				--nug-shadow:
+					0 16px 40px rgba(0, 0, 0, 0.35);
+
+				font-family:
+					Inter,
+					"Noto Sans JP",
+					system-ui,
+					-apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					sans-serif;
+			}
+
+
+			/* ========================================
+			   Reset
+			======================================== */
+
+			* {
+				box-sizing: border-box;
+			}
+
+
+			html,
+			body {
+				margin: 0;
+				min-height: 100%;
+			}
+
+
+			body {
+				background:
+					linear-gradient(
+						180deg,
+						#18251c 0%,
+						var(--nug-bg) 320px
+					);
+
+				color: var(--nug-text);
+			}
+
+
+			button,
+			input,
+			textarea {
+				font: inherit;
+			}
+
+
+			[hidden] {
+				display: none !important;
+			}
+
+
+			/* ========================================
+			   Page
+			======================================== */
+
+			.editor-page {
+				min-height: 100vh;
+				padding: 48px 20px 80px;
+			}
+
+
+			.editor-shell {
+				width: min(1250px, 100%);
+				margin: 0 auto;
+			}
+
+
+			/* ========================================
+			   Header
+			======================================== */
+
+			.editor-header {
+				display: flex;
+				align-items: flex-end;
+				justify-content: space-between;
+
+				gap: 32px;
+
+				margin-bottom: 32px;
+			}
+
+
+			.back-link {
+				display: inline-flex;
+
+				margin-bottom: 24px;
+
+				color: var(--nug-muted);
+
+				text-decoration: none;
+
+				font-size: 0.9rem;
+			}
+
+
+			.back-link:hover {
+				color: var(--nug-text);
+			}
+
+
+			.eyebrow {
+				margin: 0 0 8px;
+
+				color: var(--nug-green);
+
+				font-size: 0.75rem;
+				font-weight: 800;
+
+				letter-spacing: 0.14em;
+			}
+
+
+			h1 {
+				margin: 0;
+
+				font-size:
+					clamp(2rem, 5vw, 3rem);
+
+				line-height: 1.1;
+			}
+
+
+			.description {
+				max-width: 760px;
+
+				margin: 12px 0 0;
+
+				color: var(--nug-muted);
+
+				line-height: 1.7;
+			}
+
+
+			/* ========================================
+			   Status
+			======================================== */
+
+			.status-card {
+				margin-bottom: 24px;
+
+				padding: 20px 22px;
+
+				border:
+					1px solid
+					var(--nug-border);
+
+				border-radius: 8px;
+
+				background:
+					linear-gradient(
+						145deg,
+						var(--nug-panel-light),
+						var(--nug-panel)
+					);
+
+				box-shadow:
+					var(--nug-shadow);
+			}
+
+
+			.status-heading {
+				display: flex;
+
+				align-items: center;
+				justify-content: space-between;
+
+				gap: 16px;
+
+				margin-bottom: 18px;
+			}
+
+
+			.status-heading strong {
+				display: block;
+
+				font-size: 1rem;
+			}
+
+
+			.dirty-indicator {
+				color: var(--nug-gold);
+
+				font-size: 0.8rem;
+				font-weight: 800;
+			}
+
+
+			.status-stepper {
+				display: flex;
+
+				align-items: center;
+
+				width: 100%;
+
+				overflow-x: auto;
+
+				padding-bottom: 4px;
+			}
+
+
+			.status-step {
+				display: flex;
+
+				align-items: center;
+
+				gap: 8px;
+
+				flex: 0 0 auto;
+
+				color: #6f7c72;
+
+				font-size: 0.8rem;
+				font-weight: 700;
+
+				white-space: nowrap;
+			}
+
+
+			.status-step.active {
+				color: var(--nug-green);
+			}
+
+
+			.status-step.completed {
+				color: var(--nug-text);
+			}
+
+
+			.status-dot {
+				font-size: 0.85rem;
+			}
+
+
+			.status-step.completed
+			.status-dot {
+				color: var(--nug-green);
+			}
+
+
+			.status-line {
+				flex: 1 1 50px;
+
+				height: 1px;
+
+				min-width: 30px;
+
+				margin: 0 10px;
+
+				background:
+					var(--nug-border);
+			}
+
+
+			/* ========================================
+			   Page info
+			======================================== */
+
+			.page-info-card {
+				display: flex;
+
+				align-items: center;
+				justify-content: space-between;
+
+				gap: 24px;
+
+				margin-bottom: 24px;
+				padding: 22px 24px;
+
+				border:
+					1px solid
+					var(--nug-border);
+
+				border-radius: 8px;
+
+				background:
+					linear-gradient(
+						145deg,
+						var(--nug-panel-light),
+						var(--nug-panel)
+					);
+
+				box-shadow:
+					var(--nug-shadow);
+			}
+
+
+			.page-info-main {
+				min-width: 0;
+			}
+
+
+			.info-label {
+				display: block;
+
+				margin-bottom: 6px;
+
+				color: var(--nug-muted);
+
+				font-size: 0.75rem;
+				font-weight: 700;
+
+				letter-spacing: 0.06em;
+
+				text-transform: uppercase;
+			}
+
+
+			.page-info-card h2 {
+				margin: 0;
+
+				font-size: 1.35rem;
+			}
+
+
+			.page-info-card code {
+				display: block;
+
+				margin-top: 8px;
+
+				overflow-wrap: anywhere;
+
+				color: var(--nug-green);
+
+				font-size: 0.82rem;
+			}
+
+
+			.revision-info {
+				flex: 0 0 auto;
+
+				min-width: 120px;
+
+				padding-left: 24px;
+
+				border-left:
+					1px solid
+					var(--nug-border);
+
+				text-align: right;
+			}
+
+
+			.revision-info strong {
+				font-size: 0.95rem;
+			}
+
+
+			/* ========================================
+			   Content toolbar
+			======================================== */
+
+			.content-toolbar {
+				display: flex;
+
+				align-items: center;
+				justify-content: space-between;
+
+				gap: 16px;
+
+				margin-bottom: 9px;
+			}
+
+
+			.content-toolbar > div:first-child {
+				display: flex;
+
+				align-items: center;
+
+				gap: 10px;
+			}
+
+
+			label {
+				font-size: 0.95rem;
+				font-weight: 800;
+			}
+
+
+			.content-status {
+				display: inline-flex;
+
+				align-items: center;
+
+				min-height: 22px;
+
+				padding: 2px 8px;
+
+				border:
+					1px solid
+					var(--nug-border);
+
+				border-radius: 4px;
+
+				color: var(--nug-muted);
+
+				font-size: 0.7rem;
+				font-weight: 700;
+			}
+
+
+			.editor-meta {
+				display: flex;
+
+				align-items: center;
+
+				gap: 12px;
+
+				color: var(--nug-muted);
+
+				font-size: 0.75rem;
+			}
+
+
+			.live-status {
+				color: var(--nug-green);
+			}
+
+
+			/* ========================================
+			   Workspace
+			======================================== */
+
+			.content-workspace {
+				display: grid;
+
+				grid-template-columns:
+					minmax(0, 1fr)
+					minmax(0, 1fr);
+
+				min-height: 700px;
+
+				border:
+					1px solid
+					var(--nug-border);
+
+				border-radius: 8px;
+
+				overflow: hidden;
+
+				background: #0d130f;
+
+				box-shadow:
+					var(--nug-shadow);
+			}
+
+
+			.editor-pane,
+			.preview-pane {
+				min-width: 0;
+			}
+
+
+			.editor-pane {
+				border-right:
+					1px solid
+					var(--nug-border);
+			}
+
+
+			.pane-header {
+				display: flex;
+
+				align-items: center;
+				justify-content: space-between;
+
+				min-height: 42px;
+
+				padding: 0 14px;
+
+				border-bottom:
+					1px solid
+					var(--nug-border);
+
+				background:
+					var(--nug-panel);
+
+				color: var(--nug-muted);
+
+				font-size: 0.75rem;
+				font-weight: 700;
+			}
+
+
+			textarea {
+				display: block;
+
+				width: 100%;
+				height: calc(100% - 42px);
+
+				min-height: 658px;
+
+				padding: 18px;
+
+				border: 0;
+
+				outline: none;
+
+				resize: none;
+
+				background: #0b100d;
+
+				color: var(--nug-text);
+
+				font-family:
+					"Consolas",
+					"SFMono-Regular",
+					"Roboto Mono",
+					monospace;
+
+				font-size: 0.88rem;
+
+				line-height: 1.75;
+
+				tab-size: 2;
+			}
+
+
+			textarea:focus {
+				box-shadow:
+					inset
+					0 0 0 1px
+					var(--nug-green);
+			}
+
+
+			textarea:disabled {
+				opacity: 0.65;
+
+				cursor: not-allowed;
+			}
+
+
+			/* ========================================
+			   Markdown preview
+			======================================== */
+
+			.markdown-preview {
+				height: calc(100% - 42px);
+
+				min-height: 658px;
+
+				overflow: auto;
+
+				padding: 28px;
+
+				background:
+					linear-gradient(
+						180deg,
+						#151d18,
+						#111814
+					);
+
+				line-height: 1.8;
+			}
+
+
+			.preview-placeholder {
+				margin: 0;
+
+				color: var(--nug-muted);
+			}
+
+
+			.markdown-preview h1,
+			.markdown-preview h2,
+			.markdown-preview h3,
+			.markdown-preview h4,
+			.markdown-preview h5,
+			.markdown-preview h6 {
+				margin-top: 1.5em;
+
+				margin-bottom: 0.6em;
+
+				line-height: 1.3;
+			}
+
+
+			.markdown-preview h1 {
+				font-size: 1.8rem;
+			}
+
+
+			.markdown-preview h2 {
+				padding-bottom: 8px;
+
+				border-bottom:
+					1px solid
+					var(--nug-border);
+
+				font-size: 1.4rem;
+			}
+
+
+			.markdown-preview h3 {
+				font-size: 1.15rem;
+			}
+
+
+			.markdown-preview h1:first-child,
+			.markdown-preview h2:first-child,
+			.markdown-preview h3:first-child {
+				margin-top: 0;
+			}
+
+
+			.markdown-preview p {
+				margin:
+					0 0
+					1em;
+			}
+
+
+			.markdown-preview a {
+				color: var(--nug-green);
+
+				text-decoration: underline;
+			}
+
+
+			.markdown-preview strong {
+				color: #fff;
+			}
+
+
+			.markdown-preview blockquote {
+				margin:
+					1em 0;
+
+				padding:
+					10px 16px;
+
+				border-left:
+					3px solid
+					var(--nug-green);
+
+				background:
+					rgba(
+						114,
+						213,
+						114,
+						0.06
+					);
+
+				color: var(--nug-muted);
+			}
+
+
+			.markdown-preview ul,
+			.markdown-preview ol {
+				padding-left: 1.5rem;
+			}
+
+
+			.markdown-preview li + li {
+				margin-top: 4px;
+			}
+
+
+			.markdown-preview code {
+				padding:
+					2px 5px;
+
+				border-radius: 4px;
+
+				background:
+					#0a0f0c;
+
+				color:
+					#d7e9d8;
+
+				font-family:
+					"Consolas",
+					monospace;
+
+				font-size: 0.88em;
+			}
+
+
+			.markdown-preview pre {
+				overflow-x: auto;
+
+				margin:
+					1em 0;
+
+				padding: 16px;
+
+				border:
+					1px solid
+					var(--nug-border);
+
+				border-radius: 6px;
+
+				background:
+					#090d0a;
+			}
+
+
+			.markdown-preview pre code {
+				padding: 0;
+
+				background: transparent;
+			}
+
+
+			.markdown-preview table {
+				width: 100%;
+
+				margin:
+					1em 0;
+
+				border-collapse:
+					collapse;
+
+				font-size: 0.88rem;
+			}
+
+
+			.markdown-preview th,
+			.markdown-preview td {
+				padding:
+					8px 10px;
+
+				border:
+					1px solid
+					var(--nug-border);
+
+				text-align: left;
+			}
+
+
+			.markdown-preview th {
+				background:
+					var(--nug-panel);
+			}
+
+
+			.preview-error {
+				padding: 16px;
+
+				border:
+					1px solid
+					rgba(
+						229,
+						121,
+						121,
+						0.4
+					);
+
+				border-radius: 6px;
+
+				background:
+					rgba(
+						229,
+						121,
+						121,
+						0.08
+					);
+
+				color:
+					var(--nug-danger);
+			}
+
+
+			/* ========================================
+			   Mobile tabs
+			======================================== */
+
+			.mobile-view-tabs {
+				display: none;
+			}
+
+
+			/* ========================================
+			   Help
+			======================================== */
+
+			.field-help {
+				margin:
+					8px 0
+					24px;
+
+				color: var(--nug-muted);
+
+				font-size: 0.78rem;
+
+				line-height: 1.6;
+			}
+
+
+			/* ========================================
+			   Form
+			======================================== */
+
+			.field-group {
+				margin-top: 28px;
+
+				margin-bottom: 24px;
+			}
+
+
+			.field-heading {
+				display: flex;
+
+				align-items: center;
+				justify-content: space-between;
+
+				gap: 16px;
+
+				margin-bottom: 9px;
+			}
+
+
+			.field-heading span {
+				color: var(--nug-muted);
+
+				font-size: 0.75rem;
+			}
+
+
+			input[type="text"] {
+				display: block;
+
+				width: 100%;
+
+				min-height: 48px;
+
+				padding: 12px 14px;
+
+				border:
+					1px solid
+					var(--nug-border);
+
+				border-radius: 6px;
+
+				outline: none;
+
+				background: #0d130f;
+
+				color: var(--nug-text);
+			}
+
+
+			input[type="text"]:focus {
+				border-color:
+					var(--nug-green);
+
+				box-shadow:
+					0 0 0 3px
+					rgba(
+						114,
+						213,
+						114,
+						0.12
+					);
+			}
+
+
+			input[type="text"]:disabled {
+				opacity: 0.65;
+
+				cursor: not-allowed;
+			}
+
+
+			/* ========================================
+			   Buttons
+			======================================== */
+
+			.form-actions {
+				display: flex;
+
+				justify-content: flex-end;
+
+				gap: 12px;
+
+				margin-top: 28px;
+			}
+
+
+			.button {
+				display: inline-flex;
+
+				align-items: center;
+				justify-content: center;
+
+				min-height: 44px;
+
+				padding: 10px 18px;
+
+				border:
+					1px solid
+					transparent;
+
+				border-radius: 6px;
+
+				cursor: pointer;
+
+				font-weight: 800;
+
+				text-decoration: none;
+
+				transition:
+					transform 0.15s ease,
+					filter 0.15s ease,
+					opacity 0.15s ease;
+			}
+
+
+			.button:hover:not(:disabled) {
+				transform:
+					translateY(-1px);
+
+				filter:
+					brightness(1.08);
+			}
+
+
+			.button:disabled {
+				opacity: 0.55;
+
+				cursor: not-allowed;
+			}
+
+
+			.button-primary {
+				border-color: #5aaa5a;
+
+				background:
+					linear-gradient(
+						180deg,
+						#75d875,
+						#4fae53
+					);
+
+				color: #081008;
+
+				box-shadow:
+					0 4px 0 #326f35,
+					0 8px 20px
+					rgba(
+						0,
+						0,
+						0,
+						0.25
+					);
+			}
+
+
+			.button-secondary {
+				border-color:
+					var(--nug-border);
+
+				background:
+					var(--nug-panel);
+
+				color:
+					var(--nug-text);
+			}
+
+
+			.button-large {
+				min-width: 150px;
+
+				min-height: 50px;
+			}
+
+
+			/* ========================================
+			   State cards
+			======================================== */
+
+			.state-card {
+				display: flex;
+
+				flex-direction: column;
+
+				align-items: center;
+				justify-content: center;
+
+				min-height: 300px;
+
+				padding: 40px;
+
+				border:
+					1px solid
+					var(--nug-border);
+
+				border-radius: 8px;
+
+				background:
+					var(--nug-panel);
+
+				box-shadow:
+					var(--nug-shadow);
+
+				text-align: center;
+			}
+
+
+			.state-card p {
+				color:
+					var(--nug-muted);
+			}
+
+
+			.state-error {
+				border-color:
+					rgba(
+						229,
+						121,
+						121,
+						0.4
+					);
+			}
+
+
+			.state-icon {
+				display: grid;
+
+				width: 48px;
+				height: 48px;
+
+				place-items: center;
+
+				margin-bottom: 12px;
+
+				border-radius: 50%;
+
+				background:
+					rgba(
+						229,
+						121,
+						121,
+						0.15
+					);
+
+				color:
+					var(--nug-danger);
+
+				font-weight: 900;
+			}
+
+
+			.state-card h2 {
+				margin: 0;
+			}
+
+
+			.state-actions {
+				margin-top: 16px;
+			}
+
+
+			/* ========================================
+			   Spinner
+			======================================== */
+
+			.spinner {
+				width: 32px;
+				height: 32px;
+
+				margin-bottom: 16px;
+
+				border:
+					3px solid
+					var(--nug-border);
+
+				border-top-color:
+					var(--nug-green);
+
+				border-radius: 50%;
+
+				animation:
+					spin 0.8s
+					linear infinite;
+			}
+
+
+			@keyframes spin {
+				to {
+					transform:
+						rotate(360deg);
+				}
+			}
+
+
+			/* ========================================
+			   Action message
+			======================================== */
+
+			.action-message {
+				margin-top: 20px;
+
+				padding: 14px 16px;
+
+				border:
+					1px solid
+					var(--nug-border);
+
+				border-radius: 6px;
+
+				font-size: 0.9rem;
+
+				line-height: 1.6;
+			}
+
+
+			.action-message.success {
+				border-color:
+					rgba(
+						114,
+						213,
+						114,
+						0.4
+					);
+
+				background:
+					rgba(
+						114,
+						213,
+						114,
+						0.08
+					);
+
+				color:
+					var(--nug-green);
+			}
+
+
+			.action-message.error {
+				border-color:
+					rgba(
+						229,
+						121,
+						121,
+						0.4
+					);
+
+				background:
+					rgba(
+						229,
+						121,
+						121,
+						0.08
+					);
+
+				color:
+					var(--nug-danger);
+			}
+
+
+			.action-message.info {
+				border-color:
+					rgba(
+						117,
+						188,
+						232,
+						0.4
+					);
+
+				background:
+					rgba(
+						117,
+						188,
+						232,
+						0.08
+					);
+
+				color:
+					var(--nug-info);
+			}
+
+
+			/* ========================================
+			   Mobile
+			======================================== */
+
+			@media (max-width: 900px) {
+
+				.content-workspace {
+					grid-template-columns:
+						1fr;
+				}
+
+
+				.editor-pane {
+					border-right: 0;
+
+					border-bottom:
+						1px solid
+						var(--nug-border);
+				}
+
+
+				.editor-pane,
+				.preview-pane {
+					min-height: 500px;
+				}
+
+
+				textarea,
+				.markdown-preview {
+					min-height: 458px;
+				}
+			}
+
+
+			@media (max-width: 700px) {
+
+				.editor-page {
+					padding:
+						28px
+						14px
+						60px;
+				}
+
+
+				.editor-header {
+					align-items: stretch;
+
+					flex-direction:
+						column;
+
+					gap: 20px;
+				}
+
+
+				.header-actions {
+					display: none;
+				}
+
+
+				.status-card {
+					padding:
+						16px;
+				}
+
+
+				.status-heading {
+					align-items:
+						flex-start;
+
+					flex-direction:
+						column;
+
+					gap: 8px;
+				}
+
+
+				.status-stepper {
+					display: block;
+
+					overflow: visible;
+				}
+
+
+				.status-step {
+					min-height: 30px;
+				}
+
+
+				.status-line {
+					width: 1px;
+
+					height: 20px;
+
+					min-width: 1px;
+
+					margin:
+						2px 0
+						2px 8px;
+				}
+
+
+				.page-info-card {
+					align-items: stretch;
+
+					flex-direction:
+						column;
+				}
+
+
+				.revision-info {
+					padding-top: 16px;
+
+					padding-left: 0;
+
+					border-top:
+						1px solid
+						var(--nug-border);
+
+					border-left: 0;
+
+					text-align: left;
+				}
+
+
+				.content-toolbar {
+					align-items:
+						flex-start;
+
+					flex-direction:
+						column;
+
+					gap: 8px;
+				}
+
+
+				.mobile-view-tabs {
+					display: grid;
+
+					grid-template-columns:
+						1fr 1fr;
+
+					margin-bottom: 8px;
+
+					border:
+						1px solid
+						var(--nug-border);
+
+					border-radius: 6px;
+
+					overflow: hidden;
+				}
+
+
+				.mobile-view-tab {
+					min-height: 42px;
+
+					border: 0;
+
+					background:
+						var(--nug-panel);
+
+					color: var(--nug-muted);
+
+					cursor: pointer;
+
+					font-weight: 800;
+				}
+
+
+				.mobile-view-tab
+				+ .mobile-view-tab {
+					border-left:
+						1px solid
+						var(--nug-border);
+				}
+
+
+				.mobile-view-tab.active {
+					background:
+						var(--nug-green);
+
+					color:
+						#081008;
+				}
+
+
+				.content-workspace {
+					display: block;
+
+					min-height: 0;
+				}
+
+
+				.editor-pane,
+				.preview-pane {
+					display: none;
+
+					border: 0;
+
+					min-height: 0;
+				}
+
+
+				.editor-pane.mobile-active,
+				.preview-pane.mobile-active {
+					display: block;
+				}
+
+
+				textarea,
+				.markdown-preview {
+					height: 500px;
+
+					min-height: 500px;
+				}
+
+
+				.markdown-preview {
+					padding: 20px;
+				}
+
+
+				.form-actions {
+					flex-direction:
+						column;
+				}
+
+
+				.button-large {
+					width: 100%;
+				}
+			}
+		</style>
+	</body>
+</html>

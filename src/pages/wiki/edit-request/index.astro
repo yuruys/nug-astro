@@ -1,0 +1,1491 @@
+---
+const title = 'Wiki編集申請 | NUGBASE';
+---
+
+<!doctype html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="NUGBASE Wiki編集申請の詳細" />
+	<title>{title}</title>
+
+	<style>
+		:root {
+			color-scheme: dark;
+
+			--bg: #101315;
+			--bg-soft: #171b1e;
+			--panel: #1d2226;
+			--panel-soft: #22282d;
+			--border: #343b40;
+
+			--text: #f1f4f5;
+			--text-soft: #aeb7bd;
+			--text-muted: #7f8a91;
+
+			--accent: #7bd66f;
+			--accent-dark: #4c9d48;
+
+			--blue: #6eb6ff;
+			--yellow: #e7c766;
+			--red: #ef7777;
+
+			--shadow:
+				0 10px 30px rgba(0, 0, 0, 0.25),
+				0 2px 8px rgba(0, 0, 0, 0.2);
+
+			--radius: 8px;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			min-height: 100%;
+		}
+
+		body {
+			background:
+				linear-gradient(
+					180deg,
+					rgba(255, 255, 255, 0.025),
+					transparent 240px
+				),
+				var(--bg);
+
+			color: var(--text);
+
+			font-family:
+				Inter,
+				-apple-system,
+				BlinkMacSystemFont,
+				"Segoe UI",
+				"Hiragino Kaku Gothic ProN",
+				"Hiragino Sans",
+				Meiryo,
+				sans-serif;
+
+			line-height: 1.7;
+		}
+
+		a {
+			color: inherit;
+		}
+
+		button,
+		textarea {
+			font: inherit;
+		}
+
+		/* ========================================
+		   Header
+		======================================== */
+
+		.page-header {
+			border-bottom: 1px solid var(--border);
+			background: rgba(16, 19, 21, 0.94);
+			backdrop-filter: blur(12px);
+			position: sticky;
+			top: 0;
+			z-index: 20;
+		}
+
+		.header-inner {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 14px 20px;
+
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 16px;
+		}
+
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			text-decoration: none;
+			min-width: 0;
+		}
+
+		.brand-main {
+			font-size: 22px;
+			font-weight: 900;
+			letter-spacing: 0.08em;
+		}
+
+		.brand-sub {
+			color: var(--text-muted);
+			font-size: 12px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.header-links {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.header-link {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+
+			min-height: 38px;
+			padding: 0 13px;
+
+			border: 1px solid var(--border);
+			border-radius: 6px;
+
+			background: var(--panel);
+			color: var(--text-soft);
+
+			text-decoration: none;
+			font-size: 13px;
+			font-weight: 700;
+
+			transition:
+				background 0.15s ease,
+				color 0.15s ease,
+				border-color 0.15s ease;
+		}
+
+		.header-link:hover {
+			background: var(--panel-soft);
+			color: var(--text);
+			border-color: #4b555c;
+		}
+
+		/* ========================================
+		   Layout
+		======================================== */
+
+		.container {
+			width: min(1200px, calc(100% - 32px));
+			margin: 0 auto;
+			padding: 42px 0 80px;
+		}
+
+		.page-title {
+			margin-bottom: 28px;
+		}
+
+		.page-title h1 {
+			margin: 0 0 8px;
+			font-size: clamp(26px, 4vw, 36px);
+			line-height: 1.25;
+			font-weight: 900;
+			letter-spacing: -0.02em;
+		}
+
+		.page-title p {
+			margin: 0;
+			color: var(--text-soft);
+			font-size: 14px;
+		}
+
+		.stack {
+			display: grid;
+			gap: 18px;
+		}
+
+		.card {
+			border: 1px solid var(--border);
+			border-radius: var(--radius);
+			background: var(--panel);
+			box-shadow: var(--shadow);
+			overflow: hidden;
+		}
+
+		.card-header {
+			padding: 16px 18px;
+			border-bottom: 1px solid var(--border);
+
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+		}
+
+		.card-title {
+			margin: 0;
+			font-size: 15px;
+			font-weight: 900;
+		}
+
+		.card-body {
+			padding: 18px;
+		}
+
+		/* ========================================
+		   Loading / Error
+		======================================== */
+
+		.state {
+			padding: 60px 20px;
+			text-align: center;
+			color: var(--text-muted);
+		}
+
+		.error-state {
+			color: var(--red);
+		}
+
+		[hidden] {
+			display: none !important;
+		}
+
+		/* ========================================
+		   Page Info
+		======================================== */
+
+		.page-info {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+		}
+
+		.info-item {
+			padding: 14px;
+			border: 1px solid var(--border);
+			border-radius: 6px;
+			background: var(--bg-soft);
+		}
+
+		.info-label {
+			margin-bottom: 4px;
+			color: var(--text-muted);
+			font-size: 11px;
+			font-weight: 800;
+			letter-spacing: 0.05em;
+		}
+
+		.info-value {
+			color: var(--text);
+			font-size: 14px;
+			word-break: break-word;
+		}
+
+		.info-value code {
+			padding: 2px 5px;
+			border-radius: 4px;
+			background: #111518;
+			color: var(--text-soft);
+			font-size: 12px;
+		}
+
+		/* ========================================
+		   Status Flow
+		======================================== */
+
+		.status-flow {
+			display: grid;
+			grid-template-columns: repeat(5, minmax(0, 1fr));
+			gap: 8px;
+		}
+
+		.status-step {
+			position: relative;
+			padding: 12px 10px;
+			border: 1px solid var(--border);
+			border-radius: 6px;
+			background: var(--bg-soft);
+			text-align: center;
+		}
+
+		.status-step::after {
+			content: "›";
+
+			position: absolute;
+			right: -10px;
+			top: 50%;
+			transform: translateY(-50%);
+
+			color: var(--text-muted);
+			font-size: 18px;
+			z-index: 2;
+		}
+
+		.status-step:last-child::after {
+			display: none;
+		}
+
+		.status-step.done {
+			border-color: rgba(123, 214, 111, 0.45);
+			background: rgba(123, 214, 111, 0.08);
+		}
+
+		.status-step.active {
+			border-color: rgba(110, 182, 255, 0.6);
+			background: rgba(110, 182, 255, 0.08);
+		}
+
+		.status-step.rejected {
+			border-color: rgba(239, 119, 119, 0.55);
+			background: rgba(239, 119, 119, 0.08);
+		}
+
+		.status-icon {
+			display: block;
+			margin-bottom: 3px;
+			font-size: 16px;
+			font-weight: 900;
+		}
+
+		.status-label {
+			display: block;
+			font-size: 12px;
+			font-weight: 800;
+		}
+
+		/* ========================================
+		   Status Badge
+		======================================== */
+
+		.status-badge {
+			display: inline-flex;
+			align-items: center;
+			min-height: 30px;
+			padding: 0 10px;
+
+			border: 1px solid var(--border);
+			border-radius: 999px;
+
+			background: var(--bg-soft);
+			color: var(--text-soft);
+
+			font-size: 12px;
+			font-weight: 800;
+		}
+
+		.status-badge.pending {
+			border-color: rgba(110, 182, 255, 0.5);
+			background: rgba(110, 182, 255, 0.08);
+			color: var(--blue);
+		}
+
+		.status-badge.approved,
+		.status-badge.published {
+			border-color: rgba(123, 214, 111, 0.5);
+			background: rgba(123, 214, 111, 0.08);
+			color: var(--accent);
+		}
+
+		.status-badge.rejected {
+			border-color: rgba(239, 119, 119, 0.5);
+			background: rgba(239, 119, 119, 0.08);
+			color: var(--red);
+		}
+
+		.status-badge.publishing {
+			border-color: rgba(231, 199, 102, 0.5);
+			background: rgba(231, 199, 102, 0.08);
+			color: var(--yellow);
+		}
+
+		/* ========================================
+		   Message
+		======================================== */
+
+		.message-box {
+			padding: 14px 16px;
+			border-left: 3px solid var(--blue);
+			background: rgba(110, 182, 255, 0.06);
+			color: var(--text-soft);
+			white-space: pre-wrap;
+			word-break: break-word;
+		}
+
+		.review-box {
+			padding: 14px 16px;
+			border-left: 3px solid var(--yellow);
+			background: rgba(231, 199, 102, 0.06);
+			color: var(--text-soft);
+			white-space: pre-wrap;
+			word-break: break-word;
+		}
+
+		/* ========================================
+		   Markdown
+		======================================== */
+
+		.markdown-source {
+			margin: 0;
+			padding: 18px;
+			overflow-x: auto;
+
+			background: #0c0f10;
+			color: #d9e0e3;
+
+			font-family:
+				"SFMono-Regular",
+				Consolas,
+				"Liberation Mono",
+				monospace;
+
+			font-size: 13px;
+			line-height: 1.7;
+			white-space: pre-wrap;
+			word-break: break-word;
+		}
+
+		.preview {
+			padding: 22px;
+			background: var(--bg-soft);
+			overflow-wrap: anywhere;
+		}
+
+		.preview h1,
+		.preview h2,
+		.preview h3,
+		.preview h4 {
+			line-height: 1.35;
+		}
+
+		.preview h1 {
+			font-size: 28px;
+		}
+
+		.preview h2 {
+			margin-top: 28px;
+			font-size: 22px;
+			border-bottom: 1px solid var(--border);
+			padding-bottom: 8px;
+		}
+
+		.preview h3 {
+			margin-top: 24px;
+			font-size: 18px;
+		}
+
+		.preview p {
+			margin: 12px 0;
+		}
+
+		.preview a {
+			color: var(--blue);
+		}
+
+		.preview code {
+			padding: 2px 5px;
+			border-radius: 4px;
+			background: #111518;
+			color: #dce3e6;
+		}
+
+		.preview pre {
+			overflow-x: auto;
+			padding: 14px;
+			border-radius: 6px;
+			background: #0b0e0f;
+		}
+
+		.preview pre code {
+			padding: 0;
+			background: transparent;
+		}
+
+		.preview blockquote {
+			margin: 16px 0;
+			padding: 10px 14px;
+			border-left: 3px solid var(--border);
+			color: var(--text-soft);
+		}
+
+		.preview table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 16px 0;
+		}
+
+		.preview th,
+		.preview td {
+			border: 1px solid var(--border);
+			padding: 8px 10px;
+			text-align: left;
+		}
+
+		/* ========================================
+		   Review Controls
+		======================================== */
+
+		.review-controls {
+			border: 1px solid rgba(231, 199, 102, 0.35);
+			background:
+				linear-gradient(
+					180deg,
+					rgba(231, 199, 102, 0.055),
+					rgba(231, 199, 102, 0.02)
+				),
+				var(--panel);
+		}
+
+		.review-description {
+			margin: 0 0 16px;
+			color: var(--text-soft);
+			font-size: 13px;
+		}
+
+		.review-textarea {
+			display: block;
+			width: 100%;
+			min-height: 130px;
+
+			padding: 12px 14px;
+
+			border: 1px solid var(--border);
+			border-radius: 6px;
+
+			background: #101416;
+			color: var(--text);
+
+			resize: vertical;
+			outline: none;
+		}
+
+		.review-textarea:focus {
+			border-color: rgba(110, 182, 255, 0.7);
+			box-shadow: 0 0 0 2px rgba(110, 182, 255, 0.12);
+		}
+
+		.review-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			margin-top: 14px;
+		}
+
+		.action-button {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+
+			min-height: 42px;
+			padding: 0 16px;
+
+			border: 1px solid var(--border);
+			border-radius: 6px;
+
+			cursor: pointer;
+
+			font-size: 13px;
+			font-weight: 900;
+
+			transition:
+				transform 0.1s ease,
+				opacity 0.15s ease,
+				background 0.15s ease;
+		}
+
+		.action-button:hover:not(:disabled) {
+			transform: translateY(-1px);
+		}
+
+		.action-button:disabled {
+			cursor: not-allowed;
+			opacity: 0.5;
+		}
+
+		.approve-button {
+			border-color: rgba(123, 214, 111, 0.55);
+			background: rgba(123, 214, 111, 0.12);
+			color: var(--accent);
+		}
+
+		.approve-button:hover:not(:disabled) {
+			background: rgba(123, 214, 111, 0.2);
+		}
+
+		.reject-button {
+			border-color: rgba(239, 119, 119, 0.55);
+			background: rgba(239, 119, 119, 0.1);
+			color: var(--red);
+		}
+
+		.reject-button:hover:not(:disabled) {
+			background: rgba(239, 119, 119, 0.18);
+		}
+
+		.review-result {
+			margin-top: 12px;
+			padding: 10px 12px;
+			border-radius: 6px;
+
+			font-size: 13px;
+			white-space: pre-wrap;
+		}
+
+		.review-result.success {
+			border: 1px solid rgba(123, 214, 111, 0.35);
+			background: rgba(123, 214, 111, 0.08);
+			color: var(--accent);
+		}
+
+		.review-result.error {
+			border: 1px solid rgba(239, 119, 119, 0.35);
+			background: rgba(239, 119, 119, 0.08);
+			color: var(--red);
+		}
+
+		/* ========================================
+		   Footer Links
+		======================================== */
+
+		.page-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+
+		.page-action {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+
+			min-height: 40px;
+			padding: 0 14px;
+
+			border: 1px solid var(--border);
+			border-radius: 6px;
+
+			background: var(--panel);
+			color: var(--text-soft);
+
+			text-decoration: none;
+
+			font-size: 13px;
+			font-weight: 800;
+		}
+
+		.page-action:hover {
+			background: var(--panel-soft);
+			color: var(--text);
+		}
+
+		/* ========================================
+		   Responsive
+		======================================== */
+
+		@media (max-width: 760px) {
+			.header-inner {
+				padding: 12px 14px;
+			}
+
+			.brand-sub {
+				display: none;
+			}
+
+			.container {
+				width: min(100% - 20px, 1200px);
+				padding-top: 28px;
+			}
+
+			.page-info {
+				grid-template-columns: 1fr;
+			}
+
+			.status-flow {
+				grid-template-columns: 1fr;
+			}
+
+			.status-step::after {
+				content: "↓";
+				right: auto;
+				top: auto;
+				bottom: -13px;
+				left: 50%;
+				transform: translateX(-50%);
+			}
+
+			.status-step:last-child::after {
+				display: none;
+			}
+
+			.card-body {
+				padding: 14px;
+			}
+
+			.header-link {
+				padding: 0 10px;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<header class="page-header">
+		<div class="header-inner">
+			<a href="/" class="brand" aria-label="NUGBASE ホーム">
+				<span class="brand-main">NUG</span>
+				<span class="brand-sub">Nekozouneko Unofficial Guide</span>
+			</a>
+
+			<div class="header-links">
+				<a href="/wiki/requests/" class="header-link">
+					申請一覧
+				</a>
+
+				<a href="/account/" class="header-link">
+					アカウント
+				</a>
+			</div>
+		</div>
+	</header>
+
+	<main class="container">
+		<div id="loading-state" class="state">
+			申請情報を読み込んでいます…
+		</div>
+
+		<div id="error-state" class="state error-state" hidden>
+			申請情報を読み込めませんでした。
+		</div>
+
+		<div id="content" hidden>
+			<div class="page-title">
+				<h1>Wiki編集申請</h1>
+				<p>編集内容・レビュー状況・申請の進行状況を確認できます。</p>
+			</div>
+
+			<div class="stack">
+
+				<!-- ========================================
+				     Page Info
+				======================================== -->
+
+				<section class="card">
+					<div class="card-header">
+						<h2 class="card-title">対象ページ</h2>
+						<span id="status-badge" class="status-badge">
+							-
+						</span>
+					</div>
+
+					<div class="card-body">
+						<div class="page-info">
+							<div class="info-item">
+								<div class="info-label">ページタイトル</div>
+								<div id="page-title" class="info-value">-</div>
+							</div>
+
+							<div class="info-item">
+								<div class="info-label">ページパス</div>
+								<div class="info-value">
+									<code id="page-path">-</code>
+								</div>
+							</div>
+
+							<div class="info-item">
+								<div class="info-label">Revision</div>
+								<div id="revision-number" class="info-value">-</div>
+							</div>
+
+							<div class="info-item">
+								<div class="info-label">作成日時</div>
+								<div id="created-at" class="info-value">-</div>
+							</div>
+
+							<div class="info-item">
+								<div class="info-label">レビュー日時</div>
+								<div id="reviewed-at" class="info-value">-</div>
+							</div>
+
+							<div class="info-item">
+								<div class="info-label">レビュアー</div>
+								<div id="reviewer" class="info-value">-</div>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- ========================================
+				     Status Flow
+				======================================== -->
+
+				<section class="card">
+					<div class="card-header">
+						<h2 class="card-title">進行状況</h2>
+					</div>
+
+					<div class="card-body">
+						<div id="status-flow" class="status-flow">
+
+							<div
+								class="status-step"
+								data-step="draft"
+							>
+								<span class="status-icon">○</span>
+								<span class="status-label">編集</span>
+							</div>
+
+							<div
+								class="status-step"
+								data-step="pending"
+							>
+								<span class="status-icon">○</span>
+								<span class="status-label">レビュー申請済み</span>
+							</div>
+
+							<div
+								class="status-step"
+								data-step="approved"
+							>
+								<span class="status-icon">○</span>
+								<span class="status-label">承認</span>
+							</div>
+
+							<div
+								class="status-step"
+								data-step="publishing"
+							>
+								<span class="status-icon">○</span>
+								<span class="status-label">公開処理</span>
+							</div>
+
+							<div
+								class="status-step"
+								data-step="published"
+							>
+								<span class="status-icon">○</span>
+								<span class="status-label">公開済み</span>
+							</div>
+
+						</div>
+					</div>
+				</section>
+
+				<!-- ========================================
+				     Review Controls
+				======================================== -->
+
+				<section
+					id="review-controls"
+					class="card review-controls"
+					hidden
+				>
+					<div class="card-header">
+						<h2 class="card-title">レビュー操作</h2>
+					</div>
+
+					<div class="card-body">
+						<p class="review-description">
+							この申請はレビュー待ちです。内容を確認したうえで、承認または却下してください。
+						</p>
+
+						<label for="review-comment">
+							<div class="info-label">レビューコメント</div>
+						</label>
+
+						<textarea
+							id="review-comment"
+							class="review-textarea"
+							placeholder="必要に応じてレビューコメントを入力してください。却下する場合は理由を入力することを推奨します。"
+						></textarea>
+
+						<div class="review-actions">
+							<button
+								id="approve-button"
+								class="action-button approve-button"
+								type="button"
+							>
+								承認する
+							</button>
+
+							<button
+								id="reject-button"
+								class="action-button reject-button"
+								type="button"
+							>
+								却下する
+							</button>
+						</div>
+
+						<div
+							id="review-result"
+							class="review-result"
+							hidden
+						></div>
+					</div>
+				</section>
+
+				<!-- ========================================
+				     Message
+				======================================== -->
+
+				<section
+					id="message-card"
+					class="card"
+					hidden
+				>
+					<div class="card-header">
+						<h2 class="card-title">申請メッセージ</h2>
+					</div>
+
+					<div class="card-body">
+						<div id="message" class="message-box"></div>
+					</div>
+				</section>
+
+				<!-- ========================================
+				     Review Comment
+				======================================== -->
+
+				<section
+					id="review-comment-card"
+					class="card"
+					hidden
+				>
+					<div class="card-header">
+						<h2 class="card-title">レビューコメント</h2>
+					</div>
+
+					<div class="card-body">
+						<div id="review-comment-display" class="review-box"></div>
+					</div>
+				</section>
+
+				<!-- ========================================
+				     Markdown Source
+				======================================== -->
+
+				<section class="card">
+					<div class="card-header">
+						<h2 class="card-title">Markdown</h2>
+					</div>
+
+					<div class="card-body" style="padding: 0;">
+						<pre id="markdown-source" class="markdown-source"></pre>
+					</div>
+				</section>
+
+				<!-- ========================================
+				     Preview
+				======================================== -->
+
+				<section class="card">
+					<div class="card-header">
+						<h2 class="card-title">プレビュー</h2>
+					</div>
+
+					<div id="preview" class="preview"></div>
+				</section>
+
+				<!-- ========================================
+				     Actions
+				======================================== -->
+
+				<section class="card">
+					<div class="card-header">
+						<h2 class="card-title">操作</h2>
+					</div>
+
+					<div class="card-body">
+						<div class="page-actions">
+							<a
+								id="public-page-link"
+								class="page-action"
+								href="/docs/"
+							>
+								公開ページを見る
+							</a>
+
+							<a
+								id="edit-link"
+								class="page-action"
+								href="#"
+								hidden
+							>
+								編集に戻る
+							</a>
+						</div>
+					</div>
+				</section>
+
+			</div>
+		</div>
+	</main>
+
+	<script type="module">
+		import { marked } from 'marked';
+		import DOMPurify from 'dompurify';
+
+		const loadingState = document.querySelector('#loading-state');
+		const errorState = document.querySelector('#error-state');
+		const content = document.querySelector('#content');
+
+		const statusBadge = document.querySelector('#status-badge');
+
+		const pageTitle = document.querySelector('#page-title');
+		const pagePath = document.querySelector('#page-path');
+		const revisionNumber = document.querySelector('#revision-number');
+		const createdAt = document.querySelector('#created-at');
+		const reviewedAt = document.querySelector('#reviewed-at');
+		const reviewer = document.querySelector('#reviewer');
+
+		const statusSteps = document.querySelectorAll('.status-step');
+
+		const reviewControls = document.querySelector('#review-controls');
+		const reviewCommentInput = document.querySelector('#review-comment');
+		const approveButton = document.querySelector('#approve-button');
+		const rejectButton = document.querySelector('#reject-button');
+		const reviewResult = document.querySelector('#review-result');
+
+		const messageCard = document.querySelector('#message-card');
+		const message = document.querySelector('#message');
+
+		const reviewCommentCard = document.querySelector('#review-comment-card');
+		const reviewCommentDisplay = document.querySelector('#review-comment-display');
+
+		const markdownSource = document.querySelector('#markdown-source');
+		const preview = document.querySelector('#preview');
+
+		const publicPageLink = document.querySelector('#public-page-link');
+		const editLink = document.querySelector('#edit-link');
+
+		const params = new URLSearchParams(window.location.search);
+		const id = params.get('id');
+
+		let currentRequest = null;
+		let currentUser = null;
+		let reviewProcessing = false;
+
+		function formatDate(value) {
+			if (!value) return '-';
+
+			const date = new Date(value);
+
+			if (Number.isNaN(date.getTime())) {
+				return value;
+			}
+
+			return new Intl.DateTimeFormat('ja-JP', {
+				year: 'numeric',
+				month: 'numeric',
+				day: 'numeric',
+				hour: '2-digit',
+				minute: '2-digit',
+			}).format(date);
+		}
+
+		function escapeText(value) {
+			return String(value ?? '');
+		}
+
+		function getStatusLabel(status) {
+			switch (status) {
+				case 'draft':
+					return '下書き';
+
+				case 'pending':
+					return 'レビュー申請中';
+
+				case 'approved':
+					return '承認済み';
+
+				case 'publishing':
+					return '公開処理中';
+
+				case 'published':
+					return '公開済み';
+
+				case 'rejected':
+					return '却下';
+
+				default:
+					return status || '不明';
+			}
+		}
+
+		function updateStatusBadge(status) {
+			statusBadge.textContent = getStatusLabel(status);
+			statusBadge.className = 'status-badge';
+
+			if (
+				status === 'pending' ||
+				status === 'approved' ||
+				status === 'publishing' ||
+				status === 'published' ||
+				status === 'rejected'
+			) {
+				statusBadge.classList.add(status);
+			}
+		}
+
+		function updateStatusFlow(status) {
+			const order = [
+				'draft',
+				'pending',
+				'approved',
+				'publishing',
+				'published',
+			];
+
+			const currentIndex = order.indexOf(status);
+
+			statusSteps.forEach((step) => {
+				const stepStatus = step.dataset.step;
+
+				step.classList.remove(
+					'done',
+					'active',
+					'rejected'
+				);
+
+				const icon = step.querySelector('.status-icon');
+
+				if (status === 'rejected' && stepStatus === 'pending') {
+					step.classList.add('rejected');
+
+					if (icon) {
+						icon.textContent = '×';
+					}
+
+					return;
+				}
+
+				const stepIndex = order.indexOf(stepStatus);
+
+				if (currentIndex === -1 || stepIndex === -1) {
+					if (icon) {
+						icon.textContent = '○';
+					}
+
+					return;
+				}
+
+				if (stepIndex < currentIndex) {
+					step.classList.add('done');
+
+					if (icon) {
+						icon.textContent = '●';
+					}
+				} else if (stepIndex === currentIndex) {
+					step.classList.add('active');
+
+					if (icon) {
+						icon.textContent = '●';
+					}
+				} else {
+					if (icon) {
+						icon.textContent = '○';
+					}
+				}
+			});
+		}
+
+		function showReviewResult(messageText, type) {
+			reviewResult.hidden = false;
+			reviewResult.textContent = messageText;
+			reviewResult.className = `review-result ${type}`;
+		}
+
+		function setReviewButtonsDisabled(disabled) {
+			approveButton.disabled = disabled;
+			rejectButton.disabled = disabled;
+			reviewCommentInput.disabled = disabled;
+		}
+
+		async function loadCurrentUser() {
+			try {
+				const response = await fetch('/me', {
+					credentials: 'include',
+				});
+
+				if (!response.ok) {
+					return null;
+				}
+
+				const data = await response.json();
+
+				if (!data.loggedIn || !data.user) {
+					return null;
+				}
+
+				return data.user;
+			} catch {
+				return null;
+			}
+		}
+
+		function updateReviewControls() {
+			const isAdmin =
+				currentUser &&
+				currentUser.role === 'admin';
+
+			const isPending =
+				currentRequest &&
+				currentRequest.status === 'pending';
+
+			reviewControls.hidden = !(isAdmin && isPending);
+		}
+
+		async function loadRequest() {
+			if (!id) {
+				throw new Error('申請IDが指定されていません。');
+			}
+
+			const response = await fetch(
+				`/api/wiki/edit-requests/${encodeURIComponent(id)}`,
+				{
+					credentials: 'include',
+				}
+			);
+
+			const data = await response.json().catch(() => null);
+
+			if (!response.ok) {
+				throw new Error(
+					data?.error ||
+					'申請情報を取得できませんでした。'
+				);
+			}
+
+			if (!data?.editRequest || !data?.revision) {
+				throw new Error(
+					'申請情報の形式が正しくありません。'
+				);
+			}
+
+			currentRequest = data.editRequest;
+
+			const revision = data.revision;
+
+			pageTitle.textContent =
+				currentRequest.page_title ||
+				currentRequest.pagePath ||
+				'-';
+
+			pagePath.textContent =
+				currentRequest.page_path ||
+				currentRequest.pagePath ||
+				'-';
+
+			revisionNumber.textContent =
+				currentRequest.revision_number ??
+				revision.revision_number ??
+				'-';
+
+			createdAt.textContent =
+				formatDate(currentRequest.created_at);
+
+			reviewedAt.textContent =
+				formatDate(currentRequest.reviewed_at);
+
+			reviewer.textContent =
+				currentRequest.reviewer_display_name ||
+				currentRequest.reviewer_id ||
+				'-';
+
+			updateStatusBadge(currentRequest.status);
+			updateStatusFlow(currentRequest.status);
+
+			const requestMessage =
+				currentRequest.message ||
+				'';
+
+			if (requestMessage) {
+				messageCard.hidden = false;
+				message.textContent = requestMessage;
+			} else {
+				messageCard.hidden = true;
+			}
+
+			const requestReviewComment =
+				currentRequest.review_comment ||
+				'';
+
+			if (requestReviewComment) {
+				reviewCommentCard.hidden = false;
+				reviewCommentDisplay.textContent =
+					requestReviewComment;
+			} else {
+				reviewCommentCard.hidden = true;
+			}
+
+			const markdown =
+				revision.content ||
+				'';
+
+			markdownSource.textContent = markdown;
+
+			const renderedMarkdown =
+				await marked.parse(markdown);
+
+			preview.innerHTML =
+				DOMPurify.sanitize(renderedMarkdown);
+
+			const publicPath =
+				currentRequest.page_path ||
+				currentRequest.pagePath ||
+				'/docs/';
+
+			publicPageLink.href = publicPath;
+
+			if (currentRequest.status === 'draft') {
+				editLink.hidden = false;
+				editLink.href =
+					`/wiki/edit/?path=${encodeURIComponent(publicPath)}`;
+			} else {
+				editLink.hidden = true;
+			}
+
+			updateReviewControls();
+		}
+
+		async function performReview(status) {
+			if (reviewProcessing) {
+				return;
+			}
+
+			if (!currentRequest) {
+				return;
+			}
+
+			if (currentRequest.status !== 'pending') {
+				showReviewResult(
+					'この申請はすでに処理されています。',
+					'error'
+				);
+
+				return;
+			}
+
+			const comment =
+				reviewCommentInput.value.trim();
+
+			if (status === 'rejected' && !comment) {
+				showReviewResult(
+					'却下する場合は、レビューコメントに理由を入力してください。',
+					'error'
+				);
+
+				reviewCommentInput.focus();
+
+				return;
+			}
+
+			const actionLabel =
+				status === 'approved'
+					? '承認'
+					: '却下';
+
+			const confirmed = window.confirm(
+				`この申請を「${actionLabel}」しますか？\n\n` +
+				'この操作は申請の状態を変更します。'
+			);
+
+			if (!confirmed) {
+				return;
+			}
+
+			reviewProcessing = true;
+			setReviewButtonsDisabled(true);
+
+			reviewResult.hidden = true;
+
+			try {
+				const response = await fetch(
+					`/api/wiki/edit-requests/${encodeURIComponent(id)}/review`,
+					{
+						method: 'POST',
+						credentials: 'include',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							status,
+							comment: comment || undefined,
+						}),
+					}
+				);
+
+				const data =
+					await response.json().catch(() => null);
+
+				if (!response.ok) {
+					throw new Error(
+						data?.error ||
+						`レビュー処理に失敗しました。HTTP ${response.status}`
+					);
+				}
+
+				showReviewResult(
+					`申請を「${actionLabel}」しました。申請情報を更新しています…`,
+					'success'
+				);
+
+				await loadRequest();
+
+				reviewCommentInput.value = '';
+
+				showReviewResult(
+					`申請を「${actionLabel}」しました。`,
+					'success'
+				);
+			} catch (error) {
+				console.error(error);
+
+				showReviewResult(
+					error instanceof Error
+						? error.message
+						: 'レビュー処理に失敗しました。',
+					'error'
+				);
+
+				setReviewButtonsDisabled(false);
+			} finally {
+				reviewProcessing = false;
+
+				if (
+					currentRequest &&
+					currentRequest.status === 'pending'
+				) {
+					setReviewButtonsDisabled(false);
+				}
+			}
+		}
+
+		approveButton.addEventListener(
+			'click',
+			() => performReview('approved')
+		);
+
+		rejectButton.addEventListener(
+			'click',
+			() => performReview('rejected')
+		);
+
+		async function initialize() {
+			try {
+				currentUser = await loadCurrentUser();
+
+				await loadRequest();
+
+				loadingState.hidden = true;
+				errorState.hidden = true;
+				content.hidden = false;
+			} catch (error) {
+				console.error(error);
+
+				loadingState.hidden = true;
+				errorState.hidden = false;
+
+				errorState.textContent =
+					error instanceof Error
+						? error.message
+						: '申請情報を読み込めませんでした。';
+			}
+		}
+
+		initialize();
+	</script>
+</body>
+</html>
