@@ -190,6 +190,9 @@ export const onRequestGet: PagesFunction<Env> = async ({
 			);
 		}
 
+		/**
+		 * admin以外は自分自身の申請のみ閲覧可能
+		 */
 		if (
 			editRequest.user_id !== user.user_id &&
 			user.role !== 'admin'
@@ -197,7 +200,8 @@ export const onRequestGet: PagesFunction<Env> = async ({
 			return json(
 				{
 					ok: false,
-					error: 'You can only view your own edit requests',
+					error:
+						'You can only view your own edit requests',
 				},
 				403
 			);
@@ -229,7 +233,10 @@ export const onRequestGet: PagesFunction<Env> = async ({
 
 				LIMIT 1
 			`)
-				.bind(editRequest.revision_id, editRequest.page_id)
+				.bind(
+					editRequest.revision_id,
+					editRequest.page_id
+				)
 				.first();
 
 		/**
@@ -432,6 +439,7 @@ export const onRequestPut: PagesFunction<Env> = async ({
 		}
 
 		const content = body.content;
+
 		const message =
 			typeof body.message === 'string'
 				? body.message.trim() || null
@@ -539,18 +547,16 @@ export const onRequestPut: PagesFunction<Env> = async ({
 			currentRevision.content === content &&
 			currentMessage === message
 		) {
-			return json(
-				{
-					ok: true,
-					changed: false,
-					editRequest: {
-						id: editRequest.id,
-						status: editRequest.status,
-						revisionId:
-							editRequest.revision_id,
-					},
-				}
-			);
+			return json({
+				ok: true,
+				changed: false,
+				editRequest: {
+					id: editRequest.id,
+					status: editRequest.status,
+					revisionId:
+						editRequest.revision_id,
+				},
+			});
 		}
 
 		/**
@@ -601,28 +607,30 @@ export const onRequestPut: PagesFunction<Env> = async ({
 		/**
 		 * 編集リクエストを新Revisionへ更新
 		 */
-		const updateResult = await env.DB.prepare(`
-			UPDATE edit_requests
-			SET
-				revision_id = ?,
-				message = ?
-			WHERE id = ?
-				AND status = 'draft'
-				AND revision_id = ?
-		`)
-			.bind(
-				revisionId,
-				message,
-				editRequestId,
-				editRequest.revision_id
-			)
-			.run();
+		const updateResult =
+			await env.DB.prepare(`
+				UPDATE edit_requests
+				SET
+					revision_id = ?,
+					message = ?
+				WHERE id = ?
+					AND status = 'draft'
+					AND revision_id = ?
+			`)
+				.bind(
+					revisionId,
+					message,
+					editRequestId,
+					editRequest.revision_id
+				)
+				.run();
 
 		if (updateResult.meta?.changes !== 1) {
 			return json(
 				{
 					ok: false,
-					error: 'Draft changed while it was being saved. Reload and try again.',
+					error:
+						'Draft changed while it was being saved. Reload and try again.',
 				},
 				409
 			);
@@ -694,6 +702,369 @@ export const onRequestPut: PagesFunction<Env> = async ({
 	} catch (error) {
 		console.error(
 			'Wiki edit request PUT error:',
+			error
+		);
+
+		return json(
+			{
+				ok: false,
+				error: 'Internal server error',
+			},
+			500
+		);
+	}
+};
+
+/**
+ * DELETE
+ *
+ * 編集リクエストを削除する。
+ *
+ * editor:
+ *   - 自分自身の draft のみ削除可能
+ *
+ * admin:
+ *   - draft
+ *   - pending
+ *   - rejected
+ *   - approved
+ *   を削除可能
+ *
+ * 以下は削除不可:
+ *   - publishing
+ *   - published
+ *
+ * また、削除対象Revisionが別の場所から参照されている場合、
+ * Revision自体は削除しない。
+ *
+ * URL:
+ * /api/wiki/edit-requests/:id
+ */
+export const onRequestDelete: PagesFunction<Env> = async ({
+	env,
+	request,
+	params,
+}) => {
+	try {
+		/**
+		 * 認証
+		 */
+		const user = await getSessionUser(request, env);
+
+		if (!user) {
+			return json(
+				{
+					ok: false,
+					error: 'Unauthorized',
+				},
+				401
+			);
+		}
+
+		/**
+		 * editor / admin のみ許可
+		 */
+		if (
+			user.role !== 'editor' &&
+			user.role !== 'admin'
+		) {
+			return json(
+				{
+					ok: false,
+					error: 'Forbidden',
+				},
+				403
+			);
+		}
+
+		/**
+		 * [id] パラメータ
+		 */
+		const editRequestId =
+			typeof params.id === 'string'
+				? params.id
+				: null;
+
+		if (!editRequestId) {
+			return json(
+				{
+					ok: false,
+					error: 'Edit request ID is required',
+				},
+				400
+			);
+		}
+
+		/**
+		 * 削除対象を取得
+		 */
+		const editRequest =
+			await env.DB.prepare(`
+				SELECT
+					id,
+					page_id,
+					revision_id,
+					base_revision_id,
+					user_id,
+					status
+				FROM edit_requests
+				WHERE id = ?
+				LIMIT 1
+			`)
+				.bind(editRequestId)
+				.first();
+
+		if (!editRequest) {
+			return json(
+				{
+					ok: false,
+					error: 'Edit request not found',
+				},
+				404
+			);
+		}
+
+		/**
+		 * published / publishing は
+		 * 管理者でも削除不可
+		 */
+		if (
+			editRequest.status === 'published' ||
+			editRequest.status === 'publishing'
+		) {
+			return json(
+				{
+					ok: false,
+					error:
+						'Published or publishing edit requests cannot be deleted',
+					status: editRequest.status,
+				},
+				400
+			);
+		}
+
+		/**
+		 * adminの場合
+		 *
+		 * draft / pending / rejected / approved
+		 * を削除可能。
+		 */
+		if (user.role === 'admin') {
+			if (
+				editRequest.status !== 'draft' &&
+				editRequest.status !== 'pending' &&
+				editRequest.status !== 'rejected' &&
+				editRequest.status !== 'approved'
+			) {
+				return json(
+					{
+						ok: false,
+						error:
+							'This edit request cannot be deleted',
+						status: editRequest.status,
+					},
+					400
+				);
+			}
+		} else {
+			/**
+			 * editorの場合
+			 *
+			 * 自分自身のdraftのみ削除可能。
+			 */
+			if (editRequest.status !== 'draft') {
+				return json(
+					{
+						ok: false,
+						error:
+							'Only draft edit requests can be deleted',
+						status: editRequest.status,
+					},
+					400
+				);
+			}
+
+			if (
+				editRequest.user_id !== user.user_id
+			) {
+				return json(
+					{
+						ok: false,
+						error:
+							'You can only delete your own edit requests',
+					},
+					403
+				);
+			}
+		}
+
+		const now = new Date().toISOString();
+
+		/**
+		 * 編集リクエストを削除
+		 *
+		 * admin:
+		 *   対象IDのみ削除
+		 *
+		 * editor:
+		 *   自分自身のdraftのみ削除
+		 */
+		const deleteRequest =
+			user.role === 'admin'
+				? env.DB.prepare(`
+					DELETE FROM edit_requests
+					WHERE id = ?
+						AND status IN (
+							'draft',
+							'pending',
+							'rejected',
+							'approved'
+						)
+				`).bind(editRequestId)
+				: env.DB.prepare(`
+					DELETE FROM edit_requests
+					WHERE id = ?
+						AND user_id = ?
+						AND status = 'draft'
+				`).bind(
+					editRequestId,
+					user.user_id
+				);
+
+		/**
+		 * 削除対象Revisionを削除
+		 *
+		 * 以下のいずれかに該当する場合は
+		 * Revisionを残す。
+		 *
+		 * 1. 他のedit_requestsからrevision_idとして参照されている
+		 * 2. 他のedit_requestsからbase_revision_idとして参照されている
+		 * 3. wiki_pagesからpublished_revision_idとして参照されている
+		 */
+		const deleteRevision =
+			env.DB.prepare(`
+				DELETE FROM wiki_revisions
+				WHERE id = ?
+					AND NOT EXISTS (
+						SELECT 1
+						FROM edit_requests
+						WHERE revision_id = ?
+					)
+					AND NOT EXISTS (
+						SELECT 1
+						FROM edit_requests
+						WHERE base_revision_id = ?
+					)
+					AND NOT EXISTS (
+						SELECT 1
+						FROM wiki_pages
+						WHERE published_revision_id = ?
+					)
+			`)
+				.bind(
+					editRequest.revision_id,
+					editRequest.revision_id,
+					editRequest.revision_id,
+					editRequest.revision_id
+				);
+
+		/**
+		 * 監査ログ
+		 *
+		 * edit_requestsの削除後に、
+		 * 対象IDが存在しない場合だけ記録する。
+		 */
+		const auditLog =
+			env.DB.prepare(`
+				INSERT INTO audit_logs (
+					id,
+					user_id,
+					action,
+					target_type,
+					target_id,
+					metadata,
+					created_at
+				)
+				SELECT
+					?,
+					?,
+					?,
+					?,
+					?,
+					?,
+					?
+				WHERE NOT EXISTS (
+					SELECT 1
+					FROM edit_requests
+					WHERE id = ?
+				)
+			`)
+				.bind(
+					crypto.randomUUID(),
+					user.user_id,
+					'wiki.edit_request.delete',
+					'edit_request',
+					editRequestId,
+					JSON.stringify({
+						pageId: editRequest.page_id,
+						revisionId:
+							editRequest.revision_id,
+						previousStatus:
+							editRequest.status,
+						deletedByRole:
+							user.role,
+					}),
+					now,
+					editRequestId
+				);
+
+		/**
+		 * まとめて実行
+		 *
+		 * 順番:
+		 * 1. edit_requestsを削除
+		 * 2. 不要になったRevisionを削除
+		 * 3. 監査ログを記録
+		 */
+		await env.DB.batch([
+			deleteRequest,
+			deleteRevision,
+			auditLog,
+		]);
+
+		/**
+		 * 削除後の状態を確認
+		 */
+		const remaining =
+			await env.DB.prepare(`
+				SELECT
+					id
+				FROM edit_requests
+				WHERE id = ?
+				LIMIT 1
+			`)
+				.bind(editRequestId)
+				.first();
+
+		if (remaining) {
+			return json(
+				{
+					ok: false,
+					error:
+						'Edit request changed while it was being deleted. Reload and try again.',
+				},
+				409
+			);
+		}
+
+		return json({
+			ok: true,
+			deleted: true,
+			editRequestId,
+		});
+	} catch (error) {
+		console.error(
+			'Wiki edit request DELETE error:',
 			error
 		);
 

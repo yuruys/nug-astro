@@ -337,12 +337,15 @@ interface GitHubPullRequest {
  * 10. OAuth / Session
  * ========================================================= */
 
+/*
+ * Google OAuthではメールアドレスを取得しない。
+ *
+ * Google UserInfoで利用するのは、
+ * Googleアカウントを一意に識別する sub と、
+ * 表示用の name / picture のみ。
+ */
 interface GoogleUserInfo {
 	sub?: string;
-
-	email?: string;
-
-	email_verified?: boolean;
 
 	name?: string;
 
@@ -350,6 +353,15 @@ interface GoogleUserInfo {
 }
 
 
+/*
+ * SessionUser.email は残す。
+ *
+ * 既存ユーザーの users.email に保存されている
+ * メールアドレスとの互換性を維持するため。
+ *
+ * 今回のGoogle OAuth変更によって、
+ * この値を新たに収集することはない。
+ */
 interface SessionUser {
 	id: string;
 

@@ -3,6 +3,7 @@ const title = 'Wiki編集申請 | NUGBASE';
 ---
 
 <!doctype html>
+
 <html lang="ja">
 <head>
 	<meta charset="UTF-8" />
@@ -10,1763 +11,2019 @@ const title = 'Wiki編集申請 | NUGBASE';
 	<meta name="description" content="NUGBASE Wiki編集申請の詳細" />
 	<title>{title}</title>
 
-	<style>
-	/* =========================================================
-	   NUGBASE Wiki Edit Request
-	   ---------------------------------------------------------
-	   Visual system + Wiki edit request controls.
-	   ========================================================= */
+<style>
+/* =========================================================
+   NUGBASE Wiki Edit Request
+   ---------------------------------------------------------
+   Visual system + Wiki edit request controls.
+   ========================================================= */
 
-	:root {
-		color-scheme: dark;
+:root {
+	color-scheme: dark;
 
-		--bg: #101315;
-		--bg-soft: #171a1c;
-		--bg-deep: #0d1012;
+	--bg: #101315;
+	--bg-soft: #171a1c;
+	--bg-deep: #0d1012;
 
-		--panel: #2f3438;
-		--panel-soft: #383e42;
-		--panel-raised: #42474b;
+	--panel: #2f3438;
+	--panel-soft: #383e42;
+	--panel-raised: #42474b;
 
-		--border: #565e63;
-		--border-dark: #252a2e;
+	--border: #565e63;
+	--border-dark: #252a2e;
 
-		--text: #f1f4f2;
-		--text-soft: #b6beb9;
-		--text-muted: #858e92;
+	--text: #f1f4f2;
+	--text-soft: #b6beb9;
+	--text-muted: #858e92;
 
-		--accent: #55b85c;
-		--accent-dark: #2f7137;
-		--accent-deep: #214f27;
+	--accent: #55b85c;
+	--accent-dark: #2f7137;
+	--accent-deep: #214f27;
 
-		--blue: #73b9e8;
-		--yellow: #e4c66d;
-		--red: #e57b7b;
+	--blue: #73b9e8;
+	--yellow: #e4c66d;
+	--red: #e57b7b;
 
-		--shadow:
-			0 4px 0 #0a0c0d,
-			0 10px 18px rgba(0, 0, 0, 0.28);
+	--shadow:
+		0 4px 0 #0a0c0d,
+		0 10px 18px rgba(0, 0, 0, 0.28);
 
-		--shadow-small:
-			0 3px 0 #0a0c0d;
+	--shadow-small:
+		0 3px 0 #0a0c0d;
 
-		--shadow-inset:
-			inset 0 1px 0 rgba(255, 247, 214, 0.035);
+	--shadow-inset:
+		inset 0 1px 0 rgba(255, 247, 214, 0.035);
 
-		--radius: 3px;
-	}
+	--radius: 3px;
+}
 
-	* {
-		box-sizing: border-box;
-	}
+* {
+	box-sizing: border-box;
+}
 
-	html,
-	body {
-		margin: 0;
-		padding: 0;
-		min-height: 100%;
-	}
+html,
+body {
+	margin: 0;
+	padding: 0;
+	min-height: 100%;
+}
 
-	html {
-		background: var(--bg-deep);
-	}
+html {
+	background: var(--bg-deep);
+}
 
-	body {
-		position: relative;
-		isolation: isolate;
+body {
+	position: relative;
+	isolation: isolate;
 
-		background:
-			radial-gradient(
-				circle at 10% 0%,
-				rgba(85, 184, 92, 0.12),
-				transparent 30%
-			),
-			radial-gradient(
-				circle at 90% 10%,
-				rgba(255, 247, 214, 0.035),
-				transparent 26%
-			),
-			linear-gradient(
-				180deg,
-				#252a2d 0,
-				#191d20 220px,
-				#111416 520px,
-				#0f1113 100%
-			);
+	background:
+		radial-gradient(
+			circle at 10% 0%,
+			rgba(85, 184, 92, 0.12),
+			transparent 30%
+		),
+		radial-gradient(
+			circle at 90% 10%,
+			rgba(255, 247, 214, 0.035),
+			transparent 26%
+		),
+		linear-gradient(
+			180deg,
+			#252a2d 0,
+			#191d20 220px,
+			#111416 520px,
+			#0f1113 100%
+		);
 
-		color: var(--text);
+	color: var(--text);
 
-		font-family:
-			Inter,
-			-apple-system,
-			BlinkMacSystemFont,
-			"Segoe UI",
-			"Hiragino Kaku Gothic ProN",
-			"Hiragino Sans",
-			Meiryo,
-			sans-serif;
+	font-family:
+		Inter,
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		"Hiragino Kaku Gothic ProN",
+		"Hiragino Sans",
+		Meiryo,
+		sans-serif;
 
-		line-height: 1.7;
-	}
+	line-height: 1.7;
+}
 
-	body::before {
-		content: "";
+body::before {
+	content: "";
 
-		position: fixed;
-		inset: 0;
+	position: fixed;
+	inset: 0;
 
-		pointer-events: none;
+	pointer-events: none;
 
-		background:
-			linear-gradient(
-				135deg,
-				rgba(255, 247, 214, 0.035),
-				transparent 25%
-			),
-			repeating-linear-gradient(
-				0deg,
-				rgba(255, 255, 255, 0.008) 0,
-				rgba(255, 255, 255, 0.008) 1px,
-				transparent 1px,
-				transparent 4px
-			);
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 247, 214, 0.035),
+			transparent 25%
+		),
+		repeating-linear-gradient(
+			0deg,
+			rgba(255, 255, 255, 0.008) 0,
+			rgba(255, 255, 255, 0.008) 1px,
+			transparent 1px,
+			transparent 4px
+		);
 
-		opacity: 0.65;
-		z-index: -1;
-	}
+	opacity: 0.65;
+	z-index: -1;
+}
 
-	a {
-		color: inherit;
-	}
+a {
+	color: inherit;
+}
 
-	button,
-	textarea {
-		font: inherit;
-	}
+button,
+textarea {
+	font: inherit;
+}
 
-	button,
-	a,
-	textarea {
-		-webkit-tap-highlight-color: transparent;
-	}
+button,
+a,
+textarea {
+	-webkit-tap-highlight-color: transparent;
+}
 
-	[hidden] {
-		display: none !important;
-	}
+[hidden] {
+	display: none !important;
+}
 
-	:focus-visible {
-		outline: 2px solid var(--yellow);
-		outline-offset: 3px;
-	}
+:focus-visible {
+	outline: 2px solid var(--yellow);
+	outline-offset: 3px;
+}
 
-	/* =========================================================
-	   Header
-	========================================================= */
+/* =========================================================
+   Header
+========================================================= */
 
-	.page-header {
-		position: sticky;
-		top: 0;
-		z-index: 20;
+.page-header {
+	position: sticky;
+	top: 0;
+	z-index: 20;
 
-		border-bottom: 1px solid var(--border-dark);
+	border-bottom: 1px solid var(--border-dark);
 
-		background:
-			linear-gradient(
-				180deg,
-				rgba(58, 64, 68, 0.97),
-				rgba(31, 35, 38, 0.97)
-			);
+	background:
+		linear-gradient(
+			180deg,
+			rgba(58, 64, 68, 0.97),
+			rgba(31, 35, 38, 0.97)
+		);
 
-		box-shadow:
-			0 2px 0 rgba(255, 247, 214, 0.035),
-			0 5px 16px rgba(0, 0, 0, 0.28);
+	box-shadow:
+		0 2px 0 rgba(255, 247, 214, 0.035),
+		0 5px 16px rgba(0, 0, 0, 0.28);
 
-		backdrop-filter: blur(12px);
-	}
+	backdrop-filter: blur(12px);
+}
 
+.header-inner {
+	width: min(1200px, calc(100% - 32px));
+	margin: 0 auto;
+
+	padding: 12px 0;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+
+	min-width: 0;
+
+	text-decoration: none;
+}
+
+.brand-main {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-width: 58px;
+	min-height: 38px;
+
+	padding: 0 10px;
+
+	border: 1px solid #697277;
+
+	background:
+		linear-gradient(
+			135deg,
+			#4a5155,
+			#30363a
+		);
+
+	box-shadow:
+		0 3px 0 #101214,
+		inset 0 1px 0 rgba(255, 247, 214, 0.08);
+
+	color: #f8f9f6;
+
+	font-size: 21px;
+	font-weight: 950;
+	letter-spacing: 0.1em;
+	line-height: 1;
+}
+
+.brand-sub {
+	overflow: hidden;
+
+	color: var(--text-muted);
+
+	font-size: 12px;
+	font-weight: 700;
+
+	letter-spacing: 0.035em;
+
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.header-links {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.header-link {
+	position: relative;
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 38px;
+	padding: 0 13px;
+
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+
+	background:
+		linear-gradient(
+			180deg,
+			#3b4145,
+			#2b3034
+		);
+
+	box-shadow: var(--shadow-small);
+
+	color: var(--text-soft);
+
+	text-decoration: none;
+
+	font-size: 13px;
+	font-weight: 800;
+
+	transition:
+		transform 0.12s ease,
+		filter 0.12s ease,
+		border-color 0.12s ease;
+}
+
+.header-link:hover {
+	border-color: #707a80;
+	color: var(--text);
+	filter: brightness(1.08);
+	transform: translateY(-1px);
+}
+
+.header-link:active {
+	transform: translateY(2px);
+
+	box-shadow:
+		0 1px 0 #0a0c0d;
+}
+
+/* =========================================================
+   Layout
+========================================================= */
+
+.container {
+	width: min(1200px, calc(100% - 32px));
+	margin: 0 auto;
+
+	padding: 40px 0 80px;
+}
+
+.page-title {
+	position: relative;
+
+	margin-bottom: 32px;
+
+	padding-left: 18px;
+}
+
+.page-title::before {
+	content: "";
+
+	position: absolute;
+	left: 0;
+	top: 3px;
+	bottom: 3px;
+
+	width: 5px;
+
+	background:
+		linear-gradient(
+			180deg,
+			#79d779,
+			var(--accent-dark)
+		);
+
+	box-shadow:
+		2px 0 0 rgba(0, 0, 0, 0.3);
+}
+
+.page-title h1 {
+	margin: 0 0 8px;
+
+	color: #f7f8f5;
+
+	font-size: clamp(28px, 4vw, 38px);
+	line-height: 1.2;
+
+	font-weight: 950;
+
+	letter-spacing: -0.025em;
+
+	text-shadow:
+		0 2px 0 #0b0d0e;
+}
+
+.page-title p {
+	margin: 0;
+
+	color: var(--text-soft);
+
+	font-size: 14px;
+}
+
+.stack {
+	display: grid;
+	gap: 20px;
+}
+
+/* =========================================================
+   Cards
+========================================================= */
+
+.card {
+	position: relative;
+
+	overflow: hidden;
+
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 247, 214, 0.025),
+			transparent 30%
+		),
+		linear-gradient(
+			180deg,
+			var(--panel-raised),
+			var(--panel)
+		);
+
+	box-shadow:
+		var(--shadow),
+		var(--shadow-inset);
+}
+
+.card::before {
+	content: "";
+
+	position: absolute;
+	left: 0;
+	top: 0;
+
+	width: 100%;
+	height: 2px;
+
+	background:
+		linear-gradient(
+			90deg,
+			rgba(255, 247, 214, 0.08),
+			transparent 55%
+		);
+
+	pointer-events: none;
+}
+
+.card-header {
+	min-height: 56px;
+
+	padding: 14px 18px;
+
+	border-bottom: 1px solid var(--border-dark);
+
+	background:
+		linear-gradient(
+			180deg,
+			rgba(255, 255, 255, 0.035),
+			rgba(0, 0, 0, 0.08)
+		);
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.card-title {
+	position: relative;
+
+	margin: 0;
+	padding-left: 12px;
+
+	color: #f4f6f3;
+
+	font-size: 15px;
+	font-weight: 950;
+
+	letter-spacing: 0.015em;
+}
+
+.card-title::before {
+	content: "";
+
+	position: absolute;
+	left: 0;
+	top: 50%;
+
+	width: 4px;
+	height: 18px;
+
+	transform: translateY(-50%);
+
+	background: var(--accent);
+
+	box-shadow:
+		1px 1px 0 #183d1d;
+}
+
+.card-body {
+	padding: 20px;
+}
+
+/* =========================================================
+   Loading / Error
+========================================================= */
+
+.state {
+	position: relative;
+
+	padding: 64px 20px;
+
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 247, 214, 0.025),
+			transparent 35%
+		),
+		var(--panel);
+
+	box-shadow: var(--shadow);
+
+	text-align: center;
+
+	color: var(--text-muted);
+}
+
+.error-state {
+	border-color: rgba(229, 123, 123, 0.45);
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(229, 123, 123, 0.08),
+			transparent 45%
+		),
+		var(--panel);
+
+	color: var(--red);
+}
+
+/* =========================================================
+   Page Info
+========================================================= */
+
+.page-info {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+}
+
+.info-item {
+	min-width: 0;
+
+	padding: 14px;
+
+	border: 1px solid var(--border);
+	border-radius: 2px;
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 247, 214, 0.025),
+			transparent 45%
+		),
+		var(--bg-soft);
+
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.info-label {
+	margin-bottom: 5px;
+
+	color: var(--text-muted);
+
+	font-size: 11px;
+	font-weight: 900;
+
+	letter-spacing: 0.07em;
+	text-transform: uppercase;
+}
+
+.info-value {
+	overflow-wrap: anywhere;
+
+	color: var(--text);
+
+	font-size: 14px;
+	font-weight: 650;
+}
+
+.info-value code {
+	display: inline-block;
+
+	max-width: 100%;
+
+	padding: 3px 7px;
+
+	border: 1px solid #353c40;
+	border-radius: 2px;
+
+	background: #111416;
+
+	color: #b9d8bd;
+
+	font-family:
+		"SFMono-Regular",
+		Consolas,
+		"Liberation Mono",
+		monospace;
+
+	font-size: 12px;
+
+	word-break: break-all;
+}
+
+/* =========================================================
+   Status Flow
+========================================================= */
+
+.status-flow {
+	display: grid;
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.status-step {
+	position: relative;
+
+	min-height: 78px;
+
+	padding: 14px 10px;
+
+	border: 1px solid var(--border);
+	border-radius: 2px;
+
+	background:
+		linear-gradient(
+			180deg,
+			#363c40,
+			#292e32
+		);
+
+	box-shadow:
+		0 3px 0 #0b0d0e;
+
+	text-align: center;
+
+	transition:
+		transform 0.12s ease,
+		border-color 0.12s ease,
+		filter 0.12s ease;
+}
+
+.status-step::after {
+	content: "›";
+
+	position: absolute;
+	right: -10px;
+	top: 50%;
+
+	z-index: 2;
+
+	width: 20px;
+	height: 20px;
+
+	transform: translateY(-50%);
+
+	color: var(--text-muted);
+
+	font-size: 20px;
+	font-weight: 900;
+	line-height: 18px;
+
+	text-shadow:
+		0 2px 0 #0a0c0d;
+}
+
+.status-step:last-child::after {
+	display: none;
+}
+
+.status-step.done {
+	border-color: rgba(85, 184, 92, 0.62);
+
+	background:
+		linear-gradient(
+			180deg,
+			rgba(85, 184, 92, 0.19),
+			rgba(47, 113, 55, 0.14)
+		),
+		#2b3430;
+
+	box-shadow:
+		0 3px 0 #17261a;
+}
+
+.status-step.active {
+	border-color: rgba(115, 185, 232, 0.75);
+
+	background:
+		linear-gradient(
+			180deg,
+			rgba(115, 185, 232, 0.16),
+			rgba(62, 92, 112, 0.12)
+		),
+		#2b3237;
+
+	box-shadow:
+		0 3px 0 #18242c;
+}
+
+.status-step.rejected {
+	border-color: rgba(229, 123, 123, 0.7);
+
+	background:
+		linear-gradient(
+			180deg,
+			rgba(229, 123, 123, 0.16),
+			rgba(120, 58, 58, 0.1)
+		),
+		#322b2d;
+
+	box-shadow:
+		0 3px 0 #261618;
+}
+
+.status-icon {
+	display: block;
+
+	margin-bottom: 5px;
+
+	color: var(--text-muted);
+
+	font-size: 17px;
+	font-weight: 950;
+	line-height: 1;
+}
+
+.status-step.done .status-icon {
+	color: var(--accent);
+}
+
+.status-step.active .status-icon {
+	color: var(--blue);
+}
+
+.status-step.rejected .status-icon {
+	color: var(--red);
+}
+
+.status-label {
+	display: block;
+
+	color: var(--text-soft);
+
+	font-size: 12px;
+	font-weight: 850;
+}
+
+.status-step.done .status-label,
+.status-step.active .status-label {
+	color: var(--text);
+}
+
+/* =========================================================
+   Status Badge
+========================================================= */
+
+.status-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 30px;
+
+	padding: 0 10px;
+
+	border: 1px solid var(--border);
+	border-radius: 2px;
+
+	background: #252a2d;
+
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+	color: var(--text-soft);
+
+	font-size: 12px;
+	font-weight: 900;
+}
+
+.status-badge.pending {
+	border-color: rgba(115, 185, 232, 0.6);
+
+	background: rgba(115, 185, 232, 0.11);
+
+	color: var(--blue);
+}
+
+.status-badge.approved,
+.status-badge.published {
+	border-color: rgba(85, 184, 92, 0.62);
+
+	background: rgba(85, 184, 92, 0.11);
+
+	color: #83d887;
+}
+
+.status-badge.rejected {
+	border-color: rgba(229, 123, 123, 0.62);
+
+	background: rgba(229, 123, 123, 0.1);
+
+	color: var(--red);
+}
+
+.status-badge.publishing {
+	border-color: rgba(228, 198, 109, 0.62);
+
+	background: rgba(228, 198, 109, 0.1);
+
+	color: var(--yellow);
+}
+
+/* =========================================================
+   Message
+========================================================= */
+
+.message-box {
+	position: relative;
+
+	padding: 15px 16px 15px 19px;
+
+	border: 1px solid rgba(115, 185, 232, 0.24);
+	border-left: 4px solid var(--blue);
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(115, 185, 232, 0.09),
+			transparent 55%
+		),
+		#20272c;
+
+	color: var(--text-soft);
+
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.review-box {
+	position: relative;
+
+	padding: 15px 16px 15px 19px;
+
+	border: 1px solid rgba(228, 198, 109, 0.24);
+	border-left: 4px solid var(--yellow);
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(228, 198, 109, 0.09),
+			transparent 55%
+		),
+		#292720;
+
+	color: var(--text-soft);
+
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+/* =========================================================
+   Markdown Source
+========================================================= */
+
+.markdown-source {
+	margin: 0;
+
+	min-height: 120px;
+
+	padding: 20px;
+
+	overflow-x: auto;
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.025),
+			transparent 30%
+		),
+		#0b0e10;
+
+	color: #d9e0e3;
+
+	font-family:
+		"SFMono-Regular",
+		Consolas,
+		"Liberation Mono",
+		monospace;
+
+	font-size: 13px;
+	line-height: 1.75;
+
+	white-space: pre-wrap;
+	word-break: break-word;
+
+	tab-size: 2;
+}
+
+/* =========================================================
+   Preview
+========================================================= */
+
+.preview {
+	min-height: 120px;
+
+	padding: 24px;
+
+	background:
+		radial-gradient(
+			circle at 0% 0%,
+			rgba(255, 247, 214, 0.025),
+			transparent 30%
+		),
+		linear-gradient(
+			180deg,
+			#272c30,
+			#202528
+		);
+
+	overflow-wrap: anywhere;
+}
+
+.preview > :first-child {
+	margin-top: 0;
+}
+
+.preview > :last-child {
+	margin-bottom: 0;
+}
+
+.preview h1,
+.preview h2,
+.preview h3,
+.preview h4 {
+	color: #f3f5f2;
+
+	line-height: 1.35;
+	font-weight: 900;
+
+	text-shadow:
+		0 1px 0 #111416;
+}
+
+.preview h1 {
+	margin-top: 0;
+
+	font-size: 28px;
+}
+
+.preview h2 {
+	position: relative;
+
+	margin-top: 30px;
+	padding: 10px 0 9px 12px;
+
+	border-bottom: 1px solid var(--border);
+
+	font-size: 22px;
+}
+
+.preview h2::before {
+	content: "";
+
+	position: absolute;
+	left: 0;
+	top: 9px;
+	bottom: 9px;
+
+	width: 4px;
+
+	background: var(--accent);
+}
+
+.preview h3 {
+	margin-top: 24px;
+
+	font-size: 18px;
+}
+
+.preview h4 {
+	margin-top: 20px;
+
+	font-size: 15px;
+}
+
+.preview p {
+	margin: 12px 0;
+}
+
+.preview a {
+	color: var(--blue);
+
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+
+.preview a:hover {
+	color: #a1d4f3;
+}
+
+.preview strong {
+	color: #ffffff;
+}
+
+.preview code {
+	padding: 2px 6px;
+
+	border: 1px solid #3b4348;
+	border-radius: 2px;
+
+	background: #111416;
+
+	color: #dce3e6;
+
+	font-family:
+		"SFMono-Regular",
+		Consolas,
+		"Liberation Mono",
+		monospace;
+
+	font-size: 0.92em;
+}
+
+.preview pre {
+	overflow-x: auto;
+
+	margin: 16px 0;
+	padding: 16px;
+
+	border: 1px solid #343b40;
+	border-radius: 2px;
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.02),
+			transparent 35%
+		),
+		#0b0e0f;
+
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.preview pre code {
+	padding: 0;
+
+	border: 0;
+
+	background: transparent;
+}
+
+.preview blockquote {
+	margin: 16px 0;
+
+	padding: 11px 15px 11px 17px;
+
+	border: 1px solid #41494e;
+	border-left: 4px solid var(--border);
+
+	background: rgba(0, 0, 0, 0.14);
+
+	color: var(--text-soft);
+}
+
+.preview ul,
+.preview ol {
+	padding-left: 24px;
+}
+
+.preview li + li {
+	margin-top: 4px;
+}
+
+.preview hr {
+	margin: 24px 0;
+
+	border: 0;
+	border-top: 1px solid var(--border);
+}
+
+.preview img {
+	max-width: 100%;
+	height: auto;
+
+	border: 1px solid var(--border);
+	border-radius: 2px;
+
+	box-shadow: var(--shadow-small);
+}
+
+.preview table {
+	width: 100%;
+
+	margin: 18px 0;
+
+	border-collapse: collapse;
+
+	background: #252a2d;
+}
+
+.preview th,
+.preview td {
+	padding: 9px 11px;
+
+	border: 1px solid var(--border);
+
+	text-align: left;
+	vertical-align: top;
+}
+
+.preview th {
+	background:
+		linear-gradient(
+			180deg,
+			#3a4145,
+			#30363a
+		);
+
+	color: var(--text);
+
+	font-weight: 900;
+}
+
+.preview tr:nth-child(even) td {
+	background: rgba(255, 255, 255, 0.015);
+}
+
+/* =========================================================
+   Starlight Admonitions
+========================================================= */
+
+.preview .starlight-admonition {
+	position: relative;
+	margin: 20px 0;
+	padding: 0 16px 14px;
+	border: 1px solid #4a5358;
+	border-left: 4px solid var(--blue);
+	border-radius: 2px;
+	background: linear-gradient(135deg, rgba(115, 185, 232, 0.08), transparent 48%), #20272b;
+	box-shadow: 0 3px 0 #111416, inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.preview .starlight-admonition-title {
+	margin: 0 -16px 12px -16px;
+	padding: 10px 14px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+	color: #eef7fb;
+	font-weight: 900;
+	line-height: 1.4;
+}
+
+.preview .starlight-admonition-body > :first-child { margin-top: 0; }
+.preview .starlight-admonition-body > :last-child { margin-bottom: 0; }
+
+.preview .starlight-admonition-note { border-left-color: var(--blue); }
+.preview .starlight-admonition-tip {
+	border-left-color: var(--accent);
+	background: linear-gradient(135deg, rgba(85, 184, 92, 0.09), transparent 48%), #202821;
+}
+.preview .starlight-admonition-caution {
+	border-left-color: var(--yellow);
+	background: linear-gradient(135deg, rgba(228, 198, 109, 0.09), transparent 48%), #292720;
+}
+.preview .starlight-admonition-danger {
+	border-left-color: var(--red);
+	background: linear-gradient(135deg, rgba(229, 123, 123, 0.09), transparent 48%), #2a2224;
+}
+
+/* =========================================================
+   Starlight CardGrid / LinkCard
+========================================================= */
+
+.preview .starlight-card-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+	margin: 20px 0;
+}
+
+.preview .starlight-link-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	min-height: 116px;
+	padding: 16px 42px 16px 16px;
+	border: 1px solid var(--border);
+	border-radius: 3px;
+	background: linear-gradient(135deg, rgba(255, 247, 214, 0.035), transparent 38%), linear-gradient(180deg, #373e42, #2c3236);
+	box-shadow: 0 3px 0 #0b0d0e, inset 0 1px 0 rgba(255, 247, 214, 0.04);
+	color: var(--text);
+	text-decoration: none;
+	transition: transform 0.12s ease, border-color 0.12s ease, filter 0.12s ease;
+}
+
+.preview .starlight-link-card:hover {
+	border-color: #758087;
+	filter: brightness(1.08);
+	transform: translateY(-1px);
+}
+
+.preview .starlight-link-card-title {
+	color: #f3f5f2;
+	font-size: 16px;
+	font-weight: 950;
+	line-height: 1.4;
+}
+
+.preview .starlight-link-card-description {
+	color: var(--text-soft);
+	font-size: 13px;
+	line-height: 1.6;
+}
+
+.preview .starlight-link-card-arrow {
+	position: absolute;
+	right: 16px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--blue);
+	font-size: 20px;
+	font-weight: 900;
+}
+
+/* =========================================================
+   Review Controls
+========================================================= */
+
+.review-controls {
+	border-color: rgba(228, 198, 109, 0.4);
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(228, 198, 109, 0.08),
+			transparent 38%
+		),
+		linear-gradient(
+			180deg,
+			#393733,
+			#2e2e2b
+		);
+}
+
+.review-controls .card-title::before {
+	background: var(--yellow);
+
+	box-shadow:
+		1px 1px 0 #5a4b20;
+}
+
+.review-description {
+	margin: 0 0 18px;
+
+	color: var(--text-soft);
+
+	font-size: 13px;
+}
+
+.review-textarea {
+	display: block;
+
+	width: 100%;
+	min-height: 130px;
+
+	padding: 13px 14px;
+
+	border: 1px solid var(--border);
+	border-radius: 2px;
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.018),
+			transparent 30%
+		),
+		#111416;
+
+	color: var(--text);
+
+	resize: vertical;
+
+	outline: none;
+
+	box-shadow:
+		inset 0 2px 5px rgba(0, 0, 0, 0.28);
+
+	transition:
+		border-color 0.12s ease,
+		box-shadow 0.12s ease;
+}
+
+.review-textarea::placeholder {
+	color: #687278;
+}
+
+.review-textarea:focus {
+	border-color: rgba(115, 185, 232, 0.75);
+
+	box-shadow:
+		0 0 0 2px rgba(115, 185, 232, 0.11),
+		inset 0 2px 5px rgba(0, 0, 0, 0.28);
+}
+
+.review-textarea:disabled {
+	opacity: 0.55;
+
+	cursor: not-allowed;
+}
+
+.review-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+
+	margin-top: 16px;
+}
+
+.action-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 42px;
+
+	padding: 0 17px;
+
+	border: 1px solid var(--border);
+	border-radius: 2px;
+
+	box-shadow: var(--shadow-small);
+
+	cursor: pointer;
+
+	font-size: 13px;
+	font-weight: 900;
+
+	transition:
+		transform 0.1s ease,
+		filter 0.12s ease,
+		opacity 0.12s ease;
+}
+
+.action-button:hover:not(:disabled) {
+	filter: brightness(1.1);
+
+	transform: translateY(-1px);
+}
+
+.action-button:active:not(:disabled) {
+	transform: translateY(2px);
+
+	box-shadow:
+		0 1px 0 #0a0c0d;
+}
+
+.action-button:disabled {
+	cursor: not-allowed;
+
+	opacity: 0.5;
+}
+
+.approve-button {
+	border-color: rgba(85, 184, 92, 0.68);
+
+	background:
+		linear-gradient(
+			180deg,
+			#3f9147,
+			#2f7137
+		);
+
+	color: #f4fff3;
+
+	box-shadow:
+		0 3px 0 #1d4722;
+}
+
+.approve-button:hover:not(:disabled) {
+	background:
+		linear-gradient(
+			180deg,
+			#4ba854,
+			#367d3e
+		);
+}
+
+.reject-button {
+	border-color: rgba(229, 123, 123, 0.62);
+
+	background:
+		linear-gradient(
+			180deg,
+			#633b3d,
+			#4c2d2f
+		);
+
+	color: #ffdede;
+
+	box-shadow:
+		0 3px 0 #281719;
+}
+
+.reject-button:hover:not(:disabled) {
+	background:
+		linear-gradient(
+			180deg,
+			#754447,
+			#5a3235
+		);
+}
+
+/* =========================================================
+   Publish Controls
+========================================================= */
+
+.publish-controls {
+	border-color: rgba(85, 184, 92, 0.42);
+
+	background:
+		linear-gradient(
+			135deg,
+			rgba(85, 184, 92, 0.08),
+			transparent 40%
+		),
+		linear-gradient(
+			180deg,
+			#343c36,
+			#2c332e
+		);
+}
+
+.publish-controls .card-title::before {
+	background: var(--accent);
+
+	box-shadow:
+		1px 1px 0 #183d1d;
+}
+
+.publish-description {
+	margin: 0;
+
+	color: var(--text-soft);
+
+	font-size: 13px;
+}
+
+.publish-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+
+	margin-top: 18px;
+}
+
+.publish-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 44px;
+
+	padding: 0 19px;
+
+	border: 1px solid rgba(85, 184, 92, 0.72);
+	border-radius: 2px;
+
+	background:
+		linear-gradient(
+			180deg,
+			#4ba854,
+			#2f7137
+		);
+
+	box-shadow:
+		0 3px 0 #1d4722;
+
+	color: #f4fff3;
+
+	cursor: pointer;
+
+	font-size: 13px;
+	font-weight: 950;
+
+	transition:
+		transform 0.1s ease,
+		filter 0.12s ease,
+		opacity 0.12s ease;
+}
+
+.publish-button:hover:not(:disabled) {
+	filter: brightness(1.1);
+
+	transform: translateY(-1px);
+}
+
+.publish-button:active:not(:disabled) {
+	transform: translateY(2px);
+
+	box-shadow:
+		0 1px 0 #0a0c0d;
+}
+
+.publish-button:disabled {
+	cursor: not-allowed;
+
+	opacity: 0.55;
+}
+
+.publish-status {
+	margin-top: 14px;
+
+	padding: 11px 13px;
+
+	border: 1px solid rgba(85, 184, 92, 0.28);
+	border-radius: 2px;
+
+	background: rgba(85, 184, 92, 0.07);
+
+	color: var(--text-soft);
+
+	font-size: 13px;
+
+	white-space: pre-wrap;
+}
+
+.publish-status.success {
+	border-color: rgba(85, 184, 92, 0.45);
+
+	background: rgba(85, 184, 92, 0.09);
+
+	color: #8bd98f;
+}
+
+.publish-status.error {
+	border-color: rgba(229, 123, 123, 0.45);
+
+	background: rgba(229, 123, 123, 0.09);
+
+	color: #f09191;
+}
+
+.publish-pr-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 40px;
+
+	padding: 0 15px;
+
+	border: 1px solid rgba(115, 185, 232, 0.55);
+	border-radius: 2px;
+
+	background:
+		linear-gradient(
+			180deg,
+			#3b5362,
+			#2c3e49
+		);
+
+	box-shadow: var(--shadow-small);
+
+	color: #d5edff;
+
+	text-decoration: none;
+
+	font-size: 13px;
+	font-weight: 850;
+
+	transition:
+		transform 0.1s ease,
+		filter 0.12s ease;
+}
+
+.publish-pr-link:hover {
+	filter: brightness(1.08);
+
+	transform: translateY(-1px);
+}
+
+.publish-pr-link:active {
+	transform: translateY(2px);
+
+	box-shadow:
+		0 1px 0 #0a0c0d;
+}
+
+/* =========================================================
+   Review Result
+========================================================= */
+
+.review-result {
+	margin-top: 14px;
+
+	padding: 11px 13px;
+
+	border-radius: 2px;
+
+	font-size: 13px;
+
+	white-space: pre-wrap;
+}
+
+.review-result.success {
+	border: 1px solid rgba(85, 184, 92, 0.42);
+
+	background:
+		rgba(85, 184, 92, 0.09);
+
+	color: #8bd98f;
+}
+
+.review-result.error {
+	border: 1px solid rgba(229, 123, 123, 0.42);
+
+	background:
+		rgba(229, 123, 123, 0.09);
+
+	color: #f09191;
+}
+
+/* =========================================================
+   Delete Draft
+========================================================= */
+
+.delete-draft-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 40px;
+
+	padding: 0 15px;
+
+	border: 1px solid rgba(229, 123, 123, 0.62);
+	border-radius: 2px;
+
+	background:
+		linear-gradient(
+			180deg,
+			#633b3d,
+			#4c2d2f
+		);
+
+	box-shadow:
+		0 3px 0 #281719;
+
+	color: #ffdede;
+
+	cursor: pointer;
+
+	font-size: 13px;
+	font-weight: 900;
+
+	transition:
+		transform 0.1s ease,
+		filter 0.12s ease,
+		opacity 0.12s ease;
+}
+
+.delete-draft-button:hover:not(:disabled) {
+	filter: brightness(1.1);
+
+	transform: translateY(-1px);
+}
+
+.delete-draft-button:active:not(:disabled) {
+	transform: translateY(2px);
+
+	box-shadow:
+		0 1px 0 #0a0c0d;
+}
+
+.delete-draft-button:disabled {
+	cursor: not-allowed;
+
+	opacity: 0.5;
+}
+
+.delete-draft-result {
+	margin-top: 12px;
+
+	padding: 11px 13px;
+
+	border: 1px solid rgba(229, 123, 123, 0.42);
+	border-radius: 2px;
+
+	background:
+		rgba(229, 123, 123, 0.09);
+
+	color: #f09191;
+
+	font-size: 13px;
+
+	white-space: pre-wrap;
+}
+
+/* =========================================================
+   Admin Delete
+========================================================= */
+
+.admin-delete-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 40px;
+
+	padding: 0 15px;
+
+	border: 1px solid rgba(229, 123, 123, 0.72);
+	border-radius: 2px;
+
+	background:
+		linear-gradient(
+			180deg,
+			#754447,
+			#4c2d2f
+		);
+
+	box-shadow:
+		0 3px 0 #281719;
+
+	color: #ffe5e5;
+
+	cursor: pointer;
+
+	font-size: 13px;
+	font-weight: 950;
+
+	transition:
+		transform 0.1s ease,
+		filter 0.12s ease,
+		opacity 0.12s ease;
+}
+
+.admin-delete-button:hover:not(:disabled) {
+	filter: brightness(1.1);
+
+	transform: translateY(-1px);
+}
+
+.admin-delete-button:active:not(:disabled) {
+	transform: translateY(2px);
+
+	box-shadow:
+		0 1px 0 #0a0c0d;
+}
+
+.admin-delete-button:disabled {
+	cursor: not-allowed;
+
+	opacity: 0.5;
+}
+
+.admin-delete-result {
+	margin-top: 12px;
+
+	padding: 11px 13px;
+
+	border: 1px solid rgba(229, 123, 123, 0.42);
+	border-radius: 2px;
+
+	background:
+		rgba(229, 123, 123, 0.09);
+
+	color: #f09191;
+
+	font-size: 13px;
+
+	white-space: pre-wrap;
+}
+
+/* =========================================================
+   Footer Links / Page Actions
+========================================================= */
+
+.page-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.page-action {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	min-height: 40px;
+
+	padding: 0 15px;
+
+	border: 1px solid var(--border);
+	border-radius: 2px;
+
+	background:
+		linear-gradient(
+			180deg,
+			#3b4145,
+			#2d3337
+		);
+
+	box-shadow: var(--shadow-small);
+
+	color: var(--text-soft);
+
+	text-decoration: none;
+
+	font-size: 13px;
+	font-weight: 850;
+
+	transition:
+		transform 0.1s ease,
+		filter 0.12s ease,
+		border-color 0.12s ease;
+}
+
+.page-action:hover {
+	border-color: #727c82;
+
+	color: var(--text);
+
+	filter: brightness(1.08);
+
+	transform: translateY(-1px);
+}
+
+.page-action:active {
+	transform: translateY(2px);
+
+	box-shadow:
+		0 1px 0 #0a0c0d;
+}
+
+/* =========================================================
+   Responsive
+========================================================= */
+
+@media (max-width: 760px) {
 	.header-inner {
-		width: min(1200px, calc(100% - 32px));
-		margin: 0 auto;
+		width: min(100% - 20px, 1200px);
 
-		padding: 12px 0;
-
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 16px;
-	}
-
-	.brand {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-
-		min-width: 0;
-
-		text-decoration: none;
-	}
-
-	.brand-main {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-
-		min-width: 58px;
-		min-height: 38px;
-
-		padding: 0 10px;
-
-		border: 1px solid #697277;
-
-		background:
-			linear-gradient(
-				135deg,
-				#4a5155,
-				#30363a
-			);
-
-		box-shadow:
-			0 3px 0 #101214,
-			inset 0 1px 0 rgba(255, 247, 214, 0.08);
-
-		color: #f8f9f6;
-
-		font-size: 21px;
-		font-weight: 950;
-		letter-spacing: 0.1em;
-		line-height: 1;
+		padding: 10px 0;
 	}
 
 	.brand-sub {
-		overflow: hidden;
+		display: none;
+	}
 
-		color: var(--text-muted);
+	.brand-main {
+		min-width: 54px;
+		min-height: 36px;
 
-		font-size: 12px;
-		font-weight: 700;
-
-		letter-spacing: 0.035em;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
+		font-size: 19px;
 	}
 
 	.header-links {
-		display: flex;
-		align-items: center;
-		gap: 8px;
+		gap: 6px;
 	}
 
 	.header-link {
-		position: relative;
+		min-height: 36px;
 
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+		padding: 0 10px;
 
-		min-height: 38px;
-		padding: 0 13px;
-
-		border: 1px solid var(--border);
-		border-radius: var(--radius);
-
-		background:
-			linear-gradient(
-				180deg,
-				#3b4145,
-				#2b3034
-			);
-
-		box-shadow: var(--shadow-small);
-
-		color: var(--text-soft);
-
-		text-decoration: none;
-
-		font-size: 13px;
-		font-weight: 800;
-
-		transition:
-			transform 0.12s ease,
-			filter 0.12s ease,
-			border-color 0.12s ease;
+		font-size: 12px;
 	}
-
-	.header-link:hover {
-		border-color: #707a80;
-		color: var(--text);
-		filter: brightness(1.08);
-		transform: translateY(-1px);
-	}
-
-	.header-link:active {
-		transform: translateY(2px);
-
-		box-shadow:
-			0 1px 0 #0a0c0d;
-	}
-
-	/* =========================================================
-	   Layout
-	========================================================= */
 
 	.container {
-		width: min(1200px, calc(100% - 32px));
-		margin: 0 auto;
+		width: min(100% - 20px, 1200px);
 
-		padding: 40px 0 80px;
+		padding-top: 28px;
+		padding-bottom: 56px;
 	}
 
 	.page-title {
-		position: relative;
+		margin-bottom: 24px;
 
-		margin-bottom: 32px;
-
-		padding-left: 18px;
-	}
-
-	.page-title::before {
-		content: "";
-
-		position: absolute;
-		left: 0;
-		top: 3px;
-		bottom: 3px;
-
-		width: 5px;
-
-		background:
-			linear-gradient(
-				180deg,
-				#79d779,
-				var(--accent-dark)
-			);
-
-		box-shadow:
-			2px 0 0 rgba(0, 0, 0, 0.3);
+		padding-left: 14px;
 	}
 
 	.page-title h1 {
-		margin: 0 0 8px;
-
-		color: #f7f8f5;
-
-		font-size: clamp(28px, 4vw, 38px);
-		line-height: 1.2;
-
-		font-weight: 950;
-
-		letter-spacing: -0.025em;
-
-		text-shadow:
-			0 2px 0 #0b0d0e;
+		font-size: 28px;
 	}
 
 	.page-title p {
-		margin: 0;
-
-		color: var(--text-soft);
-
-		font-size: 14px;
+		font-size: 13px;
 	}
 
 	.stack {
-		display: grid;
-		gap: 20px;
-	}
-
-	/* =========================================================
-	   Cards
-	========================================================= */
-
-	.card {
-		position: relative;
-
-		overflow: hidden;
-
-		border: 1px solid var(--border);
-		border-radius: var(--radius);
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(255, 247, 214, 0.025),
-				transparent 30%
-			),
-			linear-gradient(
-				180deg,
-				var(--panel-raised),
-				var(--panel)
-			);
-
-		box-shadow:
-			var(--shadow),
-			var(--shadow-inset);
-	}
-
-	.card::before {
-		content: "";
-
-		position: absolute;
-		left: 0;
-		top: 0;
-
-		width: 100%;
-		height: 2px;
-
-		background:
-			linear-gradient(
-				90deg,
-				rgba(255, 247, 214, 0.08),
-				transparent 55%
-			);
-
-		pointer-events: none;
+		gap: 16px;
 	}
 
 	.card-header {
-		min-height: 56px;
+		min-height: 52px;
 
-		padding: 14px 18px;
-
-		border-bottom: 1px solid var(--border-dark);
-
-		background:
-			linear-gradient(
-				180deg,
-				rgba(255, 255, 255, 0.035),
-				rgba(0, 0, 0, 0.08)
-			);
-
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 12px;
-	}
-
-	.card-title {
-		position: relative;
-
-		margin: 0;
-		padding-left: 12px;
-
-		color: #f4f6f3;
-
-		font-size: 15px;
-		font-weight: 950;
-
-		letter-spacing: 0.015em;
-	}
-
-	.card-title::before {
-		content: "";
-
-		position: absolute;
-		left: 0;
-		top: 50%;
-
-		width: 4px;
-		height: 18px;
-
-		transform: translateY(-50%);
-
-		background: var(--accent);
-
-		box-shadow:
-			1px 1px 0 #183d1d;
+		padding: 13px 14px;
 	}
 
 	.card-body {
-		padding: 20px;
+		padding: 14px;
 	}
-
-	/* =========================================================
-	   Loading / Error
-	========================================================= */
-
-	.state {
-		position: relative;
-
-		padding: 64px 20px;
-
-		border: 1px solid var(--border);
-		border-radius: var(--radius);
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(255, 247, 214, 0.025),
-				transparent 35%
-			),
-			var(--panel);
-
-		box-shadow: var(--shadow);
-
-		text-align: center;
-
-		color: var(--text-muted);
-	}
-
-	.error-state {
-		border-color: rgba(229, 123, 123, 0.45);
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(229, 123, 123, 0.08),
-				transparent 45%
-			),
-			var(--panel);
-
-		color: var(--red);
-	}
-
-	/* =========================================================
-	   Page Info
-	========================================================= */
 
 	.page-info {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 12px;
+		grid-template-columns: 1fr;
 	}
-
-	.info-item {
-		min-width: 0;
-
-		padding: 14px;
-
-		border: 1px solid var(--border);
-		border-radius: 2px;
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(255, 247, 214, 0.025),
-				transparent 45%
-			),
-			var(--bg-soft);
-
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.025);
-	}
-
-	.info-label {
-		margin-bottom: 5px;
-
-		color: var(--text-muted);
-
-		font-size: 11px;
-		font-weight: 900;
-
-		letter-spacing: 0.07em;
-		text-transform: uppercase;
-	}
-
-	.info-value {
-		overflow-wrap: anywhere;
-
-		color: var(--text);
-
-		font-size: 14px;
-		font-weight: 650;
-	}
-
-	.info-value code {
-		display: inline-block;
-
-		max-width: 100%;
-
-		padding: 3px 7px;
-
-		border: 1px solid #353c40;
-		border-radius: 2px;
-
-		background: #111416;
-
-		color: #b9d8bd;
-
-		font-family:
-			"SFMono-Regular",
-			Consolas,
-			"Liberation Mono",
-			monospace;
-
-		font-size: 12px;
-
-		word-break: break-all;
-	}
-
-	/* =========================================================
-	   Status Flow
-	========================================================= */
 
 	.status-flow {
-		display: grid;
-		grid-template-columns: repeat(5, minmax(0, 1fr));
+		grid-template-columns: 1fr;
+
 		gap: 10px;
 	}
 
 	.status-step {
-		position: relative;
+		min-height: 68px;
 
-		min-height: 78px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 9px;
 
-		padding: 14px 10px;
+		padding: 12px 14px;
+	}
 
-		border: 1px solid var(--border);
-		border-radius: 2px;
+	.status-icon {
+		margin: 0;
 
-		background:
-			linear-gradient(
-				180deg,
-				#363c40,
-				#292e32
-			);
-
-		box-shadow:
-			0 3px 0 #0b0d0e;
-
-		text-align: center;
-
-		transition:
-			transform 0.12s ease,
-			border-color 0.12s ease,
-			filter 0.12s ease;
+		font-size: 15px;
 	}
 
 	.status-step::after {
-		content: "›";
+		content: "↓";
 
-		position: absolute;
-		right: -10px;
-		top: 50%;
-
-		z-index: 2;
+		right: auto;
+		top: auto;
+		bottom: -15px;
+		left: 50%;
 
 		width: 20px;
 		height: 20px;
 
-		transform: translateY(-50%);
+		transform: translateX(-50%);
 
-		color: var(--text-muted);
-
-		font-size: 20px;
-		font-weight: 900;
-		line-height: 18px;
-
-		text-shadow:
-			0 2px 0 #0a0c0d;
+		font-size: 18px;
+		line-height: 20px;
 	}
 
 	.status-step:last-child::after {
 		display: none;
 	}
 
-	.status-step.done {
-		border-color: rgba(85, 184, 92, 0.62);
-
-		background:
-			linear-gradient(
-				180deg,
-				rgba(85, 184, 92, 0.19),
-				rgba(47, 113, 55, 0.14)
-			),
-			#2b3430;
-
-		box-shadow:
-			0 3px 0 #17261a;
-	}
-
-	.status-step.active {
-		border-color: rgba(115, 185, 232, 0.75);
-
-		background:
-			linear-gradient(
-				180deg,
-				rgba(115, 185, 232, 0.16),
-				rgba(62, 92, 112, 0.12)
-			),
-			#2b3237;
-
-		box-shadow:
-			0 3px 0 #18242c;
-	}
-
-	.status-step.rejected {
-		border-color: rgba(229, 123, 123, 0.7);
-
-		background:
-			linear-gradient(
-				180deg,
-				rgba(229, 123, 123, 0.16),
-				rgba(120, 58, 58, 0.1)
-			),
-			#322b2d;
-
-		box-shadow:
-			0 3px 0 #261618;
-	}
-
-	.status-icon {
-		display: block;
-
-		margin-bottom: 5px;
-
-		color: var(--text-muted);
-
-		font-size: 17px;
-		font-weight: 950;
-		line-height: 1;
-	}
-
-	.status-step.done .status-icon {
-		color: var(--accent);
-	}
-
-	.status-step.active .status-icon {
-		color: var(--blue);
-	}
-
-	.status-step.rejected .status-icon {
-		color: var(--red);
-	}
-
-	.status-label {
-		display: block;
-
-		color: var(--text-soft);
-
-		font-size: 12px;
-		font-weight: 850;
-	}
-
-	.status-step.done .status-label,
-	.status-step.active .status-label {
-		color: var(--text);
-	}
-
-	/* =========================================================
-	   Status Badge
-	========================================================= */
-
-	.status-badge {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-
-		min-height: 30px;
-
-		padding: 0 10px;
-
-		border: 1px solid var(--border);
-		border-radius: 2px;
-
-		background: #252a2d;
-
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.025);
-
-		color: var(--text-soft);
-
-		font-size: 12px;
-		font-weight: 900;
-	}
-
-	.status-badge.pending {
-		border-color: rgba(115, 185, 232, 0.6);
-
-		background: rgba(115, 185, 232, 0.11);
-
-		color: var(--blue);
-	}
-
-	.status-badge.approved,
-	.status-badge.published {
-		border-color: rgba(85, 184, 92, 0.62);
-
-		background: rgba(85, 184, 92, 0.11);
-
-		color: #83d887;
-	}
-
-	.status-badge.rejected {
-		border-color: rgba(229, 123, 123, 0.62);
-
-		background: rgba(229, 123, 123, 0.1);
-
-		color: var(--red);
-	}
-
-	.status-badge.publishing {
-		border-color: rgba(228, 198, 109, 0.62);
-
-		background: rgba(228, 198, 109, 0.1);
-
-		color: var(--yellow);
-	}
-
-	/* =========================================================
-	   Message
-	========================================================= */
-
-	.message-box {
-		position: relative;
-
-		padding: 15px 16px 15px 19px;
-
-		border: 1px solid rgba(115, 185, 232, 0.24);
-		border-left: 4px solid var(--blue);
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(115, 185, 232, 0.09),
-				transparent 55%
-			),
-			#20272c;
-
-		color: var(--text-soft);
-
-		white-space: pre-wrap;
-		word-break: break-word;
-	}
-
+	.message-box,
 	.review-box {
-		position: relative;
-
-		padding: 15px 16px 15px 19px;
-
-		border: 1px solid rgba(228, 198, 109, 0.24);
-		border-left: 4px solid var(--yellow);
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(228, 198, 109, 0.09),
-				transparent 55%
-			),
-			#292720;
-
-		color: var(--text-soft);
-
-		white-space: pre-wrap;
-		word-break: break-word;
+		padding: 13px 13px 13px 16px;
 	}
-
-	/* =========================================================
-	   Markdown Source
-	========================================================= */
 
 	.markdown-source {
-		margin: 0;
+		padding: 16px;
 
-		min-height: 120px;
-
-		padding: 20px;
-
-		overflow-x: auto;
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(255, 255, 255, 0.025),
-				transparent 30%
-			),
-			#0b0e10;
-
-		color: #d9e0e3;
-
-		font-family:
-			"SFMono-Regular",
-			Consolas,
-			"Liberation Mono",
-			monospace;
-
-		font-size: 13px;
-		line-height: 1.75;
-
-		white-space: pre-wrap;
-		word-break: break-word;
-
-		tab-size: 2;
+		font-size: 12px;
 	}
-
-	/* =========================================================
-	   Preview
-	========================================================= */
 
 	.preview {
-		min-height: 120px;
-
-		padding: 24px;
-
-		background:
-			radial-gradient(
-				circle at 0% 0%,
-				rgba(255, 247, 214, 0.025),
-				transparent 30%
-			),
-			linear-gradient(
-				180deg,
-				#272c30,
-				#202528
-			);
-
-		overflow-wrap: anywhere;
-	}
-
-	.preview > :first-child {
-		margin-top: 0;
-	}
-
-	.preview > :last-child {
-		margin-bottom: 0;
-	}
-
-	.preview h1,
-	.preview h2,
-	.preview h3,
-	.preview h4 {
-		color: #f3f5f2;
-
-		line-height: 1.35;
-		font-weight: 900;
-
-		text-shadow:
-			0 1px 0 #111416;
+		padding: 18px;
 	}
 
 	.preview h1 {
-		margin-top: 0;
-
-		font-size: 28px;
+		font-size: 24px;
 	}
 
 	.preview h2 {
-		position: relative;
-
-		margin-top: 30px;
-		padding: 10px 0 9px 12px;
-
-		border-bottom: 1px solid var(--border);
-
-		font-size: 22px;
+		font-size: 20px;
 	}
 
-	.preview h2::before {
-		content: "";
-
-		position: absolute;
-		left: 0;
-		top: 9px;
-		bottom: 9px;
-
-		width: 4px;
-
-		background: var(--accent);
-	}
-
-	.preview h3 {
-		margin-top: 24px;
-
-		font-size: 18px;
-	}
-
-	.preview h4 {
-		margin-top: 20px;
-
-		font-size: 15px;
-	}
-
-	.preview p {
-		margin: 12px 0;
-	}
-
-	.preview a {
-		color: var(--blue);
-
-		text-decoration-thickness: 1px;
-		text-underline-offset: 3px;
-	}
-
-	.preview a:hover {
-		color: #a1d4f3;
-	}
-
-	.preview strong {
-		color: #ffffff;
-	}
-
-	.preview code {
-		padding: 2px 6px;
-
-		border: 1px solid #3b4348;
-		border-radius: 2px;
-
-		background: #111416;
-
-		color: #dce3e6;
-
-		font-family:
-			"SFMono-Regular",
-			Consolas,
-			"Liberation Mono",
-			monospace;
-
-		font-size: 0.92em;
-	}
-
-	.preview pre {
-		overflow-x: auto;
-
-		margin: 16px 0;
-		padding: 16px;
-
-		border: 1px solid #343b40;
-		border-radius: 2px;
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(255, 255, 255, 0.02),
-				transparent 35%
-			),
-			#0b0e0f;
-
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.025);
-	}
-
-	.preview pre code {
-		padding: 0;
-
-		border: 0;
-
-		background: transparent;
-	}
-
-	.preview blockquote {
-		margin: 16px 0;
-
-		padding: 11px 15px 11px 17px;
-
-		border: 1px solid #41494e;
-		border-left: 4px solid var(--border);
-
-		background: rgba(0, 0, 0, 0.14);
-
-		color: var(--text-soft);
-	}
-
-	.preview ul,
-	.preview ol {
-		padding-left: 24px;
-	}
-
-	.preview li + li {
-		margin-top: 4px;
-	}
-
-	.preview hr {
-		margin: 24px 0;
-
-		border: 0;
-		border-top: 1px solid var(--border);
-	}
-
-	.preview img {
-		max-width: 100%;
-		height: auto;
-
-		border: 1px solid var(--border);
-		border-radius: 2px;
-
-		box-shadow: var(--shadow-small);
+	.preview .starlight-card-grid {
+		grid-template-columns: 1fr;
 	}
 
 	.preview table {
-		width: 100%;
-
-		margin: 18px 0;
-
-		border-collapse: collapse;
-
-		background: #252a2d;
-	}
-
-	.preview th,
-	.preview td {
-		padding: 9px 11px;
-
-		border: 1px solid var(--border);
-
-		text-align: left;
-		vertical-align: top;
-	}
-
-	.preview th {
-		background:
-			linear-gradient(
-				180deg,
-				#3a4145,
-				#30363a
-			);
-
-		color: var(--text);
-
-		font-weight: 900;
-	}
-
-	.preview tr:nth-child(even) td {
-		background: rgba(255, 255, 255, 0.015);
-	}
-
-	/* =========================================================
-	   Review Controls
-	========================================================= */
-
-	.review-controls {
-		border-color: rgba(228, 198, 109, 0.4);
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(228, 198, 109, 0.08),
-				transparent 38%
-			),
-			linear-gradient(
-				180deg,
-				#393733,
-				#2e2e2b
-			);
-	}
-
-	.review-controls .card-title::before {
-		background: var(--yellow);
-
-		box-shadow:
-			1px 1px 0 #5a4b20;
-	}
-
-	.review-description {
-		margin: 0 0 18px;
-
-		color: var(--text-soft);
-
-		font-size: 13px;
-	}
-
-	.review-textarea {
 		display: block;
 
-		width: 100%;
-		min-height: 130px;
+		overflow-x: auto;
 
-		padding: 13px 14px;
-
-		border: 1px solid var(--border);
-		border-radius: 2px;
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(255, 255, 255, 0.018),
-				transparent 30%
-			),
-			#111416;
-
-		color: var(--text);
-
-		resize: vertical;
-
-		outline: none;
-
-		box-shadow:
-			inset 0 2px 5px rgba(0, 0, 0, 0.28);
-
-		transition:
-			border-color 0.12s ease,
-			box-shadow 0.12s ease;
+		white-space: nowrap;
 	}
 
-	.review-textarea::placeholder {
-		color: #687278;
-	}
-
-	.review-textarea:focus {
-		border-color: rgba(115, 185, 232, 0.75);
-
-		box-shadow:
-			0 0 0 2px rgba(115, 185, 232, 0.11),
-			inset 0 2px 5px rgba(0, 0, 0, 0.28);
-	}
-
-	.review-textarea:disabled {
-		opacity: 0.55;
-
-		cursor: not-allowed;
-	}
-
-	.review-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-
-		margin-top: 16px;
-	}
-
-	.action-button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-
-		min-height: 42px;
-
-		padding: 0 17px;
-
-		border: 1px solid var(--border);
-		border-radius: 2px;
-
-		box-shadow: var(--shadow-small);
-
-		cursor: pointer;
-
-		font-size: 13px;
-		font-weight: 900;
-
-		transition:
-			transform 0.1s ease,
-			filter 0.12s ease,
-			opacity 0.12s ease;
-	}
-
-	.action-button:hover:not(:disabled) {
-		filter: brightness(1.1);
-
-		transform: translateY(-1px);
-	}
-
-	.action-button:active:not(:disabled) {
-		transform: translateY(2px);
-
-		box-shadow:
-			0 1px 0 #0a0c0d;
-	}
-
-	.action-button:disabled {
-		cursor: not-allowed;
-
-		opacity: 0.5;
-	}
-
-	.approve-button {
-		border-color: rgba(85, 184, 92, 0.68);
-
-		background:
-			linear-gradient(
-				180deg,
-				#3f9147,
-				#2f7137
-			);
-
-		color: #f4fff3;
-
-		box-shadow:
-			0 3px 0 #1d4722;
-	}
-
-	.approve-button:hover:not(:disabled) {
-		background:
-			linear-gradient(
-				180deg,
-				#4ba854,
-				#367d3e
-			);
-	}
-
-	.reject-button {
-		border-color: rgba(229, 123, 123, 0.62);
-
-		background:
-			linear-gradient(
-				180deg,
-				#633b3d,
-				#4c2d2f
-			);
-
-		color: #ffdede;
-
-		box-shadow:
-			0 3px 0 #281719;
-	}
-
-	.reject-button:hover:not(:disabled) {
-		background:
-			linear-gradient(
-				180deg,
-				#754447,
-				#5a3235
-			);
-	}
-
-	/* =========================================================
-	   Publish Controls
-	========================================================= */
-
-	.publish-controls {
-		border-color: rgba(85, 184, 92, 0.42);
-
-		background:
-			linear-gradient(
-				135deg,
-				rgba(85, 184, 92, 0.08),
-				transparent 40%
-			),
-			linear-gradient(
-				180deg,
-				#343c36,
-				#2c332e
-			);
-	}
-
-	.publish-controls .card-title::before {
-		background: var(--accent);
-
-		box-shadow:
-			1px 1px 0 #183d1d;
-	}
-
-	.publish-description {
-		margin: 0;
-
-		color: var(--text-soft);
-
-		font-size: 13px;
-	}
-
+	.review-actions,
 	.publish-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-
-		margin-top: 18px;
+		display: grid;
+		grid-template-columns: 1fr;
 	}
 
-	.publish-button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-
-		min-height: 44px;
-
-		padding: 0 19px;
-
-		border: 1px solid rgba(85, 184, 92, 0.72);
-		border-radius: 2px;
-
-		background:
-			linear-gradient(
-				180deg,
-				#4ba854,
-				#2f7137
-			);
-
-		box-shadow:
-			0 3px 0 #1d4722;
-
-		color: #f4fff3;
-
-		cursor: pointer;
-
-		font-size: 13px;
-		font-weight: 950;
-
-		transition:
-			transform 0.1s ease,
-			filter 0.12s ease,
-			opacity 0.12s ease;
-	}
-
-	.publish-button:hover:not(:disabled) {
-		filter: brightness(1.1);
-
-		transform: translateY(-1px);
-	}
-
-	.publish-button:active:not(:disabled) {
-		transform: translateY(2px);
-
-		box-shadow:
-			0 1px 0 #0a0c0d;
-	}
-
-	.publish-button:disabled {
-		cursor: not-allowed;
-
-		opacity: 0.55;
-	}
-
-	.publish-status {
-		margin-top: 14px;
-
-		padding: 11px 13px;
-
-		border: 1px solid rgba(85, 184, 92, 0.28);
-		border-radius: 2px;
-
-		background: rgba(85, 184, 92, 0.07);
-
-		color: var(--text-soft);
-
-		font-size: 13px;
-
-		white-space: pre-wrap;
-	}
-
-	.publish-status.success {
-		border-color: rgba(85, 184, 92, 0.45);
-
-		background: rgba(85, 184, 92, 0.09);
-
-		color: #8bd98f;
-	}
-
-	.publish-status.error {
-		border-color: rgba(229, 123, 123, 0.45);
-
-		background: rgba(229, 123, 123, 0.09);
-
-		color: #f09191;
-	}
-
+	.action-button,
+	.publish-button,
 	.publish-pr-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-
-		min-height: 40px;
-
-		padding: 0 15px;
-
-		border: 1px solid rgba(115, 185, 232, 0.55);
-		border-radius: 2px;
-
-		background:
-			linear-gradient(
-				180deg,
-				#3b5362,
-				#2c3e49
-			);
-
-		box-shadow: var(--shadow-small);
-
-		color: #d5edff;
-
-		text-decoration: none;
-
-		font-size: 13px;
-		font-weight: 850;
-
-		transition:
-			transform 0.1s ease,
-			filter 0.12s ease;
+		width: 100%;
 	}
-
-	.publish-pr-link:hover {
-		filter: brightness(1.08);
-
-		transform: translateY(-1px);
-	}
-
-	.publish-pr-link:active {
-		transform: translateY(2px);
-
-		box-shadow:
-			0 1px 0 #0a0c0d;
-	}
-
-	/* =========================================================
-	   Review Result
-	========================================================= */
-
-	.review-result {
-		margin-top: 14px;
-
-		padding: 11px 13px;
-
-		border-radius: 2px;
-
-		font-size: 13px;
-
-		white-space: pre-wrap;
-	}
-
-	.review-result.success {
-		border: 1px solid rgba(85, 184, 92, 0.42);
-
-		background:
-			rgba(85, 184, 92, 0.09);
-
-		color: #8bd98f;
-	}
-
-	.review-result.error {
-		border: 1px solid rgba(229, 123, 123, 0.42);
-
-		background:
-			rgba(229, 123, 123, 0.09);
-
-		color: #f09191;
-	}
-
-	/* =========================================================
-	   Footer Links / Page Actions
-	========================================================= */
 
 	.page-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
+		display: grid;
+		grid-template-columns: 1fr;
 	}
 
-	.page-action {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-
-		min-height: 40px;
-
-		padding: 0 15px;
-
-		border: 1px solid var(--border);
-		border-radius: 2px;
-
-		background:
-			linear-gradient(
-				180deg,
-				#3b4145,
-				#2d3337
-			);
-
-		box-shadow: var(--shadow-small);
-
-		color: var(--text-soft);
-
-		text-decoration: none;
-
-		font-size: 13px;
-		font-weight: 850;
-
-		transition:
-			transform 0.1s ease,
-			filter 0.12s ease,
-			border-color 0.12s ease;
+	.page-action,
+	.delete-draft-button,
+	.admin-delete-button {
+		width: 100%;
 	}
+}
 
-	.page-action:hover {
-		border-color: #727c82;
+/* =========================================================
+   Reduced Motion
+========================================================= */
 
-		color: var(--text);
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto !important;
 
-		filter: brightness(1.08);
-
-		transform: translateY(-1px);
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
 	}
+}
+</style>
 
-	.page-action:active {
-		transform: translateY(2px);
-
-		box-shadow:
-			0 1px 0 #0a0c0d;
-	}
-
-	/* =========================================================
-	   Responsive
-	========================================================= */
-
-	@media (max-width: 760px) {
-		.header-inner {
-			width: min(100% - 20px, 1200px);
-
-			padding: 10px 0;
-		}
-
-		.brand-sub {
-			display: none;
-		}
-
-		.brand-main {
-			min-width: 54px;
-			min-height: 36px;
-
-			font-size: 19px;
-		}
-
-		.header-links {
-			gap: 6px;
-		}
-
-		.header-link {
-			min-height: 36px;
-
-			padding: 0 10px;
-
-			font-size: 12px;
-		}
-
-		.container {
-			width: min(100% - 20px, 1200px);
-
-			padding-top: 28px;
-			padding-bottom: 56px;
-		}
-
-		.page-title {
-			margin-bottom: 24px;
-
-			padding-left: 14px;
-		}
-
-		.page-title h1 {
-			font-size: 28px;
-		}
-
-		.page-title p {
-			font-size: 13px;
-		}
-
-		.stack {
-			gap: 16px;
-		}
-
-		.card-header {
-			min-height: 52px;
-
-			padding: 13px 14px;
-		}
-
-		.card-body {
-			padding: 14px;
-		}
-
-		.page-info {
-			grid-template-columns: 1fr;
-		}
-
-		.status-flow {
-			grid-template-columns: 1fr;
-
-			gap: 10px;
-		}
-
-		.status-step {
-			min-height: 68px;
-
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 9px;
-
-			padding: 12px 14px;
-		}
-
-		.status-icon {
-			margin: 0;
-
-			font-size: 15px;
-		}
-
-		.status-step::after {
-			content: "↓";
-
-			right: auto;
-			top: auto;
-			bottom: -15px;
-			left: 50%;
-
-			width: 20px;
-			height: 20px;
-
-			transform: translateX(-50%);
-
-			font-size: 18px;
-			line-height: 20px;
-		}
-
-		.status-step:last-child::after {
-			display: none;
-		}
-
-		.message-box,
-		.review-box {
-			padding: 13px 13px 13px 16px;
-		}
-
-		.markdown-source {
-			padding: 16px;
-
-			font-size: 12px;
-		}
-
-		.preview {
-			padding: 18px;
-		}
-
-		.preview h1 {
-			font-size: 24px;
-		}
-
-		.preview h2 {
-			font-size: 20px;
-		}
-
-		.preview table {
-			display: block;
-
-			overflow-x: auto;
-
-			white-space: nowrap;
-		}
-
-		.review-actions,
-		.publish-actions {
-			display: grid;
-			grid-template-columns: 1fr;
-		}
-
-		.action-button,
-		.publish-button,
-		.publish-pr-link {
-			width: 100%;
-		}
-
-		.page-actions {
-			display: grid;
-			grid-template-columns: 1fr;
-		}
-
-		.page-action {
-			width: 100%;
-		}
-	}
-
-	/* =========================================================
-	   Reduced Motion
-	========================================================= */
-
-	@media (prefers-reduced-motion: reduce) {
-		*,
-		*::before,
-		*::after {
-			scroll-behavior: auto !important;
-
-			transition-duration: 0.01ms !important;
-			animation-duration: 0.01ms !important;
-			animation-iteration-count: 1 !important;
-		}
-	}
-	</style>
 </head>
 
 <body>
@@ -1777,779 +2034,1487 @@ const title = 'Wiki編集申請 | NUGBASE';
 				<span class="brand-sub">Nekozouneko Unofficial Guide</span>
 			</a>
 
-			<div class="header-links">
-				<a href="/wiki/requests/" class="header-link">
-					申請一覧
-				</a>
+		<div class="header-links">
+			<a href="/wiki/requests/" class="header-link">
+				申請一覧
+			</a>
 
-				<a href="/account/" class="header-link">
-					アカウント
-				</a>
-			</div>
+			<a href="/account/" class="header-link">
+				アカウント
+			</a>
 		</div>
-	</header>
+	</div>
+</header>
 
-	<main class="container">
-		<div id="loading-state" class="state">
-			申請情報を読み込んでいます…
+<main class="container">
+	<div id="loading-state" class="state">
+		申請情報を読み込んでいます…
+	</div>
+
+	<div id="error-state" class="state error-state" hidden>
+		申請情報を読み込めませんでした。
+	</div>
+
+	<div id="content" hidden>
+		<div class="page-title">
+			<h1>Wiki編集申請</h1>
+			<p>編集内容・レビュー状況・申請の進行状況を確認できます。</p>
 		</div>
 
-		<div id="error-state" class="state error-state" hidden>
-			申請情報を読み込めませんでした。
-		</div>
+		<div class="stack">
 
-		<div id="content" hidden>
-			<div class="page-title">
-				<h1>Wiki編集申請</h1>
-				<p>編集内容・レビュー状況・申請の進行状況を確認できます。</p>
-			</div>
+			<!-- ========================================
+			     Page Info
+			======================================== -->
 
-			<div class="stack">
+			<section class="card">
+				<div class="card-header">
+					<h2 class="card-title">対象ページ</h2>
 
-				<!-- ========================================
-				     Page Info
-				======================================== -->
+					<span id="status-badge" class="status-badge">
+						-
+					</span>
+				</div>
 
-				<section class="card">
-					<div class="card-header">
-						<h2 class="card-title">対象ページ</h2>
+				<div class="card-body">
+					<div class="page-info">
+						<div class="info-item">
+							<div class="info-label">ページタイトル</div>
+							<div id="page-title" class="info-value">-</div>
+						</div>
 
-						<span id="status-badge" class="status-badge">
-							-
-						</span>
-					</div>
-
-					<div class="card-body">
-						<div class="page-info">
-							<div class="info-item">
-								<div class="info-label">ページタイトル</div>
-								<div id="page-title" class="info-value">-</div>
-							</div>
-
-							<div class="info-item">
-								<div class="info-label">ページパス</div>
-								<div class="info-value">
-									<code id="page-path">-</code>
-								</div>
-							</div>
-
-							<div class="info-item">
-								<div class="info-label">Revision</div>
-								<div id="revision-number" class="info-value">-</div>
-							</div>
-
-							<div class="info-item">
-								<div class="info-label">作成日時</div>
-								<div id="created-at" class="info-value">-</div>
-							</div>
-
-							<div class="info-item">
-								<div class="info-label">レビュー日時</div>
-								<div id="reviewed-at" class="info-value">-</div>
-							</div>
-
-							<div class="info-item">
-								<div class="info-label">レビュアー</div>
-								<div id="reviewer" class="info-value">-</div>
+						<div class="info-item">
+							<div class="info-label">ページパス</div>
+							<div class="info-value">
+								<code id="page-path">-</code>
 							</div>
 						</div>
-					</div>
-				</section>
 
-				<!-- ========================================
-				     Status Flow
-				======================================== -->
+						<div class="info-item">
+							<div class="info-label">Revision</div>
+							<div id="revision-number" class="info-value">-</div>
+						</div>
 
-				<section class="card">
-					<div class="card-header">
-						<h2 class="card-title">進行状況</h2>
-					</div>
+						<div class="info-item">
+							<div class="info-label">作成日時</div>
+							<div id="created-at" class="info-value">-</div>
+						</div>
 
-					<div class="card-body">
-						<div id="status-flow" class="status-flow">
+						<div class="info-item">
+							<div class="info-label">レビュー日時</div>
+							<div id="reviewed-at" class="info-value">-</div>
+						</div>
 
-							<div
-								class="status-step"
-								data-step="draft"
-							>
-								<span class="status-icon">○</span>
-								<span class="status-label">編集</span>
-							</div>
-
-							<div
-								class="status-step"
-								data-step="pending"
-							>
-								<span class="status-icon">○</span>
-								<span class="status-label">レビュー申請済み</span>
-							</div>
-
-							<div
-								class="status-step"
-								data-step="approved"
-							>
-								<span class="status-icon">○</span>
-								<span class="status-label">承認</span>
-							</div>
-
-							<div
-								class="status-step"
-								data-step="publishing"
-							>
-								<span class="status-icon">○</span>
-								<span class="status-label">公開処理</span>
-							</div>
-
-							<div
-								class="status-step"
-								data-step="published"
-							>
-								<span class="status-icon">○</span>
-								<span class="status-label">公開済み</span>
-							</div>
-
+						<div class="info-item">
+							<div class="info-label">レビュアー</div>
+							<div id="reviewer" class="info-value">-</div>
 						</div>
 					</div>
-				</section>
+				</div>
+			</section>
 
-				<!-- ========================================
-				     Review Controls
-				======================================== -->
+			<!-- ========================================
+			     Status Flow
+			======================================== -->
 
-				<section
-					id="review-controls"
-					class="card review-controls"
-					hidden
-				>
-					<div class="card-header">
-						<h2 class="card-title">レビュー操作</h2>
-					</div>
+			<section class="card">
+				<div class="card-header">
+					<h2 class="card-title">進行状況</h2>
+				</div>
 
-					<div class="card-body">
-						<p class="review-description">
-							この申請はレビュー待ちです。内容を確認したうえで、承認または却下してください。
-						</p>
+				<div class="card-body">
+					<div id="status-flow" class="status-flow">
 
-						<label for="review-comment">
-							<div class="info-label">レビューコメント</div>
-						</label>
-
-						<textarea
-							id="review-comment"
-							class="review-textarea"
-							placeholder="必要に応じてレビューコメントを入力してください。却下する場合は理由を入力してください。"
-						></textarea>
-
-						<div class="review-actions">
-							<button
-								id="approve-button"
-								class="action-button approve-button"
-								type="button"
-							>
-								承認する
-							</button>
-
-							<button
-								id="reject-button"
-								class="action-button reject-button"
-								type="button"
-							>
-								却下する
-							</button>
+						<div
+							class="status-step"
+							data-step="draft"
+						>
+							<span class="status-icon">○</span>
+							<span class="status-label">編集</span>
 						</div>
 
 						<div
-							id="review-result"
-							class="review-result"
-							hidden
-						></div>
-					</div>
-				</section>
-
-				<!-- ========================================
-				     Publish Controls
-				======================================== -->
-
-				<section
-					id="publish-controls"
-					class="card publish-controls"
-					hidden
-				>
-					<div class="card-header">
-						<h2 class="card-title">公開操作</h2>
-					</div>
-
-					<div class="card-body">
-						<p id="publish-description" class="publish-description">
-							この申請は承認済みです。GitHubに公開用ブランチを作成し、変更をコミットしてPull Requestを作成します。
-						</p>
-
-						<div class="publish-actions">
-							<button
-								id="publish-button"
-								class="publish-button"
-								type="button"
-							>
-								公開処理を開始
-							</button>
-
-							<a
-								id="publish-pr-link"
-								class="publish-pr-link"
-								href="#"
-								target="_blank"
-								rel="noopener noreferrer"
-								hidden
-							>
-								GitHub Pull Requestを開く
-							</a>
+							class="status-step"
+							data-step="pending"
+						>
+							<span class="status-icon">○</span>
+							<span class="status-label">レビュー申請済み</span>
 						</div>
 
 						<div
-							id="publish-status"
-							class="publish-status"
-							hidden
-						></div>
-					</div>
-				</section>
+							class="status-step"
+							data-step="approved"
+						>
+							<span class="status-icon">○</span>
+							<span class="status-label">承認</span>
+						</div>
 
-				<!-- ========================================
-				     Message
-				======================================== -->
-
-				<section
-					id="message-card"
-					class="card"
-					hidden
-				>
-					<div class="card-header">
-						<h2 class="card-title">申請メッセージ</h2>
-					</div>
-
-					<div class="card-body">
-						<div id="message" class="message-box"></div>
-					</div>
-				</section>
-
-				<!-- ========================================
-				     Review Comment
-				======================================== -->
-
-				<section
-					id="review-comment-card"
-					class="card"
-					hidden
-				>
-					<div class="card-header">
-						<h2 class="card-title">レビューコメント</h2>
-					</div>
-
-					<div class="card-body">
 						<div
-							id="review-comment-display"
-							class="review-box"
-						></div>
+							class="status-step"
+							data-step="publishing"
+						>
+							<span class="status-icon">○</span>
+							<span class="status-label">公開処理</span>
+						</div>
+
+						<div
+							class="status-step"
+							data-step="published"
+						>
+							<span class="status-icon">○</span>
+							<span class="status-label">公開済み</span>
+						</div>
+
 					</div>
-				</section>
+				</div>
+			</section>
 
-				<!-- ========================================
-				     Markdown Source
-				======================================== -->
+			<!-- ========================================
+			     Review Controls
+			======================================== -->
 
-				<section class="card">
-					<div class="card-header">
-						<h2 class="card-title">Markdown</h2>
-					</div>
+			<section
+				id="review-controls"
+				class="card review-controls"
+				hidden
+			>
+				<div class="card-header">
+					<h2 class="card-title">レビュー操作</h2>
+				</div>
 
-					<div class="card-body" style="padding: 0;">
-						<pre
-							id="markdown-source"
-							class="markdown-source"
-						></pre>
-					</div>
-				</section>
+				<div class="card-body">
+					<p class="review-description">
+						この申請はレビュー待ちです。内容を確認したうえで、承認または却下してください。
+					</p>
 
-				<!-- ========================================
-				     Preview
-				======================================== -->
+					<label for="review-comment">
+						<div class="info-label">レビューコメント</div>
+					</label>
 
-				<section class="card">
-					<div class="card-header">
-						<h2 class="card-title">プレビュー</h2>
+					<textarea
+						id="review-comment"
+						class="review-textarea"
+						placeholder="必要に応じてレビューコメントを入力してください。却下する場合は理由を入力してください。"
+					></textarea>
+
+					<div class="review-actions">
+						<button
+							id="approve-button"
+							class="action-button approve-button"
+							type="button"
+						>
+							承認する
+						</button>
+
+						<button
+							id="reject-button"
+							class="action-button reject-button"
+							type="button"
+						>
+							却下する
+						</button>
 					</div>
 
 					<div
-						id="preview"
-						class="preview"
+						id="review-result"
+						class="review-result"
+						hidden
 					></div>
-				</section>
+				</div>
+			</section>
 
-				<!-- ========================================
-				     Actions
-				======================================== -->
+			<!-- ========================================
+			     Publish Controls
+			======================================== -->
 
-				<section class="card">
-					<div class="card-header">
-						<h2 class="card-title">操作</h2>
+			<section
+				id="publish-controls"
+				class="card publish-controls"
+				hidden
+			>
+				<div class="card-header">
+					<h2 class="card-title">公開操作</h2>
+				</div>
+
+				<div class="card-body">
+					<p id="publish-description" class="publish-description">
+						この申請は承認済みです。GitHubに公開用ブランチを作成し、変更をコミットしてPull Requestを作成します。
+					</p>
+
+					<div class="publish-actions">
+						<button
+							id="publish-button"
+							class="publish-button"
+							type="button"
+						>
+							公開処理を開始
+						</button>
+
+						<a
+							id="publish-pr-link"
+							class="publish-pr-link"
+							href="#"
+							target="_blank"
+							rel="noopener noreferrer"
+							hidden
+						>
+							GitHub Pull Requestを開く
+						</a>
 					</div>
 
-					<div class="card-body">
-						<div class="page-actions">
+					<div
+						id="publish-status"
+						class="publish-status"
+						hidden
+					></div>
+				</div>
+			</section>
 
-							<a
-								id="public-page-link"
-								class="page-action"
-								href="/docs/"
-							>
-								公開ページを見る
-							</a>
+			<!-- ========================================
+			     Message
+			======================================== -->
 
-							<a
-								id="edit-link"
-								class="page-action"
-								href="#"
-								hidden
-							>
-								編集に戻る
-							</a>
+			<section
+				id="message-card"
+				class="card"
+				hidden
+			>
+				<div class="card-header">
+					<h2 class="card-title">申請メッセージ</h2>
+				</div>
 
-						</div>
+				<div class="card-body">
+					<div id="message" class="message-box"></div>
+				</div>
+			</section>
+
+			<!-- ========================================
+			     Review Comment
+			======================================== -->
+
+			<section
+				id="review-comment-card"
+				class="card"
+				hidden
+			>
+				<div class="card-header">
+					<h2 class="card-title">レビューコメント</h2>
+				</div>
+
+				<div class="card-body">
+					<div
+						id="review-comment-display"
+						class="review-box"
+					></div>
+				</div>
+			</section>
+
+			<!-- ========================================
+			     Markdown Source
+			======================================== -->
+
+			<section class="card">
+				<div class="card-header">
+					<h2 class="card-title">Markdown</h2>
+				</div>
+
+				<div class="card-body" style="padding: 0;">
+					<pre
+						id="markdown-source"
+						class="markdown-source"
+					></pre>
+				</div>
+			</section>
+
+			<!-- ========================================
+			     Preview
+			======================================== -->
+
+			<section class="card">
+				<div class="card-header">
+					<h2 class="card-title">プレビュー</h2>
+				</div>
+
+				<div
+					id="preview"
+					class="preview"
+				></div>
+			</section>
+
+			<!-- ========================================
+			     Actions
+			======================================== -->
+
+			<section class="card">
+				<div class="card-header">
+					<h2 class="card-title">操作</h2>
+				</div>
+
+				<div class="card-body">
+					<div class="page-actions">
+
+						<a
+							id="public-page-link"
+							class="page-action"
+							href="/docs/"
+						>
+							公開ページを見る
+						</a>
+
+						<a
+							id="edit-link"
+							class="page-action"
+							href="#"
+							hidden
+						>
+							編集に戻る
+						</a>
+
+						<button
+							id="delete-draft-button"
+							class="delete-draft-button"
+							type="button"
+							hidden
+						>
+							この下書きを削除
+						</button>
+
+						<button
+							id="admin-delete-button"
+							class="admin-delete-button"
+							type="button"
+							hidden
+						>
+							管理者としてこの申請を削除
+						</button>
+
 					</div>
-				</section>
 
-			</div>
+					<div
+						id="delete-draft-result"
+						class="delete-draft-result"
+						hidden
+					></div>
+
+					<div
+						id="admin-delete-result"
+						class="admin-delete-result"
+						hidden
+					></div>
+				</div>
+			</section>
+
 		</div>
-	</main>
+	</div>
+</main>
 
-	<script type="module">
-		import { marked } from 'marked';
-		import DOMPurify from 'dompurify';
+<script type="module">
+	import { marked } from 'marked';
+	import DOMPurify from 'dompurify';
 
-		const loadingState =
-			document.querySelector('#loading-state');
+	const loadingState =
+		document.querySelector('#loading-state');
 
-		const errorState =
-			document.querySelector('#error-state');
+	const errorState =
+		document.querySelector('#error-state');
 
-		const content =
-			document.querySelector('#content');
+	const content =
+		document.querySelector('#content');
 
-		const statusBadge =
-			document.querySelector('#status-badge');
+	const statusBadge =
+		document.querySelector('#status-badge');
 
-		const pageTitle =
-			document.querySelector('#page-title');
+	const pageTitle =
+		document.querySelector('#page-title');
 
-		const pagePath =
-			document.querySelector('#page-path');
+	const pagePath =
+		document.querySelector('#page-path');
 
-		const revisionNumber =
-			document.querySelector('#revision-number');
+	const revisionNumber =
+		document.querySelector('#revision-number');
 
-		const createdAt =
-			document.querySelector('#created-at');
+	const createdAt =
+		document.querySelector('#created-at');
 
-		const reviewedAt =
-			document.querySelector('#reviewed-at');
+	const reviewedAt =
+		document.querySelector('#reviewed-at');
 
-		const reviewer =
-			document.querySelector('#reviewer');
+	const reviewer =
+		document.querySelector('#reviewer');
 
-		const statusSteps =
-			document.querySelectorAll('.status-step');
+	const statusSteps =
+		document.querySelectorAll('.status-step');
 
-		const reviewControls =
-			document.querySelector('#review-controls');
+	const reviewControls =
+		document.querySelector('#review-controls');
 
-		const reviewCommentInput =
-			document.querySelector('#review-comment');
+	const reviewCommentInput =
+		document.querySelector('#review-comment');
 
-		const approveButton =
-			document.querySelector('#approve-button');
+	const approveButton =
+		document.querySelector('#approve-button');
 
-		const rejectButton =
-			document.querySelector('#reject-button');
+	const rejectButton =
+		document.querySelector('#reject-button');
 
-		const reviewResult =
-			document.querySelector('#review-result');
+	const reviewResult =
+		document.querySelector('#review-result');
 
-		const publishControls =
-			document.querySelector('#publish-controls');
+	const publishControls =
+		document.querySelector('#publish-controls');
 
-		const publishDescription =
-			document.querySelector('#publish-description');
+	const publishDescription =
+		document.querySelector('#publish-description');
 
-		const publishButton =
-			document.querySelector('#publish-button');
+	const publishButton =
+		document.querySelector('#publish-button');
 
-		const publishPrLink =
-			document.querySelector('#publish-pr-link');
+	const publishPrLink =
+		document.querySelector('#publish-pr-link');
 
-		const publishStatus =
-			document.querySelector('#publish-status');
+	const publishStatus =
+		document.querySelector('#publish-status');
 
-		const messageCard =
-			document.querySelector('#message-card');
+	const messageCard =
+		document.querySelector('#message-card');
 
-		const message =
-			document.querySelector('#message');
+	const message =
+		document.querySelector('#message');
 
-		const reviewCommentCard =
-			document.querySelector('#review-comment-card');
+	const reviewCommentCard =
+		document.querySelector('#review-comment-card');
 
-		const reviewCommentDisplay =
-			document.querySelector('#review-comment-display');
+	const reviewCommentDisplay =
+		document.querySelector('#review-comment-display');
 
-		const markdownSource =
-			document.querySelector('#markdown-source');
+	const markdownSource =
+		document.querySelector('#markdown-source');
 
-		const preview =
-			document.querySelector('#preview');
+	const preview =
+		document.querySelector('#preview');
 
-		const publicPageLink =
-			document.querySelector('#public-page-link');
+	const publicPageLink =
+		document.querySelector('#public-page-link');
 
-		const editLink =
-			document.querySelector('#edit-link');
+	const editLink =
+		document.querySelector('#edit-link');
 
-		const params =
-			new URLSearchParams(
-				window.location.search
+	const deleteDraftButton =
+		document.querySelector(
+			'#delete-draft-button'
+		);
+
+	const deleteDraftResult =
+		document.querySelector(
+			'#delete-draft-result'
+		);
+
+	const adminDeleteButton =
+		document.querySelector(
+			'#admin-delete-button'
+		);
+
+	const adminDeleteResult =
+		document.querySelector(
+			'#admin-delete-result'
+		);
+
+	const params =
+		new URLSearchParams(
+			window.location.search
+		);
+
+	const id =
+		params.get('id');
+
+	let currentRequest = null;
+	let currentUser = null;
+
+	let reviewProcessing = false;
+	let publishProcessing = false;
+	let deleteDraftProcessing = false;
+	let adminDeleteProcessing = false;
+
+	function formatDate(value) {
+		if (!value) {
+			return '-';
+		}
+
+		const date =
+			new Date(value);
+
+		if (
+			Number.isNaN(
+				date.getTime()
+			)
+		) {
+			return value;
+		}
+
+		return new Intl.DateTimeFormat(
+			'ja-JP',
+			{
+				year: 'numeric',
+				month: 'numeric',
+				day: 'numeric',
+				hour: '2-digit',
+				minute: '2-digit',
+			}
+		).format(date);
+	}
+
+	function getStatusLabel(status) {
+		switch (status) {
+			case 'draft':
+				return '下書き';
+
+			case 'pending':
+				return 'レビュー申請中';
+
+			case 'approved':
+				return '承認済み';
+
+			case 'publishing':
+				return '公開処理中';
+
+			case 'published':
+				return '公開済み';
+
+			case 'rejected':
+				return '却下';
+
+			default:
+				return status || '不明';
+		}
+	}
+
+	function updateStatusBadge(status) {
+		statusBadge.textContent =
+			getStatusLabel(status);
+
+		statusBadge.className =
+			'status-badge';
+
+		if (
+			status === 'pending' ||
+			status === 'approved' ||
+			status === 'publishing' ||
+			status === 'published' ||
+			status === 'rejected'
+		) {
+			statusBadge.classList.add(
+				status
 			);
-
-		const id =
-			params.get('id');
-
-		let currentRequest = null;
-		let currentUser = null;
-
-		let reviewProcessing = false;
-		let publishProcessing = false;
-
-		function formatDate(value) {
-			if (!value) {
-				return '-';
-			}
-
-			const date =
-				new Date(value);
-
-			if (
-				Number.isNaN(
-					date.getTime()
-				)
-			) {
-				return value;
-			}
-
-			return new Intl.DateTimeFormat(
-				'ja-JP',
-				{
-					year: 'numeric',
-					month: 'numeric',
-					day: 'numeric',
-					hour: '2-digit',
-					minute: '2-digit',
-				}
-			).format(date);
 		}
+	}
 
-		function getStatusLabel(status) {
-			switch (status) {
-				case 'draft':
-					return '下書き';
+	function updateStatusFlow(status) {
+		const order = [
+			'draft',
+			'pending',
+			'approved',
+			'publishing',
+			'published',
+		];
 
-				case 'pending':
-					return 'レビュー申請中';
+		const currentIndex =
+			order.indexOf(status);
 
-				case 'approved':
-					return '承認済み';
+		statusSteps.forEach(
+			(step) => {
+				const stepStatus =
+					step.dataset.step;
 
-				case 'publishing':
-					return '公開処理中';
-
-				case 'published':
-					return '公開済み';
-
-				case 'rejected':
-					return '却下';
-
-				default:
-					return status || '不明';
-			}
-		}
-
-		function updateStatusBadge(status) {
-			statusBadge.textContent =
-				getStatusLabel(status);
-
-			statusBadge.className =
-				'status-badge';
-
-			if (
-				status === 'pending' ||
-				status === 'approved' ||
-				status === 'publishing' ||
-				status === 'published' ||
-				status === 'rejected'
-			) {
-				statusBadge.classList.add(
-					status
+				step.classList.remove(
+					'done',
+					'active',
+					'rejected'
 				);
-			}
-		}
 
-		function updateStatusFlow(status) {
-			const order = [
-				'draft',
-				'pending',
-				'approved',
-				'publishing',
-				'published',
-			];
+				const icon =
+					step.querySelector(
+						'.status-icon'
+					);
 
-			const currentIndex =
-				order.indexOf(status);
-
-			statusSteps.forEach(
-				(step) => {
-					const stepStatus =
-						step.dataset.step;
-
-					step.classList.remove(
-						'done',
-						'active',
+				if (
+					status === 'rejected' &&
+					stepStatus === 'pending'
+				) {
+					step.classList.add(
 						'rejected'
 					);
 
-					const icon =
-						step.querySelector(
-							'.status-icon'
-						);
-
-					if (
-						status === 'rejected' &&
-						stepStatus === 'pending'
-					) {
-						step.classList.add(
-							'rejected'
-						);
-
-						if (icon) {
-							icon.textContent = '×';
-						}
-
-						return;
+					if (icon) {
+						icon.textContent = '×';
 					}
 
-					const stepIndex =
-						order.indexOf(
-							stepStatus
-						);
+					return;
+				}
 
-					if (
-						currentIndex === -1 ||
-						stepIndex === -1
-					) {
-						if (icon) {
-							icon.textContent = '○';
-						}
+				const stepIndex =
+					order.indexOf(
+						stepStatus
+					);
 
-						return;
+				if (
+					currentIndex === -1 ||
+					stepIndex === -1
+				) {
+					if (icon) {
+						icon.textContent = '○';
 					}
 
-					if (
-						stepIndex < currentIndex
-					) {
-						step.classList.add(
-							'done'
-						);
+					return;
+				}
 
-						if (icon) {
-							icon.textContent = '●';
-						}
-					} else if (
-						stepIndex === currentIndex
-					) {
-						step.classList.add(
-							'active'
-						);
+				if (
+					stepIndex < currentIndex
+				) {
+					step.classList.add(
+						'done'
+					);
 
-						if (icon) {
-							icon.textContent = '●';
-						}
-					} else {
-						if (icon) {
-							icon.textContent = '○';
-						}
+					if (icon) {
+						icon.textContent = '●';
+					}
+				} else if (
+					stepIndex === currentIndex
+				) {
+					step.classList.add(
+						'active'
+					);
+
+					if (icon) {
+						icon.textContent = '●';
+					}
+				} else {
+					if (icon) {
+						icon.textContent = '○';
 					}
 				}
+			}
+		);
+	}
+
+	function showReviewResult(
+		messageText,
+		type
+	) {
+		reviewResult.hidden = false;
+
+		reviewResult.textContent =
+			messageText;
+
+		reviewResult.className =
+			`review-result ${type}`;
+	}
+
+	function setReviewButtonsDisabled(
+		disabled
+	) {
+		approveButton.disabled =
+			disabled;
+
+		rejectButton.disabled =
+			disabled;
+
+		reviewCommentInput.disabled =
+			disabled;
+	}
+
+	function showPublishStatus(
+		messageText,
+		type = ''
+	) {
+		publishStatus.hidden = false;
+
+		publishStatus.textContent =
+			messageText;
+
+		publishStatus.className =
+			'publish-status';
+
+		if (type) {
+			publishStatus.classList.add(
+				type
+			);
+		}
+	}
+
+	function setPublishButtonDisabled(
+		disabled
+	) {
+		publishButton.disabled =
+			disabled;
+	}
+
+	async function loadCurrentUser() {
+		try {
+			const response =
+				await fetch(
+					'/me',
+					{
+						credentials:
+							'include',
+					}
+				);
+
+			if (!response.ok) {
+				return null;
+			}
+
+			const data =
+				await response.json();
+
+			if (
+				!data.loggedIn ||
+				!data.user
+			) {
+				return null;
+			}
+
+			return data.user;
+		} catch {
+			return null;
+		}
+	}
+
+	function updateReviewControls() {
+		const isAdmin =
+			currentUser &&
+			currentUser.role === 'admin';
+
+		const isPending =
+			currentRequest &&
+			currentRequest.status ===
+				'pending';
+
+		reviewControls.hidden =
+			!(
+				isAdmin &&
+				isPending
+			);
+	}
+
+	function updatePublishControls() {
+		const isAdmin =
+			currentUser &&
+			currentUser.role === 'admin';
+
+		const status =
+			currentRequest?.status;
+
+		const canPublish =
+			isAdmin &&
+			status === 'approved';
+
+		publishControls.hidden =
+			!canPublish;
+
+		if (canPublish) {
+			publishButton.hidden =
+				false;
+
+			publishPrLink.hidden =
+				true;
+
+			publishDescription.textContent =
+				'この申請は承認済みです。GitHubに公開用ブランチを作成し、変更をコミットしてPull Requestを作成します。';
+
+			publishStatus.hidden =
+				true;
+		} else if (
+			status === 'publishing'
+		) {
+			publishControls.hidden =
+				false;
+
+			publishButton.hidden =
+				true;
+
+			publishDescription.textContent =
+				'公開処理を実行中です。GitHub Pull Requestがmainへマージされるまで、この申請は公開処理中のままです。';
+
+			if (
+				publishStatus.hidden
+			) {
+				showPublishStatus(
+					'GitHub Pull Requestのマージを待っています。'
+				);
+			}
+		} else {
+			publishControls.hidden =
+				true;
+		}
+	}
+
+	function escapeHtml(value) {
+		return String(value ?? '')
+			.replaceAll('&', '&amp;')
+			.replaceAll('<', '&lt;')
+			.replaceAll('>', '&gt;')
+			.replaceAll('"', '&quot;')
+			.replaceAll("'", '&#39;');
+	}
+
+	function sanitizePreviewHref(value) {
+		const href = String(value ?? '').trim();
+
+		if (!href) return '#';
+		if (href.startsWith('/')) return href;
+		if (href.startsWith('#')) return href;
+
+		try {
+			const url = new URL(href, window.location.origin);
+			if (url.protocol === 'http:' || url.protocol === 'https:') return url.href;
+		} catch {
+			return '#';
+		}
+
+		return '#';
+	}
+
+	function renderStarlightLinkCard(attributes) {
+		const titleMatch = attributes.match(/title\s*=\s*["']([^"']*)["']/i);
+		const hrefMatch = attributes.match(/href\s*=\s*["']([^"']*)["']/i);
+		const descriptionMatch = attributes.match(/description\s*=\s*["']([^"']*)["']/i);
+
+		const title = titleMatch?.[1]?.trim() || 'リンク';
+		const href = sanitizePreviewHref(hrefMatch?.[1] || '#');
+		const description = descriptionMatch?.[1]?.trim() || '';
+
+		return `
+			<a class="starlight-link-card" href="${escapeHtml(href)}">
+				<span class="starlight-link-card-title">${escapeHtml(title)}</span>
+				${description ? `<span class="starlight-link-card-description">${escapeHtml(description)}</span>` : ''}
+				<span class="starlight-link-card-arrow" aria-hidden="true">→</span>
+			</a>`;
+	}
+
+	function transformStarlightLinkCards(source) {
+		return source.replace(
+			/<CardGrid\s*>\s*([\s\S]*?)\s*<\/CardGrid>/gi,
+			(_match, body) => {
+				const cards = [];
+				const cardPattern = /<LinkCard\s+([\s\S]*?)\/\s*>/gi;
+				let match;
+
+				while ((match = cardPattern.exec(body)) !== null) {
+					cards.push(renderStarlightLinkCard(match[1]));
+				}
+
+				if (!cards.length) return '';
+				return `\n<div class="starlight-card-grid">${cards.join('')}</div>\n`;
+			}
+		);
+	}
+
+	function transformStarlightAdmonitions(source) {
+		const pattern = /^\s*:::(note|tip|caution|danger)(?:\[([^\]]*)\])?\s*\n([\s\S]*?)^\s*:::\s*$/gim;
+
+		return source.replace(
+			pattern,
+			(_match, type, label, body) => {
+				const defaultTitles = {
+					note: '注記',
+					tip: 'ヒント',
+					caution: '注意',
+					danger: '警告',
+				};
+
+				const title = label?.trim() || defaultTitles[type] || type;
+
+				return `
+<aside class="starlight-admonition starlight-admonition-${type}" data-admonition="${type}">
+<div class="starlight-admonition-title">${escapeHtml(title)}</div>
+<div class="starlight-admonition-body">
+${body.trim()}
+</div>
+</aside>
+`;
+			}
+		);
+	}
+
+	function prepareStarlightPreview(source) {
+		let prepared = String(source ?? '');
+
+		// MDXのimportはプレビューでは実行せず、表示対象から除外します。
+		prepared = prepared.replace(
+			/^\s*import\s+[\s\S]*?from\s+["'][^"']+["']\s*;?\s*$/gim,
+			''
+		);
+
+		prepared = transformStarlightLinkCards(prepared);
+		prepared = transformStarlightAdmonitions(prepared);
+
+		return prepared;
+	}
+
+	function updateDeleteDraftControl() {
+		const isLoggedIn =
+			Boolean(currentUser);
+
+		const isOwner =
+			isLoggedIn &&
+			currentRequest &&
+			currentRequest.user_id ===
+				currentUser.id;
+
+		const isDraft =
+			currentRequest &&
+			currentRequest.status ===
+				'draft';
+
+		deleteDraftButton.hidden =
+			!(
+				isOwner &&
+				isDraft
+			);
+	}
+
+	function updateAdminDeleteControl() {
+		const isAdmin =
+			currentUser &&
+			currentUser.role === 'admin';
+
+		const status =
+			currentRequest?.status;
+
+		const deletableStatuses = [
+			'draft',
+			'pending',
+			'rejected',
+			'approved',
+		];
+
+		const canDelete =
+			Boolean(isAdmin) &&
+			deletableStatuses.includes(
+				status
+			);
+
+		adminDeleteButton.hidden =
+			!canDelete;
+
+		if (!canDelete) {
+			adminDeleteResult.hidden =
+				true;
+		}
+	}
+
+	async function loadRequest() {
+		if (!id) {
+			throw new Error(
+				'申請IDが指定されていません。'
 			);
 		}
 
-		function showReviewResult(
-			messageText,
-			type
-		) {
-			reviewResult.hidden = false;
+		const response =
+			await fetch(
+				`/api/wiki/edit-requests/${encodeURIComponent(id)}`,
+				{
+					credentials:
+						'include',
+				}
+			);
 
-			reviewResult.textContent =
-				messageText;
-
-			reviewResult.className =
-				`review-result ${type}`;
-		}
-
-		function setReviewButtonsDisabled(
-			disabled
-		) {
-			approveButton.disabled =
-				disabled;
-
-			rejectButton.disabled =
-				disabled;
-
-			reviewCommentInput.disabled =
-				disabled;
-		}
-
-		function showPublishStatus(
-			messageText,
-			type = ''
-		) {
-			publishStatus.hidden = false;
-
-			publishStatus.textContent =
-				messageText;
-
-			publishStatus.className =
-				'publish-status';
-
-			if (type) {
-				publishStatus.classList.add(
-					type
+		const data =
+			await response
+				.json()
+				.catch(
+					() => null
 				);
-			}
+
+		if (!response.ok) {
+			throw new Error(
+				data?.error ||
+				'申請情報を取得できませんでした。'
+			);
 		}
 
-		function setPublishButtonDisabled(
-			disabled
+		if (
+			!data?.editRequest ||
+			!data?.revision
 		) {
-			publishButton.disabled =
-				disabled;
+			throw new Error(
+				'申請情報の形式が正しくありません。'
+			);
 		}
 
-		async function loadCurrentUser() {
-			try {
-				const response =
-					await fetch(
-						'/me',
-						{
-							credentials:
-								'include',
-						}
+		currentRequest =
+			data.editRequest;
+
+		const revision =
+			data.revision;
+
+		pageTitle.textContent =
+			currentRequest.page_title ||
+			currentRequest.pagePath ||
+			'-';
+
+		pagePath.textContent =
+			currentRequest.page_path ||
+			currentRequest.pagePath ||
+			'-';
+
+		revisionNumber.textContent =
+			currentRequest.revision_number ??
+			revision.revision_number ??
+			'-';
+
+		createdAt.textContent =
+			formatDate(
+				currentRequest.created_at
+			);
+
+		reviewedAt.textContent =
+			formatDate(
+				currentRequest.reviewed_at
+			);
+
+		reviewer.textContent =
+			currentRequest.reviewer_display_name ||
+			currentRequest.reviewer_id ||
+			'-';
+
+		updateStatusBadge(
+			currentRequest.status
+		);
+
+		updateStatusFlow(
+			currentRequest.status
+		);
+
+		const requestMessage =
+			currentRequest.message ||
+			'';
+
+		if (requestMessage) {
+			messageCard.hidden =
+				false;
+
+			message.textContent =
+				requestMessage;
+		} else {
+			messageCard.hidden =
+				true;
+		}
+
+		const requestReviewComment =
+			currentRequest.review_comment ||
+			'';
+
+		if (
+			requestReviewComment
+		) {
+			reviewCommentCard.hidden =
+				false;
+
+			reviewCommentDisplay.textContent =
+				requestReviewComment;
+		} else {
+			reviewCommentCard.hidden =
+				true;
+		}
+
+		const markdown =
+			revision.content ||
+			'';
+
+		markdownSource.textContent =
+			markdown;
+
+		const previewSource =
+			prepareStarlightPreview(
+				markdown
+			);
+
+		const renderedMarkdown =
+			await marked.parse(
+				previewSource,
+				{
+					gfm: true,
+					breaks: false,
+				}
+			);
+
+		preview.innerHTML =
+			DOMPurify.sanitize(
+				renderedMarkdown,
+				{
+					USE_PROFILES: {
+						html: true,
+					},
+					ADD_ATTR: [
+						'data-admonition',
+					],
+				}
+			);
+
+		const publicPath =
+			currentRequest.page_path ||
+			currentRequest.pagePath ||
+			'/docs/';
+
+		publicPageLink.href =
+			publicPath;
+
+		if (
+			currentRequest.status ===
+			'draft'
+		) {
+			editLink.hidden =
+				false;
+
+			editLink.href =
+				`/wiki/edit/?path=${encodeURIComponent(publicPath)}&request=${encodeURIComponent(id)}`;
+		} else {
+			editLink.hidden =
+				true;
+		}
+
+		updateReviewControls();
+		updatePublishControls();
+		updateDeleteDraftControl();
+		updateAdminDeleteControl();
+	}
+
+	async function performReview(
+		status
+	) {
+		if (reviewProcessing) {
+			return;
+		}
+
+		if (!currentRequest) {
+			return;
+		}
+
+		if (
+			currentRequest.status !==
+			'pending'
+		) {
+			showReviewResult(
+				'この申請はすでに処理されています。',
+				'error'
+			);
+
+			return;
+		}
+
+		const comment =
+			reviewCommentInput.value.trim();
+
+		if (
+			status === 'rejected' &&
+			!comment
+		) {
+			showReviewResult(
+				'却下する場合は、レビューコメントに理由を入力してください。',
+				'error'
+			);
+
+			reviewCommentInput.focus();
+
+			return;
+		}
+
+		const actionLabel =
+			status === 'approved'
+				? '承認'
+				: '却下';
+
+		const confirmed =
+			window.confirm(
+				`この申請を「${actionLabel}」しますか？\n\n` +
+				'この操作は申請の状態を変更します。'
+			);
+
+		if (!confirmed) {
+			return;
+		}
+
+		reviewProcessing =
+			true;
+
+		setReviewButtonsDisabled(
+			true
+		);
+
+		reviewResult.hidden =
+			true;
+
+		try {
+			const response =
+				await fetch(
+					`/api/wiki/edit-requests/${encodeURIComponent(id)}/review`,
+					{
+						method:
+							'POST',
+
+						credentials:
+							'include',
+
+						headers: {
+							'Content-Type':
+								'application/json',
+						},
+
+						body:
+							JSON.stringify({
+								status,
+								comment:
+									comment ||
+									undefined,
+							}),
+					}
+				);
+
+			const data =
+				await response
+					.json()
+					.catch(
+						() => null
 					);
 
-				if (!response.ok) {
-					return null;
-				}
-
-				const data =
-					await response.json();
-
-				if (
-					!data.loggedIn ||
-					!data.user
-				) {
-					return null;
-				}
-
-				return data.user;
-			} catch {
-				return null;
+			if (!response.ok) {
+				throw new Error(
+					data?.error ||
+					`レビュー処理に失敗しました。HTTP ${response.status}`
+				);
 			}
-		}
 
-		function updateReviewControls() {
-			const isAdmin =
-				currentUser &&
-				currentUser.role === 'admin';
+			showReviewResult(
+				`申請を「${actionLabel}」しました。申請情報を更新しています…`,
+				'success'
+			);
 
-			const isPending =
+			await loadRequest();
+
+			reviewCommentInput.value =
+				'';
+
+			showReviewResult(
+				`申請を「${actionLabel}」しました。`,
+				'success'
+			);
+		} catch (error) {
+			console.error(error);
+
+			showReviewResult(
+				error instanceof Error
+					? error.message
+					: 'レビュー処理に失敗しました。',
+				'error'
+			);
+
+			setReviewButtonsDisabled(
+				false
+			);
+		} finally {
+			reviewProcessing =
+				false;
+
+			if (
 				currentRequest &&
 				currentRequest.status ===
-					'pending';
-
-			reviewControls.hidden =
-				!(
-					isAdmin &&
-					isPending
+					'pending'
+			) {
+				setReviewButtonsDisabled(
+					false
 				);
+			}
+		}
+	}
+
+	async function performPublish() {
+		if (publishProcessing) {
+			return;
 		}
 
-		function updatePublishControls() {
-			const isAdmin =
-				currentUser &&
-				currentUser.role === 'admin';
+		if (!currentRequest) {
+			return;
+		}
 
-			const status =
-				currentRequest?.status;
+		if (
+			currentRequest.status !==
+			'approved'
+		) {
+			showPublishStatus(
+				'この申請は現在、公開処理を開始できる状態ではありません。',
+				'error'
+			);
 
-			const canPublish =
-				isAdmin &&
-				status === 'approved';
+			return;
+		}
 
-			publishControls.hidden =
-				!canPublish;
+		const confirmed =
+			window.confirm(
+				'この申請の公開処理を開始しますか？\n\n' +
+				'GitHubに公開用ブランチを作成し、変更をコミットしてPull Requestを作成します。\n\n' +
+				'Pull Requestがmainへマージされるまで、申請は「公開処理中」になります。'
+			);
 
-			if (canPublish) {
-				publishButton.hidden =
-					false;
+		if (!confirmed) {
+			return;
+		}
+
+		publishProcessing =
+			true;
+
+		setPublishButtonDisabled(
+			true
+		);
+
+		publishPrLink.hidden =
+			true;
+
+		showPublishStatus(
+			'公開処理を開始しています…'
+		);
+
+		try {
+			const response =
+				await fetch(
+					`/api/wiki/edit-requests/${encodeURIComponent(id)}/publish`,
+					{
+						method:
+							'POST',
+
+						credentials:
+							'include',
+
+						headers: {
+							'Content-Type':
+								'application/json',
+						},
+					}
+				);
+
+			const data =
+				await response
+					.json()
+					.catch(
+						() => null
+					);
+
+			if (!response.ok) {
+				throw new Error(
+					data?.message ||
+					data?.error ||
+					`公開処理に失敗しました。HTTP ${response.status}`
+				);
+			}
+
+			const pullRequest =
+				data?.github?.pullRequest;
+
+			if (
+				pullRequest?.html_url
+			) {
+				publishPrLink.href =
+					pullRequest.html_url;
 
 				publishPrLink.hidden =
-					true;
-
-				publishDescription.textContent =
-					'この申請は承認済みです。GitHubに公開用ブランチを作成し、変更をコミットしてPull Requestを作成します。';
-
-				publishStatus.hidden =
-					true;
-			} else if (
-				status === 'publishing'
-			) {
-				publishControls.hidden =
 					false;
-
-				publishButton.hidden =
-					true;
-
-				publishDescription.textContent =
-					'公開処理を実行中です。GitHub Pull Requestがmainへマージされるまで、この申請は公開処理中のままです。';
-
-				if (
-					publishStatus.hidden
-				) {
-					showPublishStatus(
-						'GitHub Pull Requestのマージを待っています。'
-					);
-				}
-			} else {
-				publishControls.hidden =
-					true;
 			}
+
+			showPublishStatus(
+				'GitHubへの公開処理が完了しました。Pull Requestが作成されています。mainへのマージ後、Webhookによって公開済みに更新されます。',
+				'success'
+			);
+
+			await loadRequest();
+		} catch (error) {
+			console.error(error);
+
+			showPublishStatus(
+				error instanceof Error
+					? error.message
+					: '公開処理に失敗しました。',
+				'error'
+			);
+
+			setPublishButtonDisabled(
+				false
+			);
+
+			await loadRequest().catch(
+				() => {}
+			);
+		} finally {
+			publishProcessing =
+				false;
+		}
+	}
+
+	async function performDeleteDraft() {
+		if (deleteDraftProcessing) {
+			return;
 		}
 
-		async function loadRequest() {
-			if (!id) {
-				throw new Error(
-					'申請IDが指定されていません。'
-				);
-			}
+		if (!currentRequest) {
+			return;
+		}
 
+		if (
+			currentRequest.status !==
+			'draft'
+		) {
+			deleteDraftResult.hidden =
+				false;
+
+			deleteDraftResult.textContent =
+				'下書き状態の申請だけ削除できます。';
+
+			return;
+		}
+
+		if (
+			!currentUser ||
+			currentRequest.user_id !==
+				currentUser.id
+		) {
+			deleteDraftResult.hidden =
+				false;
+
+			deleteDraftResult.textContent =
+				'自分が作成した下書きだけ削除できます。';
+
+			return;
+		}
+
+		const confirmed =
+			window.confirm(
+				'この下書きを削除しますか？\n\n' +
+				'削除した下書きは元に戻せません。'
+			);
+
+		if (!confirmed) {
+			return;
+		}
+
+		deleteDraftProcessing =
+			true;
+
+		deleteDraftButton.disabled =
+			true;
+
+		deleteDraftResult.hidden =
+			false;
+
+		deleteDraftResult.textContent =
+			'下書きを削除しています…';
+
+		try {
 			const response =
 				await fetch(
 					`/api/wiki/edit-requests/${encodeURIComponent(id)}`,
 					{
+						method:
+							'DELETE',
+
 						credentials:
 							'include',
 					}
@@ -2565,460 +3530,226 @@ const title = 'Wiki編集申請 | NUGBASE';
 			if (!response.ok) {
 				throw new Error(
 					data?.error ||
-					'申請情報を取得できませんでした。'
+					`下書きの削除に失敗しました。HTTP ${response.status}`
 				);
 			}
 
-			if (
-				!data?.editRequest ||
-				!data?.revision
-			) {
-				throw new Error(
-					'申請情報の形式が正しくありません。'
-				);
-			}
+			deleteDraftResult.textContent =
+				'下書きを削除しました。申請一覧へ移動します…';
 
-			currentRequest =
-				data.editRequest;
-
-			const revision =
-				data.revision;
-
-			pageTitle.textContent =
-				currentRequest.page_title ||
-				currentRequest.pagePath ||
-				'-';
-
-			pagePath.textContent =
-				currentRequest.page_path ||
-				currentRequest.pagePath ||
-				'-';
-
-			revisionNumber.textContent =
-				currentRequest.revision_number ??
-				revision.revision_number ??
-				'-';
-
-			createdAt.textContent =
-				formatDate(
-					currentRequest.created_at
-				);
-
-			reviewedAt.textContent =
-				formatDate(
-					currentRequest.reviewed_at
-				);
-
-			reviewer.textContent =
-				currentRequest.reviewer_display_name ||
-				currentRequest.reviewer_id ||
-				'-';
-
-			updateStatusBadge(
-				currentRequest.status
+			window.setTimeout(
+				() => {
+					window.location.href =
+						'/wiki/requests/';
+				},
+				500
 			);
+		} catch (error) {
+			console.error(error);
 
-			updateStatusFlow(
-				currentRequest.status
-			);
+			deleteDraftResult.textContent =
+				error instanceof Error
+					? error.message
+					: '下書きの削除に失敗しました。';
 
-			const requestMessage =
-				currentRequest.message ||
-				'';
+			deleteDraftButton.disabled =
+				false;
 
-			if (requestMessage) {
-				messageCard.hidden =
-					false;
+			deleteDraftProcessing =
+				false;
+		}
+	}
 
-				message.textContent =
-					requestMessage;
-			} else {
-				messageCard.hidden =
-					true;
-			}
-
-			const requestReviewComment =
-				currentRequest.review_comment ||
-				'';
-
-			if (
-				requestReviewComment
-			) {
-				reviewCommentCard.hidden =
-					false;
-
-				reviewCommentDisplay.textContent =
-					requestReviewComment;
-			} else {
-				reviewCommentCard.hidden =
-					true;
-			}
-
-			const markdown =
-				revision.content ||
-				'';
-
-			markdownSource.textContent =
-				markdown;
-
-			const renderedMarkdown =
-				await marked.parse(
-					markdown
-				);
-
-			preview.innerHTML =
-				DOMPurify.sanitize(
-					renderedMarkdown
-				);
-
-			const publicPath =
-				currentRequest.page_path ||
-				currentRequest.pagePath ||
-				'/docs/';
-
-			publicPageLink.href =
-				publicPath;
-
-			if (
-				currentRequest.status ===
-				'draft'
-			) {
-				editLink.hidden =
-					false;
-
-				editLink.href =
-					`/wiki/edit/?path=${encodeURIComponent(publicPath)}&request=${encodeURIComponent(id)}`;
-			} else {
-				editLink.hidden =
-					true;
-			}
-
-			updateReviewControls();
-			updatePublishControls();
+	async function performAdminDelete() {
+		if (adminDeleteProcessing) {
+			return;
 		}
 
-		async function performReview(
-			status
+		if (!currentRequest) {
+			return;
+		}
+
+		const isAdmin =
+			currentUser &&
+			currentUser.role === 'admin';
+
+		if (!isAdmin) {
+			adminDeleteResult.hidden =
+				false;
+
+			adminDeleteResult.textContent =
+				'管理者のみ申請を削除できます。';
+
+			return;
+		}
+
+		const deletableStatuses = [
+			'draft',
+			'pending',
+			'rejected',
+			'approved',
+		];
+
+		if (
+			!deletableStatuses.includes(
+				currentRequest.status
+			)
 		) {
-			if (reviewProcessing) {
-				return;
-			}
+			adminDeleteResult.hidden =
+				false;
 
-			if (!currentRequest) {
-				return;
-			}
+			adminDeleteResult.textContent =
+				'この状態の申請は削除できません。';
 
-			if (
-				currentRequest.status !==
-				'pending'
-			) {
-				showReviewResult(
-					'この申請はすでに処理されています。',
-					'error'
-				);
-
-				return;
-			}
-
-			const comment =
-				reviewCommentInput.value.trim();
-
-			if (
-				status === 'rejected' &&
-				!comment
-			) {
-				showReviewResult(
-					'却下する場合は、レビューコメントに理由を入力してください。',
-					'error'
-				);
-
-				reviewCommentInput.focus();
-
-				return;
-			}
-
-			const actionLabel =
-				status === 'approved'
-					? '承認'
-					: '却下';
-
-			const confirmed =
-				window.confirm(
-					`この申請を「${actionLabel}」しますか？\n\n` +
-					'この操作は申請の状態を変更します。'
-				);
-
-			if (!confirmed) {
-				return;
-			}
-
-			reviewProcessing =
-				true;
-
-			setReviewButtonsDisabled(
-				true
-			);
-
-			reviewResult.hidden =
-				true;
-
-			try {
-				const response =
-					await fetch(
-						`/api/wiki/edit-requests/${encodeURIComponent(id)}/review`,
-						{
-							method:
-								'POST',
-
-							credentials:
-								'include',
-
-							headers: {
-								'Content-Type':
-									'application/json',
-							},
-
-							body:
-								JSON.stringify({
-									status,
-									comment:
-										comment ||
-										undefined,
-								}),
-						}
-					);
-
-				const data =
-					await response
-						.json()
-						.catch(
-							() => null
-						);
-
-				if (!response.ok) {
-					throw new Error(
-						data?.error ||
-						`レビュー処理に失敗しました。HTTP ${response.status}`
-					);
-				}
-
-				showReviewResult(
-					`申請を「${actionLabel}」しました。申請情報を更新しています…`,
-					'success'
-				);
-
-				await loadRequest();
-
-				reviewCommentInput.value =
-					'';
-
-				showReviewResult(
-					`申請を「${actionLabel}」しました。`,
-					'success'
-				);
-			} catch (error) {
-				console.error(error);
-
-				showReviewResult(
-					error instanceof Error
-						? error.message
-						: 'レビュー処理に失敗しました。',
-					'error'
-				);
-
-				setReviewButtonsDisabled(
-					false
-				);
-			} finally {
-				reviewProcessing =
-					false;
-
-				if (
-					currentRequest &&
-					currentRequest.status ===
-						'pending'
-				) {
-					setReviewButtonsDisabled(
-						false
-					);
-				}
-			}
+			return;
 		}
 
-		async function performPublish() {
-			if (publishProcessing) {
-				return;
+		const statusLabel =
+			getStatusLabel(
+				currentRequest.status
+			);
+
+		const confirmed =
+			window.confirm(
+				'この申請を管理者として削除しますか？\n\n' +
+				`現在の状態：${statusLabel}\n\n` +
+				'削除した申請は元に戻せません。\n' +
+				'公開済みのページや公開済みRevisionは削除されません。'
+			);
+
+		if (!confirmed) {
+			return;
+		}
+
+		adminDeleteProcessing =
+			true;
+
+		adminDeleteButton.disabled =
+			true;
+
+		adminDeleteResult.hidden =
+			false;
+
+		adminDeleteResult.textContent =
+			'申請を削除しています…';
+
+		try {
+			const response =
+				await fetch(
+					`/api/wiki/edit-requests/${encodeURIComponent(id)}`,
+					{
+						method:
+							'DELETE',
+
+						credentials:
+							'include',
+					}
+				);
+
+			const data =
+				await response
+					.json()
+					.catch(
+						() => null
+					);
+
+			if (!response.ok) {
+				throw new Error(
+					data?.error ||
+					`申請の削除に失敗しました。HTTP ${response.status}`
+				);
 			}
 
-			if (!currentRequest) {
-				return;
-			}
+			adminDeleteResult.textContent =
+				'申請を削除しました。申請一覧へ移動します…';
 
-			if (
-				currentRequest.status !==
+			window.setTimeout(
+				() => {
+					window.location.href =
+						'/wiki/requests/';
+				},
+				500
+			);
+		} catch (error) {
+			console.error(error);
+
+			adminDeleteResult.textContent =
+				error instanceof Error
+					? error.message
+					: '申請の削除に失敗しました。';
+
+			adminDeleteButton.disabled =
+				false;
+
+			adminDeleteProcessing =
+				false;
+		}
+	}
+
+	approveButton.addEventListener(
+		'click',
+		() =>
+			performReview(
 				'approved'
-			) {
-				showPublishStatus(
-					'この申請は現在、公開処理を開始できる状態ではありません。',
-					'error'
-				);
+			)
+	);
 
-				return;
-			}
+	rejectButton.addEventListener(
+		'click',
+		() =>
+			performReview(
+				'rejected'
+			)
+	);
 
-			const confirmed =
-				window.confirm(
-					'この申請の公開処理を開始しますか？\n\n' +
-					'GitHubに公開用ブランチを作成し、変更をコミットしてPull Requestを作成します。\n\n' +
-					'Pull Requestがmainへマージされるまで、申請は「公開処理中」になります。'
-				);
+	publishButton.addEventListener(
+		'click',
+		performPublish
+	);
 
-			if (!confirmed) {
-				return;
-			}
+	deleteDraftButton.addEventListener(
+		'click',
+		performDeleteDraft
+	);
 
-			publishProcessing =
+	adminDeleteButton.addEventListener(
+		'click',
+		performAdminDelete
+	);
+
+	async function initialize() {
+		try {
+			currentUser =
+				await loadCurrentUser();
+
+			await loadRequest();
+
+			loadingState.hidden =
 				true;
 
-			setPublishButtonDisabled(
-				true
-			);
-
-			publishPrLink.hidden =
+			errorState.hidden =
 				true;
 
-			showPublishStatus(
-				'公開処理を開始しています…'
-			);
+			content.hidden =
+				false;
+		} catch (error) {
+			console.error(error);
 
-			try {
-				const response =
-					await fetch(
-						`/api/wiki/edit-requests/${encodeURIComponent(id)}/publish`,
-						{
-							method:
-								'POST',
+			loadingState.hidden =
+				true;
 
-							credentials:
-								'include',
+			errorState.hidden =
+				false;
 
-							headers: {
-								'Content-Type':
-									'application/json',
-							},
-						}
-					);
-
-				const data =
-					await response
-						.json()
-						.catch(
-							() => null
-						);
-
-				if (!response.ok) {
-					throw new Error(
-						data?.message ||
-						data?.error ||
-						`公開処理に失敗しました。HTTP ${response.status}`
-					);
-				}
-
-				const pullRequest =
-					data?.github?.pullRequest;
-
-				if (
-					pullRequest?.html_url
-				) {
-					publishPrLink.href =
-						pullRequest.html_url;
-
-					publishPrLink.hidden =
-						false;
-				}
-
-				showPublishStatus(
-					'GitHubへの公開処理が完了しました。Pull Requestが作成されています。mainへのマージ後、Webhookによって公開済みに更新されます。',
-					'success'
-				);
-
-				await loadRequest();
-			} catch (error) {
-				console.error(error);
-
-				showPublishStatus(
-					error instanceof Error
-						? error.message
-						: '公開処理に失敗しました。',
-					'error'
-				);
-
-				setPublishButtonDisabled(
-					false
-				);
-
-				await loadRequest().catch(
-					() => {}
-				);
-			} finally {
-				publishProcessing =
-					false;
-			}
+			errorState.textContent =
+				error instanceof Error
+					? error.message
+					: '申請情報を読み込めませんでした。';
 		}
+	}
 
-		approveButton.addEventListener(
-			'click',
-			() =>
-				performReview(
-					'approved'
-				)
-		);
+	initialize();
+</script>
 
-		rejectButton.addEventListener(
-			'click',
-			() =>
-				performReview(
-					'rejected'
-				)
-		);
-
-		publishButton.addEventListener(
-			'click',
-			performPublish
-		);
-
-		async function initialize() {
-			try {
-				currentUser =
-					await loadCurrentUser();
-
-				await loadRequest();
-
-				loadingState.hidden =
-					true;
-
-				errorState.hidden =
-					true;
-
-				content.hidden =
-					false;
-			} catch (error) {
-				console.error(error);
-
-				loadingState.hidden =
-					true;
-
-				errorState.hidden =
-					false;
-
-				errorState.textContent =
-					error instanceof Error
-						? error.message
-						: '申請情報を読み込めませんでした。';
-			}
-		}
-
-		initialize();
-	</script>
 </body>
 </html>

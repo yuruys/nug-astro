@@ -22,6 +22,17 @@
  * nug_session Cookie
  *   ↓
  * /account/
+ *
+ * ---------------------------------------------------------
+ * メールアドレスについて
+ * ---------------------------------------------------------
+ * 今後のGoogle OAuthではメールアドレスを取得・保存しない。
+ *
+ * - Google OAuth scope では email を要求しない
+ * - Google UserInfo の email を必須にしない
+ * - 既存ユーザーの users.email は変更しない
+ * - 新規ユーザーの users.email は保存しない
+ * - 既存の users.email カラムは維持する
  * ========================================================= */
 
 
@@ -90,6 +101,7 @@ export const onRequestGet: PagesFunction<{
 	 * OAuthフローごとに独立したstateを保持する。
 	 */
 	const stateCookieName = `nug_oauth_state_${state}`;
+
 	const stateCookiePattern = new RegExp(
 		`(?:^|;\\s*)${stateCookieName}=([^;]+)`,
 	);
@@ -263,12 +275,12 @@ export const onRequestGet: PagesFunction<{
 
 	/* =====================================================
 	 * 11. 必須ユーザー情報を確認
+	 * -----------------------------------------------------
+	 * メールアドレスは取得しないため、
+	 * Googleアカウント識別子である sub のみ必須とする。
 	 * ===================================================== */
 
-	if (
-		!googleUser.sub ||
-		!googleUser.email
-	) {
+	if (!googleUser.sub) {
 		return new Response(
 			'Googleから必要なユーザー情報を取得できませんでした。',
 			{
@@ -311,7 +323,7 @@ export const onRequestGet: PagesFunction<{
 			.first<{
 				id: string;
 				display_name: string;
-				email: string;
+				email: string | null;
 				avatar_url: string | null;
 				role: string;
 			}>();
@@ -319,6 +331,11 @@ export const onRequestGet: PagesFunction<{
 
 	/* =====================================================
 	 * 13. 既存ユーザーならそのユーザーを使用
+	 * -----------------------------------------------------
+	 * 既存ユーザーの email は絶対に更新しない。
+	 *
+	 * 既に保存されているメールアドレスがある場合も、
+	 * その値をそのまま維持する。
 	 * ===================================================== */
 
 	let userId: string;
@@ -331,20 +348,13 @@ export const onRequestGet: PagesFunction<{
 				UPDATE users
 				SET
 					display_name = ?,
-					email = ?,
 					avatar_url = ?,
 					updated_at = datetime('now')
 				WHERE id = ?
 			`)
 			.bind(
-				userId
-					? (
-						googleUser.name ??
-						googleUser.email
-					)
-					: googleUser.email,
-
-				googleUser.email,
+				googleUser.name ??
+					existingIdentity.display_name,
 
 				googleUser.picture ??
 					null,
@@ -357,6 +367,12 @@ export const onRequestGet: PagesFunction<{
 
 		/* =================================================
 		 * 14. 新規ユーザーを作成
+		 * -------------------------------------------------
+		 * email カラムには値を保存しない。
+		 *
+		 * users.email は既存データとの互換性のため
+		 * データベース上には残すが、
+		 * 今後Google OAuthから新たに収集することはない。
 		 * ================================================= */
 
 		userId =
@@ -367,14 +383,12 @@ export const onRequestGet: PagesFunction<{
 				INSERT INTO users (
 					id,
 					display_name,
-					email,
 					avatar_url,
 					role,
 					created_at,
 					updated_at
 				)
 				VALUES (
-					?,
 					?,
 					?,
 					?,
@@ -387,9 +401,7 @@ export const onRequestGet: PagesFunction<{
 				userId,
 
 				googleUser.name ??
-					googleUser.email,
-
-				googleUser.email,
+					'Googleユーザー',
 
 				googleUser.picture ??
 					null,
@@ -473,7 +485,7 @@ export const onRequestGet: PagesFunction<{
 
 	/* =====================================================
 	 * 17. セッションCookieを発行
-	 * ===================================================== */
+	 * ================================================= */
 
 	const headers =
 		new Headers();

@@ -27,7 +27,7 @@ export const onRequestGet: PagesFunction<{
 
 	googleAuthUrl.searchParams.set(
 		'scope',
-		'openid email profile',
+		'openid profile',
 	);
 
 	googleAuthUrl.searchParams.set(
