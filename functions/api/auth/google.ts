@@ -49,7 +49,7 @@ export const onRequestGet: PagesFunction<{
 
 	headers.append(
 		'Set-Cookie',
-		`nug_oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
+		`nug_oauth_state_${state}=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
 	);
 
 	return new Response(null, {

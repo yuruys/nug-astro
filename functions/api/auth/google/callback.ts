@@ -80,9 +80,21 @@ export const onRequestGet: PagesFunction<{
 	const cookie =
 		request.headers.get('Cookie') ?? '';
 
-	const stateMatch = cookie.match(
-		/(?:^|;\s*)nug_oauth_state=([^;]+)/,
+	/*
+	 * stateごとに専用Cookieを使用する。
+	 *
+	 * 以前は nug_oauth_state という固定Cookieを1つだけ使用していたため、
+	 * 複数タブ・複数回のOAuth開始でstateが上書きされる可能性があった。
+	 *
+	 * 現在は nug_oauth_state_<state> というCookie名にすることで、
+	 * OAuthフローごとに独立したstateを保持する。
+	 */
+	const stateCookieName = `nug_oauth_state_${state}`;
+	const stateCookiePattern = new RegExp(
+		`(?:^|;\\s*)${stateCookieName}=([^;]+)`,
 	);
+
+	const stateMatch = cookie.match(stateCookiePattern);
 
 	if (!stateMatch) {
 		return new Response(
@@ -495,13 +507,13 @@ export const onRequestGet: PagesFunction<{
 
 
 	/* -----------------------------------------------------
-	 * OAuth state Cookieを削除
+	 * 今回使用したOAuth state Cookieだけを削除
 	 * ----------------------------------------------------- */
 
 	headers.append(
 		'Set-Cookie',
 		[
-			'nug_oauth_state=',
+			`${stateCookieName}=`,
 			'Path=/',
 			'HttpOnly',
 			'Secure',
