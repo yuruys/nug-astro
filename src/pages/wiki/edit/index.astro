@@ -938,6 +938,144 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 
 
 			/* ========================================
+			   Starlight preview preparation
+			======================================== */
+
+			function escapeHtml(value: unknown): string {
+				return String(value ?? '')
+					.replaceAll('&', '&amp;')
+					.replaceAll('<', '&lt;')
+					.replaceAll('>', '&gt;')
+					.replaceAll('"', '&quot;')
+					.replaceAll("'", '&#39;');
+			}
+
+
+			function sanitizePreviewHref(value: unknown): string {
+				const href = String(value ?? '').trim();
+
+				if (!href) return '#';
+				if (href.startsWith('/')) return href;
+				if (href.startsWith('#')) return href;
+
+				try {
+					const url = new URL(href, window.location.origin);
+					if (url.protocol === 'http:' || url.protocol === 'https:') {
+						return url.href;
+					}
+				} catch {
+					return '#';
+				}
+
+				return '#';
+			}
+
+
+			function renderStarlightLinkCard(attributes: string): string {
+				const titleMatch = attributes.match(/title\s*=\s*["']([^"']*)["']/i);
+				const hrefMatch = attributes.match(/href\s*=\s*["']([^"']*)["']/i);
+				const descriptionMatch = attributes.match(/description\s*=\s*["']([^"']*)["']/i);
+
+				const title = titleMatch?.[1]?.trim() || 'リンク';
+				const href = sanitizePreviewHref(hrefMatch?.[1] || '#');
+				const description = descriptionMatch?.[1]?.trim() || '';
+
+				return `
+<a class="starlight-link-card" href="${escapeHtml(href)}">
+	<span class="starlight-link-card-title">${escapeHtml(title)}</span>
+	${description ? `<span class="starlight-link-card-description">${escapeHtml(description)}</span>` : ''}
+	<span class="starlight-link-card-arrow" aria-hidden="true">→</span>
+</a>`;
+			}
+
+
+			function transformStarlightLinkCards(source: string): string {
+				return source.replace(
+					/<CardGrid\s*>\s*([\s\S]*?)\s*<\/CardGrid>/gi,
+					(_match, body: string) => {
+						const cards: string[] = [];
+						const cardPattern = /<LinkCard\s+([\s\S]*?)\/\s*>/gi;
+						let match: RegExpExecArray | null;
+
+						while ((match = cardPattern.exec(body)) !== null) {
+							cards.push(renderStarlightLinkCard(match[1]));
+						}
+
+						if (!cards.length) return '';
+						return `\n<div class="starlight-card-grid">${cards.join('')}</div>\n`;
+					}
+				);
+			}
+
+
+			async function transformStarlightAdmonitions(source: string): Promise<string> {
+				const pattern = /^\s*:::(note|tip|caution|danger)(?:\[([^\]]*)\])?\s*\n([\s\S]*?)^\s*:::\s*$/gim;
+				const matches = [...source.matchAll(pattern)];
+				const defaultTitles: Record<string, string> = {
+					note: '注記',
+					tip: 'ヒント',
+					caution: '注意',
+					danger: '警告',
+				};
+
+				for (const match of matches.reverse()) {
+					const [fullMatch, type, label, body] = match;
+					const start = match.index;
+
+					if (start === undefined) {
+						continue;
+					}
+
+					const title = label?.trim() || defaultTitles[type] || type;
+					const renderedBody = await marked.parse(
+						body.trim(),
+						{
+							gfm: true,
+							breaks: false,
+						}
+					);
+
+					const replacement = `
+<div class="starlight-admonition starlight-admonition-${type}" data-admonition="${type}">
+<div class="starlight-admonition-title">${escapeHtml(title)}</div>
+<div class="starlight-admonition-body">
+${renderedBody}
+</div>
+</div>
+`;
+
+					source =
+						source.slice(0, start) +
+						replacement +
+						source.slice(start + fullMatch.length);
+				}
+
+				return source;
+			}
+
+
+			async function prepareStarlightPreview(source: string): Promise<string> {
+				let prepared = String(source ?? '');
+
+				prepared = prepared.replace(
+					/^\uFEFF?---[ \t]*\r?\n[\s\S]*?\r?\n---[ \t]*(?:\r?\n|$)/,
+					''
+				);
+
+				// MDXのimportはプレビューでは実行せず、表示対象から除外します。
+				prepared = prepared.replace(
+					/^\s*import\s+[\s\S]*?from\s+["'][^"']+["']\s*;?\s*$/gim,
+					''
+				);
+
+				prepared = transformStarlightLinkCards(prepared);
+				prepared = await transformStarlightAdmonitions(prepared);
+
+				return prepared;
+			}
+
+
+			/* ========================================
 			   Markdown preview
 			======================================== */
 
@@ -963,10 +1101,12 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 
 
 				try {
+					const previewSource =
+						await prepareStarlightPreview(source);
 
 					const html =
 						await marked.parse(
-							source,
+							previewSource,
 							{
 								gfm: true,
 								breaks: false,
@@ -3310,6 +3450,116 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 	}
 
 
+	/* =========================================================
+	   Starlight preview components
+	   ========================================================= */
+
+	:global(.markdown-preview .starlight-admonition) {
+		position: relative;
+		margin: 20px 0;
+		padding: 0 16px 14px;
+		border: 1px solid var(--nug-border);
+		border-left: 4px solid var(--nug-sky);
+		border-radius: var(--nug-radius-small);
+		background: linear-gradient(135deg, rgba(111, 171, 193, 0.12), transparent 48%), #20272b;
+		box-shadow: 0 3px 0 #090b0c, inset 0 1px 0 rgba(255, 255, 255, 0.025);
+	}
+
+	:global(.markdown-preview .starlight-admonition-title) {
+		margin: 0 -16px 12px;
+		padding: 10px 14px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+		color: var(--nug-text-strong);
+		font-weight: 900;
+		line-height: 1.4;
+	}
+
+	:global(.markdown-preview .starlight-admonition-body > :first-child) {
+		margin-top: 0;
+	}
+
+	:global(.markdown-preview .starlight-admonition-body > :last-child) {
+		margin-bottom: 0;
+	}
+
+	:global(.markdown-preview .starlight-admonition-note) {
+		border-left-color: var(--nug-sky);
+	}
+
+	:global(.markdown-preview .starlight-admonition-tip) {
+		border-left-color: var(--nug-green);
+		background: linear-gradient(135deg, rgba(105, 201, 107, 0.12), transparent 48%), #202a23;
+	}
+
+	:global(.markdown-preview .starlight-admonition-caution) {
+		border-left-color: var(--nug-gold);
+		background: linear-gradient(135deg, rgba(227, 198, 106, 0.12), transparent 48%), #2b2921;
+	}
+
+	:global(.markdown-preview .starlight-admonition-danger) {
+		border-left-color: var(--nug-danger);
+		background: linear-gradient(135deg, rgba(228, 123, 123, 0.12), transparent 48%), #2c2325;
+	}
+
+	:global(.markdown-preview .starlight-card-grid) {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+		margin: 20px 0;
+	}
+
+	:global(.markdown-preview .starlight-link-card) {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 7px;
+		min-width: 0;
+		min-height: 116px;
+		padding: 16px 42px 16px 16px;
+		border: 1px solid var(--nug-border);
+		border-radius: var(--nug-radius-small);
+		background: linear-gradient(135deg, rgba(255, 247, 214, 0.04), transparent 38%), linear-gradient(180deg, #30373a, #252b2e);
+		box-shadow: 0 3px 0 #090b0c, inset 0 1px 0 rgba(255, 255, 255, 0.04);
+		color: var(--nug-text);
+		text-decoration: none;
+		transition: transform 120ms ease, border-color 120ms ease, filter 120ms ease;
+	}
+
+	:global(.markdown-preview .starlight-link-card:hover) {
+		border-color: var(--nug-gold);
+		filter: brightness(1.08);
+		transform: translateY(-1px);
+	}
+
+	:global(.markdown-preview .starlight-link-card:focus-visible) {
+		outline: 2px solid var(--nug-gold);
+		outline-offset: 3px;
+	}
+
+	:global(.markdown-preview .starlight-link-card-title) {
+		color: var(--nug-text-strong);
+		font-size: 1rem;
+		font-weight: 900;
+		line-height: 1.4;
+	}
+
+	:global(.markdown-preview .starlight-link-card-description) {
+		color: var(--nug-muted);
+		font-size: 0.82rem;
+		line-height: 1.6;
+	}
+
+	:global(.markdown-preview .starlight-link-card-arrow) {
+		position: absolute;
+		right: 16px;
+		top: 50%;
+		transform: translateY(-50%);
+		color: var(--nug-green-bright);
+		font-size: 20px;
+		font-weight: 900;
+	}
+
+
 	.preview-error {
 		padding:
 			16px;
@@ -3969,6 +4219,9 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 	   ========================================================= */
 
 	@media (max-width: 700px) {
+		:global(.markdown-preview .starlight-card-grid) {
+			grid-template-columns: minmax(0, 1fr);
+		}
 
 		.editor-page {
 			padding:
