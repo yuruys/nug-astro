@@ -1,4 +1,6 @@
 ---
+import WikiAdminHeader from '../../../components/WikiAdminHeader.astro';
+
 const title = 'Wiki編集申請 | NUGBASE';
 const description = 'NUGBASE Wikiの下書き・編集申請を管理します。';
 ---
@@ -690,6 +692,52 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 
 	.request-section {
 		margin-top: 32px;
+	}
+
+	.status-filter {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+		margin: 22px 0 8px;
+	}
+
+	.status-filter-label {
+		margin-right: 4px;
+		color: var(--text-muted);
+		font-size: 0.78rem;
+		font-weight: 850;
+	}
+
+	.status-filter-button {
+		min-height: 38px;
+		padding: 6px 12px;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-small);
+		background: var(--surface-soft);
+		color: var(--text-soft);
+		font-size: 0.78rem;
+		font-weight: 850;
+		cursor: pointer;
+		box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+		transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+	}
+
+	.status-filter-button:hover {
+		border-color: var(--accent);
+		color: var(--text);
+	}
+
+	.status-filter-button[aria-pressed="true"] {
+		border-color: var(--accent-dark);
+		background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+		color: #ffffff;
+		box-shadow: var(--shadow-button);
+	}
+
+	.status-filter-button:focus-visible {
+		outline: 2px solid var(--highlight);
+		outline-offset: 2px;
 	}
 
 	.request-section:first-of-type {
@@ -1401,27 +1449,13 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 	</head>
 
 	<body>
+		<WikiAdminHeader active="requests" />
+
 		<main class="requests-page">
 
 			<!-- =====================================================
 			     Topbar
 			     ===================================================== -->
-
-			<div class="topbar">
-				<a
-					href="/account/"
-					class="back-link"
-				>
-					<span aria-hidden="true">
-						←
-					</span>
-
-					<span>
-						アカウントへ戻る
-					</span>
-				</a>
-			</div>
-
 
 			<!-- =====================================================
 			     Main
@@ -1508,7 +1542,7 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 								</span>
 
 								<span class="summary-label">
-									レビュー申請中
+									申請中
 								</span>
 							</div>
 
@@ -1539,10 +1573,21 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 							</div>
 						</div>
 
+						<div class="status-filter" role="group" aria-label="申請statusで絞り込み">
+							<span class="status-filter-label">ステータス</span>
+							<button class="status-filter-button" type="button" data-status-filter="all" aria-pressed="true">すべて</button>
+							<button class="status-filter-button" type="button" data-status-filter="draft" aria-pressed="false">下書き</button>
+							<button class="status-filter-button" type="button" data-status-filter="pending" aria-pressed="false">申請中</button>
+							<button class="status-filter-button" type="button" data-status-filter="rejected" aria-pressed="false">却下</button>
+							<button class="status-filter-button" type="button" data-status-filter="approved" aria-pressed="false">承認済み</button>
+							<button class="status-filter-button" type="button" data-status-filter="publishing" aria-pressed="false">公開処理中</button>
+							<button class="status-filter-button" type="button" data-status-filter="published" aria-pressed="false">公開済み</button>
+						</div>
+
 
 						<!-- Draft -->
 
-						<section class="request-section">
+						<section class="request-section" data-status-section="draft">
 							<div class="section-heading">
 								<h2>
 									下書き
@@ -1565,10 +1610,10 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 
 						<!-- Pending -->
 
-						<section class="request-section">
+						<section class="request-section" data-status-section="pending">
 							<div class="section-heading">
 								<h2>
-									レビュー申請中
+									申請中
 								</h2>
 
 								<span
@@ -1588,7 +1633,7 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 
 						<!-- Approved -->
 
-						<section class="request-section">
+						<section class="request-section" data-status-section="approved">
 							<div class="section-heading">
 								<h2>
 									承認済み
@@ -1611,7 +1656,7 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 
 						<!-- Rejected -->
 
-						<section class="request-section">
+						<section class="request-section" data-status-section="rejected">
 							<div class="section-heading">
 								<h2>
 									却下
@@ -1634,7 +1679,7 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 
 						<!-- Publishing -->
 
-						<section class="request-section">
+						<section class="request-section" data-status-section="publishing">
 							<div class="section-heading">
 								<h2>
 									公開処理中
@@ -1657,7 +1702,7 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 
 						<!-- Published -->
 
-						<section class="request-section">
+						<section class="request-section" data-status-section="published">
 							<div class="section-heading">
 								<h2>
 									公開済み
@@ -1765,6 +1810,7 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 				message?: string | null;
 
 				user_id?: string;
+				user_display_name?: string;
 
 				created_at?: string;
 				reviewed_at?: string | null;
@@ -1799,6 +1845,36 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 					"#content",
 				);
 
+			const statusFilterButtons =
+				document.querySelectorAll<HTMLButtonElement>(
+					"[data-status-filter]",
+				);
+
+			const statusSections =
+				document.querySelectorAll<HTMLElement>(
+					"[data-status-section]",
+				);
+
+			statusFilterButtons.forEach((button) => {
+				button.addEventListener("click", () => {
+					const selectedStatus =
+						button.dataset.statusFilter || "all";
+
+					statusFilterButtons.forEach((filterButton) => {
+						filterButton.setAttribute(
+							"aria-pressed",
+							String(filterButton === button),
+						);
+					});
+
+					statusSections.forEach((section) => {
+						section.hidden =
+							selectedStatus !== "all" &&
+							section.dataset.statusSection !== selectedStatus;
+					});
+				});
+			});
+
 
 			/* =========================================================
 			   Status configuration
@@ -1821,7 +1897,7 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 				},
 
 				pending: {
-					label: "レビュー申請中",
+					label: "申請中",
 					className: "pending",
 					listId: "list-pending",
 					countId: "count-pending",
@@ -2088,6 +2164,15 @@ const description = 'NUGBASE Wikiの下書き・編集申請を管理します�
 									formatDate(
 										request.created_at,
 									),
+								)}
+							</span>
+
+							<span>
+								申請者：
+								${escapeHtml(
+									request.user_display_name ||
+									request.user_id ||
+									"不明",
 								)}
 							</span>
 

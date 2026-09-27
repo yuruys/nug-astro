@@ -1,4 +1,6 @@
 ---
+import WikiAdminHeader from '../../../components/WikiAdminHeader.astro';
+
 const title = 'Wiki編集申請 | NUGBASE';
 ---
 
@@ -598,6 +600,46 @@ textarea {
 	word-break: break-all;
 }
 
+.revision-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+	align-items: start;
+	gap: 16px;
+}
+
+.revision-grid > .card {
+	min-width: 0;
+}
+
+.revision-grid .markdown-source,
+.revision-grid .preview {
+	min-height: 540px;
+	max-height: 760px;
+	overflow: auto;
+}
+
+.detail-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 38px;
+	margin-bottom: 12px;
+	color: var(--blue);
+	font-size: 13px;
+	font-weight: 800;
+	text-decoration: none;
+}
+
+.detail-back:hover {
+	color: #a1d4f3;
+	text-decoration: underline;
+}
+
+.detail-back:focus-visible {
+	outline: 2px solid var(--yellow);
+	outline-offset: 3px;
+}
+
 /* =========================================================
    Status Flow
 ========================================================= */
@@ -897,7 +939,7 @@ textarea {
    Preview
 ========================================================= */
 
-.preview {
+:global(.preview) {
 	min-height: 120px;
 
 	padding: 24px;
@@ -917,18 +959,15 @@ textarea {
 	overflow-wrap: anywhere;
 }
 
-.preview > :first-child {
+:global(.preview > :first-child) {
 	margin-top: 0;
 }
 
-.preview > :last-child {
+:global(.preview > :last-child) {
 	margin-bottom: 0;
 }
 
-.preview h1,
-.preview h2,
-.preview h3,
-.preview h4 {
+:global(.preview h1, .preview h2, .preview h3, .preview h4) {
 	color: #f3f5f2;
 
 	line-height: 1.35;
@@ -938,13 +977,13 @@ textarea {
 		0 1px 0 #111416;
 }
 
-.preview h1 {
+:global(.preview h1) {
 	margin-top: 0;
 
 	font-size: 28px;
 }
 
-.preview h2 {
+:global(.preview h2) {
 	position: relative;
 
 	margin-top: 30px;
@@ -955,7 +994,7 @@ textarea {
 	font-size: 22px;
 }
 
-.preview h2::before {
+:global(.preview h2::before) {
 	content: "";
 
 	position: absolute;
@@ -968,38 +1007,38 @@ textarea {
 	background: var(--accent);
 }
 
-.preview h3 {
+:global(.preview h3) {
 	margin-top: 24px;
 
 	font-size: 18px;
 }
 
-.preview h4 {
+:global(.preview h4) {
 	margin-top: 20px;
 
 	font-size: 15px;
 }
 
-.preview p {
+:global(.preview p) {
 	margin: 12px 0;
 }
 
-.preview a {
+:global(.preview a) {
 	color: var(--blue);
 
 	text-decoration-thickness: 1px;
 	text-underline-offset: 3px;
 }
 
-.preview a:hover {
+:global(.preview a:hover) {
 	color: #a1d4f3;
 }
 
-.preview strong {
+:global(.preview strong) {
 	color: #ffffff;
 }
 
-.preview code {
+:global(.preview code) {
 	padding: 2px 6px;
 
 	border: 1px solid #3b4348;
@@ -1018,7 +1057,7 @@ textarea {
 	font-size: 0.92em;
 }
 
-.preview pre {
+:global(.preview pre) {
 	overflow-x: auto;
 
 	margin: 16px 0;
@@ -1039,7 +1078,7 @@ textarea {
 		inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
 
-.preview pre code {
+:global(.preview pre code) {
 	padding: 0;
 
 	border: 0;
@@ -1047,7 +1086,7 @@ textarea {
 	background: transparent;
 }
 
-.preview blockquote {
+:global(.preview blockquote) {
 	margin: 16px 0;
 
 	padding: 11px 15px 11px 17px;
@@ -1060,23 +1099,22 @@ textarea {
 	color: var(--text-soft);
 }
 
-.preview ul,
-.preview ol {
+:global(.preview ul, .preview ol) {
 	padding-left: 24px;
 }
 
-.preview li + li {
+:global(.preview li + li) {
 	margin-top: 4px;
 }
 
-.preview hr {
+:global(.preview hr) {
 	margin: 24px 0;
 
 	border: 0;
 	border-top: 1px solid var(--border);
 }
 
-.preview img {
+:global(.preview img) {
 	max-width: 100%;
 	height: auto;
 
@@ -1086,7 +1124,7 @@ textarea {
 	box-shadow: var(--shadow-small);
 }
 
-.preview table {
+:global(.preview table) {
 	width: 100%;
 
 	margin: 18px 0;
@@ -1096,8 +1134,7 @@ textarea {
 	background: #252a2d;
 }
 
-.preview th,
-.preview td {
+:global(.preview th, .preview td) {
 	padding: 9px 11px;
 
 	border: 1px solid var(--border);
@@ -1106,7 +1143,7 @@ textarea {
 	vertical-align: top;
 }
 
-.preview th {
+:global(.preview th) {
 	background:
 		linear-gradient(
 			180deg,
@@ -1119,15 +1156,15 @@ textarea {
 	font-weight: 900;
 }
 
-.preview tr:nth-child(even) td {
+:global(.preview tr:nth-child(even) td) {
 	background: rgba(255, 255, 255, 0.015);
 }
 
 /* =========================================================
-   Starlight Admonitions
+   Starlight Preview Extensions
 ========================================================= */
 
-.preview .starlight-admonition {
+:global(.preview .starlight-admonition) {
 	position: relative;
 	margin: 20px 0;
 	padding: 0 16px 14px;
@@ -1138,7 +1175,7 @@ textarea {
 	box-shadow: 0 3px 0 #111416, inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
 
-.preview .starlight-admonition-title {
+:global(.preview .starlight-admonition-title) {
 	margin: 0 -16px 12px -16px;
 	padding: 10px 14px;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -1147,35 +1184,30 @@ textarea {
 	line-height: 1.4;
 }
 
-.preview .starlight-admonition-body > :first-child { margin-top: 0; }
-.preview .starlight-admonition-body > :last-child { margin-bottom: 0; }
-
-.preview .starlight-admonition-note { border-left-color: var(--blue); }
-.preview .starlight-admonition-tip {
+:global(.preview .starlight-admonition-body > :first-child) { margin-top: 0; }
+:global(.preview .starlight-admonition-body > :last-child) { margin-bottom: 0; }
+:global(.preview .starlight-admonition-note) { border-left-color: var(--blue); }
+:global(.preview .starlight-admonition-tip) {
 	border-left-color: var(--accent);
 	background: linear-gradient(135deg, rgba(85, 184, 92, 0.09), transparent 48%), #202821;
 }
-.preview .starlight-admonition-caution {
+:global(.preview .starlight-admonition-caution) {
 	border-left-color: var(--yellow);
 	background: linear-gradient(135deg, rgba(228, 198, 109, 0.09), transparent 48%), #292720;
 }
-.preview .starlight-admonition-danger {
+:global(.preview .starlight-admonition-danger) {
 	border-left-color: var(--red);
 	background: linear-gradient(135deg, rgba(229, 123, 123, 0.09), transparent 48%), #2a2224;
 }
 
-/* =========================================================
-   Starlight CardGrid / LinkCard
-========================================================= */
-
-.preview .starlight-card-grid {
+:global(.preview .starlight-card-grid) {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 14px;
 	margin: 20px 0;
 }
 
-.preview .starlight-link-card {
+:global(.preview .starlight-link-card) {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -1191,26 +1223,26 @@ textarea {
 	transition: transform 0.12s ease, border-color 0.12s ease, filter 0.12s ease;
 }
 
-.preview .starlight-link-card:hover {
+:global(.preview .starlight-link-card:hover) {
 	border-color: #758087;
 	filter: brightness(1.08);
 	transform: translateY(-1px);
 }
 
-.preview .starlight-link-card-title {
+:global(.preview .starlight-link-card-title) {
 	color: #f3f5f2;
 	font-size: 16px;
 	font-weight: 950;
 	line-height: 1.4;
 }
 
-.preview .starlight-link-card-description {
+:global(.preview .starlight-link-card-description) {
 	color: var(--text-soft);
 	font-size: 13px;
 	line-height: 1.6;
 }
 
-.preview .starlight-link-card-arrow {
+:global(.preview .starlight-link-card-arrow) {
 	position: absolute;
 	right: 16px;
 	top: 50%;
@@ -1836,6 +1868,15 @@ textarea {
 ========================================================= */
 
 @media (max-width: 760px) {
+	.revision-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.revision-grid .markdown-source,
+	.revision-grid .preview {
+		min-height: 320px;
+		max-height: 560px;
+	}
 	.header-inner {
 		width: min(100% - 20px, 1200px);
 
@@ -1963,19 +2004,15 @@ textarea {
 		padding: 18px;
 	}
 
-	.preview h1 {
+	:global(.preview h1) {
 		font-size: 24px;
 	}
 
-	.preview h2 {
+	:global(.preview h2) {
 		font-size: 20px;
 	}
 
-	.preview .starlight-card-grid {
-		grid-template-columns: 1fr;
-	}
-
-	.preview table {
+	:global(.preview table) {
 		display: block;
 
 		overflow-x: auto;
@@ -2027,24 +2064,7 @@ textarea {
 </head>
 
 <body>
-	<header class="page-header">
-		<div class="header-inner">
-			<a href="/" class="brand" aria-label="NUGBASE ホーム">
-				<span class="brand-main">NUG</span>
-				<span class="brand-sub">Nekozouneko Unofficial Guide</span>
-			</a>
-
-		<div class="header-links">
-			<a href="/wiki/requests/" class="header-link">
-				申請一覧
-			</a>
-
-			<a href="/account/" class="header-link">
-				アカウント
-			</a>
-		</div>
-	</div>
-</header>
+	<WikiAdminHeader active="requests" />
 
 <main class="container">
 	<div id="loading-state" class="state">
@@ -2057,6 +2077,10 @@ textarea {
 
 	<div id="content" hidden>
 		<div class="page-title">
+			<a class="detail-back" href="/wiki/requests/">
+				<span aria-hidden="true">←</span>
+				<span>申請一覧へ戻る</span>
+			</a>
 			<h1>Wiki編集申請</h1>
 			<p>編集内容・レビュー状況・申請の進行状況を確認できます。</p>
 		</div>
@@ -2081,6 +2105,11 @@ textarea {
 						<div class="info-item">
 							<div class="info-label">ページタイトル</div>
 							<div id="page-title" class="info-value">-</div>
+						</div>
+
+						<div class="info-item">
+							<div class="info-label">申請者</div>
+							<div id="requester" class="info-value">-</div>
 						</div>
 
 						<div class="info-item">
@@ -2138,7 +2167,7 @@ textarea {
 							data-step="pending"
 						>
 							<span class="status-icon">○</span>
-							<span class="status-label">レビュー申請済み</span>
+							<span class="status-label">申請中</span>
 						</div>
 
 						<div
@@ -2313,33 +2342,25 @@ textarea {
 			     Markdown Source
 			======================================== -->
 
-			<section class="card">
-				<div class="card-header">
-					<h2 class="card-title">Markdown</h2>
-				</div>
+			<div class="revision-grid" aria-label="申請内容とプレビュー">
+				<section class="card">
+					<div class="card-header">
+						<h2 class="card-title">Markdown本文</h2>
+					</div>
 
-				<div class="card-body" style="padding: 0;">
-					<pre
-						id="markdown-source"
-						class="markdown-source"
-					></pre>
-				</div>
-			</section>
+					<div class="card-body" style="padding: 0;">
+						<pre id="markdown-source" class="markdown-source"></pre>
+					</div>
+				</section>
 
-			<!-- ========================================
-			     Preview
-			======================================== -->
+				<section class="card">
+					<div class="card-header">
+						<h2 class="card-title">プレビュー</h2>
+					</div>
 
-			<section class="card">
-				<div class="card-header">
-					<h2 class="card-title">プレビュー</h2>
-				</div>
-
-				<div
-					id="preview"
-					class="preview"
-				></div>
-			</section>
+					<div id="preview" class="preview"></div>
+				</section>
+			</div>
 
 			<!-- ========================================
 			     Actions
@@ -2426,6 +2447,9 @@ textarea {
 
 	const pageTitle =
 		document.querySelector('#page-title');
+
+	const requester =
+		document.querySelector('#requester');
 
 	const pagePath =
 		document.querySelector('#page-path');
@@ -2569,7 +2593,7 @@ textarea {
 				return '下書き';
 
 			case 'pending':
-				return 'レビュー申請中';
+				return '申請中';
 
 			case 'approved':
 				return '承認済み';
@@ -2848,109 +2872,6 @@ textarea {
 		}
 	}
 
-	function escapeHtml(value) {
-		return String(value ?? '')
-			.replaceAll('&', '&amp;')
-			.replaceAll('<', '&lt;')
-			.replaceAll('>', '&gt;')
-			.replaceAll('"', '&quot;')
-			.replaceAll("'", '&#39;');
-	}
-
-	function sanitizePreviewHref(value) {
-		const href = String(value ?? '').trim();
-
-		if (!href) return '#';
-		if (href.startsWith('/')) return href;
-		if (href.startsWith('#')) return href;
-
-		try {
-			const url = new URL(href, window.location.origin);
-			if (url.protocol === 'http:' || url.protocol === 'https:') return url.href;
-		} catch {
-			return '#';
-		}
-
-		return '#';
-	}
-
-	function renderStarlightLinkCard(attributes) {
-		const titleMatch = attributes.match(/title\s*=\s*["']([^"']*)["']/i);
-		const hrefMatch = attributes.match(/href\s*=\s*["']([^"']*)["']/i);
-		const descriptionMatch = attributes.match(/description\s*=\s*["']([^"']*)["']/i);
-
-		const title = titleMatch?.[1]?.trim() || 'リンク';
-		const href = sanitizePreviewHref(hrefMatch?.[1] || '#');
-		const description = descriptionMatch?.[1]?.trim() || '';
-
-		return `
-			<a class="starlight-link-card" href="${escapeHtml(href)}">
-				<span class="starlight-link-card-title">${escapeHtml(title)}</span>
-				${description ? `<span class="starlight-link-card-description">${escapeHtml(description)}</span>` : ''}
-				<span class="starlight-link-card-arrow" aria-hidden="true">→</span>
-			</a>`;
-	}
-
-	function transformStarlightLinkCards(source) {
-		return source.replace(
-			/<CardGrid\s*>\s*([\s\S]*?)\s*<\/CardGrid>/gi,
-			(_match, body) => {
-				const cards = [];
-				const cardPattern = /<LinkCard\s+([\s\S]*?)\/\s*>/gi;
-				let match;
-
-				while ((match = cardPattern.exec(body)) !== null) {
-					cards.push(renderStarlightLinkCard(match[1]));
-				}
-
-				if (!cards.length) return '';
-				return `\n<div class="starlight-card-grid">${cards.join('')}</div>\n`;
-			}
-		);
-	}
-
-	function transformStarlightAdmonitions(source) {
-		const pattern = /^\s*:::(note|tip|caution|danger)(?:\[([^\]]*)\])?\s*\n([\s\S]*?)^\s*:::\s*$/gim;
-
-		return source.replace(
-			pattern,
-			(_match, type, label, body) => {
-				const defaultTitles = {
-					note: '注記',
-					tip: 'ヒント',
-					caution: '注意',
-					danger: '警告',
-				};
-
-				const title = label?.trim() || defaultTitles[type] || type;
-
-				return `
-<aside class="starlight-admonition starlight-admonition-${type}" data-admonition="${type}">
-<div class="starlight-admonition-title">${escapeHtml(title)}</div>
-<div class="starlight-admonition-body">
-${body.trim()}
-</div>
-</aside>
-`;
-			}
-		);
-	}
-
-	function prepareStarlightPreview(source) {
-		let prepared = String(source ?? '');
-
-		// MDXのimportはプレビューでは実行せず、表示対象から除外します。
-		prepared = prepared.replace(
-			/^\s*import\s+[\s\S]*?from\s+["'][^"']+["']\s*;?\s*$/gim,
-			''
-		);
-
-		prepared = transformStarlightLinkCards(prepared);
-		prepared = transformStarlightAdmonitions(prepared);
-
-		return prepared;
-	}
-
 	function updateDeleteDraftControl() {
 		const isLoggedIn =
 			Boolean(currentUser);
@@ -3003,6 +2924,134 @@ ${body.trim()}
 		}
 	}
 
+	function escapeHtml(value) {
+		return String(value ?? '')
+			.replaceAll('&', '&amp;')
+			.replaceAll('<', '&lt;')
+			.replaceAll('>', '&gt;')
+			.replaceAll('"', '&quot;')
+			.replaceAll("'", '&#39;');
+	}
+
+	function sanitizePreviewHref(value) {
+		const href = String(value ?? '').trim();
+
+		if (!href) return '#';
+		if (href.startsWith('/')) return href;
+		if (href.startsWith('#')) return href;
+
+		try {
+			const url = new URL(href, window.location.origin);
+			if (url.protocol === 'http:' || url.protocol === 'https:') {
+				return url.href;
+			}
+		} catch {
+			return '#';
+		}
+
+		return '#';
+	}
+
+	function renderStarlightLinkCard(attributes) {
+		const titleMatch = attributes.match(/title\s*=\s*["']([^"']*)["']/i);
+		const hrefMatch = attributes.match(/href\s*=\s*["']([^"']*)["']/i);
+		const descriptionMatch = attributes.match(/description\s*=\s*["']([^"']*)["']/i);
+
+		const title = titleMatch?.[1]?.trim() || 'リンク';
+		const href = sanitizePreviewHref(hrefMatch?.[1] || '#');
+		const description = descriptionMatch?.[1]?.trim() || '';
+
+		return `
+<a class="starlight-link-card" href="${escapeHtml(href)}">
+	<span class="starlight-link-card-title">${escapeHtml(title)}</span>
+	${description ? `<span class="starlight-link-card-description">${escapeHtml(description)}</span>` : ''}
+	<span class="starlight-link-card-arrow" aria-hidden="true">→</span>
+</a>`;
+	}
+
+	function transformStarlightLinkCards(source) {
+		return source.replace(
+			/<CardGrid\s*>\s*([\s\S]*?)\s*<\/CardGrid>/gi,
+			(_match, body) => {
+				const cards = [];
+				const cardPattern = /<LinkCard\s+([\s\S]*?)\/\s*>/gi;
+				let match;
+
+				while ((match = cardPattern.exec(body)) !== null) {
+					cards.push(renderStarlightLinkCard(match[1]));
+				}
+
+				if (!cards.length) return '';
+				return `\n<div class="starlight-card-grid">${cards.join('')}</div>\n`;
+			}
+		);
+	}
+
+	async function transformStarlightAdmonitions(source) {
+		const pattern = /^\s*:::(note|tip|caution|danger)(?:\[([^\]]*)\])?\s*\n([\s\S]*?)^\s*:::\s*$/gim;
+		const matches = [...source.matchAll(pattern)];
+		const defaultTitles = {
+			note: '注記',
+			tip: 'ヒント',
+			caution: '注意',
+			danger: '警告',
+		};
+
+		for (const match of matches.reverse()) {
+			const [fullMatch, type, label, body] = match;
+			const start = match.index;
+
+			if (start === undefined) {
+				continue;
+			}
+
+			const title = label?.trim() || defaultTitles[type] || type;
+			const renderedBody = await marked.parse(
+				body.trim(),
+				{
+					gfm: true,
+					breaks: false,
+				}
+			);
+
+			const replacement = `
+<div class="starlight-admonition starlight-admonition-${type}" data-admonition="${type}">
+<div class="starlight-admonition-title">${escapeHtml(title)}</div>
+<div class="starlight-admonition-body">
+${renderedBody}
+</div>
+</div>
+`;
+
+			source =
+				source.slice(0, start) +
+				replacement +
+				source.slice(start + fullMatch.length);
+		}
+
+		return source;
+	}
+
+	async function prepareStarlightPreview(source) {
+		let prepared = String(source ?? '');
+
+		prepared = prepared.replace(
+			/^\uFEFF?---[ \t]*\r?\n[\s\S]*?\r?\n---[ \t]*(?:\r?\n|$)/,
+			''
+		);
+
+		// MDXのimportはプレビューでは実行せず、表示対象から除外します。
+		prepared = prepared.replace(
+			/^\s*import\s+[\s\S]*?from\s+["'][^"']+["']\s*;?\s*$/gim,
+			''
+		);
+
+		prepared = transformStarlightLinkCards(prepared);
+		prepared = await transformStarlightAdmonitions(prepared);
+
+		return prepared;
+	}
+
 	async function loadRequest() {
 		if (!id) {
 			throw new Error(
@@ -3051,6 +3100,11 @@ ${body.trim()}
 		pageTitle.textContent =
 			currentRequest.page_title ||
 			currentRequest.pagePath ||
+			'-';
+
+		requester.textContent =
+			currentRequest.user_display_name ||
+			currentRequest.user_id ||
 			'-';
 
 		pagePath.textContent =
@@ -3126,7 +3180,7 @@ ${body.trim()}
 			markdown;
 
 		const previewSource =
-			prepareStarlightPreview(
+			await prepareStarlightPreview(
 				markdown
 			);
 
@@ -3141,15 +3195,7 @@ ${body.trim()}
 
 		preview.innerHTML =
 			DOMPurify.sanitize(
-				renderedMarkdown,
-				{
-					USE_PROFILES: {
-						html: true,
-					},
-					ADD_ATTR: [
-						'data-admonition',
-					],
-				}
+				renderedMarkdown
 			);
 
 		const publicPath =

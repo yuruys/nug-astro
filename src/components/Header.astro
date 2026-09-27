@@ -2074,6 +2074,15 @@ const isActive = (href: string): boolean => {
 	}
 
 	:global(.nug-wiki-edit-button) {
+		--edit-button-bg: var(--color-accent-hover, var(--header-accent));
+		--edit-button-bg-hover: var(--color-grass-dark, #477d2b);
+		--edit-button-border: var(--color-grass-dark, var(--header-grass));
+		--edit-button-border-hover: var(--color-grass-light, var(--header-grass-light));
+		--edit-button-shadow: var(--color-shadow-strong, rgba(20, 30, 27, 0.28));
+		--edit-button-text: #fff;
+		--edit-button-focus: var(--color-gold-light, #efc45d);
+		--edit-button-transition: var(--transition-fast, 150ms ease);
+
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -2081,39 +2090,52 @@ const isActive = (href: string): boolean => {
 		flex-shrink: 0;
 		min-height: 38px;
 		padding: 0 13px;
-		border: 1px solid var(--header-grass);
+		border: 1px solid var(--edit-button-border);
 		border-radius: 0;
-		background: var(--header-accent);
+		background: var(--edit-button-bg);
 		color: #fff;
 		text-decoration: none;
 		font-size: 12px;
 		font-weight: 800;
 		line-height: 1;
 		box-shadow:
-			0 3px 0 var(--header-border-strong);
+			0 3px 0 var(--edit-button-shadow),
+			inset 0 1px 0 rgba(255, 255, 255, 0.18);
 		transition:
-			background var(--header-transition-fast),
-			border-color var(--header-transition-fast),
-			transform var(--header-transition-fast),
-			box-shadow var(--header-transition-fast);
+			background var(--edit-button-transition),
+			border-color var(--edit-button-transition),
+			transform var(--edit-button-transition),
+			box-shadow var(--edit-button-transition);
+	}
+
+	:global(html[data-theme="dark"] .nug-wiki-edit-button) {
+		--edit-button-bg: #3b702a;
+		--edit-button-bg-hover: var(--color-grass-dark, #477d2b);
+		--edit-button-border: var(--color-grass-light, #8ac95a);
+		--edit-button-border-hover: var(--color-gold-light, #efc45d);
+		--edit-button-shadow: var(--color-shadow-strong, rgba(0, 0, 0, 0.6));
 	}
 
 	:global(.nug-wiki-edit-button:hover) {
-		background: var(--header-grass-light);
-		border-color: var(--header-grass-light);
+		background: var(--edit-button-bg-hover);
+		border-color: var(--edit-button-border-hover);
+		color: var(--edit-button-text);
 		transform: translateY(-1px);
 		box-shadow:
-			0 4px 0 var(--header-border-strong);
+			0 4px 0 var(--edit-button-shadow),
+			inset 0 1px 0 rgba(255, 255, 255, 0.22);
 	}
 
 	:global(.nug-wiki-edit-button:active) {
+		color: var(--edit-button-text);
 		transform: translateY(2px);
 		box-shadow:
-			0 1px 0 var(--header-border-strong);
+			0 1px 0 var(--edit-button-shadow);
 	}
 
 	:global(.nug-wiki-edit-button:focus-visible) {
-		outline: 3px solid var(--header-gold-light);
+		color: var(--edit-button-text);
+		outline: 3px solid var(--edit-button-focus);
 		outline-offset: 2px;
 	}
 

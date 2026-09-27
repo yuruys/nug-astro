@@ -1,4 +1,6 @@
 ---
+import WikiAdminHeader from '../../../components/WikiAdminHeader.astro';
+
 const pagePath = Astro.url.searchParams.get('path') ?? '';
 ---
 
@@ -18,6 +20,8 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 	</head>
 
 	<body>
+		<WikiAdminHeader active="editor" />
+
 		<main class="editor-page">
 			<div class="editor-shell">
 
@@ -169,7 +173,7 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 								</span>
 
 								<span>
-									レビュー申請済み
+									申請中
 								</span>
 							</div>
 
@@ -296,6 +300,7 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 								id="edit-tab"
 								role="tab"
 								aria-selected="true"
+								aria-controls="edit-pane"
 								data-view="edit"
 							>
 								編集
@@ -307,6 +312,7 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 								id="preview-tab"
 								role="tab"
 								aria-selected="false"
+								aria-controls="preview-pane"
 								data-view="preview"
 							>
 								プレビュー
@@ -326,8 +332,11 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 							<!-- Markdown -->
 
 							<div
+								id="edit-pane"
 								class="editor-pane"
 								data-pane="edit"
+								role="tabpanel"
+								aria-labelledby="edit-tab"
 							>
 								<div class="pane-header">
 									<span>
@@ -353,8 +362,11 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 							<!-- Preview -->
 
 							<div
+								id="preview-pane"
 								class="preview-pane"
 								data-pane="preview"
+								role="tabpanel"
+								aria-labelledby="preview-tab"
 							>
 								<div class="pane-header">
 									<span>
@@ -680,10 +692,10 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 			const statusLabels:
 				Record<EditRequestStatus, string> = {
 					draft:
-						'編集中・下書き',
+						'下書き',
 
 					pending:
-						'レビュー申請済み',
+						'申請中',
 
 					approved:
 						'承認済み',
@@ -695,7 +707,7 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 						'公開済み',
 
 					rejected:
-						'差し戻し',
+						'却下',
 				};
 
 
@@ -920,7 +932,7 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 					'rejected'
 				) {
 					statusText.textContent =
-						'差し戻し';
+						'却下';
 				}
 			}
 
@@ -3984,7 +3996,10 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 
 		.header-actions {
 			display:
-				none;
+				flex;
+
+			width:
+				100%;
 		}
 
 
@@ -4274,6 +4289,11 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 
 
 		.button-large {
+			width:
+				100%;
+		}
+
+		.header-actions .button {
 			width:
 				100%;
 		}
