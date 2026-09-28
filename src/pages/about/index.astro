@@ -1,10 +1,1115 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+
+const contents = [
+	{
+		icon: "▤",
+		title: "攻略",
+		description:
+			"これから遊ぶ人や初心者に向けて、サーバーの遊び方や攻略情報、まだ知らない魅力を紹介します。",
+		href: "/guide/",
+		linkText: "攻略を見る",
+		className: "content-guide",
+	},
+	{
+		icon: "▥",
+		title: "Wiki",
+		description:
+			"サーバーの仕様やプラグインなど、すでに遊んでいる人が詳しく調べたい情報を整理しています。",
+		href: "/docs/",
+		linkText: "Wikiを見る",
+		className: "content-wiki",
+	},
+	{
+		icon: "▤",
+		title: "ニュース",
+		description:
+			"サーバーのイベントや仕様変更、Minecraftのアップデートなど、最新の情報をお届けします。",
+		href: "/news/",
+		linkText: "ニュースを見る",
+		className: "content-news",
+	},
+	{
+		icon: "⚒",
+		title: "ツール",
+		description:
+			"ゲーム内での計算や確認など、Minecraftマルチサーバーを遊ぶ際に役立つ便利なツールを提供します。",
+		href: "/tool/",
+		linkText: "ツールを見る",
+		className: "content-tool",
+	},
+];
 ---
 
-<Layout title="NUGについて | NUG" description="NUGについて紹介します。">
-	<section class="about-page">
-		<h1>NUGについて</h1>
-		<p>NUGはNekozouneko Serverに関する攻略・仕様・情報をまとめる非公式サイトです。</p>
-	</section>
+<Layout
+	title="NUGについて | NUGBASE"
+	description="NUGBASEについて。Minecraftマルチサーバーの攻略・仕様・ニュース・便利なツールをまとめた非公式情報サイトです。"
+>
+	<main class="about-page">
+		<!-- =====================================================
+		     Hero
+		====================================================== -->
+		<section class="about-hero">
+			<div class="hero-inner">
+				<p class="hero-eyebrow">ABOUT NUGBASE</p>
+
+				<h1>NUGBASEについて</h1>
+
+				<p class="hero-lead">
+					Minecraftマルチサーバーの情報を、<br />
+					もっと分かりやすく、もっと楽しく。
+				</p>
+			</div>
+
+			<div class="hero-decoration" aria-hidden="true">
+				<span class="pixel pixel-1"></span>
+				<span class="pixel pixel-2"></span>
+				<span class="pixel pixel-3"></span>
+				<span class="pixel pixel-4"></span>
+				<span class="pixel pixel-5"></span>
+			</div>
+		</section>
+
+		<div class="about-container">
+			<!-- =====================================================
+			     NUGBASEとは
+			====================================================== -->
+			<section class="about-section about-introduction">
+				<div class="section-heading">
+					<span class="section-marker" aria-hidden="true"></span>
+					<h2>NUGBASEとは</h2>
+				</div>
+
+				<div class="introduction-grid">
+					<div class="introduction-content">
+						<div class="site-name">
+							<strong>NUGBASE</strong>
+							<span>｜Minecraftマルチサーバー非公式情報サイト</span>
+						</div>
+
+						<p>
+							NUGBASEは、Minecraftマルチサーバーの
+							<strong>攻略・仕様・ニュース・便利なツール</strong>
+							をまとめた非公式情報サイトです。
+						</p>
+
+						<p>
+							これから遊び始める人には分かりやすい入口を、すでに遊んでいる人には詳しい仕様を。
+							さらに、まだ知らない遊び方やサーバーの魅力を見つけられる場所を目指しています。
+						</p>
+
+						<p>
+							Minecraftマルチサーバーをより深く、より楽しく遊ぶための情報基盤として、
+							さまざまな情報を整理し、必要な情報へ分かりやすくたどり着ける環境を提供します。
+						</p>
+
+						<p>
+							NUGという名称は、これまで運営してきた旧NUG攻略サイトで10か月にわたって培ってきた
+							機能や情報を統合し、さらに充実した情報を届けるため、
+							新たな形として<strong>「NUGBASE」</strong>へと発展したものです。
+						</p>
+					</div>
+
+					<!-- 沿革を紹介ページ上部にも見せる -->
+					<div class="introduction-side">
+						<div class="mini-history">
+							<p class="mini-history-label">NUG HISTORY</p>
+
+							<div class="mini-history-line">
+								<span>2025.11</span>
+								<strong>初代NUG攻略サイト</strong>
+							</div>
+
+							<div class="mini-history-line">
+								<span>2026.01</span>
+								<strong>Discordサーバー開設</strong>
+							</div>
+
+							<div class="mini-history-line">
+								<span>2026.03</span>
+								<strong>Lifeを含む大幅リニューアル</strong>
+							</div>
+
+							<div class="mini-history-line">
+								<span>2026.05</span>
+								<strong>Lands維持費計算機</strong>
+							</div>
+
+							<div class="mini-history-line">
+								<span>2026.07</span>
+								<strong>Choを含む大幅リニューアル</strong>
+							</div>
+
+							<div class="mini-history-current">
+								<span>2026.09</span>
+								<strong>現在のNUGBASEへ</strong>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			
+			<!-- =====================================================
+			     Policy
+			====================================================== -->
+			<section class="about-section policy-section">
+				<div class="section-heading">
+					<span class="section-marker" aria-hidden="true"></span>
+					<h2>NUGBASEの方針</h2>
+				</div>
+
+				<div class="policy-box">
+					<div class="policy-icon" aria-hidden="true">✓</div>
+
+					<div>
+						<h3>
+							NUGBASEは、サーバー間の優劣付けや
+							特定のサーバーへのプレイヤー誘導を目的としていません。
+						</h3>
+
+						<p>
+							各サーバーの情報を整理し、攻略情報や仕様などを共有することで、
+							プレイヤーが必要な情報を見つけ、
+							Minecraftマルチサーバーをより楽しめる環境を提供することを目的としています。
+						</p>
+					</div>
+				</div>
+
+				<div class="policy-notes">
+					<div class="policy-note">
+						<span class="policy-note-icon" aria-hidden="true">●</span>
+
+						<div>
+							<strong>掲載情報について</strong>
+							<p>
+								掲載情報は運営者による選定のほか、
+								サーバー運営者・関係者からの掲載申請にも対応しています。
+							</p>
+						</div>
+					</div>
+
+					<div class="policy-note">
+						<span class="policy-note-icon" aria-hidden="true">●</span>
+
+						<div>
+							<strong>情報について</strong>
+							<p>
+								NUGBASEは非公式サイトです。
+								各サーバーの公式運営とは独立して情報を整理・掲載しています。
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- =====================================================
+			     Contents
+			====================================================== -->
+			<section class="about-section contents-section">
+				<div class="section-heading">
+					<span class="section-marker" aria-hidden="true"></span>
+					<h2>NUGBASEの4つのコンテンツ</h2>
+				</div>
+
+				<p class="section-intro">
+					目的に合わせて、攻略・Wiki・ニュース・ツールから情報を探せます。
+				</p>
+
+				<div class="content-grid">
+					{
+						contents.map((content) => (
+							<a href={content.href} class={`content-card ${content.className}`}>
+								<span class="content-icon" aria-hidden="true">
+									{content.icon}
+								</span>
+
+								<h3>{content.title}</h3>
+
+								<p>{content.description}</p>
+
+								<span class="content-link">
+									{content.linkText}
+									<span aria-hidden="true"> →</span>
+								</span>
+							</a>
+						))
+					}
+				</div>
+			</section>
+
+			<!-- =====================================================
+			     Contact / Submission
+			====================================================== -->
+			<section class="about-section contact-section" id="contact">
+				<div class="contact-grid">
+					<div>
+						<div class="section-heading">
+							<span class="section-marker" aria-hidden="true"></span>
+							<h2>掲載について</h2>
+						</div>
+
+						<p>
+							NUGBASEでは、サーバー運営者・関係者からの掲載申請にも対応しています。
+						</p>
+
+						<p>
+							掲載内容についてのお問い合わせや、掲載に関するご相談も受け付けています。
+						</p>
+					</div>
+
+					<div class="contact-card">
+						<span class="contact-label">CONTACT</span>
+
+						<h3>お問い合わせ</h3>
+
+						<p>
+							掲載内容についてのお問い合わせや掲載に関するご相談は、
+							Discordから受け付けています。
+						</p>
+
+						<!-- Discordの実URLが確定したら href を設定 -->
+						<div class="contact-placeholder">
+							<span aria-hidden="true">◉</span>
+							<span>Discordからお問い合わせください</span>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</main>
 </Layout>
+
+<style>
+	/* =========================================================
+	   About Page
+	   NUGBASE Design System
+	   ========================================================= */
+
+	.about-page {
+		--about-bg: var(--color-background, #eef2f1);
+		--about-surface: var(--color-surface, #f7f9f8);
+		--about-surface-hover: var(--color-surface-hover, #e4e9e7);
+		--about-border: var(--color-border, #aeb8b5);
+		--about-border-strong: var(--color-border-strong, #68736f);
+		--about-text: var(--color-text, #1b211f);
+		--about-text-secondary: var(--color-text-secondary, #59635f);
+		--about-grass: var(--color-grass, #5f9f3a);
+		--about-grass-light: var(--color-grass-light, #86bd59);
+		--about-gold: var(--color-gold, #d9a441);
+		--about-gold-light: var(--color-gold-light, #efd07a);
+		--about-shadow: var(--color-shadow, rgba(20, 30, 27, 0.16));
+		--about-shadow-strong: var(
+			--color-shadow-strong,
+			rgba(20, 30, 27, 0.28)
+		);
+
+		min-height: 100%;
+		background: var(--about-bg);
+		color: var(--about-text);
+	}
+
+	/* =========================================================
+	   Hero
+	   ========================================================= */
+
+	.about-hero {
+		position: relative;
+		overflow: hidden;
+		min-height: 320px;
+		display: flex;
+		align-items: center;
+		border-bottom: 1px solid var(--about-border);
+		background:
+			linear-gradient(
+				90deg,
+				var(--about-surface) 0%,
+				var(--about-surface) 48%,
+				rgba(247, 249, 248, 0.72) 72%,
+				rgba(247, 249, 248, 0.25) 100%
+			);
+	}
+
+	.hero-inner {
+		position: relative;
+		z-index: 2;
+		width: min(1120px, calc(100% - 40px));
+		margin: 0 auto;
+		padding: 64px 0;
+	}
+
+	.hero-eyebrow {
+		margin: 0 0 14px;
+		color: var(--about-grass);
+		font-size: 0.78rem;
+		font-weight: 800;
+		letter-spacing: 0.22em;
+	}
+
+	.about-hero h1 {
+		margin: 0;
+		font-size: clamp(2rem, 5vw, 4rem);
+		line-height: 1.08;
+		letter-spacing: 0.04em;
+	}
+
+	.hero-lead {
+		margin: 22px 0 0;
+		color: var(--about-text-secondary);
+		font-size: clamp(1rem, 2vw, 1.2rem);
+		line-height: 1.9;
+	}
+
+	.hero-decoration {
+		position: absolute;
+		inset: 0 0 0 48%;
+		background:
+			linear-gradient(
+				135deg,
+				transparent 0 40%,
+				rgba(95, 159, 58, 0.08) 40% 42%,
+				transparent 42% 100%
+			);
+		opacity: 0.9;
+	}
+
+	.pixel {
+		position: absolute;
+		display: block;
+		background: var(--about-grass);
+		opacity: 0.13;
+	}
+
+	.pixel-1 {
+		width: 90px;
+		height: 90px;
+		right: 12%;
+		top: 18%;
+	}
+
+	.pixel-2 {
+		width: 44px;
+		height: 44px;
+		right: 28%;
+		top: 42%;
+	}
+
+	.pixel-3 {
+		width: 68px;
+		height: 68px;
+		right: 5%;
+		bottom: 12%;
+	}
+
+	.pixel-4 {
+		width: 28px;
+		height: 28px;
+		right: 39%;
+		bottom: 20%;
+		background: var(--about-gold);
+	}
+
+	.pixel-5 {
+		width: 38px;
+		height: 38px;
+		right: 20%;
+		bottom: 5%;
+	}
+
+	/* =========================================================
+	   Common
+	   ========================================================= */
+
+	.about-container {
+		width: min(1120px, calc(100% - 40px));
+		margin: 0 auto;
+	}
+
+	.about-section {
+		padding: 72px 0;
+	}
+
+	.section-heading {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		margin-bottom: 26px;
+	}
+
+	.section-marker {
+		display: block;
+		width: 7px;
+		height: 30px;
+		flex: 0 0 auto;
+		background: var(--about-grass);
+		box-shadow: 3px 3px 0 var(--about-shadow);
+	}
+
+	.section-heading h2 {
+		margin: 0;
+		font-size: clamp(1.45rem, 3vw, 2rem);
+		line-height: 1.3;
+		letter-spacing: 0.04em;
+	}
+
+	.section-intro {
+		max-width: 760px;
+		margin: -8px 0 32px;
+		color: var(--about-text-secondary);
+		line-height: 1.9;
+	}
+
+	/* =========================================================
+	   Introduction
+	   ========================================================= */
+
+	.introduction-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.8fr);
+		gap: 48px;
+		align-items: start;
+	}
+
+	.introduction-content {
+		font-size: 1rem;
+		line-height: 2;
+	}
+
+	.introduction-content p {
+		margin: 0 0 20px;
+	}
+
+	.introduction-content strong {
+		color: var(--about-grass);
+		font-weight: 800;
+	}
+
+	.site-name {
+		display: inline-flex;
+		align-items: baseline;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: 26px;
+		padding: 11px 18px;
+		border: 1px solid var(--about-border);
+		background: var(--about-surface);
+		box-shadow: 4px 4px 0 var(--about-shadow);
+	}
+
+	.site-name strong {
+		font-size: 1.15rem;
+		letter-spacing: 0.08em;
+	}
+
+	.site-name span {
+		color: var(--about-text-secondary);
+		font-size: 0.88rem;
+	}
+
+	/* =========================================================
+	   Mini history
+	   ========================================================= */
+
+	.mini-history {
+		padding: 24px;
+		border: 1px solid var(--about-border);
+		background: var(--about-surface);
+		box-shadow: 6px 6px 0 var(--about-shadow);
+	}
+
+	.mini-history-label {
+		margin: 0 0 18px;
+		color: var(--about-grass);
+		font-size: 0.72rem;
+		font-weight: 800;
+		letter-spacing: 0.18em;
+	}
+
+	.mini-history-line {
+		display: grid;
+		grid-template-columns: 72px 1fr;
+		gap: 12px;
+		padding: 12px 0;
+		border-bottom: 1px solid color-mix(
+			in srgb,
+			var(--about-border) 60%,
+			transparent
+		);
+	}
+
+	.mini-history-line span {
+		color: var(--about-text-secondary);
+		font-size: 0.78rem;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.mini-history-line strong {
+		font-size: 0.84rem;
+		line-height: 1.5;
+	}
+
+	.mini-history-current {
+		margin-top: 16px;
+		padding: 13px;
+		border-left: 4px solid var(--about-grass);
+		background: color-mix(
+			in srgb,
+			var(--about-grass) 10%,
+			var(--about-surface)
+		);
+	}
+
+	.mini-history-current span,
+	.mini-history-current strong {
+		display: block;
+	}
+
+	.mini-history-current span {
+		margin-bottom: 3px;
+		color: var(--about-grass);
+		font-size: 0.7rem;
+		font-weight: 800;
+		letter-spacing: 0.14em;
+	}
+
+	.mini-history-current strong {
+		font-size: 0.86rem;
+	}
+
+	/* =========================================================
+	   Timeline
+	   ========================================================= */
+
+	.history-section {
+		border-top: 1px solid var(--about-border);
+	}
+
+	.history-timeline {
+		position: relative;
+		padding: 8px 0;
+	}
+
+	.history-line {
+		position: absolute;
+		top: 25px;
+		bottom: 25px;
+		left: 82px;
+		width: 3px;
+		background: var(--about-grass);
+		opacity: 0.75;
+	}
+
+	.history-item {
+		position: relative;
+		display: grid;
+		grid-template-columns: 130px 1px minmax(0, 1fr);
+		gap: 0;
+		align-items: center;
+		min-height: 112px;
+	}
+
+	.history-date {
+		position: relative;
+		z-index: 2;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 92px;
+		height: 92px;
+		margin-left: 36px;
+		border-radius: 50%;
+		background: #625707;
+		color: #fff;
+		box-shadow: 4px 4px 0 var(--about-shadow);
+	}
+
+	.history-date time {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		font-size: 0.82rem;
+		font-weight: 700;
+		line-height: 1.35;
+		text-align: center;
+		white-space: pre-line;
+	}
+
+	.history-connector {
+		height: 1px;
+		background: var(--about-grass);
+	}
+
+	.history-card {
+		margin: 10px 0 10px 26px;
+		padding: 22px 26px;
+		border: 1px solid color-mix(
+			in srgb,
+			var(--about-gold) 40%,
+			var(--about-border)
+		);
+		background:
+			linear-gradient(
+				135deg,
+				color-mix(in srgb, var(--about-gold-light) 30%, var(--about-surface)),
+				var(--about-surface)
+			);
+		box-shadow: 5px 5px 0 var(--about-shadow);
+	}
+
+	.history-card h3 {
+		margin: 0 0 8px;
+		font-size: 1.02rem;
+		line-height: 1.5;
+	}
+
+	.history-card p {
+		margin: 0;
+		color: var(--about-text-secondary);
+		font-size: 0.84rem;
+		line-height: 1.6;
+	}
+
+	/* =========================================================
+	   Policy
+	   ========================================================= */
+
+	.policy-section {
+		border-top: 1px solid var(--about-border);
+	}
+
+	.policy-box {
+		display: grid;
+		grid-template-columns: 54px minmax(0, 1fr);
+		gap: 18px;
+		padding: 28px 30px;
+		border: 1px solid color-mix(
+			in srgb,
+			var(--about-grass) 30%,
+			var(--about-border)
+		);
+		background: color-mix(
+			in srgb,
+			var(--about-grass) 9%,
+			var(--about-surface)
+		);
+		box-shadow: 5px 5px 0 var(--about-shadow);
+	}
+
+	.policy-icon {
+		display: grid;
+		place-items: center;
+		width: 46px;
+		height: 46px;
+		background: var(--about-grass);
+		color: #fff;
+		font-size: 1.3rem;
+		font-weight: 900;
+		box-shadow: 3px 3px 0 var(--about-shadow);
+	}
+
+	.policy-box h3 {
+		margin: 0 0 12px;
+		font-size: 1rem;
+		line-height: 1.7;
+	}
+
+	.policy-box p {
+		margin: 0;
+		color: var(--about-text-secondary);
+		line-height: 1.85;
+	}
+
+	.policy-notes {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		margin-top: 28px;
+		border-top: 1px solid var(--about-border);
+		border-bottom: 1px solid var(--about-border);
+	}
+
+	.policy-note {
+		display: grid;
+		grid-template-columns: 28px 1fr;
+		gap: 12px;
+		padding: 24px 20px;
+	}
+
+	.policy-note + .policy-note {
+		border-left: 1px solid var(--about-border);
+	}
+
+	.policy-note-icon {
+		color: var(--about-grass);
+		font-size: 0.8rem;
+	}
+
+	.policy-note strong {
+		display: block;
+		margin-bottom: 7px;
+		font-size: 0.9rem;
+	}
+
+	.policy-note p {
+		margin: 0;
+		color: var(--about-text-secondary);
+		font-size: 0.84rem;
+		line-height: 1.75;
+	}
+
+	/* =========================================================
+	   Content cards
+	   ========================================================= */
+
+	.contents-section {
+		border-top: 1px solid var(--about-border);
+	}
+
+	.content-grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 14px;
+	}
+
+	.content-card {
+		display: flex;
+		flex-direction: column;
+		min-height: 250px;
+		padding: 24px 20px;
+		border: 1px solid var(--about-border);
+		background: var(--about-surface);
+		color: var(--about-text);
+		text-decoration: none;
+		box-shadow: 4px 4px 0 var(--about-shadow);
+		transition:
+			transform 0.15s ease,
+			box-shadow 0.15s ease,
+			border-color 0.15s ease;
+	}
+
+	.content-card:hover {
+		transform: translate(-2px, -2px);
+		border-color: var(--about-grass);
+		box-shadow: 7px 7px 0 var(--about-shadow);
+	}
+
+	.content-icon {
+		display: grid;
+		place-items: center;
+		width: 48px;
+		height: 48px;
+		margin-bottom: 18px;
+		border: 1px solid currentColor;
+		font-size: 1.5rem;
+		font-weight: 800;
+	}
+
+	.content-card h3 {
+		margin: 0 0 12px;
+		font-size: 1.25rem;
+	}
+
+	.content-card p {
+		flex: 1;
+		margin: 0;
+		color: var(--about-text-secondary);
+		font-size: 0.82rem;
+		line-height: 1.75;
+	}
+
+	.content-link {
+		display: inline-block;
+		margin-top: 18px;
+		font-size: 0.8rem;
+		font-weight: 800;
+	}
+
+	.content-guide {
+		--content-accent: var(--about-grass);
+	}
+
+	.content-wiki {
+		--content-accent: #3e9dc5;
+	}
+
+	.content-news {
+		--content-accent: var(--about-gold);
+	}
+
+	.content-tool {
+		--content-accent: #8763a9;
+	}
+
+	.content-card .content-icon,
+	.content-card .content-link {
+		color: var(--content-accent);
+	}
+
+	/* =========================================================
+	   Contact
+	   ========================================================= */
+
+	.contact-section {
+		border-top: 1px solid var(--about-border);
+		padding-bottom: 90px;
+	}
+
+	.contact-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(300px, 0.7fr);
+		gap: 48px;
+		align-items: center;
+	}
+
+	.contact-grid > div:first-child > p {
+		max-width: 680px;
+		color: var(--about-text-secondary);
+		line-height: 1.9;
+	}
+
+	.contact-card {
+		padding: 28px;
+		border: 1px solid var(--about-border);
+		background: var(--about-surface);
+		box-shadow: 6px 6px 0 var(--about-shadow);
+	}
+
+	.contact-label {
+		display: block;
+		margin-bottom: 8px;
+		color: var(--about-grass);
+		font-size: 0.7rem;
+		font-weight: 800;
+		letter-spacing: 0.18em;
+	}
+
+	.contact-card h3 {
+		margin: 0 0 12px;
+		font-size: 1.25rem;
+	}
+
+	.contact-card p {
+		margin: 0 0 20px;
+		color: var(--about-text-secondary);
+		font-size: 0.86rem;
+		line-height: 1.8;
+	}
+
+	.contact-placeholder {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 12px 14px;
+		border: 1px solid var(--about-border);
+		background: var(--about-bg);
+		color: var(--about-text-secondary);
+		font-size: 0.82rem;
+	}
+
+	.contact-placeholder span:first-child {
+		color: #5865f2;
+		font-size: 1.1rem;
+	}
+
+	/* =========================================================
+	   Dark mode
+	   ========================================================= */
+
+	:global(html[data-theme="dark"]) .about-page {
+		--about-bg: #151a18;
+		--about-surface: #1d2421;
+		--about-surface-hover: #27302c;
+		--about-border: #3c4843;
+		--about-border-strong: #64736d;
+		--about-text: #edf3f0;
+		--about-text-secondary: #aebbb5;
+		--about-shadow: rgba(0, 0, 0, 0.35);
+		--about-shadow-strong: rgba(0, 0, 0, 0.55);
+	}
+
+	:global(html[data-theme="dark"]) .about-hero {
+		background:
+			linear-gradient(
+				90deg,
+				#1d2421 0%,
+				#1d2421 48%,
+				rgba(29, 36, 33, 0.72) 72%,
+				rgba(29, 36, 33, 0.2) 100%
+			);
+	}
+
+	:global(html[data-theme="dark"]) .history-date {
+		background: #6e6208;
+	}
+
+	/* =========================================================
+	   Responsive
+	   ========================================================= */
+
+	@media (max-width: 900px) {
+		.introduction-grid {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+
+		.content-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.contact-grid {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.about-container {
+			width: min(100% - 28px, 560px);
+		}
+
+		.about-hero {
+			min-height: 270px;
+		}
+
+		.hero-inner {
+			width: min(100% - 28px, 560px);
+			padding: 48px 0;
+		}
+
+		.hero-decoration {
+			inset: 0;
+			opacity: 0.55;
+		}
+
+		.about-section {
+			padding: 52px 0;
+		}
+
+		.section-heading {
+			margin-bottom: 20px;
+		}
+
+		.section-marker {
+			width: 5px;
+			height: 26px;
+		}
+
+		.site-name {
+			display: block;
+			padding: 12px 14px;
+		}
+
+		.site-name strong,
+		.site-name span {
+			display: block;
+		}
+
+		.site-name span {
+			margin-top: 4px;
+		}
+
+		.mini-history {
+			padding: 18px;
+		}
+
+		.history-line {
+			left: 38px;
+		}
+
+		.history-item {
+			grid-template-columns: 76px 1px minmax(0, 1fr);
+			min-height: 104px;
+		}
+
+		.history-date {
+			width: 66px;
+			height: 66px;
+			margin-left: 5px;
+		}
+
+		.history-date time {
+			font-size: 0.68rem;
+		}
+
+		.history-card {
+			margin-left: 16px;
+			padding: 15px;
+		}
+
+		.history-card h3 {
+			font-size: 0.9rem;
+		}
+
+		.history-card p {
+			font-size: 0.75rem;
+		}
+
+		.policy-box {
+			grid-template-columns: 1fr;
+			padding: 20px;
+		}
+
+		.policy-notes {
+			grid-template-columns: 1fr;
+		}
+
+		.policy-note + .policy-note {
+			border-top: 1px solid var(--about-border);
+			border-left: 0;
+		}
+
+		.content-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 10px;
+		}
+
+		.content-card {
+			min-height: 230px;
+			padding: 18px 15px;
+		}
+
+		.content-card h3 {
+			font-size: 1.05rem;
+		}
+
+		.content-card p {
+			font-size: 0.76rem;
+			line-height: 1.65;
+		}
+
+		.contact-card {
+			padding: 22px;
+		}
+	}
+
+	@media (max-width: 420px) {
+		.content-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.content-card {
+			min-height: auto;
+		}
+
+		.history-item {
+			grid-template-columns: 68px 1px minmax(0, 1fr);
+		}
+
+		.history-date {
+			width: 60px;
+			height: 60px;
+		}
+
+		.history-card {
+			padding: 13px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.content-card {
+			transition: none;
+		}
+
+		.content-card:hover {
+			transform: none;
+		}
+	}
+</style>
