@@ -43,6 +43,8 @@ const guide = defineCollection({
 
 		icon: z.string().optional(),
 
+		image: z.string().optional(),
+
 		date: z.coerce.date().optional(),
 
 		order: z.number().optional(),
@@ -78,14 +80,17 @@ const news = defineCollection({
 
 		icon: z.string().optional(),
 
+		image: z.string().optional(),
+
 		date: z.coerce.date().optional(),
 
 		order: z.number().optional(),
 
+		featured: z.boolean().optional(),
+
 	}),
 
 });
-
 
 /* ========================================
    Tool

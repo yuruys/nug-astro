@@ -4,11 +4,26 @@ const pathname = Astro.url.pathname;
 const isHome = pathname === "/";
 const isGuide = pathname.startsWith("/guide/");
 const isWiki = pathname.startsWith("/docs/");
-const isTool = pathname.startsWith("/tool/");
 const isNews = pathname.startsWith("/news/");
+const isTool = pathname.startsWith("/tool/");
 const isAbout = pathname.startsWith("/about/");
 
-const isMore = isNews || isAbout;
+/*
+ * メイン5項目
+ *
+ * 1. ホーム
+ * 2. 攻略
+ * 3. Wiki
+ * 4. ニュース
+ * 5. その他
+ *
+ * ツール / NUGについて は
+ * 「その他」からアクセスできます。
+ */
+
+const isMore =
+	isTool ||
+	isAbout;
 
 const activeIndex = isHome
 	? 0
@@ -16,37 +31,21 @@ const activeIndex = isHome
 		? 1
 		: isWiki
 			? 2
-			: isTool
+			: isNews
 				? 3
 				: 4;
 
-/*
- * 選択インジケーターの移動量。
- *
- * 5列なので、
- * 1列 = 20%
- *
- * CSS側で複雑な計算を行わず、
- * Astro側で値を確定させます。
- */
 const activeOffset = `${activeIndex * 20}%`;
 ---
 
 <nav
 	class="mobile-bottom-nav"
-	aria-label="モバイルナビゲーション"
+	aria-label="NUGBASEメインナビゲーション"
 	style={`--active-index: ${activeIndex}; --active-offset: ${activeOffset};`}
 >
+
 	<!-- ======================================================
-	     展開ツールバー
-
-	     「その他」を押すと、
-	     下部バーの真上へ展開します。
-
-	     内容：
-	     ・ニュース
-	     ・NUGについて
-	     ・× 閉じる
+	     その他パネル
 	====================================================== -->
 
 	<div
@@ -56,34 +55,46 @@ const activeOffset = `${activeIndex * 20}%`;
 	>
 		<div class="mobile-more-panel-inner">
 
-			<!-- ================================================
-			     ニュース
-			================================================ -->
+			<!-- ==================================================
+			     ツール
+			================================================== -->
 
 			<a
-				href="/news/"
+				href="/tool/"
 				class:list={[
 					"mobile-more-item",
-					{ "is-active": isNews },
+					{ "is-active": isTool },
 				]}
-				aria-current={isNews ? "page" : undefined}
+				aria-current={isTool ? "page" : undefined}
 			>
+
 				<span class="mobile-more-item-icon">
+
 					<svg
 						viewBox="0 0 24 24"
 						aria-hidden="true"
 						focusable="false"
 					>
-						<path d="M4 5h16v14H4z" />
-						<path d="M8 9h8" />
-						<path d="M8 13h6" />
-						<path d="M8 17h4" />
+						<path d="m14.5 5.5 4 4" />
+						<path d="m13 7 4 4" />
+						<path d="m4 20 6.5-6.5" />
+						<path d="m7 21-4-4" />
+						<path d="m10 14 4-4" />
+						<path d="M14 4 16 2l6 6-2 2" />
 					</svg>
+
 				</span>
 
 				<span class="mobile-more-item-text">
-					<strong>ニュース</strong>
-					<small>NUGBASEの最新情報</small>
+
+					<strong>
+						ツール
+					</strong>
+
+					<small>
+						攻略に役立つ便利な機能
+					</small>
+
 				</span>
 
 				<svg
@@ -94,12 +105,13 @@ const activeOffset = `${activeIndex * 20}%`;
 				>
 					<path d="m9 18 6-6-6-6" />
 				</svg>
+
 			</a>
 
 
-			<!-- ================================================
+			<!-- ==================================================
 			     NUGについて
-			================================================ -->
+			================================================== -->
 
 			<a
 				href="/about/"
@@ -109,7 +121,9 @@ const activeOffset = `${activeIndex * 20}%`;
 				]}
 				aria-current={isAbout ? "page" : undefined}
 			>
+
 				<span class="mobile-more-item-icon">
+
 					<svg
 						viewBox="0 0 24 24"
 						aria-hidden="true"
@@ -119,11 +133,19 @@ const activeOffset = `${activeIndex * 20}%`;
 						<path d="M12 10v6" />
 						<path d="M12 7.5h.01" />
 					</svg>
+
 				</span>
 
 				<span class="mobile-more-item-text">
-					<strong>NUGについて</strong>
-					<small>NUGBASEについて</small>
+
+					<strong>
+						NUGについて
+					</strong>
+
+					<small>
+						NUGBASEについて
+					</small>
+
 				</span>
 
 				<svg
@@ -134,18 +156,20 @@ const activeOffset = `${activeIndex * 20}%`;
 				>
 					<path d="m9 18 6-6-6-6" />
 				</svg>
+
 			</a>
 
 
-			<!-- ================================================
+			<!-- ==================================================
 			     閉じる
-			================================================ -->
+			================================================== -->
 
 			<button
 				type="button"
 				class="mobile-more-close"
 				aria-label="その他のメニューを閉じる"
 			>
+
 				<svg
 					viewBox="0 0 24 24"
 					aria-hidden="true"
@@ -154,6 +178,7 @@ const activeOffset = `${activeIndex * 20}%`;
 					<path d="M6 6l12 12" />
 					<path d="M18 6 6 18" />
 				</svg>
+
 			</button>
 
 		</div>
@@ -161,20 +186,18 @@ const activeOffset = `${activeIndex * 20}%`;
 
 
 	<!-- ======================================================
-	     メイン下部ナビゲーション
+	     メインナビゲーション
 	====================================================== -->
 
 	<div class="mobile-bottom-nav-track">
 
-		<!-- ==================================================
-		     選択インジケーター
-		================================================== -->
+		<!-- アクティブインジケーター -->
 
 		<div
 			class="bottom-nav-indicator"
 			aria-hidden="true"
 		>
-			<span class="bottom-nav-indicator-shine"></span>
+			<span class="bottom-nav-indicator-top"></span>
 		</div>
 
 
@@ -190,7 +213,9 @@ const activeOffset = `${activeIndex * 20}%`;
 			]}
 			aria-current={isHome ? "page" : undefined}
 		>
+
 			<span class="bottom-nav-icon">
+
 				<svg
 					viewBox="0 0 24 24"
 					aria-hidden="true"
@@ -200,11 +225,13 @@ const activeOffset = `${activeIndex * 20}%`;
 					<path d="M5 9.5V21h14V9.5" />
 					<path d="M9 21v-6h6v6" />
 				</svg>
+
 			</span>
 
 			<span class="bottom-nav-label">
 				ホーム
 			</span>
+
 		</a>
 
 
@@ -220,7 +247,9 @@ const activeOffset = `${activeIndex * 20}%`;
 			]}
 			aria-current={isGuide ? "page" : undefined}
 		>
+
 			<span class="bottom-nav-icon">
+
 				<svg
 					viewBox="0 0 24 24"
 					aria-hidden="true"
@@ -231,11 +260,13 @@ const activeOffset = `${activeIndex * 20}%`;
 					<path d="M8 11h7" />
 					<path d="M8 15h5" />
 				</svg>
+
 			</span>
 
 			<span class="bottom-nav-label">
 				攻略
 			</span>
+
 		</a>
 
 
@@ -251,7 +282,9 @@ const activeOffset = `${activeIndex * 20}%`;
 			]}
 			aria-current={isWiki ? "page" : undefined}
 		>
+
 			<span class="bottom-nav-icon">
+
 				<svg
 					viewBox="0 0 24 24"
 					aria-hidden="true"
@@ -262,44 +295,48 @@ const activeOffset = `${activeIndex * 20}%`;
 					<path d="M8 13h8" />
 					<path d="M8 17h5" />
 				</svg>
+
 			</span>
 
 			<span class="bottom-nav-label">
 				Wiki
 			</span>
+
 		</a>
 
 
 		<!-- ==================================================
-		     ツール
+		     ニュース
 		================================================== -->
 
 		<a
-			href="/tool/"
+			href="/news/"
 			class:list={[
 				"bottom-nav-item",
-				{ "is-active": isTool },
+				{ "is-active": isNews },
 			]}
-			aria-current={isTool ? "page" : undefined}
+			aria-current={isNews ? "page" : undefined}
 		>
+
 			<span class="bottom-nav-icon">
+
 				<svg
 					viewBox="0 0 24 24"
 					aria-hidden="true"
 					focusable="false"
 				>
-					<path d="m14.5 5.5 4 4" />
-					<path d="m13 7 4 4" />
-					<path d="m4 20 6.5-6.5" />
-					<path d="m7 21-4-4" />
-					<path d="m10 14 4-4" />
-					<path d="M14 4 16 2l6 6-2 2" />
+					<path d="M4 5h16v14H4z" />
+					<path d="M8 9h8" />
+					<path d="M8 13h6" />
+					<path d="M8 17h4" />
 				</svg>
+
 			</span>
 
 			<span class="bottom-nav-label">
-				ツール
+				ニュース
 			</span>
+
 		</a>
 
 
@@ -318,21 +355,25 @@ const activeOffset = `${activeIndex * 20}%`;
 			aria-expanded="false"
 			aria-controls="mobile-more-panel"
 		>
+
 			<span class="bottom-nav-icon">
+
 				<svg
 					viewBox="0 0 24 24"
 					aria-hidden="true"
 					focusable="false"
 				>
-					<circle cx="5" cy="12" r="1.5" />
-					<circle cx="12" cy="12" r="1.5" />
-					<circle cx="19" cy="12" r="1.5" />
+					<circle cx="5" cy="12" r="1.6" />
+					<circle cx="12" cy="12" r="1.6" />
+					<circle cx="19" cy="12" r="1.6" />
 				</svg>
+
 			</span>
 
 			<span class="bottom-nav-label">
 				その他
 			</span>
+
 		</button>
 
 	</div>
@@ -367,10 +408,7 @@ const activeOffset = `${activeIndex * 20}%`;
 
 
 	/* ========================================================
-	   Move to body
-
-	   Starlightのレイアウトから切り離して、
-	   viewport固定ナビゲーションとして動作させます。
+	   Move navigation to body
 	======================================================== */
 
 	if (
@@ -382,7 +420,7 @@ const activeOffset = `${activeIndex * 20}%`;
 
 
 	/* ========================================================
-	   More panel state
+	   More state
 	======================================================== */
 
 	const setMoreState =
@@ -424,114 +462,104 @@ const activeOffset = `${activeIndex * 20}%`;
 
 
 	/* ========================================================
-	   More panel events
+	   More button
 	======================================================== */
 
-	if (
-		moreButton &&
-		morePanel &&
-		bottomNav
-	) {
+	moreButton?.addEventListener(
+		"click",
+		() => {
 
-		/* ----------------------------------------
-		   その他ボタン
-		---------------------------------------- */
+			const open =
+				moreButton.getAttribute(
+					"aria-expanded"
+				) === "true";
 
-		moreButton.addEventListener(
-			"click",
-			() => {
-
-				const isOpen =
-					moreButton.getAttribute(
-						"aria-expanded"
-					) === "true";
-
-				setMoreState(!isOpen);
-			}
-		);
-
-
-		/* ----------------------------------------
-		   × ボタン
-		---------------------------------------- */
-
-		moreClose?.addEventListener(
-			"click",
-			() => {
-				setMoreState(false);
-				moreButton.focus();
-			}
-		);
-
-
-		/* ----------------------------------------
-		   ページリンクを押したら閉じる
-		---------------------------------------- */
-
-		morePanel
-			.querySelectorAll<HTMLAnchorElement>("a")
-			.forEach((link) => {
-
-				link.addEventListener(
-					"click",
-					() => {
-						setMoreState(false);
-					}
-				);
-			});
-
-
-		/* ----------------------------------------
-		   ナビゲーション外をクリックしたら閉じる
-		---------------------------------------- */
-
-		document.addEventListener(
-			"click",
-			(event) => {
-
-				const target =
-					event.target;
-
-				if (
-					!(target instanceof Node)
-				) {
-					return;
-				}
-
-				if (
-					!bottomNav.contains(target)
-				) {
-					setMoreState(false);
-				}
-			}
-		);
-
-
-		/* ----------------------------------------
-		   Escape
-		---------------------------------------- */
-
-		document.addEventListener(
-			"keydown",
-			(event) => {
-
-				if (
-					event.key === "Escape"
-				) {
-					setMoreState(false);
-				}
-			}
-		);
-	}
+			setMoreState(!open);
+		}
+	);
 
 
 	/* ========================================================
-	   More panel swipe
+	   Close button
+	======================================================== */
 
-	   上方向へ展開されたパネルなので、
+	moreClose?.addEventListener(
+		"click",
+		() => {
 
-	   下方向スワイプ
-	   → 閉じる
+			setMoreState(false);
+
+			moreButton?.focus();
+		}
+	);
+
+
+	/* ========================================================
+	   Close after navigation
+	======================================================== */
+
+	morePanel
+		?.querySelectorAll<HTMLAnchorElement>("a")
+		.forEach((link) => {
+
+			link.addEventListener(
+				"click",
+				() => {
+					setMoreState(false);
+				}
+			);
+
+		});
+
+
+	/* ========================================================
+	   Outside click
+	======================================================== */
+
+	document.addEventListener(
+		"click",
+		(event) => {
+
+			const target =
+				event.target;
+
+			if (
+				!(target instanceof Node)
+			) {
+				return;
+			}
+
+			if (
+				bottomNav &&
+				!bottomNav.contains(target)
+			) {
+				setMoreState(false);
+			}
+
+		}
+	);
+
+
+	/* ========================================================
+	   Escape
+	======================================================== */
+
+	document.addEventListener(
+		"keydown",
+		(event) => {
+
+			if (
+				event.key === "Escape"
+			) {
+				setMoreState(false);
+			}
+
+		}
+	);
+
+
+	/* ========================================================
+	   Swipe down to close
 	======================================================== */
 
 	if (morePanel) {
@@ -555,6 +583,7 @@ const activeOffset = `${activeIndex * 20}%`;
 
 				startY =
 					touch.clientY;
+
 			},
 			{
 				passive: true,
@@ -588,6 +617,7 @@ const activeOffset = `${activeIndex * 20}%`;
 				) {
 					setMoreState(false);
 				}
+
 			},
 			{
 				passive: true,
@@ -598,9 +628,6 @@ const activeOffset = `${activeIndex * 20}%`;
 
 	/* ========================================================
 	   Desktop resize
-
-	   PC幅になったら
-	   「その他」を閉じます。
 	======================================================== */
 
 	const mediaQuery =
@@ -611,11 +638,10 @@ const activeOffset = `${activeIndex * 20}%`;
 	const handleDesktop =
 		(event: MediaQueryListEvent): void => {
 
-			if (!event.matches) {
-				return;
+			if (event.matches) {
+				setMoreState(false);
 			}
 
-			setMoreState(false);
 		};
 
 	mediaQuery.addEventListener(
@@ -626,1288 +652,1071 @@ const activeOffset = `${activeIndex * 20}%`;
 
 
 <style>
-	/* ========================================================
-	   NUGBASE Mobile Bottom Navigation
-	   --------------------------------------------------------
-	   Visual system:
-	   - Minecraft / BSL inspired
-	   - Square / block-like UI
-	   - No rounded UI
-	   - Global NUGBASE tokens
-	   ======================================================== */
+
+/* =========================================================
+   NUGBASE MOBILE BOTTOM NAV
+   ---------------------------------------------------------
+   Design specification
+   ---------------------------------------------------------
+   • Minecraft / BSL inspired
+   • Block / square UI
+   • Grass green = active / primary
+   • Gold = NUGBASE accent
+   • Stone = borders / structure
+   • Hard lower shadow
+   • Minimal rounded geometry
+   • Information hierarchy is visible at a glance
+========================================================= */
 
 
-	/* ========================================================
-	   Global shape rule
+/* =========================================================
+   Shape
+========================================================= */
 
-	   このコンポーネント内のUIは
-	   すべて完全な角型に統一します。
-	======================================================== */
+.mobile-bottom-nav,
+.mobile-bottom-nav *,
+.mobile-bottom-nav *::before,
+.mobile-bottom-nav *::after {
 
-	.mobile-bottom-nav,
-	.mobile-bottom-nav *,
-	.mobile-bottom-nav *::before,
-	.mobile-bottom-nav *::after {
-
-		border-radius: 0 !important;
-	}
+	border-radius: 0 !important;
+}
 
 
-	/* ========================================================
-	   Desktop
-	======================================================== */
+/* =========================================================
+   Desktop
+========================================================= */
+
+.mobile-bottom-nav {
+
+	display: none;
+}
+
+
+/* =========================================================
+   Tablet / Mobile
+========================================================= */
+
+@media (max-width: 1023px) {
+
+	/* ======================================================
+	   Shell
+	====================================================== */
 
 	.mobile-bottom-nav {
-		display: none;
-	}
 
+		--nav-height: 64px;
 
-	/* ========================================================
-	   Tablet / Mobile
-	======================================================== */
+		position: fixed !important;
 
-	@media (max-width: 1023px) {
+		left: 0 !important;
+		right: 0 !important;
+		bottom: 0 !important;
+		top: auto !important;
 
-		/* ======================================================
-		   Navigation shell
-		====================================================== */
+		z-index: 10000 !important;
 
-		.mobile-bottom-nav {
+		display: flex;
 
-			--nav-padding: 7px;
+		flex-direction: column;
 
-			position: fixed !important;
+		width: 100%;
 
-			left: 0 !important;
-			right: 0 !important;
-			bottom: 0 !important;
-			top: auto !important;
+		box-sizing: border-box;
 
-			z-index: 10000 !important;
-
-			display: flex;
-
-			flex-direction: column;
-
-			width: 100%;
-
-			box-sizing: border-box;
-
-			padding:
-				7px
-				var(--nav-padding)
-				calc(
-					7px +
-					env(safe-area-inset-bottom)
-				);
-
-			background:
-				linear-gradient(
-					180deg,
-					color-mix(
-						in srgb,
-						var(--nug-surface, #eeeeee)
-						96%,
-						var(--nug-background, #ffffff)
-					),
-					var(--nug-background, #ffffff)
-				);
-
-			border-top:
-				2px solid
-				color-mix(
-					in srgb,
-					var(--nug-accent, #c9962f)
-					28%,
-					var(--nug-border, #d8d8d8)
-				);
-
-			box-shadow:
-				0 -4px 0
-				color-mix(
-					in srgb,
-					var(--nug-border, #d8d8d8)
-					55%,
-					transparent
-				),
-				0 -10px 28px
-				rgba(
-					0,
-					0,
-					0,
-					0.14
-				);
-
-			transition:
-				padding 0.28s
-				cubic-bezier(
-					0.22,
-					1,
-					0.36,
-					1
-				);
-		}
-
-
-		/* ======================================================
-		   Main Track
-		====================================================== */
-
-		.mobile-bottom-nav-track {
-
-			position: relative;
-
-			display: grid;
-
-			grid-template-columns:
-				repeat(
-					5,
-					minmax(0, 1fr)
-				);
-
-			gap: 0;
-
-			width: 100%;
-
-			height: 58px;
-
-			box-sizing: border-box;
-		}
-
-
-		/* ======================================================
-		   Selection Indicator
-		====================================================== */
-
-		.bottom-nav-indicator {
-
-			position: absolute;
-
-			z-index: 0;
-
-			top: 0;
-			bottom: 0;
-
-			left:
-				var(--active-offset);
-
-			width:
-				20%;
-
-			box-sizing: border-box;
-
-			padding:
-				0 2px;
-
-			pointer-events: none;
-
-			transition:
-				left
-				0.30s
-				cubic-bezier(
-					0.22,
-					1,
-					0.36,
-					1
-				);
-		}
-
-
-		.bottom-nav-indicator::before {
-
-			content: "";
-
-			position: absolute;
-
-			inset:
-				0 2px;
-
-			border:
-				1px solid
-				color-mix(
-					in srgb,
-					var(--nug-accent, #c9962f)
-					40%,
-					var(--nug-border, #d8d8d8)
-				);
-
-			border-top:
-				3px solid
-				var(--nug-accent, #c9962f);
-
-			background:
-				linear-gradient(
-					180deg,
-					color-mix(
-						in srgb,
-						var(--nug-accent, #c9962f)
-						14%,
-						var(--nug-background, #ffffff)
-					),
-					color-mix(
-						in srgb,
-						var(--nug-accent, #c9962f)
-						5%,
-						var(--nug-background, #ffffff)
-					)
-				);
-
-			box-shadow:
-				0 2px 0
-				color-mix(
-					in srgb,
-					var(--nug-accent, #c9962f)
-					16%,
-					transparent
-				);
-		}
-
-
-		/* ======================================================
-		   Indicator Shine
-		====================================================== */
-
-		.bottom-nav-indicator-shine {
-
-			position: absolute;
-
-			z-index: 1;
-
-			top: 4px;
-			left: 8px;
-			right: 8px;
-
-			height: 2px;
-
-			background:
-				linear-gradient(
-					90deg,
-					transparent,
-					rgba(
-						255,
-						255,
-						255,
-						0.34
-					),
-					transparent
-				);
-		}
-
-
-		/* ======================================================
-		   Main Buttons
-		====================================================== */
-
-		.bottom-nav-item {
-
-			position: relative;
-
-			z-index: 1;
-
-			min-width: 0;
-
-			height: 58px;
-
-			display: flex;
-
-			flex-direction: column;
-
-			align-items: center;
-
-			justify-content: center;
-
-			gap: 3px;
-
-			box-sizing: border-box;
-
-			padding:
-				4px 2px;
-
-			border:
-				1px solid transparent;
-
-			background:
-				transparent;
-
-			color:
-				var(
-					--nug-text-secondary,
-					#666666
-				);
-
-			font: inherit;
-
-			font-size: 10px;
-
-			font-weight: 700;
-
-			line-height: 1;
-
-			text-decoration: none;
-
-			cursor: pointer;
-
-			-webkit-tap-highlight-color:
-				transparent;
-
-			touch-action:
-				manipulation;
-
-			transition:
-				color 0.18s ease,
-				background 0.18s ease,
-				border-color 0.18s ease,
-				transform 0.12s ease;
-		}
-
-
-		/* ======================================================
-		   Icon
-		====================================================== */
-
-		.bottom-nav-icon {
-
-			width: 23px;
-			height: 23px;
-
-			display: grid;
-
-			place-items: center;
-
-			flex-shrink: 0;
-		}
-
-
-		.bottom-nav-icon svg {
-
-			width: 22px;
-			height: 22px;
-
-			fill: none;
-
-			stroke:
-				currentColor;
-
-			stroke-width: 1.8;
-
-			stroke-linecap: square;
-			stroke-linejoin: miter;
-		}
-
-
-		.bottom-nav-more .bottom-nav-icon svg {
-
-			fill:
-				currentColor;
-
-			stroke: none;
-		}
-
-
-		/* ======================================================
-		   Active
-		====================================================== */
-
-		.bottom-nav-item.is-active {
-
-			color:
-				var(
-					--nug-accent,
-					#c9962f
-				);
-		}
-
-
-		.bottom-nav-item.is-active
-		.bottom-nav-icon svg {
-
-			transform:
-				translateY(-1px);
-		}
-
-
-		/* ======================================================
-		   Hover / Focus
-		====================================================== */
-
-		.bottom-nav-item:hover {
-
-			color:
-				var(
-					--nug-text,
-					#222222
-				);
-
-			background:
-				color-mix(
-					in srgb,
-					var(--nug-surface, #eeeeee)
-					45%,
-					transparent
-				);
-		}
-
-
-		.bottom-nav-item:focus-visible {
-
-			outline:
-				2px solid
-				var(
-					--nug-accent,
-					#c9962f
-				);
-
-			outline-offset:
-				-2px;
-		}
-
-
-		.bottom-nav-item:active {
-
-			transform:
-				translateY(2px);
-		}
-
-
-		/* ======================================================
-		   Expanded Toolbar
-		====================================================== */
-
-		.mobile-more-panel {
-
-			order: -1;
-
-			display: grid;
-
-			grid-template-rows:
-				0fr;
-
-			width: 100%;
-
-			overflow: hidden;
-
-			opacity: 0;
-
-			border-bottom:
-				0 solid
-				var(--nug-border, #d8d8d8);
-
-			transition:
-				grid-template-rows
-				0.30s
-				cubic-bezier(
-					0.22,
-					1,
-					0.36,
-					1
-				),
-				opacity
-				0.20s ease,
-				border-bottom-width
-				0.20s ease;
-		}
-
-
-		.mobile-more-panel.is-open {
-
-			grid-template-rows:
-				1fr;
-
-			opacity: 1;
-
-			border-bottom-width:
-				1px;
-		}
-
-
-		/* ======================================================
-		   Expanded Panel Inner
-
-		   上下の余白を縮小。
-		   これにより、通常時に
-		   ボタン上側へ生じていた余白を減らします。
-		====================================================== */
-
-		.mobile-more-panel-inner {
-
-			min-height: 0;
-
-			display: grid;
-
-			grid-template-columns:
-				minmax(0, 1fr)
-				minmax(0, 1fr)
-				44px;
-
-			align-items: center;
-
-			gap: 5px;
-
-			padding:
-				3px 0;
-
-			box-sizing: border-box;
-		}
-
-
-		/* ======================================================
-		   Expanded Items
-		====================================================== */
-
-		.mobile-more-item {
-
-			min-width: 0;
-
-			height: 42px;
-
-			display: flex;
-
-			align-items: center;
-
-			gap: 7px;
-
-			padding:
-				4px 8px;
-
-			box-sizing: border-box;
-
-			border:
-				1px solid
-				var(--nug-border, #d8d8d8);
-
-			border-left:
-				3px solid
-				color-mix(
-					in srgb,
-					var(--nug-accent, #c9962f)
-					45%,
-					var(--nug-border, #d8d8d8)
-				);
-
-			background:
-				linear-gradient(
-					180deg,
-					color-mix(
-						in srgb,
-						var(--nug-surface, #eeeeee)
-						94%,
-						var(--nug-background, #ffffff)
-					),
-					var(--nug-background, #ffffff)
-				);
-
-			color:
-				var(--nug-text, #222222);
-
-			text-decoration: none;
-
-			box-shadow:
-				2px 2px 0
-				color-mix(
-					in srgb,
-					var(--nug-border, #d8d8d8)
-					55%,
-					transparent
-				);
-
-			transition:
-				background 0.18s ease,
-				border-color 0.18s ease,
-				box-shadow 0.18s ease,
-				transform 0.12s ease;
-		}
-
-
-		.mobile-more-item.is-active {
-
-			border-left-color:
-				var(--nug-accent, #c9962f);
-
-			color:
-				var(--nug-accent, #c9962f);
-		}
-
-
-		.mobile-more-item:hover,
-		.mobile-more-item:focus-visible {
-
-			background:
-				var(--nug-background, #ffffff);
-
-			border-color:
-				var(
-					--nug-accent,
-					#c9962f
-				);
-
-			outline: none;
-
-			box-shadow:
-				3px 3px 0
-				color-mix(
-					in srgb,
-					var(--nug-accent, #c9962f)
-					20%,
-					transparent
-				);
-		}
-
-
-		.mobile-more-item:active {
-
-			transform:
-				translate(
-					1px,
-					1px
-				);
-
-			box-shadow:
-				1px 1px 0
-				color-mix(
-					in srgb,
-					var(--nug-border, #d8d8d8)
-					55%,
-					transparent
-				);
-		}
-
-
-		/* ======================================================
-		   Expanded Item Icon
-		====================================================== */
-
-		.mobile-more-item-icon {
-
-			width: 28px;
-			height: 28px;
-
-			display: grid;
-
-			place-items: center;
-
-			flex-shrink: 0;
-
-			border:
-				1px solid
-				color-mix(
-					in srgb,
-					var(--nug-accent, #c9962f)
-					28%,
-					var(--nug-border, #d8d8d8)
-				);
-
-			background:
-				color-mix(
-					in srgb,
-					var(--nug-accent, #c9962f)
-					10%,
-					var(--nug-background, #ffffff)
-				);
-
-			color:
-				var(
-					--nug-accent,
-					#c9962f
-				);
-		}
-
-
-		.mobile-more-item-icon svg {
-
-			width: 16px;
-			height: 16px;
-
-			fill: none;
-
-			stroke:
-				currentColor;
-
-			stroke-width: 1.8;
-
-			stroke-linecap: square;
-			stroke-linejoin: miter;
-		}
-
-
-		/* ======================================================
-		   Expanded Item Text
-		====================================================== */
-
-		.mobile-more-item-text {
-
-			display: flex;
-
-			flex-direction: column;
-
-			justify-content: center;
-
-			gap: 1px;
-
-			min-width: 0;
-		}
-
-
-		.mobile-more-item-text strong {
-
-			overflow: hidden;
-
-			font-size: 11px;
-
-			font-weight: 750;
-
-			line-height: 1.2;
-
-			white-space: nowrap;
-
-			text-overflow: ellipsis;
-		}
-
-
-		.mobile-more-item-text small {
-
-			overflow: hidden;
-
-			color:
-				var(
-					--nug-text-secondary,
-					#666666
-				);
-
-			font-size: 8px;
-
-			line-height: 1.1;
-
-			white-space: nowrap;
-
-			text-overflow: ellipsis;
-		}
-
-
-		/* ======================================================
-		   Arrow
-		====================================================== */
-
-		.mobile-more-item-arrow {
-
-			width: 15px;
-			height: 15px;
-
-			margin-left: auto;
-
-			flex-shrink: 0;
-
-			fill: none;
-
-			stroke:
-				var(
-					--nug-text-secondary,
-					#666666
-				);
-
-			stroke-width: 1.8;
-
-			stroke-linecap: square;
-			stroke-linejoin: miter;
-		}
-
-
-		/* ======================================================
-		   Close Button
-
-		   ニュース / NUGについてと
-		   完全に同じ高さにします。
-		====================================================== */
-
-		.mobile-more-close {
-
-			width: 42px;
-
-			height: 42px;
-
-			min-height: 42px;
-
-			max-height: 42px;
-
-			align-self: center;
-
-			justify-self: stretch;
-
-			display: grid;
-
-			place-items: center;
-
-			box-sizing: border-box;
-
-			padding: 0;
-
-			border:
-				1px solid
-				var(--nug-border, #d8d8d8);
-
-			background:
-				linear-gradient(
-					180deg,
-					var(--nug-surface, #eeeeee),
-					var(--nug-background, #ffffff)
-				);
-
-			color:
-				var(
-					--nug-text-secondary,
-					#666666
-				);
-
-			cursor: pointer;
-
-			-webkit-tap-highlight-color:
-				transparent;
-
-			touch-action:
-				manipulation;
-
-			box-shadow:
-				2px 2px 0
-				color-mix(
-					in srgb,
-					var(--nug-border, #d8d8d8)
-					55%,
-					transparent
-				);
-
-			transition:
-				color 0.18s ease,
-				background 0.18s ease,
-				border-color 0.18s ease,
-				box-shadow 0.18s ease,
-				transform 0.12s ease;
-		}
-
-
-		.mobile-more-close:hover,
-		.mobile-more-close:focus-visible {
-
-			color:
-				var(
-					--nug-text,
-					#222222
-				);
-
-			background:
-				var(--nug-background, #ffffff);
-
-			border-color:
-				var(
-					--nug-accent,
-					#c9962f
-				);
-
-			outline: none;
-
-			box-shadow:
-				3px 3px 0
-				color-mix(
-					in srgb,
-					var(--nug-accent, #c9962f)
-					20%,
-					transparent
-				);
-		}
-
-
-		.mobile-more-close:active {
-
-			transform:
-				translate(
-					1px,
-					1px
-				);
-
-			box-shadow:
-				1px 1px 0
-				color-mix(
-					in srgb,
-					var(--nug-border, #d8d8d8)
-					55%,
-					transparent
-				);
-		}
-
-
-		.mobile-more-close svg {
-
-			width: 20px;
-			height: 20px;
-
-			fill: none;
-
-			stroke:
-				currentColor;
-
-			stroke-width: 1.9;
-
-			stroke-linecap: square;
-			stroke-linejoin: miter;
-		}
-
-
-		/* ======================================================
-		   Body Bottom Space
-		====================================================== */
-
-		:global(body) {
-
-			padding-bottom:
-				calc(
-					72px +
-					env(safe-area-inset-bottom)
-				);
-
-			transition:
-				padding-bottom
-				0.28s
-				cubic-bezier(
-					0.22,
-					1,
-					0.36,
-					1
-				);
-		}
-
-
-		:global(html.nug-bottom-nav-expanded body) {
-
-			padding-bottom:
-				calc(
-					124px +
-					env(safe-area-inset-bottom)
-				);
-		}
-	}
-
-
-	/* ========================================================
-	   Smartphone
-	======================================================== */
-
-	@media (max-width: 767px) {
-
-		.mobile-bottom-nav {
-
-			--nav-padding: 6px;
-
-			padding:
-				6px
-				var(--nav-padding)
-				calc(
-					6px +
-					env(safe-area-inset-bottom)
-				);
-		}
-
-
-		.mobile-bottom-nav-track {
-
-			height: 56px;
-		}
-
-
-		.bottom-nav-item {
-
-			height: 56px;
-
-			font-size: 9px;
-		}
-
-
-		.bottom-nav-icon {
-
-			width: 22px;
-			height: 22px;
-		}
-
-
-		.bottom-nav-icon svg {
-
-			width: 21px;
-			height: 21px;
-		}
-
-
-		/* ----------------------------------------
-		   Expanded toolbar
-		---------------------------------------- */
-
-		.mobile-more-panel-inner {
-
-			grid-template-columns:
-				minmax(0, 1fr)
-				minmax(0, 1fr)
-				40px;
-
-			gap: 4px;
-
-			padding:
-				2px 0;
-		}
-
-
-		.mobile-more-item {
-
-			height: 40px;
-
-			padding:
-				4px 6px;
-		}
-
-
-		.mobile-more-item-text small {
-
-			display: none;
-		}
-
-
-		.mobile-more-item-icon {
-
-			width: 26px;
-			height: 26px;
-		}
-
-
-		.mobile-more-item-icon svg {
-
-			width: 15px;
-			height: 15px;
-		}
-
-
-		.mobile-more-item-arrow {
-
-			width: 14px;
-			height: 14px;
-		}
-
-
-		/* ----------------------------------------
-		   Close
-
-		   スマートフォンでも
-		   ニュース / NUGについてと
-		   完全に同じ40pxにします。
-		---------------------------------------- */
-
-		.mobile-more-close {
-
-			width: 40px;
-
-			height: 40px;
-
-			min-height: 40px;
-
-			max-height: 40px;
-		}
-
-
-		.mobile-more-close svg {
-
-			width: 19px;
-			height: 19px;
-		}
-
-
-		/* ----------------------------------------
-		   Body
-		---------------------------------------- */
-
-		:global(body) {
-
-			padding-bottom:
-				calc(
-					68px +
-					env(safe-area-inset-bottom)
-				);
-		}
-
-
-		:global(html.nug-bottom-nav-expanded body) {
-
-			padding-bottom:
-				calc(
-					116px +
-					env(safe-area-inset-bottom)
-				);
-		}
-	}
-
-
-	/* ========================================================
-	   Dark Mode
-	======================================================== */
-
-	:global(html[data-theme="dark"])
-	.mobile-bottom-nav {
+		padding:
+			5px
+			8px
+			calc(
+				5px +
+				env(safe-area-inset-bottom)
+			);
 
 		background:
 			linear-gradient(
 				180deg,
-				color-mix(
-					in srgb,
-					var(--nug-surface, #1b1b1b)
-					96%,
-					var(--nug-background, #111111)
-				),
-				var(--nug-background, #111111)
+				var(--color-surface),
+				var(--color-background)
 			);
 
-		border-top-color:
-			color-mix(
-				in srgb,
-				var(--nug-accent, #c9962f)
-				34%,
-				var(--nug-border, #333333)
-			);
+		border-top:
+			2px solid
+			var(--color-border-strong);
 
 		box-shadow:
 			0 -4px 0
-			color-mix(
-				in srgb,
-				var(--nug-border, #333333)
-				70%,
-				transparent
-			),
-			0 -12px 34px
-			rgba(
-				0,
-				0,
-				0,
-				0.46
+			var(--color-border),
+			0 -10px 28px
+			var(--color-shadow);
+
+		transition:
+			padding 0.25s
+			cubic-bezier(
+				0.22,
+				1,
+				0.36,
+				1
 			);
 	}
 
 
-	:global(html[data-theme="dark"])
+	/* ======================================================
+	   Track
+	====================================================== */
+
+	.mobile-bottom-nav-track {
+
+		position: relative;
+
+		display: grid;
+
+		grid-template-columns:
+			repeat(
+				5,
+				minmax(0, 1fr)
+			);
+
+		width: 100%;
+
+		height: var(--nav-height);
+
+		box-sizing: border-box;
+	}
+
+
+	/* ======================================================
+	   Active Indicator
+	====================================================== */
+
+	.bottom-nav-indicator {
+
+		position: absolute;
+
+		z-index: 0;
+
+		top: 0;
+		bottom: 0;
+
+		left:
+			var(--active-offset);
+
+		width: 20%;
+
+		padding: 0 2px;
+
+		box-sizing: border-box;
+
+		pointer-events: none;
+
+		transition:
+			left 0.28s
+			cubic-bezier(
+				0.22,
+				1,
+				0.36,
+				1
+			);
+	}
+
+
 	.bottom-nav-indicator::before {
 
+		content: "";
+
+		position: absolute;
+
+		inset: 0 2px;
+
+		border:
+			1px solid
+			var(--color-border);
+
+		border-top:
+			3px solid
+			var(--color-grass);
+
 		background:
 			linear-gradient(
 				180deg,
-				color-mix(
-					in srgb,
-					var(--nug-accent, #c9962f)
-					20%,
-					var(--nug-background, #111111)
-				),
-				color-mix(
-					in srgb,
-					var(--nug-accent, #c9962f)
-					7%,
-					var(--nug-background, #111111)
-				)
+				var(--color-accent-soft),
+				transparent
 			);
-
-		border-color:
-			color-mix(
-				in srgb,
-				var(--nug-accent, #c9962f)
-				42%,
-				var(--nug-border, #333333)
-			);
-
-		border-top-color:
-			var(--nug-accent, #c9962f);
 
 		box-shadow:
-			0 2px 0
-			color-mix(
-				in srgb,
-				var(--nug-accent, #c9962f)
-				24%,
+			0 3px 0
+			var(--color-border);
+	}
+
+
+	/* ======================================================
+	   Grass highlight
+	====================================================== */
+
+	.bottom-nav-indicator-top {
+
+		position: absolute;
+
+		z-index: 2;
+
+		top: 4px;
+		left: 10px;
+		right: 10px;
+
+		height: 2px;
+
+		background:
+			linear-gradient(
+				90deg,
+				transparent,
+				var(--color-grass-light),
 				transparent
 			);
 	}
 
 
-	:global(html[data-theme="dark"])
-	.mobile-more-item,
-	:global(html[data-theme="dark"])
-	.mobile-more-close {
+	/* ======================================================
+	   Item
+	====================================================== */
 
-		background:
-			linear-gradient(
-				180deg,
-				var(--nug-surface, #1b1b1b),
-				var(--nug-background, #111111)
-			);
+	.bottom-nav-item {
 
-		border-color:
-			var(--nug-border, #333333);
+		position: relative;
+
+		z-index: 1;
+
+		display: flex;
+
+		flex-direction: column;
+
+		align-items: center;
+
+		justify-content: center;
+
+		gap: 4px;
+
+		min-width: 0;
+
+		height: var(--nav-height);
+
+		padding:
+			5px 2px;
+
+		box-sizing: border-box;
+
+		border: 1px solid transparent;
+
+		background: transparent;
 
 		color:
-			var(--nug-text, #f2f2f2);
+			var(--color-text-secondary);
 
-		box-shadow:
-			2px 2px 0
-			rgba(
-				0,
-				0,
-				0,
-				0.35
-			);
+		font: inherit;
+
+		font-size: 10px;
+
+		font-weight: 800;
+
+		line-height: 1;
+
+		text-decoration: none;
+
+		cursor: pointer;
+
+		-webkit-tap-highlight-color: transparent;
+
+		touch-action: manipulation;
+
+		transition:
+			color 0.18s ease,
+			background-color 0.18s ease,
+			transform 0.12s ease;
 	}
 
 
-	:global(html[data-theme="dark"])
-	.mobile-more-item:hover,
-	:global(html[data-theme="dark"])
-	.mobile-more-item:focus-visible,
-	:global(html[data-theme="dark"])
-	.mobile-more-close:hover,
-	:global(html[data-theme="dark"])
-	.mobile-more-close:focus-visible {
+	/* ======================================================
+	   Icon
+	====================================================== */
+
+	.bottom-nav-icon {
+
+		display: grid;
+
+		place-items: center;
+
+		width: 24px;
+		height: 24px;
+
+		flex-shrink: 0;
+	}
+
+
+	.bottom-nav-icon svg {
+
+		width: 22px;
+		height: 22px;
+
+		fill: none;
+
+		stroke:
+			currentColor;
+
+		stroke-width: 1.8;
+
+		stroke-linecap: square;
+		stroke-linejoin: miter;
+
+		transition:
+			transform 0.18s ease;
+	}
+
+
+	.bottom-nav-more
+	.bottom-nav-icon svg {
+
+		fill:
+			currentColor;
+
+		stroke: none;
+	}
+
+
+	/* ======================================================
+	   Active
+	====================================================== */
+
+	.bottom-nav-item.is-active {
+
+		color:
+			var(--color-grass);
+	}
+
+
+	.bottom-nav-item.is-active
+	.bottom-nav-icon svg {
+
+		transform:
+			translateY(-1px);
+	}
+
+
+	.bottom-nav-item.is-active
+	.bottom-nav-label {
+
+		font-weight: 900;
+	}
+
+
+	/* ======================================================
+	   Hover
+	====================================================== */
+
+	.bottom-nav-item:hover {
+
+		color:
+			var(--color-text);
+	}
+
+
+	.bottom-nav-item:hover
+	.bottom-nav-icon svg {
+
+		transform:
+			translateY(-1px);
+	}
+
+
+	/* ======================================================
+	   Focus
+	====================================================== */
+
+	.bottom-nav-item:focus-visible {
+
+		outline:
+			2px solid
+			var(--color-grass);
+
+		outline-offset:
+			-2px;
+	}
+
+
+	/* ======================================================
+	   Press
+	====================================================== */
+
+	.bottom-nav-item:active {
+
+		transform:
+			translateY(2px);
+	}
+
+
+	/* ======================================================
+	   More panel
+	====================================================== */
+
+	.mobile-more-panel {
+
+		order: -1;
+
+		display: grid;
+
+		grid-template-rows: 0fr;
+
+		width: 100%;
+
+		overflow: hidden;
+
+		opacity: 0;
+
+		border-bottom:
+			0 solid
+			var(--color-border);
+
+		transition:
+			grid-template-rows 0.28s
+			cubic-bezier(
+				0.22,
+				1,
+				0.36,
+				1
+			),
+			opacity 0.18s ease,
+			border-bottom-width 0.18s ease;
+	}
+
+
+	.mobile-more-panel.is-open {
+
+		grid-template-rows: 1fr;
+
+		opacity: 1;
+
+		border-bottom-width: 1px;
+	}
+
+
+	/* ======================================================
+	   More panel inner
+	====================================================== */
+
+	.mobile-more-panel-inner {
+
+		min-height: 0;
+
+		display: grid;
+
+		grid-template-columns:
+			minmax(0, 1fr)
+			minmax(0, 1fr)
+			52px;
+
+		align-items: center;
+
+		gap: 8px;
+
+		padding:
+			8px 0;
+
+		box-sizing: border-box;
+	}
+
+
+	/* ======================================================
+	   More item
+	====================================================== */
+
+	.mobile-more-item {
+
+		min-width: 0;
+
+		height: 52px;
+
+		display: flex;
+
+		align-items: center;
+
+		gap: 9px;
+
+		padding:
+			5px 9px;
+
+		box-sizing: border-box;
+
+		border:
+			1px solid
+			var(--color-border);
+
+		border-left:
+			3px solid
+			var(--color-grass);
 
 		background:
-			var(--nug-background, #111111);
+			var(--color-surface);
 
-		border-color:
-			var(--nug-accent, #c9962f);
+		color:
+			var(--color-text);
+
+		text-decoration: none;
 
 		box-shadow:
 			3px 3px 0
-			color-mix(
-				in srgb,
-				var(--nug-accent, #c9962f)
-				20%,
-				transparent
-			);
+			var(--color-border);
+
+		transition:
+			background-color 0.18s ease,
+			border-color 0.18s ease,
+			box-shadow 0.18s ease,
+			transform 0.12s ease;
 	}
 
 
-	:global(html[data-theme="dark"])
-	.mobile-more-item-text small,
-	:global(html[data-theme="dark"])
-	.mobile-more-item-arrow {
+	.mobile-more-item.is-active {
+
+		border-left-color:
+			var(--color-gold);
+
+	}
+
+
+	.mobile-more-item:hover,
+	.mobile-more-item:focus-visible {
+
+		background:
+			var(--color-surface-hover);
+
+		border-color:
+			var(--color-grass);
+
+		outline: none;
+
+		box-shadow:
+			4px 4px 0
+			var(--color-grass);
+	}
+
+
+	.mobile-more-item:active {
+
+		transform:
+			translate(
+				2px,
+				2px
+			);
+
+		box-shadow:
+			1px 1px 0
+			var(--color-border);
+	}
+
+
+	/* ======================================================
+	   More icon
+	====================================================== */
+
+	.mobile-more-item-icon {
+
+		display: grid;
+
+		place-items: center;
+
+		width: 30px;
+		height: 30px;
+
+		flex-shrink: 0;
+
+		border:
+			1px solid
+			var(--color-border);
+
+		background:
+			var(--color-accent-soft);
 
 		color:
-			var(
-				--nug-text-secondary,
-				#aaaaaa
+			var(--color-grass);
+	}
+
+
+	.mobile-more-item-icon svg {
+
+		width: 16px;
+		height: 16px;
+
+		fill: none;
+
+		stroke:
+			currentColor;
+
+		stroke-width: 1.8;
+
+		stroke-linecap: square;
+		stroke-linejoin: miter;
+	}
+
+
+	/* ======================================================
+	   More text
+	====================================================== */
+
+	.mobile-more-item-text {
+
+		display: flex;
+
+		flex-direction: column;
+
+		justify-content: center;
+
+		gap: 2px;
+
+		min-width: 0;
+	}
+
+
+	.mobile-more-item-text strong {
+
+		overflow: hidden;
+
+		font-size: 12px;
+
+		font-weight: 900;
+
+		line-height: 1.2;
+
+		white-space: nowrap;
+
+		text-overflow: ellipsis;
+	}
+
+
+	.mobile-more-item-text small {
+
+		overflow: hidden;
+
+		color:
+			var(--color-text-secondary);
+
+		font-size: 8px;
+
+		line-height: 1.2;
+
+		white-space: nowrap;
+
+		text-overflow: ellipsis;
+	}
+
+
+	/* ======================================================
+	   Arrow
+	====================================================== */
+
+	.mobile-more-item-arrow {
+
+		width: 16px;
+		height: 16px;
+
+		margin-left: auto;
+
+		flex-shrink: 0;
+
+		fill: none;
+
+		stroke:
+			var(--color-text-secondary);
+
+		stroke-width: 1.8;
+
+		stroke-linecap: square;
+		stroke-linejoin: miter;
+	}
+
+
+	/* ======================================================
+	   Close
+	====================================================== */
+
+	.mobile-more-close {
+
+		width: 52px;
+		height: 52px;
+
+		display: grid;
+
+		place-items: center;
+
+		box-sizing: border-box;
+
+		padding: 0;
+
+		border:
+			1px solid
+			var(--color-border);
+
+		background:
+			var(--color-surface);
+
+		color:
+			var(--color-text-secondary);
+
+		cursor: pointer;
+
+		box-shadow:
+			3px 3px 0
+			var(--color-border);
+
+		transition:
+			color 0.18s ease,
+			background-color 0.18s ease,
+			border-color 0.18s ease,
+			box-shadow 0.18s ease,
+			transform 0.12s ease;
+	}
+
+
+	.mobile-more-close:hover,
+	.mobile-more-close:focus-visible {
+
+		color:
+			var(--color-text);
+
+		background:
+			var(--color-surface-hover);
+
+		border-color:
+			var(--color-grass);
+
+		outline: none;
+
+		box-shadow:
+			4px 4px 0
+			var(--color-grass);
+	}
+
+
+	.mobile-more-close:active {
+
+		transform:
+			translate(
+				2px,
+				2px
+			);
+
+		box-shadow:
+			1px 1px 0
+			var(--color-border);
+	}
+
+
+	.mobile-more-close svg {
+
+		width: 20px;
+		height: 20px;
+
+		fill: none;
+
+		stroke:
+			currentColor;
+
+		stroke-width: 1.9;
+
+		stroke-linecap: square;
+		stroke-linejoin: miter;
+	}
+
+
+	/* ======================================================
+	   Body space
+	====================================================== */
+
+	:global(body) {
+
+		padding-bottom:
+			calc(
+				74px +
+				env(safe-area-inset-bottom)
+			);
+
+		transition:
+			padding-bottom 0.28s
+			cubic-bezier(
+				0.22,
+				1,
+				0.36,
+				1
 			);
 	}
 
 
-	/* ========================================================
-	   Reduced Motion
-	======================================================== */
+	:global(html.nug-bottom-nav-expanded body) {
 
-	@media (prefers-reduced-motion: reduce) {
-
-		.mobile-bottom-nav,
-		.bottom-nav-indicator,
-		.mobile-more-panel,
-		.bottom-nav-item,
-		.mobile-more-item,
-		.mobile-more-close {
-
-			transition: none !important;
-		}
+		padding-bottom:
+			calc(
+				138px +
+				env(safe-area-inset-bottom)
+			);
 	}
+
+}
+
+
+/* =========================================================
+   Smartphone
+========================================================= */
+
+@media (max-width: 767px) {
+
+	.mobile-bottom-nav {
+
+		--nav-height: 58px;
+
+		padding:
+			4px
+			5px
+			calc(
+				4px +
+				env(safe-area-inset-bottom)
+			);
+	}
+
+
+	.mobile-bottom-nav-track {
+
+		height:
+			var(--nav-height);
+	}
+
+
+	.bottom-nav-item {
+
+		height:
+			var(--nav-height);
+
+		font-size:
+			9px;
+	}
+
+
+	.bottom-nav-icon {
+
+		width: 22px;
+		height: 22px;
+	}
+
+
+	.bottom-nav-icon svg {
+
+		width: 20px;
+		height: 20px;
+	}
+
+
+	.mobile-more-panel-inner {
+
+		grid-template-columns:
+			minmax(0, 1fr)
+			minmax(0, 1fr)
+			42px;
+
+		gap: 5px;
+
+		padding:
+			5px 0;
+	}
+
+
+	.mobile-more-item {
+
+		height: 44px;
+
+		padding:
+			4px 6px;
+	}
+
+
+	.mobile-more-item-icon {
+
+		width: 27px;
+		height: 27px;
+	}
+
+
+	.mobile-more-item-icon svg {
+
+		width: 15px;
+		height: 15px;
+	}
+
+
+	.mobile-more-item-text small {
+
+		display:
+			none;
+	}
+
+
+	.mobile-more-item-arrow {
+
+		width: 14px;
+		height: 14px;
+	}
+
+
+	.mobile-more-close {
+
+		width: 44px;
+		height: 44px;
+	}
+
+
+	.mobile-more-close svg {
+
+		width: 18px;
+		height: 18px;
+	}
+
+
+	:global(body) {
+
+		padding-bottom:
+			calc(
+				66px +
+				env(safe-area-inset-bottom)
+			);
+	}
+
+
+	:global(html.nug-bottom-nav-expanded body) {
+
+		padding-bottom:
+			calc(
+				116px +
+				env(safe-area-inset-bottom)
+			);
+	}
+
+}
+
+
+/* =========================================================
+   Dark Mode
+========================================================= */
+
+:global(html[data-theme="dark"])
+.mobile-bottom-nav {
+
+	background:
+		linear-gradient(
+			180deg,
+			var(--color-surface),
+			var(--color-background)
+		);
+
+	border-top-color:
+		var(--color-border-strong);
+
+	box-shadow:
+		0 -4px 0
+		rgba(
+			0,
+			0,
+			0,
+			0.5
+		),
+		0 -12px 32px
+		rgba(
+			0,
+			0,
+			0,
+			0.55
+		);
+}
+
+
+:global(html[data-theme="dark"])
+.bottom-nav-indicator::before {
+
+	background:
+		linear-gradient(
+			180deg,
+			var(--color-accent-soft),
+			transparent
+		);
+
+	border-color:
+		var(--color-border-strong);
+
+	border-top-color:
+		var(--color-grass);
+
+	box-shadow:
+		0 3px 0
+		rgba(
+			0,
+			0,
+			0,
+			0.4
+		);
+}
+
+
+:global(html[data-theme="dark"])
+.mobile-more-item,
+:global(html[data-theme="dark"])
+.mobile-more-close {
+
+	background:
+		var(--color-surface);
+
+	border-color:
+		var(--color-border-strong);
+
+	box-shadow:
+		3px 3px 0
+		rgba(
+			0,
+			0,
+			0,
+			0.45
+		);
+}
+
+
+:global(html[data-theme="dark"])
+.mobile-more-item:hover,
+:global(html[data-theme="dark"])
+.mobile-more-item:focus-visible,
+:global(html[data-theme="dark"])
+.mobile-more-close:hover,
+:global(html[data-theme="dark"])
+.mobile-more-close:focus-visible {
+
+	background:
+		var(--color-surface-hover);
+
+	border-color:
+		var(--color-grass);
+
+	box-shadow:
+		4px 4px 0
+		var(--color-grass);
+}
+
+
+/* =========================================================
+   Reduced Motion
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+	.mobile-bottom-nav,
+	.bottom-nav-indicator,
+	.bottom-nav-item,
+	.mobile-more-panel,
+	.mobile-more-item,
+	.mobile-more-close {
+
+		transition:
+			none !important;
+	}
+
+}
+
 </style>
