@@ -3,7 +3,6 @@ title: 「マルチは重い」を覆す軽量鯖？Lifeサーバーって結局
 description: 最大30人同時接続でも軽量設計というLifeサーバーの世界観・サーバー構成・プラグイン構成を、公式ページの情報から紹介します。
 category: Life
 icon: 💎
-image: 
 date: 2026-09-28
 featured: false
 ---

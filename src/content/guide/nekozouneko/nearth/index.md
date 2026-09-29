@@ -3,7 +3,6 @@ title: 日本最大級の地球再現鯖？NEarthサーバーって結局どん�
 description: 1/326スケールで地球を再現したNEarthサーバーの世界観・サーバー構成・プラグイン構成を、公式ページの情報から紹介します。
 category: NEarth
 icon: 🌎
-image: 
 date: 2026-09-28
 featured: false
 ---
