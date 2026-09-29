@@ -1,0 +1,197 @@
+---
+interface Props { contentType: 'guide' | 'news' }
+const { contentType } = Astro.props;
+const isGuide = contentType === 'guide';
+const title = isGuide ? '攻略を編集' : 'ニュースを編集';
+const categories = isGuide
+	? ['初心者向け', '基本情報', '経済', '土地・建築', '国家・外交', '戦闘', '採掘・資源', '農業・生活', 'プラグイン', 'ワールド', '便利機能', '困ったとき']
+	: ['マイクラアプデ', 'サーバーアプデ', 'マイクライベント', 'サーバーイベント', 'NUGBASEおしらせ'];
+---
+<!doctype html>
+<html lang="ja">
+	<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex, nofollow" /><title>{title} | NUGBASE 管理画面</title></head>
+	<body data-content-type={contentType} data-guide={String(isGuide)}>
+		<header class="topbar"><a class="brand" href="/admin/" aria-label="管理画面トップ"><span class="brand-mark">NUG</span><span><strong>NUGBASE</strong><small>管理画面</small></span></a><button class="menu-toggle" id="menu-toggle" type="button" aria-controls="admin-nav" aria-expanded="false" aria-label="メニューを開く"><span></span><span></span><span></span></button><a class="site-link" href="/">サイトを見る ↗</a></header>
+		<div class="shell">
+			<aside class="sidebar" id="admin-nav" aria-label="管理メニュー"><p class="nav-label">管理メニュー</p><nav><a href="/admin/" class="nav-link">▦ ダッシュボード</a><a href="/admin/guide/" class:list={['nav-link', { active: isGuide }]} aria-current={isGuide ? 'page' : undefined}>▤ 攻略管理</a><a href="/admin/news/" class:list={['nav-link', { active: !isGuide }]} aria-current={!isGuide ? 'page' : undefined}>◷ ニュース管理</a><a href="/admin/servers/" class="nav-link">◈ サーバー管理</a><a href="/admin/review/" class="nav-link">✓ Wikiレビュー</a></nav><div class="sidebar-note"><span class="live-dot"></span> 管理者セッションで保護されています</div></aside>
+			<main class="main">
+				<div class="page-heading"><div><p class="eyebrow">EDIT ARTICLE</p><h1>{title}</h1><p class="intro">記事情報を編集して保存します。</p></div><a class="button secondary" href={`/admin/${contentType}/`}>一覧へ戻る</a></div>
+				<div class="notice error" id="error-state" role="alert" aria-live="polite" hidden></div>
+				<div class="state" id="loading-state"><span class="spinner" aria-hidden="true"></span><p>記事情報を読み込んでいます…</p></div>
+				<section class="panel" id="edit-panel" hidden aria-labelledby="form-title">
+					<div class="panel-heading"><div><p class="eyebrow">ARTICLE DETAILS</p><h2 id="form-title">記事情報 <span class="status-badge" id="article-status"></span></h2><p class="article-id" id="article-id"></p></div></div>
+					<div class="data-notice">保存時にGitHubの現在版を確認します。競合時は入力内容を保ったままエラーを表示します。</div>
+					<div class="save-message" id="save-message" role="status" aria-live="polite" hidden></div>
+					<form id="edit-form"><div class="form-grid">
+						{isGuide && <label class="field" for="server-id"><span>サーバー</span><select id="server-id" disabled><option>読み込み中…</option></select></label>}
+						<label class="field" for="title"><span>タイトル</span><input id="title" type="text" required /></label>
+						<label class="field full" for="description"><span>説明</span><textarea id="description" rows="3" required></textarea></label>
+						<label class="field" for="category"><span>カテゴリ</span><select id="category" required><option value="">未読み込み</option>{categories.map((category) => <option value={category}>{category}</option>)}</select></label>
+						<label class="field" for="date"><span>投稿日</span><input id="date" type="date" required /></label>
+						<label class="field" for="icon"><span>アイコン</span><input id="icon" type="text" placeholder="emoji" /></label>
+						<label class="field" for="image"><span>画像パス</span><input id="image" type="text" /></label>
+						<label class="field full check-row" for="featured"><input id="featured" type="checkbox" /> NUGBASE PICKUPに掲載する</label>
+						<div class="field full body-field">
+							<label for="body" id="body-label">Markdown / MDX本文</label>
+							<div class="preview-tabs" role="tablist" aria-label="本文の表示方法">
+								<button class="preview-tab is-active" id="edit-tab" type="button" role="tab" aria-selected="true" aria-controls="body">編集</button>
+								<button class="preview-tab" id="preview-tab" type="button" role="tab" aria-selected="false" aria-controls="body-preview">プレビュー</button>
+							</div>
+							<textarea id="body" rows="16" required aria-labelledby="body-label" aria-controls="body-editor" data-editor-pane></textarea>
+							<div class="markdown-preview" id="body-preview" role="tabpanel" aria-labelledby="preview-tab" tabindex="0" hidden data-editor-pane></div>
+						</div>
+					</div><div class="form-actions"><a class="button secondary" href={`/admin/${contentType}/`}>戻る</a><button class="button danger" id="delete-button" type="button">記事を削除</button><button class="button primary" id="save-button" type="submit">保存する</button></div></form>
+					<div class="record-meta"><span>source path</span><code id="source-path"></code><span>状態</span><span id="record-status"></span></div>
+				</section>
+			</main>
+		</div>
+		<script>
+			import { renderMarkdownPreview } from '../../lib/markdown-preview';
+
+			type Article = { id: number; content_type: 'guide' | 'news'; article_id: string; server_id: number | null; server_name: string | null; server_slug: string | null; source_path: string; status: 'publishing' | 'published' };
+			type ArticleContent = { title: string; description: string; category: string; date: string; icon?: string; image?: string; featured: boolean; server?: string; body: string };
+			type Server = { id: number; name: string; enabled: number | boolean };
+			type Result<T> = { ok?: boolean; error?: string; article?: T; content?: ArticleContent; servers?: Server[] };
+			const contentType = document.body.dataset.contentType as 'guide' | 'news';
+			const isGuide = document.body.dataset.guide === 'true';
+			const id = new URLSearchParams(location.search).get('id');
+			const loading = document.getElementById('loading-state') as HTMLElement;
+			const panel = document.getElementById('edit-panel') as HTMLElement;
+			const errorState = document.getElementById('error-state') as HTMLElement;
+			const editForm = document.getElementById('edit-form') as HTMLFormElement;
+			const saveButton = document.getElementById('save-button') as HTMLButtonElement;
+			const deleteButton = document.getElementById('delete-button') as HTMLButtonElement;
+			const saveMessage = document.getElementById('save-message') as HTMLElement;
+			const bodyEditor = document.getElementById('body') as HTMLTextAreaElement;
+			const bodyPreview = document.getElementById('body-preview') as HTMLElement;
+			const editTab = document.getElementById('edit-tab') as HTMLButtonElement;
+			const previewTab = document.getElementById('preview-tab') as HTMLButtonElement;
+			let saving = false;
+			let deleting = false;
+			let previewRenderId = 0;
+			function fail(message: string) { loading.hidden = true; panel.hidden = true; errorState.textContent = message; errorState.hidden = false; }
+			async function getData<T>(response: Response): Promise<Result<T>> {
+				let data: Result<T> = {}; try { data = await response.json() as Result<T>; } catch { /* use status text below */ }
+				if (!response.ok || !data.ok) {
+					if (response.status === 401) throw new Error('未認証です（401）。管理者として再ログインしてください。');
+					if (response.status === 403) throw new Error('操作権限がありません（403）。');
+					if (response.status === 404) throw new Error('記事が見つかりません（404）。削除済みの記事は編集できません。');
+					throw new Error(data.error || `APIエラー（${response.status || 'ネットワーク'}）`);
+				}
+				return data;
+			}
+			function setBodyMode(mode: 'edit' | 'preview') {
+				const showingPreview = mode === 'preview';
+				bodyEditor.hidden = showingPreview;
+				bodyPreview.hidden = !showingPreview;
+				editTab.classList.toggle('is-active', !showingPreview);
+				previewTab.classList.toggle('is-active', showingPreview);
+				editTab.setAttribute('aria-selected', String(!showingPreview));
+				previewTab.setAttribute('aria-selected', String(showingPreview));
+				if (!showingPreview) return;
+
+				const renderId = ++previewRenderId;
+				bodyPreview.textContent = 'プレビューを生成しています…';
+				void renderMarkdownPreview(bodyEditor.value).then((html) => {
+					if (renderId === previewRenderId && !bodyPreview.hidden) bodyPreview.innerHTML = html;
+				}).catch(() => {
+					if (renderId === previewRenderId) bodyPreview.textContent = 'プレビューを表示できませんでした。本文を確認してください。';
+				});
+			}
+			async function load() {
+				if (!id || !/^\d+$/.test(id) || Number(id) <= 0) { fail('記事IDが指定されていないか、不正です（404）。一覧から記事を選び直してください。'); return; }
+				try {
+					const result = await getData<Article>(await fetch(`/api/admin/articles/${encodeURIComponent(id)}`, { credentials: 'same-origin' }));
+					const article = result.article;
+					if (!article || article.content_type !== contentType || !['publishing', 'published'].includes(article.status)) { fail('この記事は編集対象として利用できません（404）。'); return; }
+					const content = result.content;
+					if (!content) { fail('GitHubから記事内容を取得できませんでした。'); return; }
+					(document.getElementById('article-id') as HTMLElement).textContent = `記事ID ${article.article_id} ・ DB ID ${article.id}`;
+					(document.getElementById('article-status') as HTMLElement).textContent = article.status === 'published' ? '公開中' : '公開待ち';
+					(document.getElementById('record-status') as HTMLElement).textContent = article.status === 'published' ? '公開中' : '公開待ち';
+					(document.getElementById('source-path') as HTMLElement).textContent = article.source_path;
+					(document.getElementById('title') as HTMLInputElement).value = content.title;
+					(document.getElementById('description') as HTMLTextAreaElement).value = content.description;
+					const category = document.getElementById('category') as HTMLSelectElement;
+					if (!Array.from(category.options).some((option) => option.value === content.category)) category.add(new Option(content.category, content.category));
+					category.value = content.category;
+					(document.getElementById('date') as HTMLInputElement).value = content.date;
+					(document.getElementById('icon') as HTMLInputElement).value = content.icon ?? '';
+					(document.getElementById('image') as HTMLInputElement).value = content.image ?? '';
+					(document.getElementById('featured') as HTMLInputElement).checked = content.featured;
+					(document.getElementById('body') as HTMLTextAreaElement).value = content.body;
+					if (isGuide) {
+						if (article.server_id === null) { fail('攻略記事にサーバーが設定されていません。'); return; }
+						const serverSelect = document.getElementById('server-id') as HTMLSelectElement;
+						const serversResult = await getData<never>(await fetch('/api/admin/servers', { credentials: 'same-origin' }));
+						serverSelect.replaceChildren();
+						for (const server of serversResult.servers ?? []) serverSelect.add(new Option(server.name, String(server.id)));
+						if (!Array.from(serverSelect.options).some((option) => option.value === String(article.server_id))) serverSelect.add(new Option(article.server_name ?? `Server ${article.server_id}`, String(article.server_id)));
+						serverSelect.value = String(article.server_id); serverSelect.disabled = false;
+					}
+					loading.hidden = true; panel.hidden = false;
+				} catch (error) { fail(error instanceof Error ? error.message : '記事情報を読み込めませんでした。'); }
+			}
+			editForm.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				if (saving || !id || !editForm.reportValidity()) return;
+				saving = true; saveButton.disabled = true; saveButton.textContent = '保存中…';
+				saveMessage.className = 'save-message'; saveMessage.textContent = '保存しています…'; saveMessage.hidden = false;
+				const payload = {
+					title: (document.getElementById('title') as HTMLInputElement).value,
+					description: (document.getElementById('description') as HTMLTextAreaElement).value,
+					category: (document.getElementById('category') as HTMLSelectElement).value,
+					icon: (document.getElementById('icon') as HTMLInputElement).value,
+					image: (document.getElementById('image') as HTMLInputElement).value,
+					date: (document.getElementById('date') as HTMLInputElement).value,
+					featured: (document.getElementById('featured') as HTMLInputElement).checked,
+					body: (document.getElementById('body') as HTMLTextAreaElement).value,
+				};
+				try {
+					const response = await fetch(`/api/admin/articles/${encodeURIComponent(id)}/save`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+					let result: Result<never> = {}; try { result = await response.json() as Result<never>; } catch { /* use HTTP status below */ }
+					if (!response.ok || !result.ok) {
+						if (response.status === 401) throw new Error('未認証です（401）。再ログインしてください。');
+						if (response.status === 403) throw new Error('保存する権限がありません（403）。');
+						if (response.status === 404) throw new Error('記事が見つかりません（404）。削除済みの記事は保存できません。');
+						if (response.status === 409) throw new Error('他の変更があるため保存できませんでした。入力内容は保持されています。');
+						if (response.status >= 500) throw new Error(result.error || `サーバーエラー（${response.status}）。入力内容は保持されています。`);
+						throw new Error(result.error || `保存に失敗しました（${response.status}）。`);
+					}
+					saveMessage.className = 'save-message success'; saveMessage.textContent = '保存しました。';
+				} catch (error) {
+					saveMessage.className = 'save-message error'; saveMessage.textContent = error instanceof Error ? error.message : '保存に失敗しました。入力内容は保持されています。';
+				} finally { saving = false; saveButton.disabled = false; saveButton.textContent = '保存する'; }
+			});
+			deleteButton.addEventListener('click', async () => {
+				if (deleting || saving || !id) return;
+				if (!window.confirm('この記事を削除しますか？GitHub上のファイルも削除され、このIDは再利用されません。')) return;
+				deleting = true; deleteButton.disabled = true; deleteButton.textContent = '削除中…';
+				saveMessage.className = 'save-message'; saveMessage.textContent = '削除しています…'; saveMessage.hidden = false;
+				try {
+					const response = await fetch(`/api/admin/articles/${encodeURIComponent(id)}`, { method: 'DELETE', credentials: 'same-origin' });
+					let result: Result<never> = {}; try { result = await response.json() as Result<never>; } catch { /* show status fallback */ }
+					if (!response.ok || !result.ok) {
+						if (response.status === 401) throw new Error('未認証です（401）。再ログインしてください。');
+						if (response.status === 403) throw new Error('削除する権限がありません（403）。');
+						if (response.status === 404) throw new Error('記事が見つかりません。すでに削除されている可能性があります。');
+					if (response.status === 409) throw new Error(result.error || '他の変更があるため削除できませんでした。');
+					throw new Error(result.error || `削除に失敗しました（${response.status || 'ネットワーク'}）。`);
+					}
+					location.href = `/admin/${contentType}/`;
+				} catch (error) {
+					saveMessage.className = 'save-message error'; saveMessage.textContent = error instanceof Error ? error.message : '削除に失敗しました。';
+				} finally { deleting = false; deleteButton.disabled = false; deleteButton.textContent = '記事を削除'; }
+			});
+			editTab.addEventListener('click', () => setBodyMode('edit'));
+			previewTab.addEventListener('click', () => setBodyMode('preview'));
+			const menuButton = document.getElementById('menu-toggle') as HTMLButtonElement;
+			menuButton.addEventListener('click', () => { const open = menuButton.getAttribute('aria-expanded') !== 'true'; menuButton.setAttribute('aria-expanded', String(open)); menuButton.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く'); (document.getElementById('admin-nav') as HTMLElement).classList.toggle('is-open', open); });
+			void load();
+		</script>
+	</body>
+</html>
+<style is:global>
+	:root{color-scheme:dark;--bg:#111416;--panel:#202529;--line:#41494d;--line2:#586267;--text:#f1f4f2;--soft:#c4ccc7;--muted:#929d96;--green:#72ad55;--green2:#8bc96d;--red:#e27b78;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--text)}*{box-sizing:border-box}html,body{margin:0;min-height:100%;max-width:100%;overflow-x:hidden}body{background:radial-gradient(ellipse at 65% -10%,#72ad551f,transparent 45%),linear-gradient(180deg,#151a1c,var(--bg) 450px);line-height:1.55}button,input,textarea,select{font:inherit}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--green2);outline-offset:3px}[hidden]{display:none!important}.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:20px;height:72px;padding:0 clamp(16px,3vw,40px);border-bottom:1px solid #343c3e;background:#111416f2}.brand{display:flex;align-items:center;gap:12px;min-width:0}.brand-mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid #568f43;border-radius:4px;background:linear-gradient(145deg,#6ea95a,#38642f);font-size:12px;font-weight:950}.brand strong,.brand small{display:block}.brand strong{font-size:14px}.brand small{color:var(--muted);font-size:10px}.site-link{display:inline-flex;align-items:center;min-height:44px;margin-left:auto;padding:0 14px;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--soft);font-size:12px;font-weight:750}.menu-toggle{display:none}.shell{display:grid;grid-template-columns:236px minmax(0,1fr);width:min(1440px,100%);min-height:calc(100vh - 72px);margin:auto}.sidebar{position:sticky;top:72px;display:flex;flex-direction:column;align-self:start;min-height:calc(100vh - 72px);padding:30px 16px 20px;border-right:1px solid #30373a}.nav-label,.eyebrow{margin:0;color:#88bf70;font-size:10px;font-weight:900;letter-spacing:.13em}.nav-label{padding:0 12px 12px;color:var(--muted)}.sidebar nav{display:grid;gap:5px}.nav-link{display:flex;align-items:center;min-height:46px;padding:0 12px;border:1px solid transparent;border-radius:3px;color:#b7c0ba;font-size:13px;font-weight:750}.nav-link:hover{background:#ffffff08}.nav-link.active{border-color:#456043;background:#42653a33;color:#f3f8f0}.sidebar-note{display:flex;gap:9px;margin-top:auto;padding:15px 10px 0;border-top:1px solid #30373a;color:var(--muted);font-size:10px}.live-dot{width:7px;height:7px;flex:0 0 7px;margin-top:5px;border-radius:50%;background:var(--green)}.main{width:min(1000px,100%);min-width:0;margin:auto;padding:42px clamp(18px,4vw,56px) 48px}.page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}.page-heading h1{margin:7px 0 0;font-size:clamp(27px,3vw,36px);font-weight:900}.intro{margin:10px 0 0;color:var(--muted);font-size:13px}.button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 15px;border:1px solid;border-radius:3px;font-size:12px;font-weight:850}.primary{border-color:#568f43;background:linear-gradient(180deg,#7dbd5f,#609c49);color:#fff}.button:disabled{opacity:.6;cursor:wait}.secondary{border-color:var(--line2);background:#292f33;color:var(--soft)}.danger{border-color:#754543;background:#301f20;color:#f2d0cd}.danger:disabled{opacity:.6;cursor:wait}.panel{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:4px;background:var(--panel);box-shadow:0 4px #0004,0 10px 24px #0002}.panel-heading{padding:20px 22px;border-bottom:1px solid #ffffff0c}.panel-heading h2{margin:4px 0;font-size:19px}.article-id{margin:4px 0 0;color:var(--muted);font-size:12px}.status-badge{display:inline-block;padding:3px 8px;border:1px solid #8d7134;color:#e6ca7c;font-size:11px;vertical-align:middle}.data-notice{margin:18px 22px 0;padding:12px 14px;border-left:4px solid #8d7134;background:#6b542733;color:#e6ca7c;font-size:12px;overflow-wrap:anywhere}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:22px}.field{display:grid;gap:8px;min-width:0;color:var(--soft);font-size:12px;font-weight:750}.field input:not([type=checkbox]),.field textarea,.field select{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line2);border-radius:3px;background:#15191b;color:var(--text);font-size:13px}.field textarea{resize:vertical}.field textarea#body{min-height:280px}.full{grid-column:1/-1}.check-row{display:flex;align-items:center;min-height:44px}.check-row input{width:20px;height:20px;margin-right:10px;accent-color:var(--green)}.body-field{min-width:0}.preview-tabs{display:flex;gap:6px;border-bottom:1px solid #41494d}.preview-tab{min-width:96px;min-height:44px;padding:0 14px;border:1px solid transparent;border-bottom:0;background:transparent;color:var(--muted);font-size:12px;font-weight:800;cursor:pointer}.preview-tab.is-active{border-color:#586267;border-radius:3px 3px 0 0;background:#292f33;color:#f1f4f2}.markdown-preview{min-height:280px;max-width:100%;overflow-wrap:anywhere;padding:16px;border:1px solid #586267;border-top:0;border-radius:0 0 3px 3px;background:#15191b;color:var(--text);font-size:14px;font-weight:400}.markdown-preview :global(img){max-width:100%;height:auto}.markdown-preview :global(pre){max-width:100%;overflow:auto}.markdown-preview :global(table){display:block;max-width:100%;overflow-x:auto;border-collapse:collapse}.markdown-preview :global(th),.markdown-preview :global(td){padding:7px 9px;border:1px solid #41494d}.form-actions{display:flex;justify-content:flex-end;gap:10px;padding:0 22px 20px}.record-meta{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px 14px;padding:14px 22px;border-top:1px solid #ffffff10;color:var(--muted);font-size:11px}.record-meta code{color:var(--soft);overflow-wrap:anywhere}.notice{padding:16px;border:1px solid #754543;border-left:4px solid var(--red);background:#301f20;color:#f2d0cd;font-size:13px;overflow-wrap:anywhere}.save-message{margin:0 22px 18px;padding:13px 16px;border:1px solid var(--line2);background:#171b1e;color:var(--soft);font-size:13px;overflow-wrap:anywhere}.save-message.success{border-color:#537747;border-left:4px solid var(--green);background:#233120;color:#d8efcf}.save-message.error{border-color:#754543;border-left:4px solid var(--red);background:#301f20;color:#f2d0cd}.state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;color:var(--muted);text-align:center}.spinner{width:29px;height:29px;border:3px solid var(--line);border-top-color:var(--green2);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+	@media(max-width:760px){.topbar{height:64px;gap:12px}.brand-mark{width:38px;height:38px}.menu-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:44px;height:44px;margin-left:auto;border:1px solid var(--line);border-radius:3px;background:var(--panel)}.menu-toggle span{width:18px;height:2px;background:#d5ddd7}.site-link{padding:0 10px;font-size:11px}.shell{display:block;min-height:calc(100vh - 64px)}.sidebar{position:fixed;top:64px;bottom:0;left:0;z-index:19;width:min(290px,86vw);min-height:0;padding:22px 16px;background:#15191bf7;transform:translateX(-105%);transition:transform .2s}.sidebar.is-open{transform:translateX(0)}.main{padding:30px 18px 38px}.page-heading{align-items:stretch;flex-direction:column;gap:16px}.page-heading>.button{width:100%}.form-grid{grid-template-columns:minmax(0,1fr);padding:18px}.full{grid-column:auto}.data-notice{margin:14px 18px 0}.record-meta{grid-template-columns:1fr}.form-actions{flex-wrap:wrap;padding:0 18px 18px}.form-actions>.button{flex:1 1 120px}}
+</style>
