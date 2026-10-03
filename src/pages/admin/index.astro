@@ -1,4 +1,5 @@
 ---
+import AdminSidebar from '../../components/admin/AdminSidebar.astro';
 ---
 
 <!doctype html>
@@ -183,6 +184,34 @@
 		min-height: 100vh;
 	}
 
+	.admin-layout {
+		display: grid;
+
+		grid-template-columns:
+			220px minmax(0, 1fr);
+
+		min-height:
+			calc(100vh - 72px);
+	}
+
+	.admin-main {
+		width:
+			min(
+				var(--content-width),
+				calc(100% - 32px)
+			);
+
+		margin: 0 auto;
+
+		padding:
+			48px 0 80px;
+	}
+
+
+	/* =========================================================
+	   05. Header
+	   ========================================================= */
+
 	.admin-header {
 		position: sticky;
 		top: 0;
@@ -221,7 +250,7 @@
 
 
 	/* =========================================================
-	   05. NUGBASE Brand
+	   06. NUGBASE Brand
 	   ========================================================= */
 
 	.brand {
@@ -315,7 +344,7 @@
 
 
 	/* =========================================================
-	   06. Header Actions
+	   07. Header Actions
 	   ========================================================= */
 
 	.header-actions {
@@ -390,24 +419,6 @@
 
 		box-shadow:
 			0 1px 0 rgba(0, 0, 0, 0.22);
-	}
-
-
-	/* =========================================================
-	   07. Main
-	   ========================================================= */
-
-	.admin-main {
-		width:
-			min(
-				var(--content-width),
-				calc(100% - 32px)
-			);
-
-		margin: 0 auto;
-
-		padding:
-			48px 0 80px;
 	}
 
 
@@ -1732,24 +1743,40 @@
 	   24. Responsive - Mobile
 	   ========================================================= */
 
-	@media (max-width: 640px) {
-		.admin-header-inner,
+	@media (max-width: 760px) {
+		.admin-layout {
+			display:
+				block;
+
+			min-height:
+				auto;
+		}
+
 		.admin-main {
 			width:
 				min(
 					calc(100% - 20px),
 					var(--content-width)
 				);
-		}
 
-		.admin-header-inner {
-			min-height:
-				64px;
-		}
+			margin:
+				0 auto;
 
-		.admin-main {
 			padding:
 				32px 0 64px;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.admin-header-inner {
+			width:
+				min(
+					calc(100% - 20px),
+					var(--content-width)
+				);
+
+			min-height:
+				64px;
 		}
 
 		.brand-mark {
@@ -2106,332 +2133,338 @@
 		</header>
 
 
-		<main class="admin-main">
+		<div class="admin-layout">
 
-			<section class="page-heading">
-				<div class="page-heading-row">
+			<AdminSidebar active="dashboard" />
 
-					<div>
-						<h1>管理ダッシュボード</h1>
+			<main class="admin-main">
 
-						<p>
-							NUGBASE Wikiの編集・レビュー・公開状況を管理します。
-						</p>
+				<section class="page-heading">
+					<div class="page-heading-row">
+
+						<div>
+							<h1>管理ダッシュボード</h1>
+
+							<p>
+								NUGBASE Wikiの編集・レビュー・公開状況を管理します。
+							</p>
+						</div>
+
+						<button
+							id="refresh-button"
+							class="refresh-button"
+							type="button"
+						>
+							再読み込み
+						</button>
+
+					</div>
+				</section>
+
+
+				<section
+					class="dashboard-grid"
+					aria-label="Wiki管理状況"
+				>
+
+					<div class="dashboard-card pending">
+						<div class="dashboard-card-label">
+							レビュー待ち
+						</div>
+
+						<div
+							class="dashboard-card-value"
+							id="pending-count"
+						>
+							—
+						</div>
+
+						<div class="dashboard-card-note">
+							承認・却下が必要な申請
+						</div>
 					</div>
 
-					<button
-						id="refresh-button"
-						class="refresh-button"
-						type="button"
-					>
-						再読み込み
-					</button>
 
-				</div>
-			</section>
+					<div class="dashboard-card approved">
+						<div class="dashboard-card-label">
+							承認済み
+						</div>
 
+						<div
+							class="dashboard-card-value"
+							id="approved-count"
+						>
+							—
+						</div>
 
-			<section
-				class="dashboard-grid"
-				aria-label="Wiki管理状況"
-			>
-
-				<div class="dashboard-card pending">
-					<div class="dashboard-card-label">
-						レビュー待ち
+						<div class="dashboard-card-note">
+							公開待ちの申請
+						</div>
 					</div>
 
-					<div
-						class="dashboard-card-value"
-						id="pending-count"
-					>
-						—
+
+					<div class="dashboard-card publishing">
+						<div class="dashboard-card-label">
+							公開処理中
+						</div>
+
+						<div
+							class="dashboard-card-value"
+							id="publishing-count"
+						>
+							—
+						</div>
+
+						<div class="dashboard-card-note">
+							GitHub公開処理中の申請
+						</div>
 					</div>
 
-					<div class="dashboard-card-note">
-						承認・却下が必要な申請
-					</div>
-				</div>
 
+					<div class="dashboard-card pages">
+						<div class="dashboard-card-label">
+							Wikiページ
+						</div>
 
-				<div class="dashboard-card approved">
-					<div class="dashboard-card-label">
-						承認済み
-					</div>
+						<div
+							class="dashboard-card-value"
+							id="page-count"
+						>
+							—
+						</div>
 
-					<div
-						class="dashboard-card-value"
-						id="approved-count"
-					>
-						—
-					</div>
-
-					<div class="dashboard-card-note">
-						公開待ちの申請
-					</div>
-				</div>
-
-
-				<div class="dashboard-card publishing">
-					<div class="dashboard-card-label">
-						公開処理中
+						<div class="dashboard-card-note">
+							登録されているWikiページ
+						</div>
 					</div>
 
-					<div
-						class="dashboard-card-value"
-						id="publishing-count"
-					>
-						—
-					</div>
+				</section>
 
-					<div class="dashboard-card-note">
-						GitHub公開処理中の申請
-					</div>
-				</div>
-
-
-				<div class="dashboard-card pages">
-					<div class="dashboard-card-label">
-						Wikiページ
-					</div>
-
-					<div
-						class="dashboard-card-value"
-						id="page-count"
-					>
-						—
-					</div>
-
-					<div class="dashboard-card-note">
-						登録されているWikiページ
-					</div>
-				</div>
-
-			</section>
-
-
-			<div
-				id="loading-state"
-				class="state-card"
-			>
-				<div class="state-title">
-					管理情報を読み込んでいます
-				</div>
-
-				<div class="state-text">
-					しばらくお待ちください。
-				</div>
-			</div>
-
-
-			<div
-				id="error-state"
-				class="state-card error-card"
-				hidden
-			>
-				<div class="state-title">
-					読み込みに失敗しました
-				</div>
 
 				<div
-					class="state-text"
-					id="error-message"
+					id="loading-state"
+					class="state-card"
 				>
-					管理情報を取得できませんでした。
+					<div class="state-title">
+						管理情報を読み込んでいます
+					</div>
+
+					<div class="state-text">
+						しばらくお待ちください。
+					</div>
 				</div>
-			</div>
 
 
-			<div id="dashboard-content" hidden>
-
-				<section class="section">
-
-					<div class="section-heading">
-						<h2>レビュー申請</h2>
-
-						<span id="pending-label">
-							0件
-						</span>
+				<div
+					id="error-state"
+					class="state-card error-card"
+					hidden
+				>
+					<div class="state-title">
+						読み込みに失敗しました
 					</div>
 
 					<div
-						id="pending-empty"
-						class="state-card"
-						hidden
+						class="state-text"
+						id="error-message"
 					>
-						<div class="state-title">
-							レビュー待ちの申請はありません
+						管理情報を取得できませんでした。
+					</div>
+				</div>
+
+
+				<div id="dashboard-content" hidden>
+
+					<section class="section">
+
+						<div class="section-heading">
+							<h2>レビュー申請</h2>
+
+							<span id="pending-label">
+								0件
+							</span>
 						</div>
 
-						<div class="state-text">
-							現在、管理者による確認が必要な申請はありません。
-						</div>
-					</div>
-
-					<div
-						id="pending-list"
-						class="request-list"
-						hidden
-					></div>
-
-				</section>
-
-
-				<section class="section">
-
-					<div class="section-heading">
-						<h2>公開待ち</h2>
-
-						<span id="approved-label">
-							0件
-						</span>
-					</div>
-
-					<div
-						id="approved-empty"
-						class="state-card"
-						hidden
-					>
-						<div class="state-title">
-							公開待ちの申請はありません
-						</div>
-
-						<div class="state-text">
-							承認済みで公開処理を待っている申請はありません。
-						</div>
-					</div>
-
-					<div
-						id="approved-list"
-						class="request-list"
-						hidden
-					></div>
-
-				</section>
-
-
-				<section class="section">
-
-					<div class="section-heading">
-						<h2>公開処理中</h2>
-
-						<span id="publishing-label">
-							0件
-						</span>
-					</div>
-
-					<div
-						id="publishing-empty"
-						class="state-card"
-						hidden
-					>
-						<div class="state-title">
-							公開処理中の申請はありません
-						</div>
-
-						<div class="state-text">
-							現在、GitHubへの公開処理を実行している申請はありません。
-						</div>
-					</div>
-
-					<div
-						id="publishing-list"
-						class="request-list"
-						hidden
-					></div>
-
-				</section>
-
-
-				<section class="section">
-
-					<div class="section-heading">
-						<h2>最近の申請</h2>
-
-						<span>
-							処理済みの履歴
-						</span>
-					</div>
-
-					<div
-						id="activity-empty"
-						class="state-card"
-						hidden
-					>
-						<div class="state-title">
-							履歴はありません
-						</div>
-
-						<div class="state-text">
-							処理済みの申請はまだありません。
-						</div>
-					</div>
-
-					<div
-						id="activity-list"
-						class="activity-list"
-						hidden
-					></div>
-
-				</section>
-
-
-				<section class="section">
-
-					<div class="section-heading">
-						<h2>管理メニュー</h2>
-					</div>
-
-					<div class="quick-links">
-
-						<a
-							href="/docs/"
-							class="quick-link"
+						<div
+							id="pending-empty"
+							class="state-card"
+							hidden
 						>
-							<div class="quick-link-title">
-								Wikiを見る
+							<div class="state-title">
+								レビュー待ちの申請はありません
 							</div>
 
-							<div class="quick-link-description">
-								現在公開されているWikiを確認します。
+							<div class="state-text">
+								現在、管理者による確認が必要な申請はありません。
 							</div>
-						</a>
+						</div>
+
+						<div
+							id="pending-list"
+							class="request-list"
+							hidden
+						></div>
+
+					</section>
 
 
-						<a
-							href="/wiki/requests/"
-							class="quick-link"
+					<section class="section">
+
+						<div class="section-heading">
+							<h2>公開待ち</h2>
+
+							<span id="approved-label">
+								0件
+							</span>
+						</div>
+
+						<div
+							id="approved-empty"
+							class="state-card"
+							hidden
 						>
-							<div class="quick-link-title">
-								自分の申請
+							<div class="state-title">
+								公開待ちの申請はありません
 							</div>
 
-							<div class="quick-link-description">
-								自分が作成した下書き・レビュー申請を確認します。
+							<div class="state-text">
+								承認済みで公開処理を待っている申請はありません。
 							</div>
-						</a>
+						</div>
+
+						<div
+							id="approved-list"
+							class="request-list"
+							hidden
+						></div>
+
+					</section>
 
 
-						<a
-							href="/account/"
-							class="quick-link"
+					<section class="section">
+
+						<div class="section-heading">
+							<h2>公開処理中</h2>
+
+							<span id="publishing-label">
+								0件
+							</span>
+						</div>
+
+						<div
+							id="publishing-empty"
+							class="state-card"
+							hidden
 						>
-							<div class="quick-link-title">
-								アカウント
+							<div class="state-title">
+								公開処理中の申請はありません
 							</div>
 
-							<div class="quick-link-description">
-								アカウント情報と権限を確認します。
+							<div class="state-text">
+								現在、GitHubへの公開処理を実行している申請はありません。
 							</div>
-						</a>
+						</div>
 
-					</div>
+						<div
+							id="publishing-list"
+							class="request-list"
+							hidden
+						></div>
 
-				</section>
+					</section>
 
-			</div>
 
-		</main>
+					<section class="section">
+
+						<div class="section-heading">
+							<h2>最近の申請</h2>
+
+							<span>
+								処理済みの履歴
+							</span>
+						</div>
+
+						<div
+							id="activity-empty"
+							class="state-card"
+							hidden
+						>
+							<div class="state-title">
+								履歴はありません
+							</div>
+
+							<div class="state-text">
+								処理済みの申請はまだありません。
+							</div>
+						</div>
+
+						<div
+							id="activity-list"
+							class="activity-list"
+							hidden
+						></div>
+
+					</section>
+
+
+					<section class="section">
+
+						<div class="section-heading">
+							<h2>管理メニュー</h2>
+						</div>
+
+						<div class="quick-links">
+
+							<a
+								href="/docs/"
+								class="quick-link"
+							>
+								<div class="quick-link-title">
+									Wikiを見る
+								</div>
+
+								<div class="quick-link-description">
+									現在公開されているWikiを確認します。
+								</div>
+							</a>
+
+
+							<a
+								href="/wiki/requests/"
+								class="quick-link"
+							>
+								<div class="quick-link-title">
+									自分の申請
+								</div>
+
+								<div class="quick-link-description">
+									自分が作成した下書き・レビュー申請を確認します。
+								</div>
+							</a>
+
+
+							<a
+								href="/account/"
+								class="quick-link"
+							>
+								<div class="quick-link-title">
+									アカウント
+								</div>
+
+								<div class="quick-link-description">
+									アカウント情報と権限を確認します。
+								</div>
+							</a>
+
+						</div>
+
+					</section>
+
+				</div>
+
+			</main>
+
+		</div>
 
 	</div>
 

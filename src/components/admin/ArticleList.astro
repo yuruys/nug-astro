@@ -1,9 +1,12 @@
 ---
+import AdminSidebar from './AdminSidebar.astro';
+
 interface Props {
 	contentType: 'guide' | 'news';
 }
 
 const { contentType } = Astro.props;
+
 const isGuide = contentType === 'guide';
 const title = isGuide ? '攻略管理' : 'ニュース管理';
 const apiUrl = `/api/admin/articles?content_type=${contentType}`;
@@ -18,113 +21,1031 @@ const newUrl = `/admin/${contentType}/new/`;
 		<meta name="robots" content="noindex, nofollow" />
 		<title>{title} | NUGBASE 管理画面</title>
 	</head>
-	<body data-api-url={apiUrl} data-content-type={contentType} data-guide={String(isGuide)}>
+
+	<body
+		data-api-url={apiUrl}
+		data-content-type={contentType}
+		data-guide={String(isGuide)}
+	>
 		<header class="topbar">
-			<a class="brand" href="/admin/" aria-label="管理画面トップ"><span class="brand-mark">NUG</span><span><strong>NUGBASE</strong><small>管理画面</small></span></a>
-			<button class="menu-toggle" id="menu-toggle" type="button" aria-controls="admin-nav" aria-expanded="false" aria-label="メニューを開く"><span></span><span></span><span></span></button>
-			<a class="site-link" href="/">サイトを見る <span aria-hidden="true">↗</span></a>
+			<a class="brand" href="/admin/" aria-label="管理画面トップ">
+				<span class="brand-mark">NUG</span>
+				<span>
+					<strong>NUGBASE</strong>
+					<small>管理画面</small>
+				</span>
+			</a>
+
+			<button
+				class="menu-toggle"
+				id="menu-toggle"
+				type="button"
+				aria-controls="admin-nav"
+				aria-expanded="false"
+				aria-label="メニューを開く"
+			>
+				<span></span>
+				<span></span>
+				<span></span>
+			</button>
+
+			<a class="site-link" href="/">
+				サイトを見る <span aria-hidden="true">↗</span>
+			</a>
 		</header>
+
 		<div class="shell">
-			<aside class="sidebar" id="admin-nav" aria-label="管理メニュー">
-				<p class="nav-label">管理メニュー</p>
-				<nav>
-					<a href="/admin/" class="nav-link"><span aria-hidden="true">▦</span> ダッシュボード</a>
-					<a href="/admin/guide/" class:list={['nav-link', { active: isGuide }]} aria-current={isGuide ? 'page' : undefined}><span aria-hidden="true">▤</span> 攻略管理</a>
-					<a href="/admin/news/" class:list={['nav-link', { active: !isGuide }]} aria-current={!isGuide ? 'page' : undefined}><span aria-hidden="true">◷</span> ニュース管理</a>
-					<a href="/admin/servers/" class="nav-link"><span aria-hidden="true">◈</span> サーバー管理</a>
-					<a href="/admin/review/" class="nav-link"><span aria-hidden="true">✓</span> Wikiレビュー</a>
-				</nav>
-				<div class="sidebar-note"><span class="live-dot"></span> 管理者セッションで保護されています</div>
-			</aside>
+			<AdminSidebar active={isGuide ? 'guide' : 'news'} />
+
 			<main class="main">
 				<div class="page-heading">
-					<div><p class="eyebrow">CONTENT MANAGEMENT</p><h1>{title}</h1><p class="intro">{isGuide ? '攻略記事の公開状況と掲載内容を確認します。' : 'ニュース記事の公開状況と掲載内容を確認します。'}</p></div>
-					<a class="button primary add-button" href={newUrl}><span aria-hidden="true">＋</span> 新規作成</a>
-				</div>
-				<section class="panel list-panel" aria-labelledby="list-title">
-					<div class="panel-heading"><div><p class="eyebrow">ARTICLE DIRECTORY</p><h2 id="list-title">{isGuide ? '攻略記事一覧' : 'ニュース記事一覧'}</h2></div><span class="count" id="article-count">— 件</span></div>
-					<div class="state" id="loading-state"><span class="spinner" aria-hidden="true"></span><p>記事一覧を読み込んでいます…</p></div>
-					<div class="state" id="empty-state" hidden><span class="empty-icon" aria-hidden="true">▤</span><h3>記事がありません</h3><p>新規作成から記事を登録できます。</p></div>
-					<div class="state error-state" id="error-state" hidden><span class="error-icon" aria-hidden="true">!</span><h3>一覧を読み込めませんでした</h3><p id="error-message"></p><button class="button secondary" id="retry-button" type="button">再読み込み</button></div>
-					<div class="table-wrap" id="table-wrap" hidden>
-						<table><thead><tr><th>ID</th><th>タイトル</th>{isGuide && <th>サーバー</th>}<th>カテゴリ</th><th>投稿日</th><th>PICKUP</th><th>公開状態</th><th><span class="visually-hidden">操作</span></th></tr></thead><tbody id="article-rows"></tbody></table>
+					<div>
+						<p class="eyebrow">CONTENT MANAGEMENT</p>
+						<h1>{title}</h1>
+						<p class="intro">
+							{isGuide
+								? '攻略記事の公開状況と掲載内容を確認します。'
+								: 'ニュース記事の公開状況と掲載内容を確認します。'}
+						</p>
 					</div>
+
+					<a class="button primary add-button" href={newUrl}>
+						<span aria-hidden="true">＋</span> 新規作成
+					</a>
+				</div>
+
+				<section class="panel list-panel" aria-labelledby="list-title">
+					<div class="panel-heading">
+						<div>
+							<p class="eyebrow">ARTICLE DIRECTORY</p>
+							<h2 id="list-title">
+								{isGuide ? '攻略記事一覧' : 'ニュース記事一覧'}
+							</h2>
+						</div>
+
+						<span class="count" id="article-count">— 件</span>
+					</div>
+
+					<div class="state" id="loading-state">
+						<span class="spinner" aria-hidden="true"></span>
+						<p>記事一覧を読み込んでいます…</p>
+					</div>
+
+					<div class="state" id="empty-state" hidden>
+						<span class="empty-icon" aria-hidden="true">▤</span>
+						<h3>記事がありません</h3>
+						<p>新規作成から記事を登録できます。</p>
+					</div>
+
+					<div class="state error-state" id="error-state" hidden>
+						<span class="error-icon" aria-hidden="true">!</span>
+						<h3>一覧を読み込めませんでした</h3>
+						<p id="error-message"></p>
+						<button
+							class="button secondary"
+							id="retry-button"
+							type="button"
+						>
+							再読み込み
+						</button>
+					</div>
+
+					<div class="table-wrap" id="table-wrap" hidden>
+						<table>
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>タイトル</th>
+									{isGuide && <th>サーバー</th>}
+									<th>カテゴリ</th>
+									<th>投稿日</th>
+									<th>PICKUP</th>
+									<th>公開状態</th>
+									<th>
+										<span class="visually-hidden">操作</span>
+									</th>
+								</tr>
+							</thead>
+							<tbody id="article-rows"></tbody>
+						</table>
+					</div>
+
 					<div class="card-list" id="article-cards" hidden></div>
 				</section>
 			</main>
 		</div>
+
 		<script>
 			const apiUrl = document.body.dataset.apiUrl!;
 			const contentType = document.body.dataset.contentType!;
 			const isGuide = document.body.dataset.guide === 'true';
-			type Article = { db_id: number; article_id: string; server_id: number | null; server_name: string | null; title: string; category: string; date: string; featured: boolean; status: 'publishing' | 'published' };
-			type ApiResult = { ok?: boolean; error?: string; articles?: Article[] };
-			const get = (id: string) => document.getElementById(id) as HTMLElement;
+
+			type Article = {
+				db_id: number;
+				article_id: string;
+				server_id: number | null;
+				server_name: string | null;
+				title: string;
+				category: string;
+				date: string;
+				featured: boolean;
+				status: 'publishing' | 'published';
+			};
+
+			type ApiResult = {
+				ok?: boolean;
+				error?: string;
+				articles?: Article[];
+			};
+
+			const get = (id: string) =>
+				document.getElementById(id) as HTMLElement;
+
 			const rows = get('article-rows') as HTMLTableSectionElement;
 			const cards = get('article-cards');
+
 			let articles: Article[] = [];
-			function setView(view: 'loading' | 'empty' | 'error' | 'list') {
-				get('loading-state').hidden = view !== 'loading'; get('empty-state').hidden = view !== 'empty'; get('error-state').hidden = view !== 'error';
-				get('table-wrap').hidden = view !== 'list' || !articles.length; cards.hidden = view !== 'list' || !articles.length;
+
+			function setView(
+				view: 'loading' | 'empty' | 'error' | 'list',
+			) {
+				get('loading-state').hidden = view !== 'loading';
+				get('empty-state').hidden = view !== 'empty';
+				get('error-state').hidden = view !== 'error';
+
+				get('table-wrap').hidden =
+					view !== 'list' || !articles.length;
+
+				cards.hidden = view !== 'list' || !articles.length;
 			}
+
 			async function loadArticles() {
 				setView('loading');
+
 				try {
-					const response = await fetch(apiUrl, { credentials: 'same-origin' });
-					const result = await response.json() as ApiResult;
+					const response = await fetch(apiUrl, {
+						credentials: 'same-origin',
+					});
+
+					const result = (await response.json()) as ApiResult;
+
 					if (!response.ok || !result.ok) {
-						if (response.status === 401) throw new Error('管理者として再ログインしてください（401）。');
-						if (response.status === 403) throw new Error('一覧を見る権限がありません（403）。');
-						throw new Error(result.error || `通信に失敗しました（${response.status}）。`);
+						if (response.status === 401) {
+							throw new Error(
+								'管理者として再ログインしてください（401）。',
+							);
+						}
+
+						if (response.status === 403) {
+							throw new Error(
+								'一覧を見る権限がありません（403）。',
+							);
+						}
+
+						throw new Error(
+							result.error ||
+								`通信に失敗しました（${response.status}）。`,
+						);
 					}
-					articles = Array.isArray(result.articles) ? result.articles : [];
-					get('article-count').textContent = `${articles.length} 件`;
-					if (!articles.length) { setView('empty'); return; }
-					render(); setView('list');
+
+					articles = Array.isArray(result.articles)
+						? result.articles
+						: [];
+
+					get('article-count').textContent =
+						`${articles.length} 件`;
+
+					if (!articles.length) {
+						setView('empty');
+						return;
+					}
+
+					render();
+					setView('list');
 				} catch (error) {
-					get('error-message').textContent = error instanceof Error ? error.message : '通信に失敗しました。時間をおいて再度お試しください。'; setView('error');
+					get('error-message').textContent =
+						error instanceof Error
+							? error.message
+							: '通信に失敗しました。時間をおいて再度お試しください。';
+
+					setView('error');
 				}
 			}
-			function cell(text: string, className = '') { const td = document.createElement('td'); td.textContent = text; if (className) td.className = className; return td; }
-			function statusLabel(status: Article['status']) { return status === 'published' ? '公開中' : '公開待ち'; }
-			function editLink(article: Article) {
-				const link = document.createElement('a'); link.className = 'button secondary edit-button'; link.textContent = '編集';
-				link.href = `/admin/${contentType}/edit/?id=${encodeURIComponent(String(article.db_id))}`;
-				link.setAttribute('aria-label', `${article.title}を編集`); return link;
+
+			function cell(text: string, className = '') {
+				const td = document.createElement('td');
+
+				td.textContent = text;
+
+				if (className) {
+					td.className = className;
+				}
+
+				return td;
 			}
+
+			function statusLabel(status: Article['status']) {
+				return status === 'published' ? '公開中' : '公開待ち';
+			}
+
+			function editLink(article: Article) {
+				const link = document.createElement('a');
+
+				link.className = 'button secondary edit-button';
+				link.textContent = '編集';
+				link.href = `/admin/${contentType}/edit/?id=${encodeURIComponent(String(article.db_id))}`;
+				link.setAttribute(
+					'aria-label',
+					`${article.title}を編集`,
+				);
+
+				return link;
+			}
+
 			function render() {
-				rows.replaceChildren(); cards.replaceChildren();
+				rows.replaceChildren();
+				cards.replaceChildren();
+
 				for (const article of articles) {
 					const row = document.createElement('tr');
-					row.append(cell(article.article_id, 'id-cell'), cell(article.title, 'title-cell'));
-					if (isGuide) row.append(cell(article.server_name || '—', 'server-cell'));
-					row.append(cell(article.category, 'category-cell'), cell(article.date, 'date-cell'));
-					const pickup = cell(article.featured ? '掲載' : '—', 'pickup-cell'); if (article.featured) pickup.classList.add('is-featured'); row.append(pickup);
-					const status = cell(statusLabel(article.status), 'status-cell'); status.classList.add(article.status === 'published' ? 'is-published' : 'is-publishing'); row.append(status);
-					const action = cell('', 'action-cell'); action.append(editLink(article)); row.append(action); rows.append(row);
-					const card = document.createElement('article'); card.className = 'article-card';
-					const top = document.createElement('div'); top.className = 'card-top'; const identity = document.createElement('div'); identity.className = 'card-identity';
-					const id = document.createElement('span'); id.className = 'card-id'; id.textContent = `ID ${article.article_id}`; const heading = document.createElement('h3'); heading.textContent = article.title; identity.append(id, heading);
-					const badge = document.createElement('span'); badge.className = `badge ${article.status === 'published' ? 'is-published' : 'is-publishing'}`; badge.textContent = statusLabel(article.status); top.append(identity, badge); card.append(top);
-					const meta = document.createElement('dl'); meta.className = 'card-meta';
-					const values: Array<[string, string]> = [...(isGuide ? [['サーバー', article.server_name || '—'] as [string, string]] : []), ['カテゴリ', article.category], ['投稿日', article.date], ['PICKUP', article.featured ? '掲載' : '—']];
-					for (const [label, value] of values) { const item = document.createElement('div'); const dt = document.createElement('dt'); dt.textContent = label; const dd = document.createElement('dd'); dd.textContent = value; item.append(dt, dd); meta.append(item); }
-					card.append(meta); const actions = document.createElement('div'); actions.className = 'card-actions'; actions.append(editLink(article)); card.append(actions); cards.append(card);
+
+					row.append(
+						cell(article.article_id, 'id-cell'),
+						cell(article.title, 'title-cell'),
+					);
+
+					if (isGuide) {
+						row.append(
+							cell(
+								article.server_name || '—',
+								'server-cell',
+							),
+						);
+					}
+
+					row.append(
+						cell(article.category, 'category-cell'),
+						cell(article.date, 'date-cell'),
+					);
+
+					const pickup = cell(
+						article.featured ? '掲載' : '—',
+						'pickup-cell',
+					);
+
+					if (article.featured) {
+						pickup.classList.add('is-featured');
+					}
+
+					row.append(pickup);
+
+					const status = cell(
+						statusLabel(article.status),
+						'status-cell',
+					);
+
+					status.classList.add(
+						article.status === 'published'
+							? 'is-published'
+							: 'is-publishing',
+					);
+
+					row.append(status);
+
+					const action = cell('', 'action-cell');
+					action.append(editLink(article));
+					row.append(action);
+
+					rows.append(row);
+
+					const card = document.createElement('article');
+					card.className = 'article-card';
+
+					const top = document.createElement('div');
+					top.className = 'card-top';
+
+					const identity = document.createElement('div');
+					identity.className = 'card-identity';
+
+					const id = document.createElement('span');
+					id.className = 'card-id';
+					id.textContent = `ID ${article.article_id}`;
+
+					const heading = document.createElement('h3');
+					heading.textContent = article.title;
+
+					identity.append(id, heading);
+
+					const badge = document.createElement('span');
+					badge.className = `badge ${
+						article.status === 'published'
+							? 'is-published'
+							: 'is-publishing'
+					}`;
+					badge.textContent = statusLabel(article.status);
+
+					top.append(identity, badge);
+					card.append(top);
+
+					const meta = document.createElement('dl');
+					meta.className = 'card-meta';
+
+					const values: Array<[string, string]> = [
+						...(isGuide
+							? [
+									[
+										'サーバー',
+										article.server_name || '—',
+									] as [string, string],
+								]
+							: []),
+						['カテゴリ', article.category],
+						['投稿日', article.date],
+						[
+							'PICKUP',
+							article.featured ? '掲載' : '—',
+						],
+					];
+
+					for (const [label, value] of values) {
+						const item = document.createElement('div');
+
+						const dt = document.createElement('dt');
+						dt.textContent = label;
+
+						const dd = document.createElement('dd');
+						dd.textContent = value;
+
+						item.append(dt, dd);
+						meta.append(item);
+					}
+
+					card.append(meta);
+
+					const actions = document.createElement('div');
+					actions.className = 'card-actions';
+					actions.append(editLink(article));
+
+					card.append(actions);
+					cards.append(card);
 				}
 			}
-			get('retry-button').addEventListener('click', () => void loadArticles());
-			const menuButton = document.getElementById('menu-toggle') as HTMLButtonElement;
-			menuButton.addEventListener('click', () => { const open = menuButton.getAttribute('aria-expanded') !== 'true'; menuButton.setAttribute('aria-expanded', String(open)); menuButton.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く'); get('admin-nav').classList.toggle('is-open', open); });
+
+			get('retry-button').addEventListener(
+				'click',
+				() => void loadArticles(),
+			);
+
+			const menuButton = document.getElementById(
+				'menu-toggle',
+			) as HTMLButtonElement;
+
+			menuButton.addEventListener('click', () => {
+				const open =
+					menuButton.getAttribute('aria-expanded') !== 'true';
+
+				menuButton.setAttribute(
+					'aria-expanded',
+					String(open),
+				);
+
+				menuButton.setAttribute(
+					'aria-label',
+					open
+						? 'メニューを閉じる'
+						: 'メニューを開く',
+				);
+
+				get('admin-nav').classList.toggle('is-open', open);
+			});
+
 			void loadArticles();
 		</script>
 	</body>
 </html>
 
 <style is:global>
-	:root{color-scheme:dark;--bg:#111416;--panel:#202529;--panel2:#292f33;--line:#41494d;--line2:#586267;--text:#f1f4f2;--soft:#c4ccc7;--muted:#929d96;--green:#72ad55;--green2:#8bc96d;--red:#e27b78;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--text)}
-	*{box-sizing:border-box}html,body{margin:0;min-height:100%;max-width:100%;overflow-x:hidden}body{background:radial-gradient(ellipse at 65% -10%,rgba(114,173,85,.12),transparent 45%),linear-gradient(180deg,#151a1c,var(--bg) 450px);line-height:1.55}button,a{font:inherit}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible{outline:3px solid var(--green2);outline-offset:3px}[hidden]{display:none!important}
-	.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:20px;height:72px;padding:0 clamp(16px,3vw,40px);border-bottom:1px solid #343c3e;background:#111416f2;backdrop-filter:blur(14px);box-shadow:0 4px 18px #0003}.brand{display:flex;align-items:center;gap:12px;min-width:0}.brand-mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid #568f43;border-radius:4px;background:linear-gradient(145deg,#6ea95a,#38642f);font-size:12px;font-weight:950}.brand strong,.brand small{display:block}.brand strong{font-size:14px}.brand small{color:var(--muted);font-size:10px}.site-link{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;margin-left:auto;padding:0 14px;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--soft);font-size:12px;font-weight:750}.menu-toggle{display:none}.shell{display:grid;grid-template-columns:236px minmax(0,1fr);width:min(1440px,100%);min-height:calc(100vh - 72px);margin:0 auto}.sidebar{position:sticky;top:72px;display:flex;flex-direction:column;align-self:start;min-height:calc(100vh - 72px);padding:30px 16px 20px;border-right:1px solid #30373a}.nav-label,.eyebrow{margin:0;color:#88bf70;font-size:10px;font-weight:900;letter-spacing:.13em}.nav-label{padding:0 12px 12px;color:var(--muted)}.sidebar nav{display:grid;gap:5px}.nav-link{display:flex;align-items:center;gap:12px;min-height:46px;padding:0 12px;border:1px solid transparent;border-radius:3px;color:#b7c0ba;font-size:13px;font-weight:750}.nav-link>span{display:grid;width:20px;place-items:center;color:#89968e;font-size:17px}.nav-link:hover{background:#ffffff08;color:white}.nav-link.active{border-color:#456043;background:linear-gradient(90deg,#42653a55,#42653a17);color:#f3f8f0}.nav-link.active>span{color:var(--green2)}.sidebar-note{display:flex;align-items:flex-start;gap:9px;margin-top:auto;padding:15px 10px 0;border-top:1px solid #30373a;color:var(--muted);font-size:10px}.live-dot{width:7px;height:7px;flex:0 0 7px;margin-top:5px;border-radius:50%;background:var(--green);box-shadow:0 0 8px #72ad5580}.main{width:min(1200px,100%);min-width:0;margin:0 auto;padding:42px clamp(18px,4vw,56px) 48px}.page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}.page-heading h1{margin:7px 0 0;font-size:clamp(27px,3vw,36px);font-weight:900;line-height:1.2}.intro{margin:10px 0 0;color:var(--muted);font-size:13px}.button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 15px;border:1px solid;border-radius:3px;font-size:12px;font-weight:850;cursor:pointer}.primary{border-color:#568f43;background:linear-gradient(180deg,#7dbd5f,#609c49);color:white;box-shadow:0 3px #0004}.secondary{border-color:var(--line2);background:linear-gradient(180deg,#333a3e,#272d30);color:var(--soft)}.add-button{flex:0 0 auto}.panel{min-width:0;border:1px solid var(--line);border-radius:4px;background:linear-gradient(145deg,#ffffff09,transparent 42%),var(--panel);box-shadow:0 4px #0004,0 10px 24px #0002}.list-panel{overflow:hidden}.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;border-bottom:1px solid #ffffff0c}.panel-heading h2{margin:4px 0 0;font-size:18px}.count{color:var(--muted);font-size:12px;font-weight:750}.table-wrap{width:100%;overflow:hidden}table{width:100%;border-collapse:collapse;table-layout:fixed;text-align:left}thead{background:#ffffff06}th{padding:12px 9px;border-bottom:1px solid var(--line);color:var(--muted);font-size:10px}td{padding:13px 9px;border-bottom:1px solid #ffffff0b;color:var(--soft);font-size:12px;vertical-align:middle;overflow-wrap:anywhere}th:first-child{width:7%}th:nth-child(2){width:24%}th:nth-last-child(1){width:10%}.title-cell{color:var(--text);font-weight:750}.id-cell,.date-cell{color:var(--muted);font-variant-numeric:tabular-nums}.badge{display:inline-flex;align-items:center;justify-content:center;min-width:56px;min-height:27px;padding:2px 8px;border:1px solid;border-radius:2px;font-size:10px;font-weight:850}.is-published,.status-cell.is-published{border-color:#4e7545;background:#34512a55;color:#a7d891}.is-publishing,.status-cell.is-publishing{border-color:#8d7134;background:#6b542733;color:#e6ca7c}.status-cell{font-size:11px;font-weight:800}.pickup-cell.is-featured{color:#e6ca7c;font-weight:800}.action-cell{text-align:right}.edit-button{min-height:40px;padding:0 12px;font-size:11px}.card-list{display:none}.article-card{min-width:0;padding:16px;border:1px solid #485156;border-radius:3px;background:#252b2e}.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.card-identity{min-width:0}.card-id{color:var(--muted);font-size:10px;font-variant-numeric:tabular-nums}.card-identity h3{margin:3px 0 0;font-size:16px;overflow-wrap:anywhere}.card-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 0;padding-top:12px;border-top:1px solid #ffffff10}.card-meta div{min-width:0}.card-meta dt{color:var(--muted);font-size:10px}.card-meta dd{margin:3px 0 0;color:var(--soft);font-size:12px;overflow-wrap:anywhere}.card-actions{display:flex;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid #ffffff10}.card-actions .button{min-width:88px}.state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:235px;padding:28px;text-align:center}.state p{margin:7px 0 0;color:var(--muted);font-size:13px}.state h3{margin:4px 0 0;font-size:17px}.spinner{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--green2);border-radius:50%;animation:spin .8s linear infinite}.empty-icon,.error-icon{display:grid;width:44px;height:44px;place-items:center;margin-bottom:9px;border:1px solid #568f4366;color:var(--green2);font-size:22px}.error-icon{border-color:#a94e47;color:var(--red);font-weight:900}.error-state .button{margin-top:18px}.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@keyframes spin{to{transform:rotate(360deg)}}
-	@media(max-width:1000px){th,td{padding-right:6px;padding-left:6px;font-size:10px}.edit-button{padding:0 8px}}
-	@media(max-width:760px){.topbar{height:64px;gap:12px}.brand-mark{width:38px;height:38px}.menu-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:44px;height:44px;margin-left:auto;border:1px solid var(--line);border-radius:3px;background:var(--panel)}.menu-toggle span{width:18px;height:2px;background:#d5ddd7}.site-link{min-height:44px;margin-left:0;padding:0 10px;font-size:11px}.shell{display:block;min-height:calc(100vh - 64px)}.sidebar{position:fixed;top:64px;bottom:0;left:0;z-index:19;width:min(290px,86vw);min-height:0;padding:22px 16px 20px;border-right:1px solid var(--line);background:#15191bf7;box-shadow:12px 0 28px #0004;transform:translateX(-105%);transition:transform .2s}.sidebar.is-open{transform:translateX(0)}.main{padding:30px 18px 38px}.page-heading{align-items:stretch;flex-direction:column;gap:16px;margin-bottom:22px}.page-heading h1{font-size:29px}.add-button{width:100%}.table-wrap{display:none!important}.card-list{display:grid;gap:12px;padding:14px}.panel-heading{padding:17px 18px}}
-	@media(max-width:380px){.site-link{padding:0 8px;font-size:10px}.brand{gap:8px}.brand strong{font-size:12px}.main{padding-right:13px;padding-left:13px}}
+	:root {
+		color-scheme: dark;
+		--bg: #111416;
+		--panel: #202529;
+		--panel2: #292f33;
+		--line: #41494d;
+		--line2: #586267;
+		--text: #f1f4f2;
+		--soft: #c4ccc7;
+		--muted: #929d96;
+		--green: #72ad55;
+		--green2: #8bc96d;
+		--red: #e27b78;
+		font-family:
+			system-ui,
+			-apple-system,
+			BlinkMacSystemFont,
+			"Segoe UI",
+			"Yu Gothic",
+			Meiryo,
+			sans-serif;
+		background: var(--bg);
+		color: var(--text);
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	html,
+	body {
+		margin: 0;
+		min-height: 100%;
+		max-width: 100%;
+		overflow-x: hidden;
+	}
+
+	body {
+		background:
+			radial-gradient(
+				ellipse at 65% -10%,
+				rgba(114, 173, 85, 0.12),
+				transparent 45%
+			),
+			linear-gradient(
+				180deg,
+				#151a1c,
+				var(--bg) 450px
+			);
+		line-height: 1.55;
+	}
+
+	button,
+	a {
+		font: inherit;
+	}
+
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	button:focus-visible,
+	a:focus-visible {
+		outline: 3px solid var(--green2);
+		outline-offset: 3px;
+	}
+
+	[hidden] {
+		display: none !important;
+	}
+
+	.topbar {
+		position: sticky;
+		top: 0;
+		z-index: 20;
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		height: 72px;
+		padding: 0 clamp(16px, 3vw, 40px);
+		border-bottom: 1px solid #343c3e;
+		background: #111416f2;
+		backdrop-filter: blur(14px);
+		box-shadow: 0 4px 18px #0003;
+	}
+
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		min-width: 0;
+	}
+
+	.brand-mark {
+		display: grid;
+		place-items: center;
+		width: 42px;
+		height: 42px;
+		border: 1px solid #568f43;
+		border-radius: 4px;
+		background: linear-gradient(
+			145deg,
+			#6ea95a,
+			#38642f
+		);
+		font-size: 12px;
+		font-weight: 950;
+	}
+
+	.brand strong,
+	.brand small {
+		display: block;
+	}
+
+	.brand strong {
+		font-size: 14px;
+	}
+
+	.brand small {
+		color: var(--muted);
+		font-size: 10px;
+	}
+
+	.site-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 7px;
+		min-height: 44px;
+		margin-left: auto;
+		padding: 0 14px;
+		border: 1px solid var(--line);
+		border-radius: 3px;
+		background: var(--panel);
+		color: var(--soft);
+		font-size: 12px;
+		font-weight: 750;
+	}
+
+	.menu-toggle {
+		display: none;
+	}
+
+	.shell {
+		display: grid;
+		grid-template-columns: 236px minmax(0, 1fr);
+		width: min(1440px, 100%);
+		min-height: calc(100vh - 72px);
+		margin: 0 auto;
+	}
+
+	.main {
+		width: min(1200px, 100%);
+		min-width: 0;
+		margin: 0 auto;
+		padding: 42px clamp(18px, 4vw, 56px) 48px;
+	}
+
+	.page-heading {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 24px;
+		margin-bottom: 28px;
+	}
+
+	.eyebrow {
+		margin: 0;
+		color: #88bf70;
+		font-size: 10px;
+		font-weight: 900;
+		letter-spacing: 0.13em;
+	}
+
+	.page-heading h1 {
+		margin: 7px 0 0;
+		font-size: clamp(27px, 3vw, 36px);
+		font-weight: 900;
+		line-height: 1.2;
+	}
+
+	.intro {
+		margin: 10px 0 0;
+		color: var(--muted);
+		font-size: 13px;
+	}
+
+	.button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 7px;
+		min-height: 44px;
+		padding: 0 15px;
+		border: 1px solid;
+		border-radius: 3px;
+		font-size: 12px;
+		font-weight: 850;
+		cursor: pointer;
+	}
+
+	.primary {
+		border-color: #568f43;
+		background: linear-gradient(
+			180deg,
+			#7dbd5f,
+			#609c49
+		);
+		color: white;
+		box-shadow: 0 3px #0004;
+	}
+
+	.secondary {
+		border-color: var(--line2);
+		background: linear-gradient(
+			180deg,
+			#333a3e,
+			#272d30
+		);
+		color: var(--soft);
+	}
+
+	.add-button {
+		flex: 0 0 auto;
+	}
+
+	.panel {
+		min-width: 0;
+		border: 1px solid var(--line);
+		border-radius: 4px;
+		background:
+			linear-gradient(
+				145deg,
+				#ffffff09,
+				transparent 42%
+			),
+			var(--panel);
+		box-shadow:
+			0 4px #0004,
+			0 10px 24px #0002;
+	}
+
+	.list-panel {
+		overflow: hidden;
+	}
+
+	.panel-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 20px 22px;
+		border-bottom: 1px solid #ffffff0c;
+	}
+
+	.panel-heading h2 {
+		margin: 4px 0 0;
+		font-size: 18px;
+	}
+
+	.count {
+		color: var(--muted);
+		font-size: 12px;
+		font-weight: 750;
+	}
+
+	.table-wrap {
+		width: 100%;
+		overflow: hidden;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		table-layout: fixed;
+		text-align: left;
+	}
+
+	thead {
+		background: #ffffff06;
+	}
+
+	th {
+		padding: 12px 9px;
+		border-bottom: 1px solid var(--line);
+		color: var(--muted);
+		font-size: 10px;
+	}
+
+	td {
+		padding: 13px 9px;
+		border-bottom: 1px solid #ffffff0b;
+		color: var(--soft);
+		font-size: 12px;
+		vertical-align: middle;
+		overflow-wrap: anywhere;
+	}
+
+	th:first-child {
+		width: 7%;
+	}
+
+	th:nth-child(2) {
+		width: 24%;
+	}
+
+	th:nth-last-child(1) {
+		width: 10%;
+	}
+
+	.title-cell {
+		color: var(--text);
+		font-weight: 750;
+	}
+
+	.id-cell,
+	.date-cell {
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 56px;
+		min-height: 27px;
+		padding: 2px 8px;
+		border: 1px solid;
+		border-radius: 2px;
+		font-size: 10px;
+		font-weight: 850;
+	}
+
+	.is-published,
+	.status-cell.is-published {
+		border-color: #4e7545;
+		background: #34512a55;
+		color: #a7d891;
+	}
+
+	.is-publishing,
+	.status-cell.is-publishing {
+		border-color: #8d7134;
+		background: #6b542733;
+		color: #e6ca7c;
+	}
+
+	.status-cell {
+		font-size: 11px;
+		font-weight: 800;
+	}
+
+	.pickup-cell.is-featured {
+		color: #e6ca7c;
+		font-weight: 800;
+	}
+
+	.action-cell {
+		text-align: right;
+	}
+
+	.edit-button {
+		min-height: 40px;
+		padding: 0 12px;
+		font-size: 11px;
+	}
+
+	.card-list {
+		display: none;
+	}
+
+	.article-card {
+		min-width: 0;
+		padding: 16px;
+		border: 1px solid #485156;
+		border-radius: 3px;
+		background: #252b2e;
+	}
+
+	.card-top {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 10px;
+	}
+
+	.card-identity {
+		min-width: 0;
+	}
+
+	.card-id {
+		color: var(--muted);
+		font-size: 10px;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.card-identity h3 {
+		margin: 3px 0 0;
+		font-size: 16px;
+		overflow-wrap: anywhere;
+	}
+
+	.card-meta {
+		display: grid;
+		grid-template-columns: repeat(
+			2,
+			minmax(0, 1fr)
+		);
+		gap: 10px;
+		margin: 14px 0 0;
+		padding-top: 12px;
+		border-top: 1px solid #ffffff10;
+	}
+
+	.card-meta div {
+		min-width: 0;
+	}
+
+	.card-meta dt {
+		color: var(--muted);
+		font-size: 10px;
+	}
+
+	.card-meta dd {
+		margin: 3px 0 0;
+		color: var(--soft);
+		font-size: 12px;
+		overflow-wrap: anywhere;
+	}
+
+	.card-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 14px;
+		padding-top: 12px;
+		border-top: 1px solid #ffffff10;
+	}
+
+	.card-actions .button {
+		min-width: 88px;
+	}
+
+	.state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 235px;
+		padding: 28px;
+		text-align: center;
+	}
+
+	.state p {
+		margin: 7px 0 0;
+		color: var(--muted);
+		font-size: 13px;
+	}
+
+	.state h3 {
+		margin: 4px 0 0;
+		font-size: 17px;
+	}
+
+	.spinner {
+		width: 30px;
+		height: 30px;
+		border: 3px solid var(--line);
+		border-top-color: var(--green2);
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.empty-icon,
+	.error-icon {
+		display: grid;
+		width: 44px;
+		height: 44px;
+		place-items: center;
+		margin-bottom: 9px;
+		border: 1px solid #568f4366;
+		color: var(--green2);
+		font-size: 22px;
+	}
+
+	.error-icon {
+		border-color: #a94e47;
+		color: var(--red);
+		font-weight: 900;
+	}
+
+	.error-state .button {
+		margin-top: 18px;
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (max-width: 1000px) {
+		th,
+		td {
+			padding-right: 6px;
+			padding-left: 6px;
+			font-size: 10px;
+		}
+
+		.edit-button {
+			padding: 0 8px;
+		}
+	}
+
+	@media (max-width: 760px) {
+		.topbar {
+			height: 64px;
+			gap: 12px;
+		}
+
+		.brand-mark {
+			width: 38px;
+			height: 38px;
+		}
+
+		.menu-toggle {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 5px;
+			width: 44px;
+			height: 44px;
+			margin-left: auto;
+			border: 1px solid var(--line);
+			border-radius: 3px;
+			background: var(--panel);
+		}
+
+		.menu-toggle span {
+			width: 18px;
+			height: 2px;
+			background: #d5ddd7;
+		}
+
+		.site-link {
+			min-height: 44px;
+			margin-left: 0;
+			padding: 0 10px;
+			font-size: 11px;
+		}
+
+		.shell {
+			display: block;
+			min-height: calc(100vh - 64px);
+		}
+
+		.main {
+			padding: 30px 18px 38px;
+		}
+
+		.page-heading {
+			align-items: stretch;
+			flex-direction: column;
+			gap: 16px;
+			margin-bottom: 22px;
+		}
+
+		.page-heading h1 {
+			font-size: 29px;
+		}
+
+		.add-button {
+			width: 100%;
+		}
+
+		.table-wrap {
+			display: none !important;
+		}
+
+		.card-list {
+			display: grid;
+			gap: 12px;
+			padding: 14px;
+		}
+
+		.panel-heading {
+			padding: 17px 18px;
+		}
+	}
+
+	@media (max-width: 380px) {
+		.site-link {
+			padding: 0 8px;
+			font-size: 10px;
+		}
+
+		.brand {
+			gap: 8px;
+		}
+
+		.brand strong {
+			font-size: 12px;
+		}
+
+		.main {
+			padding-right: 13px;
+			padding-left: 13px;
+		}
+	}
 </style>

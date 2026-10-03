@@ -1,0 +1,147 @@
+---
+interface Props {
+	active: 'dashboard' | 'guide' | 'news' | 'servers' | 'review';
+}
+
+const { active } = Astro.props;
+
+const navItems = [
+	{ key: 'dashboard', href: '/admin/', icon: '▦', label: 'ダッシュボード' },
+	{ key: 'guide', href: '/admin/guide/', icon: '▤', label: '攻略管理' },
+	{ key: 'news', href: '/admin/news/', icon: '◷', label: 'ニュース管理' },
+	{ key: 'servers', href: '/admin/servers/', icon: '◈', label: 'サーバー管理' },
+	{ key: 'review', href: '/admin/review/', icon: '✓', label: 'Wikiレビュー' },
+] as const;
+---
+
+<aside class="sidebar" id="admin-nav" aria-label="管理メニュー">
+	<p class="nav-label">管理メニュー</p>
+
+	<nav>
+		{navItems.map((item) => {
+			const isActive = active === item.key;
+
+			return (
+				<a
+					href={item.href}
+					class:list={['nav-link', { active: isActive }]}
+					aria-current={isActive ? 'page' : undefined}
+				>
+					<span aria-hidden="true">{item.icon}</span>
+					{item.label}
+				</a>
+			);
+		})}
+	</nav>
+
+	<div class="sidebar-note">
+		<span class="live-dot"></span>
+		管理者セッションで保護されています
+	</div>
+</aside>
+
+<style>
+	.sidebar {
+		position: sticky;
+		top: 72px;
+		display: flex;
+		flex-direction: column;
+		align-self: start;
+		min-height: calc(100vh - 72px);
+		padding: 30px 16px 20px;
+		border-right: 1px solid #30373a;
+	}
+
+	.nav-label {
+		margin: 0;
+		padding: 0 12px 12px;
+		color: var(--muted);
+		font-size: 10px;
+		font-weight: 900;
+		letter-spacing: .13em;
+	}
+
+	.sidebar nav {
+		display: grid;
+		gap: 5px;
+	}
+
+	.nav-link {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		min-height: 46px;
+		padding: 0 12px;
+		border: 1px solid transparent;
+		border-radius: 3px;
+		color: #b7c0ba;
+		font-size: 13px;
+		font-weight: 750;
+	}
+
+	.nav-link > span {
+		display: grid;
+		width: 20px;
+		place-items: center;
+		color: #89968e;
+		font-size: 17px;
+	}
+
+	.nav-link:hover {
+		background: #ffffff08;
+		color: white;
+	}
+
+	.nav-link.active {
+		border-color: #456043;
+		background: linear-gradient(90deg, #42653a55, #42653a17);
+		color: #f3f8f0;
+	}
+
+	.nav-link.active > span {
+		color: var(--green2);
+	}
+
+	.sidebar-note {
+		display: flex;
+		align-items: flex-start;
+		gap: 9px;
+		margin-top: auto;
+		padding: 15px 10px 0;
+		border-top: 1px solid #30373a;
+		color: var(--muted);
+		font-size: 10px;
+	}
+
+	.live-dot {
+		width: 7px;
+		height: 7px;
+		flex: 0 0 7px;
+		margin-top: 5px;
+		border-radius: 50%;
+		background: var(--green);
+		box-shadow: 0 0 8px #72ad5580;
+	}
+
+	@media (max-width: 760px) {
+		.sidebar {
+			position: fixed;
+			top: 64px;
+			bottom: 0;
+			left: 0;
+			z-index: 19;
+			width: min(290px, 86vw);
+			min-height: 0;
+			padding: 22px 16px 20px;
+			border-right: 1px solid var(--line);
+			background: #15191bf7;
+			box-shadow: 12px 0 28px #0004;
+			transform: translateX(-105%);
+			transition: transform .2s;
+		}
+
+		.sidebar.is-open {
+			transform: translateX(0);
+		}
+	}
+</style>
