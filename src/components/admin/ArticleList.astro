@@ -1,5 +1,6 @@
 ---
 import AdminSidebar from './AdminSidebar.astro';
+import AdminHeader from './AdminHeader.astro';
 
 interface Props {
 	contentType: 'guide' | 'news';
@@ -27,32 +28,7 @@ const newUrl = `/admin/${contentType}/new/`;
 		data-content-type={contentType}
 		data-guide={String(isGuide)}
 	>
-		<header class="topbar">
-			<a class="brand" href="/admin/" aria-label="管理画面トップ">
-				<span class="brand-mark">NUG</span>
-				<span>
-					<strong>NUGBASE</strong>
-					<small>管理画面</small>
-				</span>
-			</a>
-
-			<button
-				class="menu-toggle"
-				id="menu-toggle"
-				type="button"
-				aria-controls="admin-nav"
-				aria-expanded="false"
-				aria-label="メニューを開く"
-			>
-				<span></span>
-				<span></span>
-				<span></span>
-			</button>
-
-			<a class="site-link" href="/">
-				サイトを見る <span aria-hidden="true">↗</span>
-			</a>
-		</header>
+		<AdminHeader />
 
 		<div class="shell">
 			<AdminSidebar active={isGuide ? 'guide' : 'news'} />
@@ -396,29 +372,6 @@ const newUrl = `/admin/${contentType}/new/`;
 				() => void loadArticles(),
 			);
 
-			const menuButton = document.getElementById(
-				'menu-toggle',
-			) as HTMLButtonElement;
-
-			menuButton.addEventListener('click', () => {
-				const open =
-					menuButton.getAttribute('aria-expanded') !== 'true';
-
-				menuButton.setAttribute(
-					'aria-expanded',
-					String(open),
-				);
-
-				menuButton.setAttribute(
-					'aria-label',
-					open
-						? 'メニューを閉じる'
-						: 'メニューを開く',
-				);
-
-				get('admin-nav').classList.toggle('is-open', open);
-			});
-
 			void loadArticles();
 		</script>
 	</body>
@@ -495,78 +448,6 @@ const newUrl = `/admin/${contentType}/new/`;
 
 	[hidden] {
 		display: none !important;
-	}
-
-	.topbar {
-		position: sticky;
-		top: 0;
-		z-index: 20;
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		height: 72px;
-		padding: 0 clamp(16px, 3vw, 40px);
-		border-bottom: 1px solid #343c3e;
-		background: #111416f2;
-		backdrop-filter: blur(14px);
-		box-shadow: 0 4px 18px #0003;
-	}
-
-	.brand {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		min-width: 0;
-	}
-
-	.brand-mark {
-		display: grid;
-		place-items: center;
-		width: 42px;
-		height: 42px;
-		border: 1px solid #568f43;
-		border-radius: 4px;
-		background: linear-gradient(
-			145deg,
-			#6ea95a,
-			#38642f
-		);
-		font-size: 12px;
-		font-weight: 950;
-	}
-
-	.brand strong,
-	.brand small {
-		display: block;
-	}
-
-	.brand strong {
-		font-size: 14px;
-	}
-
-	.brand small {
-		color: var(--muted);
-		font-size: 10px;
-	}
-
-	.site-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 7px;
-		min-height: 44px;
-		margin-left: auto;
-		padding: 0 14px;
-		border: 1px solid var(--line);
-		border-radius: 3px;
-		background: var(--panel);
-		color: var(--soft);
-		font-size: 12px;
-		font-weight: 750;
-	}
-
-	.menu-toggle {
-		display: none;
 	}
 
 	.shell {
@@ -953,43 +834,6 @@ const newUrl = `/admin/${contentType}/new/`;
 	}
 
 	@media (max-width: 760px) {
-		.topbar {
-			height: 64px;
-			gap: 12px;
-		}
-
-		.brand-mark {
-			width: 38px;
-			height: 38px;
-		}
-
-		.menu-toggle {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			gap: 5px;
-			width: 44px;
-			height: 44px;
-			margin-left: auto;
-			border: 1px solid var(--line);
-			border-radius: 3px;
-			background: var(--panel);
-		}
-
-		.menu-toggle span {
-			width: 18px;
-			height: 2px;
-			background: #d5ddd7;
-		}
-
-		.site-link {
-			min-height: 44px;
-			margin-left: 0;
-			padding: 0 10px;
-			font-size: 11px;
-		}
-
 		.shell {
 			display: block;
 			min-height: calc(100vh - 64px);
@@ -1030,19 +874,6 @@ const newUrl = `/admin/${contentType}/new/`;
 	}
 
 	@media (max-width: 380px) {
-		.site-link {
-			padding: 0 8px;
-			font-size: 10px;
-		}
-
-		.brand {
-			gap: 8px;
-		}
-
-		.brand strong {
-			font-size: 12px;
-		}
-
 		.main {
 			padding-right: 13px;
 			padding-left: 13px;

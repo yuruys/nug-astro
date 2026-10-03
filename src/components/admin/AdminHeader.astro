@@ -1,0 +1,291 @@
+---
+---
+
+<header class="admin-header">
+	<div class="admin-header-inner">
+		<a
+			class="brand"
+			href="/admin/"
+			aria-label="NUGBASE 管理画面トップ"
+		>
+			<span class="brand-mark">NUG</span>
+
+			<span class="brand-copy">
+				<strong>NUGBASE</strong>
+				<small>管理画面</small>
+			</span>
+		</a>
+
+		<button
+			class="menu-toggle"
+			id="menu-toggle"
+			type="button"
+			aria-controls="admin-nav"
+			aria-expanded="false"
+			aria-label="メニューを開く"
+		>
+			<span></span>
+			<span></span>
+			<span></span>
+		</button>
+
+		<a class="site-link" href="/">
+			サイトを見る ↗
+		</a>
+	</div>
+</header>
+
+<script>
+	const menuButton = document.getElementById(
+		'menu-toggle',
+	) as HTMLButtonElement | null;
+
+	const adminNav = document.getElementById(
+		'admin-nav',
+	) as HTMLElement | null;
+
+	if (menuButton && adminNav) {
+		menuButton.addEventListener('click', () => {
+			const open =
+				menuButton.getAttribute('aria-expanded') !== 'true';
+
+			menuButton.setAttribute(
+				'aria-expanded',
+				String(open),
+			);
+
+			menuButton.setAttribute(
+				'aria-label',
+				open
+					? 'メニューを閉じる'
+					: 'メニューを開く',
+			);
+
+			adminNav.classList.toggle('is-open', open);
+		});
+	}
+</script>
+
+<style>
+	.admin-header {
+		position: sticky;
+		top: 0;
+		z-index: 30;
+
+		height: 72px;
+
+		border-bottom: 1px solid #30373a;
+
+		background:
+			linear-gradient(
+				180deg,
+				rgba(58, 64, 68, 0.97),
+				rgba(31, 35, 38, 0.97)
+			);
+
+		box-shadow:
+			0 2px 0 rgba(255, 247, 214, 0.035),
+			0 5px 16px rgba(0, 0, 0, 0.28);
+
+		backdrop-filter: blur(12px);
+	}
+
+	.admin-header-inner {
+		width: min(1440px, calc(100% - 32px));
+		height: 100%;
+		margin: 0 auto;
+
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+
+		min-width: 0;
+
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.brand-mark {
+		display: grid;
+		place-items: center;
+
+		width: 42px;
+		height: 42px;
+
+		border: 1px solid #568f43;
+		border-radius: 4px;
+
+		background:
+			linear-gradient(
+				145deg,
+				#6ea95a,
+				#38642f
+			);
+
+		box-shadow:
+			0 3px 0 #101214,
+			inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+		color: #fff;
+
+		font-size: 12px;
+		font-weight: 950;
+		letter-spacing: 0.04em;
+	}
+
+	.brand-copy {
+		display: grid;
+		gap: 1px;
+
+		min-width: 0;
+	}
+
+	.brand-copy strong {
+		color: #f1f4f2;
+
+		font-size: 14px;
+		font-weight: 900;
+		line-height: 1.2;
+	}
+
+	.brand-copy small {
+		color: #929d96;
+
+		font-size: 10px;
+		font-weight: 700;
+		line-height: 1.2;
+	}
+
+	.site-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+
+		min-height: 44px;
+
+		margin-left: auto;
+		padding: 0 14px;
+
+		border: 1px solid #41494d;
+		border-radius: 3px;
+
+		background: #202529;
+
+		box-shadow: 0 3px 0 #0a0c0d;
+
+		color: #c4ccc7;
+
+		font-size: 12px;
+		font-weight: 750;
+
+		text-decoration: none;
+
+		transition:
+			transform 0.12s ease,
+			filter 0.12s ease,
+			border-color 0.12s ease;
+	}
+
+	.site-link:hover {
+		border-color: #586267;
+
+		color: #f1f4f2;
+
+		filter: brightness(1.08);
+
+		transform: translateY(-1px);
+	}
+
+	.site-link:active {
+		transform: translateY(2px);
+
+		box-shadow: 0 1px 0 #0a0c0d;
+	}
+
+	.menu-toggle {
+		display: none;
+
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		gap: 5px;
+
+		width: 44px;
+		height: 44px;
+
+		margin-left: auto;
+
+		padding: 0;
+
+		border: 1px solid #41494d;
+		border-radius: 3px;
+
+		background: #202529;
+
+		color: #d5ddd7;
+
+		cursor: pointer;
+	}
+
+	.menu-toggle span {
+		width: 18px;
+		height: 2px;
+
+		background: currentColor;
+	}
+
+	.menu-toggle:hover {
+		border-color: #586267;
+		filter: brightness(1.08);
+	}
+
+	.menu-toggle:focus-visible,
+	.site-link:focus-visible,
+	.brand:focus-visible {
+		outline: 2px solid #e4c66d;
+		outline-offset: 3px;
+	}
+
+	@media (max-width: 760px) {
+		.admin-header {
+			height: 64px;
+		}
+
+		.admin-header-inner {
+			width: min(
+				calc(100% - 20px),
+				1440px
+			);
+
+			gap: 12px;
+		}
+
+		.brand-mark {
+			width: 38px;
+			height: 38px;
+		}
+
+		.menu-toggle {
+			display: flex;
+		}
+
+		.site-link {
+			min-height: 40px;
+			padding: 0 10px;
+
+			font-size: 11px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.site-link {
+			transition: none;
+		}
+	}
+</style>

@@ -1,5 +1,6 @@
 ---
 import AdminSidebar from '../../components/admin/AdminSidebar.astro';
+import AdminHeader from '../../components/admin/AdminHeader.astro';
 ---
 
 <!doctype html>
@@ -2085,53 +2086,7 @@ import AdminSidebar from '../../components/admin/AdminSidebar.astro';
 <body>
 	<div class="admin-shell">
 
-		<header class="admin-header">
-			<div class="admin-header-inner">
-
-				<a
-					href="/admin/"
-					class="brand"
-					aria-label="NUGBASE 管理画面"
-				>
-					<div class="brand-mark">NUG</div>
-
-					<div class="brand-text">
-						<div class="brand-title">
-							NUGBASE 管理画面
-						</div>
-
-						<div class="brand-subtitle">
-							Wiki Management
-						</div>
-					</div>
-				</a>
-
-				<nav class="header-actions">
-					<a
-						href="/wiki/requests/"
-						class="header-link"
-					>
-						自分の申請
-					</a>
-
-					<a
-						href="/docs/"
-						class="header-link"
-					>
-						Wikiを見る
-					</a>
-
-					<a
-						href="/account/"
-						class="header-link"
-					>
-						アカウント
-					</a>
-				</nav>
-
-			</div>
-		</header>
-
+	 <AdminHeader />
 
 		<div class="admin-layout">
 

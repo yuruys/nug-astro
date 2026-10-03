@@ -1,5 +1,6 @@
 ---
 import AdminSidebar from '../../../components/admin/AdminSidebar.astro';
+import AdminHeader from '../../../components/admin/AdminHeader.astro';
 
 const title = 'サーバー管理';
 ---
@@ -13,27 +14,7 @@ const title = 'サーバー管理';
 		<title>{title} | NUGBASE 管理画面</title>
 	</head>
 	<body>
-		<header class="topbar">
-			<a class="brand" href="/admin/" aria-label="管理画面トップ">
-				<span class="brand-mark">NUG</span>
-				<span><strong>NUGBASE</strong><small>管理画面</small></span>
-			</a>
-
-			<button
-				class="menu-toggle"
-				id="menu-toggle"
-				type="button"
-				aria-controls="admin-nav"
-				aria-expanded="false"
-				aria-label="メニューを開く"
-			>
-				<span></span><span></span><span></span>
-			</button>
-
-			<a class="site-link" href="/">
-				サイトを見る <span aria-hidden="true">↗</span>
-			</a>
-		</header>
+		<AdminHeader />
 
 		<div class="shell">
 			<AdminSidebar active="servers" />

@@ -1,0 +1,143 @@
+---
+import AdminHeader from "./AdminHeader.astro";
+import AdminSidebar from "./AdminSidebar.astro";
+
+interface Props {
+	active: "dashboard" | "guide" | "news" | "servers" | "review";
+}
+
+const { active } = Astro.props;
+---
+
+<div class="admin-layout-root">
+	<AdminHeader />
+
+	<div class="admin-layout">
+		<AdminSidebar active={active} />
+
+		<main class="admin-main">
+			<div class="admin-content">
+				<slot />
+			</div>
+		</main>
+	</div>
+</div>
+
+<style>
+	.admin-layout-root {
+		--admin-bg: #111416;
+		--admin-surface: #2b3034;
+		--admin-surface-alt: #32383c;
+		--admin-surface-hover: #383f43;
+
+		--admin-text: #f1f4f2;
+		--admin-text-secondary: #c3cac6;
+		--admin-text-muted: #929b96;
+
+		--admin-accent: #72ad55;
+		--admin-accent-light: #8bc56c;
+		--admin-accent-dark: #568d3f;
+		--admin-accent-soft: rgba(114, 173, 85, 0.12);
+
+		--admin-border: #4a5155;
+		--admin-border-strong: #5b6469;
+
+		--admin-warning: #d8a84e;
+		--admin-danger: #d96b6b;
+		--admin-info: #6ca6d8;
+		--admin-purple: #9b82c7;
+
+		--admin-radius: 6px;
+		--admin-radius-small: 4px;
+
+		--admin-shadow:
+			0 2px 0 rgba(0, 0, 0, 0.22),
+			0 8px 24px rgba(0, 0, 0, 0.18);
+
+		--admin-shadow-small:
+			0 2px 0 rgba(0, 0, 0, 0.2),
+			0 4px 12px rgba(0, 0, 0, 0.14);
+
+		--admin-content-width: 1200px;
+		--admin-header-height: 72px;
+		--admin-mobile-header-height: 64px;
+		--admin-sidebar-width: 220px;
+		--admin-breakpoint: 760px;
+
+		min-height: 100vh;
+		background: #111416;
+		color: #f1f4f2;
+		font-family:
+			system-ui,
+			-apple-system,
+			BlinkMacSystemFont,
+			"Segoe UI",
+			"Yu Gothic",
+			"YuGothic",
+			"Hiragino Kaku Gothic ProN",
+			Meiryo,
+			sans-serif;
+		line-height: 1.6;
+		box-sizing: border-box;
+
+		background-image:
+			radial-gradient(
+				circle at 50% -20%,
+				rgba(114, 173, 85, 0.08),
+				transparent 42%
+			),
+			linear-gradient(
+				180deg,
+				#111416 0%,
+				#111416 55%,
+				#0d1012 100%
+			);
+	}
+
+	.admin-layout-root *,
+	.admin-layout-root *::before,
+	.admin-layout-root *::after {
+		box-sizing: border-box;
+	}
+
+	.admin-layout {
+		display: grid;
+		grid-template-columns: var(--admin-sidebar-width) minmax(0, 1fr);
+		min-height: calc(100vh - var(--admin-header-height));
+	}
+
+	.admin-main {
+		min-width: 0;
+		width: 100%;
+		overflow-x: hidden;
+		padding: 48px 32px 80px;
+	}
+
+	.admin-content {
+		width: min(100%, var(--admin-content-width));
+		margin: 0 auto;
+	}
+
+	@media (max-width: 760px) {
+		.admin-layout {
+			display: block;
+			min-height: auto;
+		}
+
+		.admin-main {
+			width: 100%;
+			min-width: 0;
+			padding: 32px 20px 56px;
+		}
+
+		.admin-content {
+			width: 100%;
+		}
+	}
+
+	@media (max-width: 420px) {
+		.admin-main {
+			padding: 24px 14px 48px;
+		}
+	}
+</style>

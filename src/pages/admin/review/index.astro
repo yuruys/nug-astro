@@ -1,5 +1,5 @@
 ---
-import AdminSidebar from '../../../components/admin/AdminSidebar.astro';
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
 ---
 
 <!doctype html>
@@ -18,52 +18,10 @@ import AdminSidebar from '../../../components/admin/AdminSidebar.astro';
 	</head>
 
 	<body>
-		<main class="admin-page">
-			<div class="admin-layout">
-				<AdminSidebar active="review" />
+		<AdminLayout active="review">
+			<main class="admin-page">
 
 				<div class="admin-shell">
-
-					<!-- ========================================
-					     Header
-					======================================== -->
-
-					<header class="admin-header">
-
-						<div>
-							<a
-								href="/admin/"
-								class="back-link"
-							>
-								← Wiki管理へ戻る
-							</a>
-
-							<p class="eyebrow">
-								NUGBASE ADMIN
-							</p>
-
-							<h1>
-								Wikiレビュー
-							</h1>
-
-							<p class="description">
-								申請されたWiki編集内容を確認します。
-							</p>
-						</div>
-
-						<div class="header-actions">
-							<a
-								href="/docs/"
-								class="button button-secondary"
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-								Wikiを見る
-							</a>
-						</div>
-
-					</header>
-
 
 					<!-- ========================================
 					     Loading
@@ -492,7 +450,6 @@ import AdminSidebar from '../../../components/admin/AdminSidebar.astro';
 
 					</section>
 
-				</div>
 			</div>
 		</main>
 
@@ -1432,1982 +1389,1436 @@ import AdminSidebar from '../../../components/admin/AdminSidebar.astro';
 		======================================== -->
 
 		<style>
-			/* =========================================================
-			   NUGBASE ADMIN / Wiki Review
-			   ---------------------------------------------------------
-			   Design only.
-			   HTML / JavaScript / API / IDs / Classes are untouched.
-			   ========================================================= */
-
-
-			/* =========================================================
-			   01. Design Tokens
-			========================================================= */
-
-			:root {
-				color-scheme: dark;
-
-				/* NUGBASE dark world */
-				--nug-bg: #0f1113;
-				--nug-bg-deep: #0b0d0f;
-
-				--nug-surface: #202529;
-				--nug-surface-raised: #292e32;
-				--nug-surface-light: #343a3f;
-
-				--nug-border: #485057;
-				--nug-border-strong: #5b646b;
-
-				/* Text */
-				--nug-text: #f1f4f2;
-				--nug-text-soft: #d5dbd7;
-				--nug-muted: #9da7a1;
-				--nug-muted-dark: #707a74;
-
-				/* Grass / nature */
-				--nug-green: #70c96b;
-				--nug-green-bright: #8be183;
-				--nug-green-dark: #397a3d;
-				--nug-green-deep: #285b30;
-
-				/* Warm light */
-				--nug-gold: #e8cc76;
-				--nug-warm: #fff7d6;
-
-				/* Status */
-				--nug-danger: #e27b78;
-				--nug-danger-dark: #713b3a;
-
-				--nug-info: #7bb9dc;
-				--nug-info-dark: #35586d;
-
-				/* Block shadows */
-				--nug-shadow:
-					0 5px 0 rgba(0, 0, 0, 0.38),
-					0 12px 28px rgba(0, 0, 0, 0.24);
-
-				--nug-shadow-small:
-					0 3px 0 rgba(0, 0, 0, 0.38),
-					0 7px 16px rgba(0, 0, 0, 0.2);
-
-				--nug-shadow-green:
-					0 4px 0 var(--nug-green-dark),
-					0 10px 20px rgba(0, 0, 0, 0.25);
-
-				--nug-shadow-danger:
-					0 4px 0 var(--nug-danger-dark),
-					0 10px 20px rgba(0, 0, 0, 0.25);
-
-				font-family:
-					Inter,
-					"Noto Sans JP",
-					system-ui,
-					-apple-system,
-					BlinkMacSystemFont,
-					"Segoe UI",
-					sans-serif;
-			}
+	/* =========================================================
+	   NUGBASE ADMIN / Wiki Review
+	   ---------------------------------------------------------
+	   Reviewページ固有のデザインのみ。
+	   AdminLayout / AdminHeader / AdminSidebar の
+	   共通レイアウト・機能には干渉しない。
+	   ========================================================= */
 
 
-			/* =========================================================
-			   02. Reset
-			========================================================= */
+	/* =========================================================
+	   01. Review Design Tokens
+	   ---------------------------------------------------------
+	   /admin/ のデザインを基準にする。
+	   ========================================================= */
 
-			* {
-				box-sizing: border-box;
-			}
+	:root {
+		color-scheme: dark;
 
+		--review-bg: #111416;
+		--review-bg-deep: #0d1012;
 
-			html,
-			body {
-				margin: 0;
-				min-height: 100%;
-			}
+		--review-surface: #2b3034;
+		--review-surface-alt: #32383c;
+		--review-surface-hover: #383f43;
 
+		--review-border: #4a5155;
+		--review-border-strong: #5b6469;
 
-			html {
-				background: var(--nug-bg-deep);
-			}
+		--review-text: #f1f4f2;
+		--review-text-secondary: #c3cac6;
+		--review-text-muted: #929b96;
 
+		--review-green: #72ad55;
+		--review-green-light: #8ac46c;
+		--review-green-dark: #4f813d;
+		--review-green-deep: #365c2c;
 
-			body {
-				background:
-					radial-gradient(
-						circle at 8% 0%,
-						rgba(112, 201, 107, 0.11),
-						transparent 32%
-					),
-					radial-gradient(
-						circle at 92% 12%,
-						rgba(255, 247, 214, 0.045),
-						transparent 28%
-					),
-					linear-gradient(
-						180deg,
-						#18201b 0,
-						#111518 260px,
-						var(--nug-bg) 620px
-					);
+		--review-gold: #d8b85f;
+		--review-gold-dark: #78652f;
 
-				color: var(--nug-text);
+		--review-danger: #d87370;
+		--review-danger-dark: #793f3d;
 
-				font-size: 16px;
-				line-height: 1.5;
-			}
+		--review-info: #79b5d5;
+		--review-info-dark: #3e6276;
 
+		--review-shadow:
+			0 5px 0 rgba(0, 0, 0, 0.32),
+			0 12px 28px rgba(0, 0, 0, 0.22);
 
-			button,
-			input,
-			textarea {
-				font: inherit;
-			}
+		--review-shadow-small:
+			0 3px 0 rgba(0, 0, 0, 0.28),
+			0 8px 16px rgba(0, 0, 0, 0.18);
 
+		--review-shadow-green:
+			0 4px 0 var(--review-green-deep),
+			0 10px 20px rgba(0, 0, 0, 0.22);
 
-			button,
-			a {
-				-webkit-tap-highlight-color:
-					transparent;
-			}
+		--review-shadow-danger:
+			0 4px 0 var(--review-danger-dark),
+			0 10px 20px rgba(0, 0, 0, 0.22);
+	}
 
 
-			[hidden] {
-				display: none !important;
-			}
+	/* =========================================================
+	   02. Review Page Base
+	   ========================================================= */
 
+	.admin-page {
+		position: relative;
 
-			::selection {
-				background:
-					rgba(
-						112,
-						201,
-						107,
-						0.28
-					);
+		min-height: 100%;
+		width: 100%;
 
-				color:
-					var(--nug-warm);
-			}
+		color: var(--review-text);
 
+		overflow: hidden;
+	}
 
-			/* =========================================================
-			   03. Layout
-			========================================================= */
 
-			.admin-page {
-				position: relative;
+	.admin-page::before {
+		content: "";
 
-				min-height: 100vh;
+		position: fixed;
+		inset: 0;
 
-				padding:
-					0
-					0
-					80px;
+		pointer-events: none;
 
-				overflow: hidden;
-			}
+		background:
+			radial-gradient(
+				circle at 8% 0%,
+				rgba(114, 173, 85, 0.07),
+				transparent 30%
+			),
+			linear-gradient(
+				135deg,
+				rgba(255, 255, 255, 0.018),
+				transparent 28%
+			);
 
+		z-index: 0;
+	}
 
-			.admin-page::before {
-				content: "";
 
-				position: fixed;
+	/* =========================================================
+	   03. Review Content Shell
+	   ---------------------------------------------------------
+	   AdminLayout側の幅・配置を邪魔しない。
+	   ========================================================= */
 
-				inset:
-					0;
+	.admin-shell {
+		position: relative;
+		z-index: 1;
 
-				pointer-events: none;
+		width: 100%;
+		max-width: 1200px;
 
-				background:
-					linear-gradient(
-						135deg,
-						rgba(255, 255, 255, 0.025),
-						transparent 25%
-					);
+		margin: 0 auto;
 
-				z-index: 0;
-			}
+		padding: 0;
+	}
 
 
-			.admin-layout {
-				position: relative;
+	/* =========================================================
+	   04. Legacy Header
+	   ---------------------------------------------------------
+	   現在は AdminHeader.astro を使用しているため不要。
+	   ただしHTML側に残っていてもレイアウトへ影響しないよう
+	   最低限の互換指定だけ残す。
+	   ========================================================= */
 
-				z-index: 1;
+	.admin-header {
+		display: none;
+	}
 
-				display: grid;
 
-				grid-template-columns:
-					220px
-					minmax(0, 1fr);
+	.back-link {
+		display: inline-flex;
 
-				min-height:
-					100vh;
-			}
+		align-items: center;
 
+		min-height: 34px;
 
-			.admin-shell {
-				position: relative;
+		margin-bottom: 16px;
 
-				width:
-					min(
-						1200px,
-						calc(100% - 48px)
-					);
+		color: var(--review-text-muted);
 
-				margin:
-					0 auto;
+		font-size: 0.85rem;
+		font-weight: 700;
 
-				padding:
-					40px
-					0
-					0;
-			}
+		text-decoration: none;
 
+		transition:
+			color 0.15s ease,
+			transform 0.15s ease;
+	}
 
-			/* =========================================================
-			   04. Header
-			========================================================= */
 
-			.admin-header {
-				display: flex;
+	.back-link:hover {
+		color: var(--review-green-light);
 
-				align-items: flex-end;
+		transform: translateX(-2px);
+	}
 
-				justify-content: space-between;
 
-				gap: 32px;
+	.back-link:focus-visible {
+		outline: 2px solid var(--review-green);
 
-				margin-bottom: 32px;
+		outline-offset: 4px;
+	}
 
-				padding-bottom: 24px;
 
-				border-bottom:
-					2px solid
-					var(--nug-border);
+	.eyebrow {
+		margin: 0 0 8px;
 
-				position: relative;
-			}
+		color: var(--review-green-light);
 
+		font-size: 0.72rem;
+		font-weight: 900;
 
-			.admin-header::after {
-				content: "";
+		letter-spacing: 0.14em;
 
-				position: absolute;
+		text-transform: uppercase;
+	}
 
-				left: 0;
-				bottom: -2px;
 
-				width: 96px;
-				height: 2px;
+	h1 {
+		margin: 0;
 
-				background:
-					var(--nug-green);
-			}
+		color: var(--review-text);
 
+		font-size: clamp(2rem, 5vw, 2.5rem);
+		font-weight: 850;
 
-			.back-link {
-				display: inline-flex;
+		letter-spacing: -0.025em;
 
-				align-items: center;
+		line-height: 1.15;
 
-				min-height: 32px;
+		text-shadow:
+			0 2px 0 rgba(0, 0, 0, 0.24);
+	}
 
-				margin-bottom: 16px;
 
-				color:
-					var(--nug-muted);
+	.description {
+		max-width: 700px;
 
-				font-size: 0.85rem;
+		margin: 12px 0 0;
 
-				font-weight: 700;
+		color: var(--review-text-secondary);
 
-				text-decoration: none;
+		line-height: 1.75;
+	}
 
-				transition:
-					color 0.15s ease,
-					transform 0.15s ease;
-			}
 
+	.header-actions {
+		flex-shrink: 0;
+	}
 
-			.back-link:hover {
-				color:
-					var(--nug-green-bright);
 
-				transform:
-					translateX(-2px);
-			}
+	/* =========================================================
+	   05. State
+	   ========================================================= */
 
+	.state-card {
+		position: relative;
 
-			.back-link:focus-visible {
-				outline:
-					2px solid
-					var(--nug-green);
+		display: flex;
 
-				outline-offset:
-					4px;
-			}
+		flex-direction: column;
 
+		align-items: center;
+		justify-content: center;
 
-			.eyebrow {
-				margin:
-					0 0 8px;
+		min-height: 300px;
 
-				color:
-					var(--nug-green-bright);
+		padding: 40px;
 
-				font-size:
-					0.72rem;
+		border:
+			1px solid
+			var(--review-border);
 
-				font-weight:
-					900;
+		border-radius: 6px;
 
-				letter-spacing:
-					0.16em;
+		background:
+			linear-gradient(
+				145deg,
+				rgba(255, 255, 255, 0.025),
+				transparent 45%
+			),
+			var(--review-surface);
 
-				text-transform:
-					uppercase;
-			}
+		box-shadow: var(--review-shadow);
 
+		text-align: center;
 
-			h1 {
-				margin: 0;
+		overflow: hidden;
+	}
 
-				color:
-					var(--nug-text);
 
-				font-size:
-					clamp(
-						2rem,
-						5vw,
-						3rem
-					);
+	.state-card::before {
+		content: "";
 
-				font-weight:
-					900;
+		position: absolute;
 
-				letter-spacing:
-					-0.035em;
+		inset: 0 0 auto 0;
 
-				line-height:
-					1.08;
+		height: 3px;
 
-				text-shadow:
-					0 2px 0 rgba(0, 0, 0, 0.3);
-			}
+		background: var(--review-green);
+	}
 
 
-			.description {
-				max-width: 700px;
+	.state-card p {
+		color: var(--review-text-muted);
+	}
 
-				margin:
-					12px 0 0;
 
-				color:
-					var(--nug-muted);
+	.state-card h2 {
+		margin: 0 0 8px;
 
-				line-height:
-					1.75;
-			}
+		color: var(--review-text);
 
+		font-size: 1.25rem;
+	}
 
-			.header-actions {
-				flex-shrink: 0;
-			}
 
+	.state-error {
+		border-color:
+			rgba(216, 115, 112, 0.55);
+	}
 
-			/* =========================================================
-			   05. State
-			========================================================= */
 
-			.state-card {
-				position: relative;
+	.state-error::before {
+		background: var(--review-danger);
+	}
 
-				display: flex;
 
-				flex-direction: column;
+	.state-icon {
+		display: grid;
 
-				align-items: center;
+		width: 48px;
+		height: 48px;
 
-				justify-content: center;
+		place-items: center;
 
-				min-height: 300px;
+		margin-bottom: 16px;
 
-				padding: 40px;
+		border:
+			1px solid
+			rgba(216, 115, 112, 0.45);
 
-				border:
-					1px solid
-					var(--nug-border);
+		border-radius: 4px;
 
-				border-radius: 3px;
+		background:
+			rgba(216, 115, 112, 0.10);
 
-				background:
-					linear-gradient(
-						145deg,
-						rgba(255, 255, 255, 0.035),
-						transparent 45%
-					),
-					var(--nug-surface);
+		color: var(--review-danger);
 
-				box-shadow:
-					var(--nug-shadow);
+		font-weight: 900;
 
-				text-align: center;
+		box-shadow:
+			0 3px 0
+			rgba(121, 63, 61, 0.55);
+	}
 
-				overflow: hidden;
-			}
 
+	.spinner {
+		width: 32px;
+		height: 32px;
 
-			.state-card::before {
-				content: "";
+		margin-bottom: 16px;
 
-				position: absolute;
+		border:
+			3px solid
+			var(--review-border);
 
-				inset:
-					0 0 auto 0;
+		border-top-color:
+			var(--review-green);
 
-				height: 3px;
+		border-radius: 3px;
 
-				background:
-					var(--nug-green);
-			}
+		animation:
+			spin 0.8s
+			linear infinite;
+	}
 
 
-			.state-card p {
-				color:
-					var(--nug-muted);
-			}
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 
 
-			.state-card h2 {
-				margin:
-					0 0 8px;
+	/* =========================================================
+	   06. Status Banner
+	   ========================================================= */
 
-				font-size:
-					1.25rem;
-			}
+	.status-banner {
+		position: relative;
 
+		display: flex;
 
-			.state-error {
-				border-color:
-					rgba(
-						226,
-						123,
-						120,
-						0.55
-					);
-			}
+		align-items: center;
+		justify-content: space-between;
 
+		gap: 20px;
 
-			.state-error::before {
-				background:
-					var(--nug-danger);
-			}
+		margin-bottom: 24px;
 
+		padding: 16px 20px;
 
-			.state-icon {
-				display: grid;
+		border:
+			1px solid
+			var(--review-border);
 
-				width: 48px;
-				height: 48px;
+		border-left:
+			4px solid
+			var(--review-info);
 
-				place-items: center;
+		border-radius: 6px;
 
-				margin-bottom: 16px;
+		background:
+			linear-gradient(
+				145deg,
+				rgba(255, 255, 255, 0.025),
+				transparent 55%
+			),
+			var(--review-surface);
 
-				border:
-					1px solid
-					rgba(
-						226,
-						123,
-						120,
-						0.45
-					);
+		box-shadow: var(--review-shadow-small);
+	}
 
-				border-radius: 3px;
 
-				background:
-					rgba(
-						226,
-						123,
-						120,
-						0.12
-					);
+	.status-banner > div {
+		display: flex;
 
-				color:
-					var(--nug-danger);
+		align-items: center;
 
-				font-weight:
-					900;
+		gap: 14px;
+	}
 
-				box-shadow:
-					0 3px 0
-					rgba(
-						113,
-						59,
-						58,
-						0.6
-					);
-			}
 
+	.status-label {
+		color: var(--review-text-muted);
 
-			.spinner {
-				width: 32px;
-				height: 32px;
+		font-size: 0.72rem;
+		font-weight: 800;
 
-				margin-bottom: 16px;
+		letter-spacing: 0.04em;
+	}
 
-				border:
-					3px solid
-					var(--nug-border);
 
-				border-top-color:
-					var(--nug-green);
+	.status-banner strong {
+		display: inline-flex;
 
-				border-radius: 2px;
+		align-items: center;
 
-				animation:
-					spin 0.8s
-					linear infinite;
-			}
+		min-height: 30px;
 
+		padding: 5px 10px;
 
-			@keyframes spin {
-				to {
-					transform:
-						rotate(360deg);
-				}
-			}
+		border:
+			1px solid
+			var(--review-info-dark);
 
+		border-radius: 4px;
 
-			/* =========================================================
-			   06. Status Banner
-			========================================================= */
+		background:
+			rgba(121, 181, 213, 0.10);
 
-			.status-banner {
-				position: relative;
+		color: var(--review-info);
 
-				display: flex;
+		font-size: 0.82rem;
+		font-weight: 800;
+	}
 
-				align-items: center;
 
-				justify-content: space-between;
+	.status-banner[data-status="approved"] {
+		border-left-color:
+			var(--review-green);
+	}
 
-				gap: 20px;
 
-				margin-bottom: 24px;
+	.status-banner[data-status="approved"] strong {
+		border-color:
+			var(--review-green-dark);
 
-				padding:
-					16px
-					20px;
+		background:
+			rgba(114, 173, 85, 0.11);
 
-				border:
-					1px solid
-					var(--nug-border);
+		color:
+			var(--review-green-light);
+	}
 
-				border-left:
-					4px solid
-					var(--nug-info);
 
-				border-radius: 3px;
+	.status-banner[data-status="rejected"] {
+		border-left-color:
+			var(--review-danger);
+	}
 
-				background:
-					linear-gradient(
-						145deg,
-						rgba(255, 255, 255, 0.035),
-						transparent 55%
-					),
-					var(--nug-surface);
 
-				box-shadow:
-					var(--nug-shadow-small);
-			}
+	.status-banner[data-status="rejected"] strong {
+		border-color:
+			var(--review-danger-dark);
 
+		background:
+			rgba(216, 115, 112, 0.10);
 
-			.status-banner > div {
-				display: flex;
+		color:
+			var(--review-danger);
+	}
 
-				align-items: center;
 
-				gap: 14px;
-			}
+	.status-banner[data-status="published"] {
+		border-left-color:
+			var(--review-green);
+	}
 
 
-			.status-label {
-				color:
-					var(--nug-muted);
+	.status-banner[data-status="published"] strong {
+		border-color:
+			var(--review-green-dark);
 
-				font-size:
-					0.72rem;
+		background:
+			rgba(114, 173, 85, 0.11);
 
-				font-weight:
-					800;
+		color:
+			var(--review-green-light);
+	}
 
-				letter-spacing:
-					0.04em;
-			}
 
+	.status-banner > span:last-child {
+		overflow-wrap: anywhere;
 
-			.status-banner strong {
-				display: inline-flex;
+		color: var(--review-text-muted);
 
-				align-items: center;
+		font-family:
+			"Consolas",
+			"SFMono-Regular",
+			monospace;
 
-				min-height: 30px;
+		font-size: 0.7rem;
+	}
 
-				padding:
-					5px
-					10px;
 
-				border:
-					1px solid
-					var(--nug-info-dark);
+	/* =========================================================
+	   07. Panels
+	   ========================================================= */
 
-				border-radius: 2px;
+	.panel {
+		position: relative;
 
-				background:
-					rgba(
-						123,
-						185,
-						220,
-						0.11
-					);
+		margin-bottom: 24px;
 
-				color:
-					var(--nug-info);
+		border:
+			1px solid
+			var(--review-border);
 
-				font-size:
-					0.82rem;
+		border-radius: 6px;
 
-				font-weight:
-					800;
-			}
+		background:
+			linear-gradient(
+				145deg,
+				rgba(255, 255, 255, 0.022),
+				transparent 38%
+			),
+			var(--review-surface);
 
+		box-shadow: var(--review-shadow);
 
-			.status-banner[data-status="approved"] {
-				border-left-color:
-					var(--nug-green);
-			}
+		overflow: hidden;
+	}
 
 
-			.status-banner[data-status="approved"]
-			strong {
-				border-color:
-					var(--nug-green-dark);
+	.panel::after {
+		content: "";
 
-				background:
-					rgba(
-						112,
-						201,
-						107,
-						0.12
-					);
+		position: absolute;
 
-				color:
-					var(--nug-green-bright);
-			}
+		top: 0;
+		left: 0;
 
+		width: 32px;
+		height: 3px;
 
-			.status-banner[data-status="rejected"] {
-				border-left-color:
-					var(--nug-danger);
-			}
+		background:
+			var(--review-green);
 
+		opacity: 0.9;
+	}
 
-			.status-banner[data-status="rejected"]
-			strong {
-				border-color:
-					var(--nug-danger-dark);
 
-				background:
-					rgba(
-						226,
-						123,
-						120,
-						0.12
-					);
+	.panel-proposed {
+		border-color:
+			rgba(114, 173, 85, 0.52);
 
-				color:
-					var(--nug-danger);
-			}
+		box-shadow:
+			0 5px 0
+			rgba(54, 92, 44, 0.75),
+			0 12px 28px
+			rgba(0, 0, 0, 0.22);
+	}
 
 
-			.status-banner[data-status="published"] {
-				border-left-color:
-					var(--nug-green);
-			}
+	.panel-proposed::after {
+		width: 72px;
 
+		background:
+			var(--review-green-light);
+	}
 
-			.status-banner[data-status="published"]
-			strong {
-				border-color:
-					var(--nug-green-dark);
 
-				background:
-					rgba(
-						112,
-						201,
-						107,
-						0.12
-					);
+	.panel-heading {
+		display: flex;
 
-				color:
-					var(--nug-green-bright);
-			}
+		align-items: center;
+		justify-content: space-between;
 
+		gap: 20px;
 
-			.status-banner > span:last-child {
-				overflow-wrap:
-					anywhere;
+		padding: 20px 22px;
 
-				color:
-					var(--nug-muted-dark);
+		border-bottom:
+			1px solid
+			var(--review-border);
 
-				font-family:
-					"Consolas",
-					"SFMono-Regular",
-					monospace;
+		background:
+			rgba(255, 255, 255, 0.018);
+	}
 
-				font-size:
-					0.7rem;
-			}
 
+	.panel-eyebrow {
+		margin: 0 0 6px;
 
-			/* =========================================================
-			   07. Panels
-			========================================================= */
+		color:
+			var(--review-green);
 
-			.panel {
-				position: relative;
+		font-size: 0.68rem;
+		font-weight: 900;
 
-				margin-bottom: 24px;
+		letter-spacing: 0.14em;
 
-				border:
-					1px solid
-					var(--nug-border);
+		text-transform: uppercase;
+	}
 
-				border-radius: 3px;
 
-				background:
-					linear-gradient(
-						145deg,
-						rgba(255, 255, 255, 0.028),
-						transparent 38%
-					),
-					var(--nug-surface);
+	.panel-heading h2 {
+		margin: 0;
 
-				box-shadow:
-					var(--nug-shadow);
+		color:
+			var(--review-text);
 
-				overflow: hidden;
-			}
+		font-size: 1.15rem;
+		font-weight: 850;
+	}
 
 
-			.panel::after {
-				content: "";
+	/* =========================================================
+	   08. Metadata
+	   ========================================================= */
 
-				position: absolute;
+	.metadata-grid {
+		display: grid;
 
-				top: 0;
-				left: 0;
+		grid-template-columns:
+			repeat(
+				2,
+				minmax(0, 1fr)
+			);
+	}
 
-				width: 28px;
-				height: 2px;
 
-				background:
-					var(--nug-green);
+	.metadata-item {
+		position: relative;
 
-				opacity:
-					0.75;
-			}
+		min-width: 0;
 
+		padding: 18px 22px;
 
-			.panel-proposed {
-				border-color:
-					rgba(
-						112,
-						201,
-						107,
-						0.5
-					);
+		border-bottom:
+			1px solid
+			var(--review-border);
 
-				box-shadow:
-					0 5px 0
-					rgba(
-						40,
-						91,
-						48,
-						0.65
-					),
-					0 12px 28px
-					rgba(
-						0,
-						0,
-						0,
-						0.24
-					);
-			}
+		background:
+			rgba(0, 0, 0, 0.055);
+	}
 
 
-			.panel-proposed::after {
-				width: 72px;
+	.metadata-item:nth-child(odd) {
+		border-right:
+			1px solid
+			var(--review-border);
+	}
 
-				background:
-					var(--nug-green-bright);
-			}
 
+	.metadata-item:nth-last-child(-n + 2) {
+		border-bottom: 0;
+	}
 
-			.panel-heading {
-				display: flex;
 
-				align-items: center;
+	.metadata-item > span {
+		display: block;
 
-				justify-content: space-between;
+		margin-bottom: 7px;
 
-				gap: 20px;
+		color:
+			var(--review-text-muted);
 
-				padding:
-					20px
-					22px;
+		font-size: 0.7rem;
+		font-weight: 800;
 
-				border-bottom:
-					1px solid
-					var(--nug-border);
+		letter-spacing: 0.03em;
+	}
 
-				background:
-					rgba(
-						255,
-						255,
-						255,
-						0.018
-					);
-			}
 
+	.metadata-item strong {
+		color:
+			var(--review-text);
 
-			.panel-eyebrow {
-				margin:
-					0 0 6px;
+		font-size: 0.9rem;
+	}
 
-				color:
-					var(--nug-green);
 
-				font-size:
-					0.68rem;
+	.metadata-item code {
+		display: block;
 
-				font-weight:
-					900;
+		overflow-wrap: anywhere;
 
-				letter-spacing:
-					0.14em;
+		color:
+			var(--review-green-light);
 
-				text-transform:
-					uppercase;
-			}
+		font-family:
+			"Consolas",
+			"SFMono-Regular",
+			monospace;
 
+		font-size: 0.8rem;
 
-			.panel-heading h2 {
-				margin: 0;
+		line-height: 1.55;
+	}
 
-				color:
-					var(--nug-text);
 
-				font-size:
-					1.15rem;
+	/* =========================================================
+	   09. Message
+	   ========================================================= */
 
-				font-weight:
-					850;
-			}
+	.edit-message {
+		margin: 0;
 
+		padding: 18px 22px;
 
-			/* =========================================================
-			   08. Metadata
-			========================================================= */
+		color:
+			var(--review-text-secondary);
 
-			.metadata-grid {
-				display: grid;
+		line-height: 1.8;
 
-				grid-template-columns:
-					repeat(
-						2,
-						minmax(0, 1fr)
-					);
-			}
+		white-space: pre-wrap;
+	}
 
 
-			.metadata-item {
-				position: relative;
+	#message-panel .edit-message,
+	#review-comment-panel .edit-message {
+		position: relative;
 
-				min-width: 0;
+		margin:
+			18px
+			22px;
 
-				padding:
-					18px
-					22px;
+		padding:
+			14px
+			16px;
 
-				border-bottom:
-					1px solid
-					var(--nug-border);
+		border-left:
+			3px solid
+			var(--review-green);
 
-				background:
-					rgba(
-						0,
-						0,
-						0,
-						0.06
-					);
-			}
+		background:
+			rgba(114, 173, 85, 0.055);
+	}
 
 
-			.metadata-item:nth-child(odd) {
-				border-right:
-					1px solid
-					var(--nug-border);
-			}
+	/* =========================================================
+	   10. Code / Revision Viewer
+	   ========================================================= */
 
+	.code-view {
+		max-height: 650px;
 
-			.metadata-item:nth-last-child(-n + 2) {
-				border-bottom: 0;
-			}
+		margin: 0;
 
+		padding: 20px;
 
-			.metadata-item > span {
-				display: block;
+		overflow: auto;
 
-				margin-bottom: 7px;
+		border-top: 0;
 
-				color:
-					var(--nug-muted);
+		background:
+			#171b1e;
 
-				font-size:
-					0.7rem;
+		color:
+			#dce8df;
 
-				font-weight:
-					800;
+		font-family:
+			"Consolas",
+			"SFMono-Regular",
+			"Roboto Mono",
+			monospace;
 
-				letter-spacing:
-					0.03em;
-			}
+		font-size: 0.82rem;
 
+		line-height: 1.7;
 
-			.metadata-item strong {
-				color:
-					var(--nug-text);
+		white-space: pre-wrap;
 
-				font-size:
-					0.9rem;
-			}
+		overflow-wrap: anywhere;
 
+		tab-size: 4;
+	}
 
-			.metadata-item code {
-				display: block;
 
-				overflow-wrap:
-					anywhere;
+	.code-view::-webkit-scrollbar {
+		width: 10px;
+		height: 10px;
+	}
 
-				color:
-					var(--nug-green-bright);
 
-				font-family:
-					"Consolas",
-					"SFMono-Regular",
-					monospace;
+	.code-view::-webkit-scrollbar-track {
+		background:
+			#111416;
+	}
 
-				font-size:
-					0.8rem;
 
-				line-height:
-					1.55;
-			}
+	.code-view::-webkit-scrollbar-thumb {
+		background:
+			#4a5155;
 
+		border:
+			2px solid
+			#111416;
+	}
 
-			/* =========================================================
-			   09. Message
-			========================================================= */
 
-			.edit-message {
-				margin: 0;
+	.code-view::-webkit-scrollbar-thumb:hover {
+		background:
+			var(--review-green);
+	}
 
-				padding:
-					18px
-					22px;
 
-				color:
-					var(--nug-text-soft);
+	.revision-badge {
+		display: inline-flex;
 
-				line-height:
-					1.8;
+		align-items: center;
 
-				white-space:
-					pre-wrap;
-			}
+		min-height: 30px;
 
+		padding: 5px 10px;
 
-			#message-panel .edit-message,
-			#review-comment-panel .edit-message {
-				position: relative;
+		border:
+			1px solid
+			var(--review-border);
 
-				border-left:
-					3px solid
-					var(--nug-green);
+		border-radius: 4px;
 
-				margin:
-					18px
-					22px;
+		background:
+			rgba(255, 255, 255, 0.022);
 
-				padding:
-					14px
-					16px;
+		color:
+			var(--review-text-muted);
 
-				background:
-					rgba(
-						112,
-						201,
-						107,
-						0.055
-					);
-			}
+		font-size: 0.75rem;
+		font-weight: 800;
+	}
 
 
-			/* =========================================================
-			   10. Code / Revision Viewer
-			========================================================= */
+	.revision-badge.proposed {
+		border-color:
+			var(--review-green-dark);
 
-			.code-view {
-				max-height:
-					650px;
+		background:
+			rgba(114, 173, 85, 0.10);
 
-				margin: 0;
+		color:
+			var(--review-green-light);
 
-				padding:
-					20px;
+		box-shadow:
+			0 2px 0
+			rgba(54, 92, 44, 0.55);
+	}
 
-				overflow:
-					auto;
 
-				border-top:
-					0;
+	/* =========================================================
+	   11. Review Result
+	   ========================================================= */
 
-				background:
-					#0b0e10;
+	.review-result {
+		display: grid;
 
-				color:
-					#dce8df;
+		grid-template-columns:
+			repeat(
+				2,
+				minmax(0, 1fr)
+			);
 
-				font-family:
-					"Consolas",
-					"SFMono-Regular",
-					"Roboto Mono",
-					monospace;
+		padding: 18px 22px;
 
-				font-size:
-					0.82rem;
+		border-bottom:
+			1px solid
+			var(--review-border);
 
-				line-height:
-					1.7;
+		background:
+			rgba(0, 0, 0, 0.05);
+	}
 
-				white-space:
-					pre-wrap;
 
-				overflow-wrap:
-					anywhere;
+	.review-result > div {
+		display: flex;
 
-				tab-size:
-					4;
-			}
+		flex-direction: column;
 
+		gap: 5px;
+	}
 
-			.code-view::-webkit-scrollbar {
-				width: 10px;
-				height: 10px;
-			}
 
+	.review-result span {
+		color:
+			var(--review-text-muted);
 
-			.code-view::-webkit-scrollbar-track {
-				background:
-					#080a0c;
-			}
+		font-size: 0.7rem;
+		font-weight: 700;
+	}
 
 
-			.code-view::-webkit-scrollbar-thumb {
-				background:
-					#3c4540;
+	.review-result strong {
+		color:
+			var(--review-text);
 
-				border:
-					2px solid
-					#080a0c;
-			}
+		font-size: 0.9rem;
+	}
 
 
-			.code-view::-webkit-scrollbar-thumb:hover {
-				background:
-					var(--nug-green-dark);
-			}
+	/* =========================================================
+	   12. Review Actions
+	   ========================================================= */
 
+	.review-actions {
+		margin-top: 8px;
 
-			.revision-badge {
-				display: inline-flex;
+		margin-bottom: 32px;
+	}
 
-				align-items: center;
 
-				min-height:
-					30px;
+	.review-warning {
+		position: relative;
 
-				padding:
-					5px
-					10px;
+		margin-bottom: 20px;
 
-				border:
-					1px solid
-					var(--nug-border);
+		padding: 18px 20px;
 
-				border-radius:
-					2px;
+		border:
+			1px solid
+			rgba(216, 184, 95, 0.42);
 
-				background:
-					rgba(
-						255,
-						255,
-						255,
-						0.025
-					);
+		border-left:
+			4px solid
+			var(--review-gold);
 
-				color:
-					var(--nug-muted);
+		border-radius: 6px;
 
-				font-size:
-					0.75rem;
+		background:
+			linear-gradient(
+				135deg,
+				rgba(216, 184, 95, 0.085),
+				rgba(216, 184, 95, 0.025)
+			);
 
-				font-weight:
-					800;
-			}
+		box-shadow:
+			0 4px 0
+			rgba(120, 101, 47, 0.30);
+	}
 
 
-			.revision-badge.proposed {
-				border-color:
-					var(--nug-green-dark);
+	.review-warning strong {
+		color:
+			var(--review-gold);
 
-				background:
-					rgba(
-						112,
-						201,
-						107,
-						0.1
-					);
+		font-size: 0.9rem;
+	}
 
-				color:
-					var(--nug-green-bright);
 
-				box-shadow:
-					0 2px 0
-					rgba(
-						40,
-						91,
-						48,
-						0.5
-					);
-			}
+	.review-warning p {
+		margin:
+			8px
+			0
+			0;
 
+		color:
+			var(--review-text-muted);
 
-			/* =========================================================
-			   11. Review Result
-			========================================================= */
+		font-size: 0.85rem;
 
-			.review-result {
-				display: grid;
+		line-height: 1.75;
+	}
 
-				grid-template-columns:
-					repeat(
-						2,
-						minmax(0, 1fr)
-					);
 
-				padding:
-					18px
-					22px;
+	.action-buttons {
+		display: flex;
 
-				border-bottom:
-					1px solid
-					var(--nug-border);
+		justify-content: flex-end;
 
-				background:
-					rgba(
-						0,
-						0,
-						0,
-						0.055
-					);
-			}
+		gap: 16px;
+	}
 
 
-			.review-result > div {
-				display: flex;
+	/* =========================================================
+	   13. Buttons
+	   ========================================================= */
 
-				flex-direction:
-					column;
+	.button {
+		position: relative;
 
-				gap: 5px;
-			}
+		display: inline-flex;
 
+		align-items: center;
+		justify-content: center;
 
-			.review-result span {
-				color:
-					var(--nug-muted);
+		min-height: 40px;
 
-				font-size:
-					0.7rem;
+		padding: 9px 18px;
 
-				font-weight:
-					700;
-			}
+		border:
+			1px solid
+			transparent;
 
+		border-radius: 4px;
 
-			.review-result strong {
-				color:
-					var(--nug-text);
+		cursor: pointer;
 
-				font-size:
-					0.9rem;
-			}
+		font-weight: 800;
 
+		text-decoration: none;
 
-			/* =========================================================
-			   12. Review Actions
-			========================================================= */
+		transition:
+			transform 0.12s ease,
+			filter 0.12s ease,
+			opacity 0.12s ease,
+			background-color 0.12s ease;
+	}
 
-			.review-actions {
-				margin-top:
-					8px;
 
-				margin-bottom:
-					32px;
-			}
+	.button:hover:not(:disabled) {
+		transform: translateY(-2px);
 
+		filter: brightness(1.06);
+	}
 
-			.review-warning {
-				position: relative;
 
-				margin-bottom:
-					20px;
+	.button:active:not(:disabled) {
+		transform: translateY(2px);
+	}
 
-				padding:
-					18px
-					20px;
 
-				border:
-					1px solid
-					rgba(
-						232,
-						204,
-						118,
-						0.42
-					);
+	.button:focus-visible {
+		outline:
+			2px solid
+			var(--review-green-light);
 
-				border-left:
-					4px solid
-					var(--nug-gold);
+		outline-offset: 3px;
+	}
 
-				border-radius:
-					3px;
 
-				background:
-					linear-gradient(
-						135deg,
-						rgba(
-							232,
-							204,
-							118,
-							0.095
-						),
-						rgba(
-							232,
-							204,
-							118,
-							0.025
-						)
-					);
+	.button:disabled {
+		opacity: 0.5;
 
-				box-shadow:
-					0 4px 0
-					rgba(
-						100,
-						82,
-						35,
-						0.3
-					);
-			}
+		cursor: not-allowed;
 
+		filter: saturate(0.5);
+	}
 
-			.review-warning strong {
-				color:
-					var(--nug-gold);
 
-				font-size:
-					0.9rem;
-			}
+	.button-primary {
+		border-color:
+			var(--review-green);
 
+		background:
+			linear-gradient(
+				180deg,
+				#7fba61 0%,
+				#679f4d 100%
+			);
 
-			.review-warning p {
-				margin:
-					8px
-					0
-					0;
+		color:
+			#111a0e;
 
-				color:
-					var(--nug-muted);
+		box-shadow:
+			var(--review-shadow-green);
+	}
 
-				font-size:
-					0.85rem;
 
-				line-height:
-					1.75;
-			}
+	.button-primary:hover:not(:disabled) {
+		background:
+			linear-gradient(
+				180deg,
+				#8acb6b 0%,
+				#72ad55 100%
+			);
+	}
 
 
-			.action-buttons {
-				display: flex;
+	.button-danger {
+		border-color:
+			#ad5b58;
 
-				justify-content:
-					flex-end;
+		background:
+			linear-gradient(
+				180deg,
+				#d77b77 0%,
+				#bf625e 100%
+			);
 
-				gap:
-					16px;
-			}
+		color:
+			#210b0a;
 
+		box-shadow:
+			var(--review-shadow-danger);
+	}
 
-			/* =========================================================
-			   13. Buttons
-			========================================================= */
 
-			.button {
-				position: relative;
+	.button-danger:hover:not(:disabled) {
+		background:
+			linear-gradient(
+				180deg,
+				#e48b87 0%,
+				#cc6b66 100%
+			);
+	}
 
-				display: inline-flex;
 
-				align-items: center;
+	.button-secondary {
+		border-color:
+			var(--review-border);
 
-				justify-content: center;
+		background:
+			linear-gradient(
+				180deg,
+				#353b3f 0%,
+				#292e32 100%
+			);
 
-				min-height:
-					44px;
+		color:
+			var(--review-text);
 
-				padding:
-					10px
-					18px;
+		box-shadow:
+			0 3px 0 #171b1e,
+			0 7px 14px rgba(0, 0, 0, 0.18);
+	}
 
-				border:
-					1px solid
-					transparent;
 
-				border-radius:
-					3px;
+	.button-secondary:hover:not(:disabled) {
+		border-color:
+			var(--review-border-strong);
 
-				cursor:
-					pointer;
+		background:
+			linear-gradient(
+				180deg,
+				#3d4448 0%,
+				#30363a 100%
+			);
+	}
 
-				font-weight:
-					850;
 
-				text-decoration:
-					none;
+	.button-large {
+		min-width: 150px;
 
-				transition:
-					transform 0.12s ease,
-					filter 0.12s ease,
-					opacity 0.12s ease,
-					background-color 0.12s ease;
-			}
+		min-height: 44px;
+	}
 
 
-			.button:hover:not(:disabled) {
-				transform:
-					translateY(-2px);
+	/* =========================================================
+	   14. Action Message
+	   ========================================================= */
 
-				filter:
-					brightness(1.08);
-			}
+	.action-message {
+		margin:
+			0
+			0
+			24px;
 
+		padding:
+			14px
+			16px;
 
-			.button:active:not(:disabled) {
-				transform:
-					translateY(3px);
-			}
+		border:
+			1px solid
+			var(--review-border);
 
+		border-left:
+			4px solid
+			var(--review-info);
 
-			.button:focus-visible {
-				outline:
-					2px solid
-					var(--nug-warm);
+		border-radius: 6px;
 
-				outline-offset:
-					3px;
-			}
+		background:
+			var(--review-surface);
 
+		font-size: 0.9rem;
 
-			.button:disabled {
-				opacity:
-					0.5;
+		line-height: 1.65;
 
-				cursor:
-					not-allowed;
+		box-shadow:
+			var(--review-shadow-small);
+	}
 
-				filter:
-					saturate(0.5);
-			}
 
+	.action-message.success {
+		border-color:
+			rgba(114, 173, 85, 0.45);
 
-			.button-primary {
-				border-color:
-					#6fca69;
+		border-left-color:
+			var(--review-green);
 
-				background:
-					linear-gradient(
-						180deg,
-						#83dc7b 0%,
-						#5ab85a 100%
-					);
+		background:
+			rgba(114, 173, 85, 0.075);
 
-				color:
-					#0c170d;
+		color:
+			var(--review-green-light);
+	}
 
-				box-shadow:
-					var(--nug-shadow-green);
-			}
 
+	.action-message.error {
+		border-color:
+			rgba(216, 115, 112, 0.45);
 
-			.button-primary:hover:not(:disabled) {
-				background:
-					linear-gradient(
-						180deg,
-						#97e58e 0%,
-						#68c665 100%
-					);
-			}
+		border-left-color:
+			var(--review-danger);
 
+		background:
+			rgba(216, 115, 112, 0.075);
 
-			.button-danger {
-				border-color:
-					#bd6562;
+		color:
+			var(--review-danger);
+	}
 
-				background:
-					linear-gradient(
-						180deg,
-						#e28782 0%,
-						#c9615e 100%
-					);
 
-				color:
-					#210b0a;
+	.action-message.info {
+		border-color:
+			rgba(121, 181, 213, 0.45);
 
-				box-shadow:
-					var(--nug-shadow-danger);
-			}
+		border-left-color:
+			var(--review-info);
 
+		background:
+			rgba(121, 181, 213, 0.075);
 
-			.button-danger:hover:not(:disabled) {
-				background:
-					linear-gradient(
-						180deg,
-						#ed9690 0%,
-						#d66c68 100%
-					);
-			}
+		color:
+			var(--review-info);
+	}
 
 
-			.button-secondary {
-				border-color:
-					var(--nug-border);
+	/* =========================================================
+	   15. Bottom
+	   ========================================================= */
 
-				background:
-					linear-gradient(
-						180deg,
-						#30363b 0%,
-						#252a2e 100%
-					);
+	.bottom-actions {
+		display: flex;
 
-				color:
-					var(--nug-text);
+		justify-content:
+			flex-start;
 
-				box-shadow:
-					0 3px 0
-					#15191c,
-					0 7px 14px
-					rgba(
-						0,
-						0,
-						0,
-						0.18
-					);
-			}
+		padding-top: 4px;
+	}
 
 
-			.button-secondary:hover:not(:disabled) {
-				border-color:
-					var(--nug-border-strong);
+	/* =========================================================
+	   16. Responsive
+	   ========================================================= */
 
-				background:
-					linear-gradient(
-						180deg,
-						#3a4146 0%,
-						#2b3035 100%
-					);
-			}
+	@media (max-width: 900px) {
+		.metadata-grid {
+			grid-template-columns: 1fr;
+		}
 
 
-			.button-large {
-				min-width:
-					150px;
+		.metadata-item:nth-child(odd) {
+			border-right: 0;
+		}
 
-				min-height:
-					50px;
-			}
 
+		.metadata-item:nth-last-child(-n + 2) {
+			border-bottom:
+				1px solid
+				var(--review-border);
+		}
 
-			/* =========================================================
-			   14. Action Message
-			========================================================= */
 
-			.action-message {
-				margin:
-					0
-					0
-					24px;
+		.metadata-item:last-child {
+			border-bottom: 0;
+		}
+	}
 
-				padding:
-					14px
-					16px;
 
-				border:
-					1px solid
-					var(--nug-border);
+	@media (max-width: 760px) {
+		.admin-shell {
+			max-width: none;
+		}
+	}
 
-				border-left:
-					4px solid
-					var(--nug-info);
 
-				border-radius:
-					3px;
+	@media (max-width: 700px) {
+		.header-actions {
+			display: none;
+		}
 
-				background:
-					var(--nug-surface);
 
-				font-size:
-					0.9rem;
+		h1 {
+			font-size: 2rem;
+		}
 
-				line-height:
-					1.65;
 
-				box-shadow:
-					var(--nug-shadow-small);
-			}
+		.description {
+			font-size: 0.9rem;
 
+			line-height: 1.7;
+		}
 
-			.action-message.success {
-				border-color:
-					rgba(
-						112,
-						201,
-						107,
-						0.45
-					);
 
-				border-left-color:
-					var(--nug-green);
+		.status-banner {
+			align-items: flex-start;
 
-				background:
-					rgba(
-						112,
-						201,
-						107,
-						0.08
-					);
+			flex-direction: column;
 
-				color:
-					var(--nug-green-bright);
-			}
+			gap: 12px;
 
+			padding: 15px 16px;
+		}
 
-			.action-message.error {
-				border-color:
-					rgba(
-						226,
-						123,
-						120,
-						0.45
-					);
 
-				border-left-color:
-					var(--nug-danger);
+		.status-banner > div {
+			align-items: flex-start;
 
-				background:
-					rgba(
-						226,
-						123,
-						120,
-						0.08
-					);
+			flex-direction: column;
 
-				color:
-					var(--nug-danger);
-			}
+			gap: 8px;
+		}
 
 
-			.action-message.info {
-				border-color:
-					rgba(
-						123,
-						185,
-						220,
-						0.45
-					);
+		.panel-heading {
+			align-items: flex-start;
 
-				border-left-color:
-					var(--nug-info);
+			flex-direction: column;
 
-				background:
-					rgba(
-						123,
-						185,
-						220,
-						0.08
-					);
+			gap: 12px;
 
-				color:
-					var(--nug-info);
-			}
+			padding: 18px;
+		}
 
 
-			/* =========================================================
-			   15. Bottom
-			========================================================= */
+		.metadata-item {
+			padding: 16px 18px;
+		}
 
-			.bottom-actions {
-				display: flex;
 
-				justify-content:
-					flex-start;
+		.review-result {
+			grid-template-columns: 1fr;
 
-				padding-top:
-					4px;
-			}
+			gap: 16px;
 
+			padding: 18px;
+		}
 
-			/* =========================================================
-			   16. Responsive
-			========================================================= */
 
-			@media (max-width: 900px) {
-				.admin-page {
-					padding:
-						0
-						0
-						64px;
-				}
+		.code-view {
+			max-height: 520px;
 
+			padding: 16px;
 
-				.admin-shell {
-					width:
-						min(
-							1200px,
-							calc(100% - 40px)
-						);
+			font-size: 0.76rem;
 
-					padding-top:
-						32px;
-				}
+			line-height: 1.65;
+		}
 
 
-				.admin-header {
-					align-items:
-						flex-start;
-				}
+		#message-panel .edit-message,
+		#review-comment-panel .edit-message {
+			margin:
+				16px
+				18px;
+		}
 
 
-				.metadata-grid {
-					grid-template-columns:
-						1fr;
-				}
+		.review-warning {
+			padding: 16px;
+		}
 
 
-				.metadata-item:nth-child(odd) {
-					border-right: 0;
-				}
+		.action-buttons {
+			flex-direction: column;
 
+			gap: 12px;
+		}
 
-				.metadata-item:nth-last-child(-n + 2) {
-					border-bottom:
-						1px solid
-						var(--nug-border);
-				}
 
+		.action-buttons .button {
+			width: 100%;
+		}
 
-				.metadata-item:last-child {
-					border-bottom: 0;
-				}
-			}
 
+		.bottom-actions .button {
+			width: 100%;
+		}
+	}
 
-			@media (max-width: 760px) {
-				.admin-layout {
-					display:
-						block;
 
-					min-height:
-						auto;
-				}
+	@media (max-width: 420px) {
+		h1 {
+			font-size: 1.75rem;
+		}
 
 
-				.admin-shell {
-					width:
-						calc(100% - 28px);
+		.status-banner {
+			margin-bottom: 16px;
+		}
 
-					margin:
-						0 auto;
 
-					padding-top:
-						24px;
-				}
-			}
+		.panel {
+			margin-bottom: 18px;
+		}
 
 
-			@media (max-width: 700px) {
-				.admin-page {
-					padding:
-						0
-						0
-						56px;
-				}
+		.panel-heading {
+			padding: 16px;
+		}
 
 
-				.admin-shell {
-					width:
-						calc(100% - 28px);
+		.code-view {
+			font-size: 0.7rem;
+		}
 
-					padding-top:
-						24px;
-				}
 
+		.button {
+			min-height: 44px;
 
-				.admin-header {
-					flex-direction:
-						column;
+			padding:
+				10px
+				14px;
+		}
 
-					gap:
-						20px;
 
-					margin-bottom:
-						24px;
+		.button-large {
+			min-height: 48px;
+		}
+	}
 
-					padding-bottom:
-						20px;
-				}
 
+	/* =========================================================
+	   17. Reduced Motion
+	   ========================================================= */
 
-				.header-actions {
-					display:
-						none;
-				}
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			scroll-behavior: auto !important;
 
+			transition: none !important;
 
-				h1 {
-					font-size:
-						2rem;
-				}
-
-
-				.description {
-					font-size:
-						0.9rem;
-
-					line-height:
-						1.7;
-				}
-
-
-				.status-banner {
-					align-items:
-						flex-start;
-
-					flex-direction:
-						column;
-
-					gap:
-						12px;
-
-					padding:
-						15px
-						16px;
-				}
-
-
-				.status-banner > div {
-					align-items:
-						flex-start;
-
-					flex-direction:
-						column;
-
-					gap:
-						8px;
-				}
-
-
-				.panel-heading {
-					align-items:
-						flex-start;
-
-					flex-direction:
-						column;
-
-					gap:
-						12px;
-
-					padding:
-						18px;
-				}
-
-
-				.metadata-item {
-					padding:
-						16px
-						18px;
-				}
-
-
-				.review-result {
-					grid-template-columns:
-						1fr;
-
-					gap:
-						16px;
-
-					padding:
-						18px;
-				}
-
-
-				.code-view {
-					max-height:
-						520px;
-
-					padding:
-						16px;
-
-					font-size:
-						0.76rem;
-
-					line-height:
-						1.65;
-				}
-
-
-				#message-panel .edit-message,
-				#review-comment-panel .edit-message {
-					margin:
-						16px
-						18px;
-				}
-
-
-				.review-warning {
-					padding:
-						16px;
-				}
-
-
-				.action-buttons {
-					flex-direction:
-						column;
-
-					gap:
-						12px;
-				}
-
-
-				.action-buttons .button {
-					width:
-						100%;
-				}
-
-
-				.bottom-actions .button {
-					width:
-						100%;
-				}
-			}
-
-
-			@media (max-width: 420px) {
-				.admin-shell {
-					width:
-						calc(100% - 20px);
-
-					padding-top:
-						20px;
-				}
-
-
-				h1 {
-					font-size:
-						1.75rem;
-				}
-
-
-				.status-banner {
-					margin-bottom:
-						16px;
-				}
-
-
-				.panel {
-					margin-bottom:
-						18px;
-				}
-
-
-				.panel-heading {
-					padding:
-						16px;
-				}
-
-
-				.code-view {
-					font-size:
-						0.7rem;
-				}
-
-
-				.button {
-					min-height:
-						46px;
-
-					padding:
-						10px
-						14px;
-				}
-
-
-				.button-large {
-					min-height:
-						52px;
-				}
-			}
-
-
-			/* =========================================================
-			   17. Reduced Motion
-			========================================================= */
-
-			@media (prefers-reduced-motion: reduce) {
-				*,
-				*::before,
-				*::after {
-					scroll-behavior:
-						auto !important;
-
-					transition:
-						none !important;
-
-					animation:
-						none !important;
-				}
-			}
-		</style>
+			animation: none !important;
+		}
+	}
+</style>
+		</AdminLayout>
 	</body>
 </html>

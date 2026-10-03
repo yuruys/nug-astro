@@ -1,16 +1,41 @@
 ---
 interface Props {
-	active: 'dashboard' | 'guide' | 'news' | 'servers' | 'review';
+	active: "dashboard" | "guide" | "news" | "servers" | "review";
 }
 
 const { active } = Astro.props;
 
 const navItems = [
-	{ key: 'dashboard', href: '/admin/', icon: '▦', label: 'ダッシュボード' },
-	{ key: 'guide', href: '/admin/guide/', icon: '▤', label: '攻略管理' },
-	{ key: 'news', href: '/admin/news/', icon: '◷', label: 'ニュース管理' },
-	{ key: 'servers', href: '/admin/servers/', icon: '◈', label: 'サーバー管理' },
-	{ key: 'review', href: '/admin/review/', icon: '✓', label: 'Wikiレビュー' },
+	{
+		key: "dashboard",
+		href: "/admin/",
+		icon: "▦",
+		label: "ダッシュボード",
+	},
+	{
+		key: "guide",
+		href: "/admin/guide/",
+		icon: "▤",
+		label: "攻略管理",
+	},
+	{
+		key: "news",
+		href: "/admin/news/",
+		icon: "◷",
+		label: "ニュース管理",
+	},
+	{
+		key: "servers",
+		href: "/admin/servers/",
+		icon: "◈",
+		label: "サーバー管理",
+	},
+	{
+		key: "review",
+		href: "/admin/review/",
+		icon: "✓",
+		label: "Wikiレビュー",
+	},
 ] as const;
 ---
 
@@ -18,20 +43,22 @@ const navItems = [
 	<p class="nav-label">管理メニュー</p>
 
 	<nav>
-		{navItems.map((item) => {
-			const isActive = active === item.key;
+		{
+			navItems.map((item) => {
+				const isActive = active === item.key;
 
-			return (
-				<a
-					href={item.href}
-					class:list={['nav-link', { active: isActive }]}
-					aria-current={isActive ? 'page' : undefined}
-				>
-					<span aria-hidden="true">{item.icon}</span>
-					{item.label}
-				</a>
-			);
-		})}
+				return (
+					<a
+						href={item.href}
+						class:list={["nav-link", { active: isActive }]}
+						aria-current={isActive ? "page" : undefined}
+					>
+						<span aria-hidden="true">{item.icon}</span>
+						{item.label}
+					</a>
+				);
+			})
+		}
 	</nav>
 
 	<div class="sidebar-note">
@@ -43,22 +70,37 @@ const navItems = [
 <style>
 	.sidebar {
 		position: sticky;
-		top: 72px;
+		top: var(--admin-header-height, 72px);
+
 		display: flex;
 		flex-direction: column;
 		align-self: start;
-		min-height: calc(100vh - 72px);
+
+		width: var(--admin-sidebar-width, 220px);
+		min-height: calc(
+			100vh - var(--admin-header-height, 72px)
+		);
+
 		padding: 30px 16px 20px;
-		border-right: 1px solid #30373a;
+
+		border-right: 1px solid
+			var(--admin-border, #4a5155);
+
+		background: rgba(17, 20, 22, 0.72);
 	}
 
 	.nav-label {
 		margin: 0;
 		padding: 0 12px 12px;
-		color: var(--muted);
+
+		color: var(
+			--admin-text-muted,
+			#929b96
+		);
+
 		font-size: 10px;
 		font-weight: 900;
-		letter-spacing: .13em;
+		letter-spacing: 0.13em;
 	}
 
 	.sidebar nav {
@@ -70,78 +112,187 @@ const navItems = [
 		display: flex;
 		align-items: center;
 		gap: 12px;
+
 		min-height: 46px;
 		padding: 0 12px;
+
 		border: 1px solid transparent;
-		border-radius: 3px;
-		color: #b7c0ba;
+		border-radius: var(
+			--admin-radius-small,
+			4px
+		);
+
+		color: var(
+			--admin-text-secondary,
+			#c3cac6
+		);
+
 		font-size: 13px;
 		font-weight: 750;
+
+		text-decoration: none;
+
+		transition:
+			background 0.12s ease,
+			border-color 0.12s ease,
+			color 0.12s ease,
+			transform 0.12s ease;
 	}
 
 	.nav-link > span {
 		display: grid;
+
 		width: 20px;
+
 		place-items: center;
-		color: #89968e;
+
+		color: var(
+			--admin-text-muted,
+			#929b96
+		);
+
 		font-size: 17px;
+
+		transition: color 0.12s ease;
 	}
 
 	.nav-link:hover {
-		background: #ffffff08;
-		color: white;
+		background: var(
+			--admin-surface-hover,
+			#383f43
+		);
+
+		color: var(
+			--admin-text,
+			#f1f4f2
+		);
+	}
+
+	.nav-link:active {
+		transform: translateY(1px);
 	}
 
 	.nav-link.active {
-		border-color: #456043;
-		background: linear-gradient(90deg, #42653a55, #42653a17);
-		color: #f3f8f0;
+		border-color: var(
+			--admin-accent-dark,
+			#568d3f
+		);
+
+		background: var(
+			--admin-accent-soft,
+			rgba(114, 173, 85, 0.12)
+		);
+
+		color: var(
+			--admin-text,
+			#f1f4f2
+		);
+
+		box-shadow:
+			inset 3px 0 0 var(
+				--admin-accent,
+				#72ad55
+			);
 	}
 
 	.nav-link.active > span {
-		color: var(--green2);
+		color: var(
+			--admin-accent-light,
+			#8bc56c
+		);
+	}
+
+	.nav-link:focus-visible {
+		outline: 2px solid
+			var(--admin-warning, #d8a84e);
+		outline-offset: 2px;
 	}
 
 	.sidebar-note {
 		display: flex;
 		align-items: flex-start;
 		gap: 9px;
+
 		margin-top: auto;
 		padding: 15px 10px 0;
-		border-top: 1px solid #30373a;
-		color: var(--muted);
+
+		border-top: 1px solid
+			var(--admin-border, #4a5155);
+
+		color: var(
+			--admin-text-muted,
+			#929b96
+		);
+
 		font-size: 10px;
+		line-height: 1.5;
 	}
 
 	.live-dot {
 		width: 7px;
 		height: 7px;
 		flex: 0 0 7px;
+
 		margin-top: 5px;
+
 		border-radius: 50%;
-		background: var(--green);
-		box-shadow: 0 0 8px #72ad5580;
+
+		background: var(
+			--admin-accent,
+			#72ad55
+		);
+
+		box-shadow:
+			0 0 8px
+			rgba(114, 173, 85, 0.5);
 	}
 
 	@media (max-width: 760px) {
 		.sidebar {
 			position: fixed;
-			top: 64px;
+
+			top: var(
+				--admin-mobile-header-height,
+				64px
+			);
 			bottom: 0;
 			left: 0;
+
 			z-index: 19;
+
 			width: min(290px, 86vw);
 			min-height: 0;
+
 			padding: 22px 16px 20px;
-			border-right: 1px solid var(--line);
-			background: #15191bf7;
-			box-shadow: 12px 0 28px #0004;
+
+			border-right: 1px solid
+				var(--admin-border, #4a5155);
+
+			background:
+				linear-gradient(
+					180deg,
+					rgba(43, 48, 52, 0.99),
+					rgba(17, 20, 22, 0.99)
+				);
+
+			box-shadow:
+				12px 0 28px rgba(0, 0, 0, 0.28);
+
 			transform: translateX(-105%);
-			transition: transform .2s;
+
+			transition: transform 0.2s ease;
 		}
 
 		.sidebar.is-open {
 			transform: translateX(0);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.nav-link,
+		.nav-link > span,
+		.sidebar {
+			transition: none;
 		}
 	}
 </style>
