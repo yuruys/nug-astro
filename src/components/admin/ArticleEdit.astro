@@ -15,12 +15,12 @@ const categories = isGuide
 		<div class="shell">
 			<aside class="sidebar" id="admin-nav" aria-label="管理メニュー"><p class="nav-label">管理メニュー</p><nav><a href="/admin/" class="nav-link">▦ ダッシュボード</a><a href="/admin/guide/" class:list={['nav-link', { active: isGuide }]} aria-current={isGuide ? 'page' : undefined}>▤ 攻略管理</a><a href="/admin/news/" class:list={['nav-link', { active: !isGuide }]} aria-current={!isGuide ? 'page' : undefined}>◷ ニュース管理</a><a href="/admin/servers/" class="nav-link">◈ サーバー管理</a><a href="/admin/review/" class="nav-link">✓ Wikiレビュー</a></nav><div class="sidebar-note"><span class="live-dot"></span> 管理者セッションで保護されています</div></aside>
 			<main class="main">
-				<div class="page-heading"><div><p class="eyebrow">EDIT ARTICLE</p><h1>{title}</h1><p class="intro">記事情報を編集して保存します。</p></div><a class="button secondary" href={`/admin/${contentType}/`}>一覧へ戻る</a></div>
+				<div class="page-heading"><div><p class="eyebrow">EDIT ARTICLE</p><h1>{title}</h1><p class="intro">公開待ちの記事は公開し、公開中の記事は変更を保存します。</p></div><a class="button secondary" href={`/admin/${contentType}/`}>一覧へ戻る</a></div>
 				<div class="notice error" id="error-state" role="alert" aria-live="polite" hidden></div>
 				<div class="state" id="loading-state"><span class="spinner" aria-hidden="true"></span><p>記事情報を読み込んでいます…</p></div>
 				<section class="panel" id="edit-panel" hidden aria-labelledby="form-title">
 					<div class="panel-heading"><div><p class="eyebrow">ARTICLE DETAILS</p><h2 id="form-title">記事情報 <span class="status-badge" id="article-status"></span></h2><p class="article-id" id="article-id"></p></div></div>
-					<div class="data-notice">保存時にGitHubの現在版を確認します。競合時は入力内容を保ったままエラーを表示します。</div>
+					<div class="data-notice">公開待ちの記事はGitHubへ新規作成します。公開中の記事はGitHubの現在版を確認して保存します。</div>
 					<div class="save-message" id="save-message" role="status" aria-live="polite" hidden></div>
 					<form id="edit-form"><div class="form-grid">
 						{isGuide && <label class="field" for="server-id"><span>サーバー</span><select id="server-id" disabled><option>読み込み中…</option></select></label>}
@@ -32,7 +32,7 @@ const categories = isGuide
 						<label class="field" for="image"><span>画像パス</span><input id="image" type="text" /></label>
 						<label class="field full check-row" for="featured"><input id="featured" type="checkbox" /> NUGBASE PICKUPに掲載する</label>
 						<div class="field full body-field">
-							<label for="body" id="body-label">Markdown / MDX本文</label>
+							<label for="body" id="body-label">Markdown本文</label>
 							<div class="preview-tabs" role="tablist" aria-label="本文の表示方法">
 								<button class="preview-tab is-active" id="edit-tab" type="button" role="tab" aria-selected="true" aria-controls="body">編集</button>
 								<button class="preview-tab" id="preview-tab" type="button" role="tab" aria-selected="false" aria-controls="body-preview">プレビュー</button>
@@ -40,7 +40,7 @@ const categories = isGuide
 							<textarea id="body" rows="16" required aria-labelledby="body-label" aria-controls="body-editor" data-editor-pane></textarea>
 							<div class="markdown-preview" id="body-preview" role="tabpanel" aria-labelledby="preview-tab" tabindex="0" hidden data-editor-pane></div>
 						</div>
-					</div><div class="form-actions"><a class="button secondary" href={`/admin/${contentType}/`}>戻る</a><button class="button danger" id="delete-button" type="button">記事を削除</button><button class="button primary" id="save-button" type="submit">保存する</button></div></form>
+					</div><div class="form-actions"><a class="button secondary" href={`/admin/${contentType}/`}>戻る</a><button class="button danger" id="delete-button" type="button">記事を削除</button><button class="button primary" id="publish-button" type="button" hidden>公開する</button><button class="button primary" id="save-button" type="submit" hidden>保存する</button></div></form>
 					<div class="record-meta"><span>source path</span><code id="source-path"></code><span>状態</span><span id="record-status"></span></div>
 				</section>
 			</main>
@@ -51,7 +51,7 @@ const categories = isGuide
 			type Article = { id: number; content_type: 'guide' | 'news'; article_id: string; server_id: number | null; server_name: string | null; server_slug: string | null; source_path: string; status: 'publishing' | 'published' };
 			type ArticleContent = { title: string; description: string; category: string; date: string; icon?: string; image?: string; featured: boolean; server?: string; body: string };
 			type Server = { id: number; name: string; enabled: number | boolean };
-			type Result<T> = { ok?: boolean; error?: string; article?: T; content?: ArticleContent; servers?: Server[] };
+			type Result<T> = { ok?: boolean; error?: string; article?: T; content?: ArticleContent | null; servers?: Server[] };
 			const contentType = document.body.dataset.contentType as 'guide' | 'news';
 			const isGuide = document.body.dataset.guide === 'true';
 			const id = new URLSearchParams(location.search).get('id');
@@ -60,6 +60,7 @@ const categories = isGuide
 			const errorState = document.getElementById('error-state') as HTMLElement;
 			const editForm = document.getElementById('edit-form') as HTMLFormElement;
 			const saveButton = document.getElementById('save-button') as HTMLButtonElement;
+			const publishButton = document.getElementById('publish-button') as HTMLButtonElement;
 			const deleteButton = document.getElementById('delete-button') as HTMLButtonElement;
 			const saveMessage = document.getElementById('save-message') as HTMLElement;
 			const bodyEditor = document.getElementById('body') as HTMLTextAreaElement;
@@ -67,9 +68,20 @@ const categories = isGuide
 			const editTab = document.getElementById('edit-tab') as HTMLButtonElement;
 			const previewTab = document.getElementById('preview-tab') as HTMLButtonElement;
 			let saving = false;
+			let publishing = false;
 			let deleting = false;
 			let previewRenderId = 0;
 			function fail(message: string) { loading.hidden = true; panel.hidden = true; errorState.textContent = message; errorState.hidden = false; }
+			let articleStatus: 'publishing' | 'published' | null = null;
+			function localDate() { const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`; }
+			function setArticleStatus(status: 'publishing' | 'published') {
+				articleStatus = status;
+				const label = status === 'published' ? '公開中' : '公開待ち';
+				(document.getElementById('article-status') as HTMLElement).textContent = label;
+				(document.getElementById('record-status') as HTMLElement).textContent = label;
+				publishButton.hidden = status !== 'publishing';
+				saveButton.hidden = status !== 'published';
+			}
 			async function getData<T>(response: Response): Promise<Result<T>> {
 				let data: Result<T> = {}; try { data = await response.json() as Result<T>; } catch { /* use status text below */ }
 				if (!response.ok || !data.ok) {
@@ -104,22 +116,21 @@ const categories = isGuide
 					const result = await getData<Article>(await fetch(`/api/admin/articles/${encodeURIComponent(id)}`, { credentials: 'same-origin' }));
 					const article = result.article;
 					if (!article || article.content_type !== contentType || !['publishing', 'published'].includes(article.status)) { fail('この記事は編集対象として利用できません（404）。'); return; }
-					const content = result.content;
-					if (!content) { fail('GitHubから記事内容を取得できませんでした。'); return; }
+					const content = result.content ?? null;
+					if (!content && article.status !== 'publishing') { fail('GitHubから記事内容を取得できませんでした。'); return; }
 					(document.getElementById('article-id') as HTMLElement).textContent = `記事ID ${article.article_id} ・ DB ID ${article.id}`;
-					(document.getElementById('article-status') as HTMLElement).textContent = article.status === 'published' ? '公開中' : '公開待ち';
-					(document.getElementById('record-status') as HTMLElement).textContent = article.status === 'published' ? '公開中' : '公開待ち';
+					setArticleStatus(article.status);
 					(document.getElementById('source-path') as HTMLElement).textContent = article.source_path;
-					(document.getElementById('title') as HTMLInputElement).value = content.title;
-					(document.getElementById('description') as HTMLTextAreaElement).value = content.description;
+					(document.getElementById('title') as HTMLInputElement).value = content?.title ?? '';
+					(document.getElementById('description') as HTMLTextAreaElement).value = content?.description ?? '';
 					const category = document.getElementById('category') as HTMLSelectElement;
-					if (!Array.from(category.options).some((option) => option.value === content.category)) category.add(new Option(content.category, content.category));
-					category.value = content.category;
-					(document.getElementById('date') as HTMLInputElement).value = content.date;
-					(document.getElementById('icon') as HTMLInputElement).value = content.icon ?? '';
-					(document.getElementById('image') as HTMLInputElement).value = content.image ?? '';
-					(document.getElementById('featured') as HTMLInputElement).checked = content.featured;
-					(document.getElementById('body') as HTMLTextAreaElement).value = content.body;
+					if (content && !Array.from(category.options).some((option) => option.value === content.category)) category.add(new Option(content.category, content.category));
+					category.value = content?.category ?? '';
+					(document.getElementById('date') as HTMLInputElement).value = content?.date ?? localDate();
+					(document.getElementById('icon') as HTMLInputElement).value = content?.icon ?? '';
+					(document.getElementById('image') as HTMLInputElement).value = content?.image ?? '';
+					(document.getElementById('featured') as HTMLInputElement).checked = content?.featured ?? false;
+					(document.getElementById('body') as HTMLTextAreaElement).value = content?.body ?? '';
 					if (isGuide) {
 						if (article.server_id === null) { fail('攻略記事にサーバーが設定されていません。'); return; }
 						const serverSelect = document.getElementById('server-id') as HTMLSelectElement;
@@ -134,7 +145,7 @@ const categories = isGuide
 			}
 			editForm.addEventListener('submit', async (event) => {
 				event.preventDefault();
-				if (saving || !id || !editForm.reportValidity()) return;
+				if (saving || publishing || articleStatus !== 'published' || !id || !editForm.reportValidity()) return;
 				saving = true; saveButton.disabled = true; saveButton.textContent = '保存中…';
 				saveMessage.className = 'save-message'; saveMessage.textContent = '保存しています…'; saveMessage.hidden = false;
 				const payload = {
@@ -163,8 +174,38 @@ const categories = isGuide
 					saveMessage.className = 'save-message error'; saveMessage.textContent = error instanceof Error ? error.message : '保存に失敗しました。入力内容は保持されています。';
 				} finally { saving = false; saveButton.disabled = false; saveButton.textContent = '保存する'; }
 			});
+			publishButton.addEventListener('click', async () => {
+				if (publishing || saving || articleStatus !== 'publishing' || !id || !editForm.reportValidity()) return;
+				publishing = true; publishButton.disabled = true; deleteButton.disabled = true; publishButton.textContent = '公開中…';
+				saveMessage.className = 'save-message'; saveMessage.textContent = 'GitHubへ公開しています…'; saveMessage.hidden = false;
+				const payload = {
+					article_db_id: Number(id),
+					format: 'md',
+					title: (document.getElementById('title') as HTMLInputElement).value,
+					description: (document.getElementById('description') as HTMLTextAreaElement).value,
+					category: (document.getElementById('category') as HTMLSelectElement).value,
+					date: (document.getElementById('date') as HTMLInputElement).value,
+					icon: (document.getElementById('icon') as HTMLInputElement).value,
+					image: (document.getElementById('image') as HTMLInputElement).value,
+					featured: (document.getElementById('featured') as HTMLInputElement).checked,
+					body: (document.getElementById('body') as HTMLTextAreaElement).value,
+				};
+				try {
+					const response = await fetch('/api/admin/articles/publish', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+					let result: Result<never> = {}; try { result = await response.json() as Result<never>; } catch { /* use HTTP status below */ }
+					if (!response.ok || !result.ok) {
+						if (response.status === 401) throw new Error('未認証です（401）。再ログインしてください。');
+						if (response.status === 403) throw new Error('公開する権限がありません（403）。');
+						throw new Error(result.error || `公開に失敗しました（${response.status || 'ネットワーク'}）。入力内容は保持されています。`);
+					}
+					setArticleStatus('published');
+					saveMessage.className = 'save-message success'; saveMessage.textContent = '公開しました。以降の変更は「保存する」から反映できます。';
+				} catch (error) {
+					saveMessage.className = 'save-message error'; saveMessage.textContent = error instanceof Error ? error.message : '公開に失敗しました。入力内容は保持されています。';
+				} finally { publishing = false; publishButton.disabled = false; deleteButton.disabled = false; publishButton.textContent = '公開する'; }
+			});
 			deleteButton.addEventListener('click', async () => {
-				if (deleting || saving || !id) return;
+				if (deleting || saving || publishing || !id) return;
 				if (!window.confirm('この記事を削除しますか？GitHub上のファイルも削除され、このIDは再利用されません。')) return;
 				deleting = true; deleteButton.disabled = true; deleteButton.textContent = '削除中…';
 				saveMessage.className = 'save-message'; saveMessage.textContent = '削除しています…'; saveMessage.hidden = false;

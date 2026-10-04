@@ -25,13 +25,12 @@ const categories = isGuide
 				<a href="/admin/review/" class="nav-link">✓ Wikiレビュー</a>
 			</nav><div class="sidebar-note"><span class="live-dot"></span> 管理者セッションで保護されています</div></aside>
 			<main class="main">
-				<div class="page-heading"><div><p class="eyebrow">NEW ARTICLE</p><h1>{title}</h1><p class="intro">入力した内容はこの画面では保存・公開されません。記事IDを予約します。</p></div><a class="button secondary back-button" href={`/admin/${contentType}/`}>一覧へ戻る</a></div>
+				<div class="page-heading"><div><p class="eyebrow">NEW ARTICLE</p><h1>{title}</h1><p class="intro">記事IDを予約した後、この画面から公開します。</p></div><a class="button secondary back-button" href={`/admin/${contentType}/`}>一覧へ戻る</a></div>
 				<div class="notice" id="notice" role="alert" aria-live="polite" hidden></div>
 				<section class="panel form-panel" aria-labelledby="form-title">
 					<div class="panel-heading"><div><p class="eyebrow">ARTICLE DETAILS</p><h2 id="form-title">記事情報</h2></div></div>
 					<form id="article-form" novalidate><div class="form-grid">
 						{isGuide && <label class="field" for="server-id"><span>サーバー <em>必須</em></span><select id="server-id" name="server_id" required><option value="">読み込み中…</option></select><small>D1に登録された有効なサーバーを選択します。</small></label>}
-						<label class="field" for="format"><span>本文形式 <em>必須</em></span><select id="format" name="format" required><option value="md">Markdown (.md)</option><option value="mdx">MDX (.mdx)</option></select><small>予約後に拡張子は変更できません。</small></label>
 						<label class="field full" for="title"><span>タイトル <em>必須</em></span><input id="title" name="title" type="text" required maxlength="160" /></label>
 						<label class="field full" for="description"><span>説明 <em>必須</em></span><textarea id="description" name="description" rows="3" required maxlength="500"></textarea></label>
 						<label class="field" for="category"><span>カテゴリ <em>必須</em></span><select id="category" name="category" required><option value="">選択してください</option>{categories.map((category) => <option value={category}>{category}</option>)}</select></label>
@@ -39,10 +38,10 @@ const categories = isGuide
 						<label class="field" for="icon"><span>アイコン <small>任意・emoji</small></span><input id="icon" name="icon" type="text" maxlength="32" placeholder="🌱" /></label>
 						<label class="field" for="image"><span>画像 <small>任意</small></span><input id="image" name="image" type="text" maxlength="300" placeholder="/images/example.webp" /></label>
 						<label class="field full" for="featured"><span>NUGBASE PICKUP</span><span class="check-row"><input id="featured" name="featured" type="checkbox" /> NUGBASE PICKUPに掲載する</span></label>
-						<label class="field full" for="body"><span>Markdown / MDX本文 <em>必須</em></span><textarea id="body" name="body" rows="12" required placeholder="記事本文を入力してください"></textarea></label>
+						<label class="field full" for="body"><span>Markdown本文 <em>必須</em></span><textarea id="body" name="body" rows="12" required placeholder="記事本文を入力してください"></textarea></label>
 					</div><div class="form-actions"><a class="button secondary" href={`/admin/${contentType}/`}>戻る</a><button class="button primary" id="submit-button" type="submit">記事IDを予約する</button></div></form>
 				</section>
-				<section class="panel success-panel" id="success-panel" aria-live="polite" hidden><div class="success-mark" aria-hidden="true">✓</div><p class="eyebrow">ID RESERVED</p><h2>記事IDを予約しました</h2><dl class="reservation-details"><div><dt>記事ID</dt><dd id="reserved-article-id"></dd></div><div><dt>公開状態</dt><dd>公開待ち</dd></div><div><dt>source path</dt><dd id="reserved-source-path"></dd></div></dl><p class="success-note">本文の保存・公開はまだ行われていません。次の編集画面から続けられます。</p><div class="success-actions"><a class="button secondary" href={`/admin/${contentType}/`}>一覧へ戻る</a><a class="button primary" id="continue-link" href={`/admin/${contentType}/edit/`}>編集画面へ進む</a></div></section>
+				<section class="panel success-panel" id="reservation-panel" aria-live="polite" hidden><div class="success-mark" aria-hidden="true">✓</div><p class="eyebrow">ID RESERVED</p><h2>記事IDを予約しました</h2><dl class="reservation-details"><div><dt>記事ID</dt><dd id="reserved-article-id"></dd></div><div><dt>公開状態</dt><dd>公開待ち</dd></div><div><dt>source path</dt><dd id="reserved-source-path"></dd></div></dl><p class="success-note">入力内容はこの画面に保持されています。「公開する」からGitHubへ作成できます。</p></section>
 			</main>
 		</div>
 		<script>
@@ -55,6 +54,8 @@ const categories = isGuide
 			const notice = document.getElementById('notice') as HTMLElement;
 			const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
 			const serverSelect = document.getElementById('server-id') as HTMLSelectElement | null;
+			const reservationPanel = document.getElementById('reservation-panel') as HTMLElement;
+			let reservedArticleDbId: number | null = null;
 			function showError(message: string) { notice.textContent = message; notice.className = 'notice error'; notice.hidden = false; notice.focus(); }
 			function localDate() { const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`; }
 			async function responseData(response: Response): Promise<ApiResult> {
@@ -82,21 +83,40 @@ const categories = isGuide
 			form.addEventListener('submit', async (event) => {
 				event.preventDefault(); notice.hidden = true;
 				if (!form.reportValidity()) return;
-				if (isGuide && !serverSelect?.value) { showError('サーバーを選択してください。'); serverSelect?.focus(); return; }
-				submitButton.disabled = true; submitButton.textContent = 'IDを予約しています…';
-				const payload: { content_type: 'guide' | 'news'; format: 'md' | 'mdx'; server_id?: number } = { content_type: contentType, format: (document.getElementById('format') as HTMLSelectElement).value as 'md' | 'mdx' };
-				if (isGuide) payload.server_id = Number(serverSelect?.value);
+				if (reservedArticleDbId === null && isGuide && !serverSelect?.value) { showError('サーバーを選択してください。'); serverSelect?.focus(); return; }
+				submitButton.disabled = true;
 				try {
-					const data = await responseData(await fetch('/api/admin/articles', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }));
-					const article = data.article;
-					if (!article || !Number.isSafeInteger(article.id) || !article.article_id || !article.source_path) throw new Error('予約応答に必要な情報がありません。予約状態を確認してください。');
-					form.hidden = true;
-					(document.getElementById('reserved-article-id') as HTMLElement).textContent = article.article_id;
-					(document.getElementById('reserved-source-path') as HTMLElement).textContent = article.source_path;
-					(document.getElementById('continue-link') as HTMLAnchorElement).href = `/admin/${contentType}/edit/?id=${encodeURIComponent(String(article.id))}`;
-					const success = document.getElementById('success-panel') as HTMLElement; success.hidden = false; success.scrollIntoView({ behavior: 'smooth', block: 'start' });
-				} catch (error) { showError(error instanceof Error ? error.message : '記事IDを予約できませんでした。'); }
-				finally { submitButton.disabled = false; submitButton.textContent = '記事IDを予約する'; }
+					if (reservedArticleDbId === null) {
+						submitButton.textContent = 'IDを予約しています…';
+						const payload: { content_type: 'guide' | 'news'; format: 'md'; server_id?: number } = { content_type: contentType, format: 'md' };
+						if (isGuide) payload.server_id = Number(serverSelect?.value);
+						const data = await responseData(await fetch('/api/admin/articles', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }));
+						const article = data.article;
+						if (!article || !Number.isSafeInteger(article.id) || !article.article_id || !article.source_path || article.status !== 'publishing') throw new Error('予約応答に必要な情報がありません。予約状態を確認してください。');
+						reservedArticleDbId = article.id;
+						(document.getElementById('reserved-article-id') as HTMLElement).textContent = article.article_id;
+						(document.getElementById('reserved-source-path') as HTMLElement).textContent = article.source_path;
+						reservationPanel.hidden = false;
+						if (serverSelect) serverSelect.disabled = true;
+					} else {
+						submitButton.textContent = 'GitHubへ公開中…';
+						const payload = {
+							article_db_id: reservedArticleDbId,
+							format: 'md',
+							title: (document.getElementById('title') as HTMLInputElement).value,
+							description: (document.getElementById('description') as HTMLTextAreaElement).value,
+							category: (document.getElementById('category') as HTMLSelectElement).value,
+							date: (document.getElementById('date') as HTMLInputElement).value,
+							icon: (document.getElementById('icon') as HTMLInputElement).value,
+							image: (document.getElementById('image') as HTMLInputElement).value,
+							featured: (document.getElementById('featured') as HTMLInputElement).checked,
+							body: (document.getElementById('body') as HTMLTextAreaElement).value,
+						};
+						await responseData(await fetch('/api/admin/articles/publish', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }));
+						location.href = `/admin/${contentType}/edit/?id=${encodeURIComponent(String(reservedArticleDbId))}`;
+					}
+				} catch (error) { showError(error instanceof Error ? error.message : reservedArticleDbId === null ? '記事IDを予約できませんでした。' : '公開に失敗しました。入力内容は保持されています。'); }
+				finally { submitButton.disabled = false; submitButton.textContent = reservedArticleDbId === null ? '記事IDを予約する' : '公開する'; }
 			});
 			(document.getElementById('date') as HTMLInputElement).value = localDate();
 			const menuButton = document.getElementById('menu-toggle') as HTMLButtonElement;

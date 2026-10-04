@@ -218,8 +218,8 @@ function validatePayload(body: PublishRequest): string | null {
 	if (!Number.isSafeInteger(body.article_db_id) || (body.article_db_id as number) <= 0) {
 		return 'article_db_id must be a positive integer';
 	}
-	if (body.format !== 'md' && body.format !== 'mdx') {
-		return 'format must be md or mdx';
+	if (body.format !== 'md') {
+		return 'format must be md';
 	}
 	for (const key of ['title', 'description', 'category', 'date', 'body'] as const) {
 		if (typeof body[key] !== 'string') return `${key} must be a string`;
@@ -382,10 +382,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 			return json({ ok: false, error: 'server is not accepted for news articles' }, 400);
 		}
 
-		const format = body.format as 'md' | 'mdx';
+		const format = body.format as 'md';
 		const expectedPath = article.content_type === 'guide'
-			? `src/content/guide/${serverSlug}/${article.article_id}.${format}`
-			: `src/content/news/${article.article_id}.${format}`;
+			? `src/content/guide/${serverSlug}/${article.article_id}.md`
+			: `src/content/news/${article.article_id}.md`;
 		if (article.source_path !== expectedPath) {
 			return json({ ok: false, error: 'format or D1 source_path does not match the reserved article path', code: 'ARTICLE_SOURCE_PATH_MISMATCH' }, 409);
 		}

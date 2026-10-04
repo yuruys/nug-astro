@@ -76,12 +76,13 @@ function parseArticleFile(raw: string, contentType: ArticleDetail['content_type'
 	};
 }
 
-async function fetchArticleContent(sourcePath: string, token: string, contentType: ArticleDetail['content_type'], serverSlug: string | null): Promise<ArticleContent> {
+async function fetchArticleContent(sourcePath: string, token: string, contentType: ArticleDetail['content_type'], serverSlug: string | null): Promise<ArticleContent | null> {
 	const path = sourcePath.split('/').map(encodeURIComponent).join('/');
 	const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPOSITORY}/contents/${path}?ref=${encodeURIComponent(GITHUB_BRANCH)}`, {
 		headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'NUGBASE' },
 		signal: AbortSignal.timeout(12_000),
 	});
+	if (response.status === 404) return null;
 	if (!response.ok) throw new Error(`GitHub article lookup failed (${response.status})`);
 	const file = await response.json() as GitHubFile;
 	if (file.type !== 'file' || file.path !== sourcePath || file.encoding !== 'base64' || typeof file.content !== 'string') throw new Error('GitHub returned an unsupported article file');
@@ -123,8 +124,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 		const sourcePathMatches = /^\d{3}$/.test(article.article_id)
 			&& (article.content_type === 'guide'
 				? /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(article.server_slug ?? '')
-					&& new RegExp(`^src/content/guide/${article.server_slug}/${article.article_id}\\.(?:md|mdx)$`).test(article.source_path)
-				: new RegExp(`^src/content/news/${article.article_id}\\.(?:md|mdx)$`).test(article.source_path));
+					&& new RegExp(`^src/content/guide/${article.server_slug}/${article.article_id}\\.md$`).test(article.source_path)
+				: new RegExp(`^src/content/news/${article.article_id}\\.md$`).test(article.source_path));
 		if (!sourcePathMatches) {
 			return Response.json({ ok: false, error: 'D1 article ID and source_path do not match' }, { status: 409 });
 		}
@@ -133,6 +134,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 		}
 		try {
 			const content = await fetchArticleContent(article.source_path, context.env.GITHUB_TOKEN, article.content_type, article.server_slug);
+			if (!content && article.status === 'published') {
+				return Response.json({ ok: false, error: 'Could not load article content from GitHub' }, { status: 502 });
+			}
 			const { created_at, updated_at, ...record } = article;
 			return Response.json({ ok: true, article: record, content });
 		} catch (error) {

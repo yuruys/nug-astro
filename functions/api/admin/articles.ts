@@ -235,8 +235,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 		if (body.content_type !== 'guide' && body.content_type !== 'news') {
 			return Response.json({ ok: false, error: 'content_type must be guide or news' }, { status: 400 });
 		}
-		if (body.format !== 'md' && body.format !== 'mdx') {
-			return Response.json({ ok: false, error: 'format must be md or mdx' }, { status: 400 });
+		if (body.format !== 'md') {
+			return Response.json({ ok: false, error: 'format must be md' }, { status: 400 });
 		}
 
 		const contentType = body.content_type;
@@ -400,8 +400,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
 		const now = new Date().toISOString();
 		const sourcePath = contentType === 'guide'
-			? `src/content/guide/${serverSlug}/${articleId}.${body.format}`
-			: `src/content/news/${articleId}.${body.format}`;
+			? `src/content/guide/${serverSlug}/${articleId}.md`
+			: `src/content/news/${articleId}.md`;
 		const successAuditId = crypto.randomUUID();
 
 		try {
