@@ -19,9 +19,7 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 	<body>
 		<AdminLayout active="review">
-			<main class="admin-page">
-
-				<div class="admin-shell">
+			<div class="admin-page">
 
 					<!-- ========================================
 					     Loading
@@ -451,7 +449,6 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 					</section>
 
 			</div>
-		</main>
 
 
 		<!-- ========================================
@@ -1459,6 +1456,7 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 	.admin-page {
 		position: relative;
+		z-index: 1;
 
 		min-height: 100%;
 		width: 100%;
@@ -1490,38 +1488,6 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 			);
 
 		z-index: 0;
-	}
-
-
-	/* =========================================================
-	   03. Review Content Shell
-	   ---------------------------------------------------------
-	   AdminLayout側の幅・配置を邪魔しない。
-	   ========================================================= */
-
-	.admin-shell {
-		position: relative;
-		z-index: 1;
-
-		width: 100%;
-		max-width: 1200px;
-
-		margin: 0 auto;
-
-		padding: 0;
-	}
-
-
-	/* =========================================================
-	   04. Legacy Header
-	   ---------------------------------------------------------
-	   現在は AdminHeader.astro を使用しているため不要。
-	   ただしHTML側に残っていてもレイアウトへ影響しないよう
-	   最低限の互換指定だけ残す。
-	   ========================================================= */
-
-	.admin-header {
-		display: none;
 	}
 
 
@@ -2646,13 +2612,6 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 		.metadata-item:last-child {
 			border-bottom: 0;
-		}
-	}
-
-
-	@media (max-width: 760px) {
-		.admin-shell {
-			max-width: none;
 		}
 	}
 

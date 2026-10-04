@@ -1,6 +1,5 @@
 ---
-import AdminSidebar from './AdminSidebar.astro';
-import AdminHeader from './AdminHeader.astro';
+import AdminLayout from './AdminLayout.astro';
 
 interface Props {
 	contentType: 'guide' | 'news';
@@ -28,12 +27,8 @@ const newUrl = `/admin/${contentType}/new/`;
 		data-content-type={contentType}
 		data-guide={String(isGuide)}
 	>
-		<AdminHeader />
-
-		<div class="shell">
-			<AdminSidebar active={isGuide ? 'guide' : 'news'} />
-
-			<main class="main">
+		<AdminLayout active={isGuide ? 'guide' : 'news'}>
+			<div class="article-list-page">
 				<div class="page-heading">
 					<div>
 						<p class="eyebrow">CONTENT MANAGEMENT</p>
@@ -108,8 +103,8 @@ const newUrl = `/admin/${contentType}/new/`;
 
 					<div class="card-list" id="article-cards" hidden></div>
 				</section>
-			</main>
-		</div>
+			</div>
+		</AdminLayout>
 
 		<script>
 			const apiUrl = document.body.dataset.apiUrl!;
@@ -378,7 +373,7 @@ const newUrl = `/admin/${contentType}/new/`;
 </html>
 
 <style is:global>
-	:root {
+	.article-list-page {
 		color-scheme: dark;
 		--bg: #111416;
 		--panel: #202529;
@@ -391,43 +386,11 @@ const newUrl = `/admin/${contentType}/new/`;
 		--green: #72ad55;
 		--green2: #8bc96d;
 		--red: #e27b78;
-		font-family:
-			system-ui,
-			-apple-system,
-			BlinkMacSystemFont,
-			"Segoe UI",
-			"Yu Gothic",
-			Meiryo,
-			sans-serif;
-		background: var(--bg);
 		color: var(--text);
 	}
 
 	* {
 		box-sizing: border-box;
-	}
-
-	html,
-	body {
-		margin: 0;
-		min-height: 100%;
-		max-width: 100%;
-		overflow-x: hidden;
-	}
-
-	body {
-		background:
-			radial-gradient(
-				ellipse at 65% -10%,
-				rgba(114, 173, 85, 0.12),
-				transparent 45%
-			),
-			linear-gradient(
-				180deg,
-				#151a1c,
-				var(--bg) 450px
-			);
-		line-height: 1.55;
 	}
 
 	button,
@@ -440,29 +403,14 @@ const newUrl = `/admin/${contentType}/new/`;
 		text-decoration: none;
 	}
 
-	button:focus-visible,
-	a:focus-visible {
+	.article-list-page button:focus-visible,
+	.article-list-page a:focus-visible {
 		outline: 3px solid var(--green2);
 		outline-offset: 3px;
 	}
 
-	[hidden] {
+	.article-list-page [hidden] {
 		display: none !important;
-	}
-
-	.shell {
-		display: grid;
-		grid-template-columns: 236px minmax(0, 1fr);
-		width: min(1440px, 100%);
-		min-height: calc(100vh - 72px);
-		margin: 0 auto;
-	}
-
-	.main {
-		width: min(1200px, 100%);
-		min-width: 0;
-		margin: 0 auto;
-		padding: 42px clamp(18px, 4vw, 56px) 48px;
 	}
 
 	.page-heading {
@@ -834,15 +782,6 @@ const newUrl = `/admin/${contentType}/new/`;
 	}
 
 	@media (max-width: 760px) {
-		.shell {
-			display: block;
-			min-height: calc(100vh - 64px);
-		}
-
-		.main {
-			padding: 30px 18px 38px;
-		}
-
 		.page-heading {
 			align-items: stretch;
 			flex-direction: column;
@@ -874,9 +813,5 @@ const newUrl = `/admin/${contentType}/new/`;
 	}
 
 	@media (max-width: 380px) {
-		.main {
-			padding-right: 13px;
-			padding-left: 13px;
-		}
 	}
 </style>

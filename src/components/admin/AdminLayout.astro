@@ -65,6 +65,8 @@ const { active } = Astro.props;
 		--admin-breakpoint: 760px;
 
 		min-height: 100vh;
+		width: 100%;
+		overflow-x: clip;
 		background: #111416;
 		color: #f1f4f2;
 		font-family:
@@ -92,6 +94,12 @@ const { active } = Astro.props;
 				#111416 55%,
 				#0d1012 100%
 			);
+	}
+
+	:global(html),
+	:global(body) {
+		min-height: 100%;
+		margin: 0;
 	}
 
 	.admin-layout-root *,

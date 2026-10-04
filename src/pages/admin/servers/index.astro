@@ -1,6 +1,5 @@
 ---
-import AdminSidebar from '../../../components/admin/AdminSidebar.astro';
-import AdminHeader from '../../../components/admin/AdminHeader.astro';
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 const title = 'サーバー管理';
 ---
@@ -14,12 +13,7 @@ const title = 'サーバー管理';
 		<title>{title} | NUGBASE 管理画面</title>
 	</head>
 	<body>
-		<AdminHeader />
-
-		<div class="shell">
-			<AdminSidebar active="servers" />
-
-			<main class="main">
+		<AdminLayout active="servers">
 				<div class="page-heading">
 					<div>
 						<p class="eyebrow">CONTENT SETTINGS</p>
@@ -157,8 +151,7 @@ const title = 'サーバー管理';
 				<footer class="page-footer">
 					サーバーを無効にしても、登録済みの記事データは保持されます。
 				</footer>
-			</main>
-		</div>
+		</AdminLayout>
 
 		<script>
 			type Server = {
@@ -536,28 +529,6 @@ const title = 'サーバー管理';
 				() => void loadServers(),
 			);
 
-			$('HTMLButtonElement')('menu-toggle').addEventListener(
-				'click',
-				(event) => {
-					const button = event.currentTarget as HTMLButtonElement;
-
-					const open =
-						button.getAttribute('aria-expanded') !== 'true';
-
-					button.setAttribute('aria-expanded', String(open));
-
-					button.setAttribute(
-						'aria-label',
-						open ? 'メニューを閉じる' : 'メニューを開く',
-					);
-
-					$('HTMLElement')('admin-nav').classList.toggle(
-						'is-open',
-						open,
-					);
-				},
-			);
-
 			form.addEventListener('submit', async (event) => {
 				event.preventDefault();
 
@@ -708,99 +679,6 @@ const title = 'サーバー管理';
 
 	[hidden] {
 		display: none !important;
-	}
-
-	.topbar {
-		position: sticky;
-		top: 0;
-		z-index: 20;
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		height: 72px;
-		padding: 0 clamp(16px, 3vw, 40px);
-		border-bottom: 1px solid #343c3e;
-		background: rgba(17, 20, 22, 0.95);
-		backdrop-filter: blur(14px);
-		box-shadow: 0 4px 18px #0003;
-	}
-
-	.brand {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		min-width: 0;
-	}
-
-	.brand-mark {
-		display: grid;
-		place-items: center;
-		width: 42px;
-		height: 42px;
-		border: 1px solid #568f43;
-		border-radius: 4px;
-		background: linear-gradient(145deg, #6ea95a, #38642f);
-		box-shadow: inset 0 2px #ffffff2e, 0 4px #0005;
-		font-size: 12px;
-		font-weight: 950;
-		letter-spacing: 0.04em;
-	}
-
-	.brand strong,
-	.brand small {
-		display: block;
-	}
-
-	.brand strong {
-		font-size: 14px;
-		letter-spacing: 0.03em;
-	}
-
-	.brand small {
-		margin-top: 1px;
-		color: var(--muted);
-		font-size: 10px;
-		letter-spacing: 0.08em;
-	}
-
-	.site-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 7px;
-		min-height: 44px;
-		margin-left: auto;
-		padding: 0 14px;
-		border: 1px solid var(--line);
-		border-radius: 3px;
-		background: var(--panel);
-		color: var(--soft);
-		font-size: 12px;
-		font-weight: 750;
-	}
-
-	.site-link:hover {
-		border-color: var(--line2);
-		color: white;
-	}
-
-	.menu-toggle {
-		display: none;
-	}
-
-	.shell {
-		display: grid;
-		grid-template-columns: 236px minmax(0, 1fr);
-		width: min(1440px, 100%);
-		min-height: calc(100vh - 72px);
-		margin: 0 auto;
-	}
-
-	.main {
-		width: min(1200px, 100%);
-		min-width: 0;
-		margin: 0 auto;
-		padding: 42px clamp(18px, 4vw, 56px) 48px;
 	}
 
 	.page-heading {
@@ -1278,15 +1156,6 @@ const title = 'サーバー管理';
 	}
 
 	@media (max-width: 1000px) {
-		.shell {
-			grid-template-columns: 205px minmax(0, 1fr);
-		}
-
-		.main {
-			padding-right: 24px;
-			padding-left: 24px;
-		}
-
 		th,
 		td {
 			padding-right: 8px;
@@ -1311,68 +1180,6 @@ const title = 'サーバー管理';
 	}
 
 	@media (max-width: 760px) {
-		.topbar {
-			height: 64px;
-			gap: 12px;
-		}
-
-		.brand-mark {
-			width: 38px;
-			height: 38px;
-		}
-
-		.menu-toggle {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			gap: 5px;
-			width: 44px;
-			height: 44px;
-			margin-left: auto;
-			border: 1px solid var(--line);
-			border-radius: 3px;
-			background: var(--panel);
-			cursor: pointer;
-		}
-
-		.menu-toggle span {
-			width: 18px;
-			height: 2px;
-			background: #d5ddd7;
-			transition:
-				transform 0.15s,
-				opacity 0.15s;
-		}
-
-		.menu-toggle[aria-expanded="true"] span:first-child {
-			transform: translateY(7px) rotate(45deg);
-		}
-
-		.menu-toggle[aria-expanded="true"] span:nth-child(2) {
-			opacity: 0;
-		}
-
-		.menu-toggle[aria-expanded="true"] span:last-child {
-			transform: translateY(-7px) rotate(-45deg);
-		}
-
-		.site-link {
-			min-height: 44px;
-			margin-left: 0;
-			padding: 0 10px;
-			font-size: 11px;
-		}
-
-		.shell {
-			display: block;
-			min-height: calc(100vh - 64px);
-		}
-
-		.main {
-			padding: 30px 18px 38px;
-		}
-
 		.page-heading {
 			align-items: flex-start;
 			flex-direction: column;
@@ -1494,28 +1301,6 @@ const title = 'サーバー管理';
 	}
 
 	@media (max-width: 380px) {
-		.site-link {
-			padding: 0 8px;
-			font-size: 10px;
-		}
-
-		.brand {
-			gap: 8px;
-		}
-
-		.brand strong {
-			font-size: 12px;
-		}
-
-		.brand small {
-			font-size: 9px;
-		}
-
-		.main {
-			padding-right: 13px;
-			padding-left: 13px;
-		}
-
 		.card-meta {
 			grid-template-columns: minmax(58px, 0.55fr) minmax(0, 1.45fr);
 		}
