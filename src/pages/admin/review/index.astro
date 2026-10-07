@@ -1,5 +1,7 @@
 ---
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
+
+const requestedRequestId = Astro.url.searchParams.get('id')?.trim() || null;
 ---
 
 <!doctype html>
@@ -19,7 +21,61 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 	<body>
 		<AdminLayout active="review">
-			<div class="admin-page">
+			<div class="admin-page" data-request-id={requestedRequestId ?? ''}>
+				<section id="list-state" class="list-page" hidden={Boolean(requestedRequestId)}>
+					<div class="page-heading">
+						<div>
+							<p class="eyebrow">WIKI REVIEW</p>
+							<h1>Wikiレビュー</h1>
+							<p class="description">レビュー待ちの編集リクエストを確認します。</p>
+						</div>
+					</div>
+
+					<section class="panel list-panel" aria-labelledby="list-title">
+						<div class="panel-heading">
+							<div>
+								<p class="panel-eyebrow">PENDING REQUESTS</p>
+								<h2 id="list-title">レビュー待ち一覧</h2>
+							</div>
+							<span class="count" id="request-count">— 件</span>
+						</div>
+
+						<div class="list-state" id="list-loading-state" aria-live="polite">
+							<span class="spinner" aria-hidden="true"></span>
+							<p>レビュー一覧を読み込んでいます…</p>
+						</div>
+
+						<div class="list-state" id="list-empty-state" hidden>
+							<span class="empty-icon" aria-hidden="true">✓</span>
+							<h3>レビュー待ちの申請はありません</h3>
+						</div>
+
+						<div class="list-state state-error" id="list-error-state" hidden role="alert">
+							<span class="state-icon" aria-hidden="true">!</span>
+							<h3>一覧を読み込めませんでした</h3>
+							<p id="list-error-message"></p>
+							<button class="button button-secondary" id="list-retry-button" type="button">再読み込み</button>
+						</div>
+
+						<div class="table-wrap" id="request-table-wrap" hidden>
+							<table>
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>対象ページ</th>
+										<th>申請者</th>
+										<th>作成日時</th>
+										<th>ステータス</th>
+										<th><span class="visually-hidden">操作</span></th>
+									</tr>
+								</thead>
+								<tbody id="request-rows"></tbody>
+							</table>
+						</div>
+
+						<div class="request-cards" id="request-cards" hidden></div>
+					</section>
+				</section>
 
 					<!-- ========================================
 					     Loading
@@ -28,13 +84,14 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 					<section
 						id="loading-state"
 						class="state-card"
+						hidden={!requestedRequestId}
 						aria-live="polite"
 					>
-						<div class="spinner"></div>
-
-						<p>
-							レビュー内容を読み込んでいます…
-						</p>
+						<p id="detail-before-state">レビュー詳細を準備しています…</p>
+						<div id="detail-loading-state" hidden>
+							<div class="spinner"></div>
+							<p>レビュー内容を読み込んでいます…</p>
+						</div>
 					</section>
 
 
@@ -63,7 +120,7 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 						<div class="state-actions">
 
 							<a
-								href="/admin/"
+								href="/admin/review/"
 								class="button button-secondary"
 							>
 								管理画面へ戻る
@@ -90,6 +147,7 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 							id="status-banner"
 							class="status-banner"
 						>
+
 
 							<div>
 								<span class="status-label">
@@ -197,7 +255,6 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 						</section>
 
-
 						<!-- ====================================
 						     Message
 						==================================== -->
@@ -290,10 +347,17 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 							</div>
 
+							<div class="preview-tabs" role="tablist" aria-label="申請内容の表示方法">
+								<button class="preview-tab is-active" id="proposed-source-tab" type="button" role="tab" aria-selected="true">本文</button>
+								<button class="preview-tab" id="proposed-preview-tab" type="button" role="tab" aria-selected="false">プレビュー</button>
+							</div>
 							<pre
 								id="proposed-content"
 								class="code-view"
+								role="tabpanel"
+								aria-labelledby="proposed-source-tab"
 							></pre>
+							<div id="proposed-preview-content" class="markdown-preview" role="tabpanel" aria-labelledby="proposed-preview-tab" tabindex="0" hidden></div>
 
 						</section>
 
@@ -435,10 +499,21 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 						     Back
 						==================================== -->
 
+						<section id="delete-actions" class="delete-actions" hidden aria-label="編集リクエストの削除">
+							<div>
+								<strong>編集リクエストを削除</strong>
+								<p>この操作は取り消せません。対象内容を確認してから実行してください。</p>
+							</div>
+							<button id="delete-button" class="button button-danger" type="button">
+								<span class="button-label">削除</span>
+								<span class="button-loading" hidden>削除中…</span>
+							</button>
+						</section>
+
 						<div class="bottom-actions">
 
 							<a
-								href="/admin/"
+								href="/admin/review/"
 								class="button button-secondary"
 							>
 								レビュー一覧へ戻る
@@ -456,6 +531,8 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 		======================================== -->
 
 		<script>
+			import { renderMarkdownPreview } from '../../../lib/markdown-preview';
+
 			/* ========================================
 			   Types
 			======================================== */
@@ -539,6 +616,24 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 			}
 
 
+			interface EditRequestSummary {
+				id: string;
+				status: EditRequestStatus;
+				created_at: string;
+				page_path: string;
+				page_title: string;
+				user_id: string;
+				user_display_name?: string | null;
+			}
+
+
+			interface ListResponse {
+				ok: boolean;
+				error?: string;
+				editRequests?: EditRequestSummary[];
+			}
+
+
 			interface ReviewResponse {
 				ok: boolean;
 
@@ -548,17 +643,19 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 			}
 
 
+			interface DeleteResponse {
+				ok: boolean;
+				deleted?: boolean;
+				error?: string;
+			}
+
+
 			/* ========================================
 			   URL
 			======================================== */
 
-			const searchParams =
-				new URLSearchParams(
-					window.location.search
-				);
-
-			const editRequestId =
-				searchParams.get('id');
+			const pageRoot = document.querySelector<HTMLElement>('.admin-page')!;
+			const editRequestId = pageRoot.dataset.requestId?.trim() || null;
 
 
 			/* ========================================
@@ -705,6 +802,23 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 					'#reject-button'
 				)!;
 
+			const detailBeforeState = document.querySelector<HTMLElement>('#detail-before-state')!;
+			const detailLoadingState = document.querySelector<HTMLElement>('#detail-loading-state')!;
+			const listLoadingState = document.querySelector<HTMLElement>('#list-loading-state')!;
+			const listEmptyState = document.querySelector<HTMLElement>('#list-empty-state')!;
+			const listErrorState = document.querySelector<HTMLElement>('#list-error-state')!;
+			const listErrorMessage = document.querySelector<HTMLElement>('#list-error-message')!;
+			const requestTableWrap = document.querySelector<HTMLElement>('#request-table-wrap')!;
+			const requestRows = document.querySelector<HTMLTableSectionElement>('#request-rows')!;
+			const requestCards = document.querySelector<HTMLElement>('#request-cards')!;
+			const requestCount = document.querySelector<HTMLElement>('#request-count')!;
+			const proposedSourceTab = document.querySelector<HTMLButtonElement>('#proposed-source-tab')!;
+			const proposedPreviewTab = document.querySelector<HTMLButtonElement>('#proposed-preview-tab')!;
+			const proposedPreviewContent = document.querySelector<HTMLElement>('#proposed-preview-content')!;
+			const listRetryButton = document.querySelector<HTMLButtonElement>('#list-retry-button')!;
+			const deleteActions = document.querySelector<HTMLElement>('#delete-actions')!;
+			const deleteButton = document.querySelector<HTMLButtonElement>('#delete-button')!;
+
 
 			/* ========================================
 			   State
@@ -712,6 +826,8 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 			let currentRequest:
 				EditRequest | null = null;
+			let proposedSource = '';
+			let previewRenderId = 0;
 
 
 			/* ========================================
@@ -721,8 +837,7 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 			function showError(
 				text: string
 			): void {
-				loadingState.hidden = true;
-				reviewState.hidden = true;
+				setDetailState('error');
 				errorState.hidden = false;
 
 				errorMessage.textContent =
@@ -731,9 +846,29 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 
 			function showReview(): void {
-				loadingState.hidden = true;
-				errorState.hidden = true;
-				reviewState.hidden = false;
+				setDetailState('success');
+			}
+
+
+			function setDetailState(
+				state: 'before' | 'loading' | 'success' | 'error'
+			): void {
+				loadingState.hidden = !['before', 'loading'].includes(state);
+				detailBeforeState.hidden = state !== 'before';
+				detailLoadingState.hidden = state !== 'loading';
+				errorState.hidden = state !== 'error';
+				reviewState.hidden = state !== 'success';
+			}
+
+
+			function setListState(
+				state: 'loading' | 'empty' | 'error' | 'list'
+			): void {
+				listLoadingState.hidden = state !== 'loading';
+				listEmptyState.hidden = state !== 'empty';
+				listErrorState.hidden = state !== 'error';
+				requestTableWrap.hidden = state !== 'list';
+				requestCards.hidden = state !== 'list';
 			}
 
 
@@ -858,11 +993,149 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 			}
 
 
+			function createCell(text: string, className = ''): HTMLTableCellElement {
+				const cell = document.createElement('td');
+				cell.textContent = text;
+				if (className) cell.className = className;
+				return cell;
+			}
+
+
+			function requestDetailUrl(id: string): string {
+				return `/admin/review/?id=${encodeURIComponent(id)}`;
+			}
+
+
+			function renderRequests(requests: EditRequestSummary[]): void {
+				requestRows.replaceChildren();
+				requestCards.replaceChildren();
+
+				for (const request of requests) {
+					const row = document.createElement('tr');
+					const idLink = document.createElement('a');
+					idLink.href = requestDetailUrl(request.id);
+					idLink.textContent = request.id;
+					idLink.className = 'request-link';
+					row.append(createCell('', 'id-cell'));
+					row.cells[0].append(idLink);
+
+					const pageCell = createCell('', 'page-cell');
+					const pageLink = document.createElement('a');
+					pageLink.href = requestDetailUrl(request.id);
+					pageLink.textContent = request.page_title || request.page_path;
+					pageLink.className = 'request-link';
+					const pagePathText = document.createElement('small');
+					pagePathText.textContent = request.page_path;
+					pageCell.append(pageLink, pagePathText);
+					row.append(
+						pageCell,
+						createCell(request.user_display_name || request.user_id, 'applicant-cell'),
+						createCell(formatDate(request.created_at), 'date-cell'),
+					);
+
+					const statusCell = createCell(statusLabel(request.status), 'status-cell');
+					statusCell.dataset.status = request.status;
+					row.append(statusCell);
+
+					const actionCell = createCell('', 'action-cell');
+					const actionLink = document.createElement('a');
+					actionLink.href = requestDetailUrl(request.id);
+					actionLink.className = 'button button-secondary';
+					actionLink.textContent = '確認';
+					actionCell.append(actionLink);
+					row.append(actionCell);
+					requestRows.append(row);
+
+					const card = document.createElement('article');
+					card.className = 'request-card';
+					const cardHeading = document.createElement('div');
+					cardHeading.className = 'request-card-heading';
+					const cardTitle = document.createElement('a');
+					cardTitle.href = requestDetailUrl(request.id);
+					cardTitle.className = 'request-link';
+					cardTitle.textContent = request.page_title || request.page_path;
+					const cardId = document.createElement('span');
+					cardId.textContent = `ID ${request.id}`;
+					cardHeading.append(cardTitle, cardId);
+					const metadata = document.createElement('dl');
+					metadata.className = 'request-card-meta';
+					for (const [label, value] of [
+						['対象ページ', request.page_path],
+						['申請者', request.user_display_name || request.user_id],
+						['作成日時', formatDate(request.created_at)],
+						['ステータス', statusLabel(request.status)],
+					] as Array<[string, string]>) {
+						const term = document.createElement('dt');
+						term.textContent = label;
+						const valueElement = document.createElement('dd');
+						valueElement.textContent = value;
+						metadata.append(term, valueElement);
+					}
+					card.append(cardHeading, metadata);
+					requestCards.append(card);
+				}
+			}
+
+
+			async function loadRequests(): Promise<void> {
+				setListState('loading');
+				try {
+					const response = await fetch('/api/wiki/edit-requests?status=pending', {
+						credentials: 'same-origin',
+					});
+					const data = await response.json() as ListResponse;
+					if (!response.ok || !data.ok) {
+						throw new Error(data.error || `通信に失敗しました（${response.status}）。`);
+					}
+
+					const requests = Array.isArray(data.editRequests) ? data.editRequests : [];
+					requestCount.textContent = `${requests.length} 件`;
+					if (!requests.length) {
+						setListState('empty');
+						return;
+					}
+
+					renderRequests(requests);
+					setListState('list');
+				} catch (error) {
+					listErrorMessage.textContent = error instanceof Error
+						? error.message
+						: 'レビュー一覧を読み込めませんでした。';
+					setListState('error');
+				}
+			}
+
+
 			function applyStatusStyle(
 				status: EditRequestStatus
 			): void {
 				statusBanner.dataset.status =
 					status;
+			}
+
+
+			async function setProposedMode(mode: 'source' | 'preview'): Promise<void> {
+				const showingPreview = mode === 'preview';
+				proposedContent.hidden = showingPreview;
+				proposedPreviewContent.hidden = !showingPreview;
+				proposedSourceTab.classList.toggle('is-active', !showingPreview);
+				proposedPreviewTab.classList.toggle('is-active', showingPreview);
+				proposedSourceTab.setAttribute('aria-selected', String(!showingPreview));
+				proposedPreviewTab.setAttribute('aria-selected', String(showingPreview));
+				if (!showingPreview) return;
+
+				const renderId = ++previewRenderId;
+				proposedPreviewContent.textContent = 'プレビューを生成しています…';
+				try {
+					const safeHtml = await renderMarkdownPreview(proposedSource);
+					if (renderId === previewRenderId && !proposedPreviewContent.hidden) {
+						proposedPreviewContent.innerHTML = safeHtml;
+					}
+				} catch {
+					if (renderId === previewRenderId) {
+						proposedPreviewContent.textContent = 'プレビューを表示できませんでした。本文を確認してください。';
+					}
+				}
 			}
 
 
@@ -998,12 +1271,15 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 				if (
 					data.revision
 				) {
+					proposedSource = data.revision.content;
 					proposedRevision.textContent =
 						`Revision ${data.revision.revision_number}`;
 
 					proposedContent.textContent =
 						data.revision.content;
+					void setProposedMode('source');
 				} else {
+					proposedSource = '';
 					proposedRevision.textContent =
 						'-';
 
@@ -1063,6 +1339,13 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 						true
 					);
 				}
+
+				deleteActions.hidden = ![
+					'draft',
+					'pending',
+					'approved',
+					'rejected',
+				].includes(request.status);
 			}
 
 
@@ -1072,14 +1355,8 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 			async function loadReview():
 				Promise<void> {
-
-				if (!editRequestId) {
-					showError(
-						'レビューする編集リクエストのIDが指定されていません。'
-					);
-
-					return;
-				}
+				if (!editRequestId) return;
+				setDetailState('loading');
 
 
 				try {
@@ -1349,6 +1626,35 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 			}
 
 
+			async function deleteRequest(): Promise<void> {
+				if (!currentRequest || deleteButton.disabled) return;
+				const confirmed = window.confirm(
+					`このWiki編集リクエストを削除します。この操作は取り消せません。\n\nID: ${currentRequest.id}\n${currentRequest.page_title}\n${currentRequest.page_path}\n\n削除しますか？`,
+				);
+				if (!confirmed) return;
+
+				clearActionMessage();
+				setButtonLoading(deleteButton, true);
+				try {
+					const response = await fetch(
+						`/api/wiki/edit-requests/${encodeURIComponent(currentRequest.id)}`,
+						{ method: 'DELETE', credentials: 'same-origin' },
+					);
+					const data = await response.json() as DeleteResponse;
+					if (!response.ok || !data.ok) {
+						throw new Error(data.error || `削除に失敗しました（${response.status}）。`);
+					}
+					window.location.assign('/admin/review/');
+				} catch (error) {
+					setActionMessage(
+						error instanceof Error ? error.message : '削除に失敗しました。',
+						'error',
+					);
+					setButtonLoading(deleteButton, false);
+				}
+			}
+
+
 			/* ========================================
 			   Events
 			======================================== */
@@ -1362,6 +1668,18 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 				}
 			);
 
+			proposedSourceTab.addEventListener('click', () => {
+				void setProposedMode('source');
+			});
+
+			proposedPreviewTab.addEventListener('click', () => {
+				void setProposedMode('preview');
+			});
+
+			listRetryButton.addEventListener('click', () => {
+				void loadRequests();
+			});
+
 
 			rejectButton.addEventListener(
 				'click',
@@ -1372,12 +1690,21 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 				}
 			);
 
+			deleteButton.addEventListener('click', () => {
+				void deleteRequest();
+			});
+
 
 			/* ========================================
 			   Initial load
 			======================================== */
 
-			void loadReview();
+			if (editRequestId) {
+				setDetailState('before');
+				void loadReview();
+			} else {
+				void loadRequests();
+			}
 		</script>
 
 
@@ -1464,6 +1791,260 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 		color: var(--review-text);
 
 		overflow: hidden;
+	}
+
+
+	.admin-page [hidden] {
+		display: none !important;
+	}
+
+
+	.list-page {
+		position: relative;
+		z-index: 1;
+		min-width: 0;
+	}
+
+
+	.list-page .page-heading {
+		margin-bottom: 28px;
+	}
+
+
+	.list-panel {
+		min-width: 0;
+	}
+
+
+	.list-state {
+		display: flex;
+		min-height: 220px;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 28px;
+		color: var(--review-text-muted);
+		text-align: center;
+	}
+
+
+	.list-state p,
+	.list-state h3 {
+		margin: 0;
+	}
+
+
+	.list-state h3 {
+		color: var(--review-text);
+		font-size: 1rem;
+	}
+
+
+	.empty-icon {
+		display: grid;
+		width: 42px;
+		height: 42px;
+		place-items: center;
+		margin-bottom: 6px;
+		border: 1px solid var(--review-green-dark);
+		border-radius: 4px;
+		color: var(--review-green-light);
+		font-size: 1.2rem;
+	}
+
+
+	.table-wrap {
+		width: 100%;
+		max-width: 100%;
+		overflow-x: auto;
+	}
+
+
+	.table-wrap table {
+		width: 100%;
+		border-collapse: collapse;
+		table-layout: fixed;
+	}
+
+
+	.table-wrap th,
+	.table-wrap td {
+		padding: 14px 12px;
+		border-bottom: 1px solid var(--review-border);
+		text-align: left;
+		vertical-align: middle;
+		overflow-wrap: anywhere;
+	}
+
+
+	.table-wrap th {
+		background: rgba(0, 0, 0, 0.12);
+		color: var(--review-text-muted);
+		font-size: 0.72rem;
+		font-weight: 800;
+	}
+
+
+	.table-wrap td {
+		color: var(--review-text-secondary);
+		font-size: 0.82rem;
+	}
+
+
+	.table-wrap tbody tr:last-child td {
+		border-bottom: 0;
+	}
+
+
+	.id-cell,
+	.date-cell {
+		font-variant-numeric: tabular-nums;
+	}
+
+
+	.request-link {
+		color: var(--review-text);
+		font-weight: 750;
+		text-decoration: none;
+	}
+
+
+	.request-link:hover {
+		color: var(--review-green-light);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+
+	.page-cell small {
+		display: block;
+		margin-top: 4px;
+		color: var(--review-text-muted);
+		font-family: "Consolas", "SFMono-Regular", monospace;
+		font-size: 0.7rem;
+		overflow-wrap: anywhere;
+	}
+
+
+	.status-cell[data-status] {
+		color: var(--review-gold);
+		font-weight: 800;
+	}
+
+
+	.request-cards {
+		display: none;
+		min-width: 0;
+	}
+
+
+	.request-card {
+		min-width: 0;
+		padding: 18px;
+		border-bottom: 1px solid var(--review-border);
+	}
+
+
+	.request-card:last-child {
+		border-bottom: 0;
+	}
+
+
+	.request-card-heading {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 12px;
+		min-width: 0;
+		margin-bottom: 14px;
+	}
+
+
+	.request-card-heading a {
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+
+	.request-card-heading > span {
+		flex: 0 0 auto;
+		color: var(--review-text-muted);
+		font-family: "Consolas", "SFMono-Regular", monospace;
+		font-size: 0.72rem;
+	}
+
+
+	.request-card-meta {
+		display: grid;
+		grid-template-columns: minmax(78px, 0.35fr) minmax(0, 1fr);
+		gap: 8px 12px;
+		margin: 0;
+		font-size: 0.78rem;
+	}
+
+
+	.request-card-meta dt {
+		color: var(--review-text-muted);
+	}
+
+
+	.request-card-meta dd {
+		min-width: 0;
+		margin: 0;
+		color: var(--review-text-secondary);
+		overflow-wrap: anywhere;
+	}
+
+
+	.preview-tabs {
+		display: flex;
+		gap: 4px;
+		padding: 10px 16px 0;
+		border-bottom: 1px solid var(--review-border);
+	}
+
+
+	.preview-tab {
+		min-height: 40px;
+		padding: 0 14px;
+		border: 1px solid transparent;
+		border-bottom: 0;
+		border-radius: 4px 4px 0 0;
+		background: transparent;
+		color: var(--review-text-muted);
+		cursor: pointer;
+	}
+
+
+	.preview-tab.is-active {
+		border-color: var(--review-border);
+		background: #171b1e;
+		color: var(--review-green-light);
+	}
+
+
+	.markdown-preview {
+		min-width: 0;
+		max-height: 650px;
+		padding: 20px;
+		overflow: auto;
+		background: #171b1e;
+		color: var(--review-text-secondary);
+		overflow-wrap: anywhere;
+	}
+
+
+	:global(.admin-page .markdown-preview img),
+	:global(.admin-page .markdown-preview table),
+	:global(.admin-page .markdown-preview pre) {
+		max-width: 100%;
+	}
+
+
+	:global(.admin-page .markdown-preview pre),
+	:global(.admin-page .markdown-preview table) {
+		overflow: auto;
 	}
 
 
@@ -2267,6 +2848,32 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 	}
 
 
+	.delete-actions {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 20px;
+		margin-bottom: 24px;
+		padding: 16px 18px;
+		border: 1px solid var(--review-border);
+		border-radius: 6px;
+		background: rgba(0, 0, 0, 0.12);
+	}
+
+
+	.delete-actions strong {
+		color: var(--review-text-secondary);
+		font-size: 0.85rem;
+	}
+
+
+	.delete-actions p {
+		margin: 4px 0 0;
+		color: var(--review-text-muted);
+		font-size: 0.78rem;
+	}
+
+
 	.review-warning {
 		position: relative;
 
@@ -2616,6 +3223,18 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 	}
 
 
+	@media (max-width: 760px) {
+		.table-wrap {
+			display: none;
+		}
+
+
+		.request-cards {
+			display: grid;
+		}
+	}
+
+
 	@media (max-width: 700px) {
 		.header-actions {
 			display: none;
@@ -2712,6 +3331,13 @@ import AdminLayout from '../../../components/admin/AdminLayout.astro';
 
 		.action-buttons .button {
 			width: 100%;
+		}
+
+
+		.delete-actions {
+			align-items: stretch;
+			flex-direction: column;
+			gap: 12px;
 		}
 
 
