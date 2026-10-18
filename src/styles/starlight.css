@@ -135,7 +135,7 @@
 	------------------------------------------------------- */
 
 	--sl-font:
-		var(--font-sans);
+		var(--font-display);
 
 	--sl-font-mono:
 		var(--font-mono);
@@ -240,12 +240,12 @@ starlight-menu-button {
 
 .site-header {
 	color: var(--color-text);
-	font-family: var(--font-sans);
+	font-family: var(--font-display);
 }
 
 .site-header a,
 .site-header button {
-	font-family: var(--font-sans);
+	font-family: var(--font-display);
 }
 
 .site-header a {

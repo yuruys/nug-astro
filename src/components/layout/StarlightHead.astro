@@ -4,11 +4,17 @@ const title = entry.data.title;
 const description = entry.data.description;
 const ogImageURL = new URL("/images/mein.webp", Astro.site ?? Astro.url).href;
 const retainedHead = head.filter(
-	({ tag, attrs }) => !(tag === "meta" && attrs.property === "og:locale"),
+	({ tag, attrs }) => !(tag === "meta" && attrs?.property === "og:locale"),
 );
 ---
 
 {retainedHead.map(({ tag: Tag, attrs, content }) => <Tag {...attrs} set:html={content} />)}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=M+PLUS+Rounded+1c:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap"
+	rel="stylesheet"
+/>
 <meta property="og:locale" content="ja_JP" />
 <meta property="og:image" content={ogImageURL} />
 <meta name="twitter:title" content={title} />

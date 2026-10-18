@@ -93,6 +93,13 @@ button {
 	border: 0;
 	background: none;
 	cursor: pointer;
+	font-family: var(--font-display);
+}
+
+input,
+textarea,
+select {
+	font-family: var(--font-sans);
 }
 
 img,
@@ -137,28 +144,21 @@ select {
 	------------------------------------------------------- */
 
 	--font-sans:
-		-apple-system,
-		BlinkMacSystemFont,
-		"Segoe UI",
 		"Noto Sans JP",
-		"Helvetica Neue",
-		Arial,
+		"Noto Sans",
 		sans-serif;
 
 	--font-display:
-		-apple-system,
-		BlinkMacSystemFont,
-		"Segoe UI",
+		"M PLUS Rounded 1c",
 		"Noto Sans JP",
-		"Helvetica Neue",
-		Arial,
+		"Noto Sans",
 		sans-serif;
 
 	--font-mono:
-		"SFMono-Regular",
 		"JetBrains Mono",
-		"Consolas",
-		"Menlo",
+		"SFMono-Regular",
+		Consolas,
+		"Liberation Mono",
 		monospace;
 
 
