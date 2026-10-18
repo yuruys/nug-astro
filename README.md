@@ -1,43 +1,62 @@
-# Astro Starter Kit: Minimal
+# NUGBASE
+
+NUGBASE は、ねこぞうねこサーバー向けの日本語ガイド、ニュース、ツール、Wikiを提供するサイトです。
+
+## 技術スタック
+
+- Astro 7 と Astro Content Collections
+- Starlight によるWiki
+- Pagefind によるサイト内検索
+- Cloudflare Pages Functions と D1
+- TypeScript、Markdown、MDX
+
+## 開発環境
+
+- Node.js 22.12 以上
+- npm
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+`npm run dev` は起動前に `prepare:pagefind` を実行し、AstroのビルドとPagefind生成を行います。`public/pagefind/` は追跡されている生成ファイルのため、検索インデックスが更新される場合があります。
 
-## 🚀 Project Structure
+## コマンド
 
-Inside of your Astro project, you'll see the following folders and files:
+- `npm run dev`: Pagefindを準備して開発サーバーを起動
+- `npm run build:astro`: Astroサイトを `dist/` にビルド
+- `npm run build`: Astroをビルドし、`dist/` にPagefindインデックスを生成
+- `npm run prepare:pagefind`: ビルドと検索インデックス生成後、インデックスを `public/pagefind/` にコピー
+- `npm run preview`: 直近のAstroビルドをローカルでプレビュー
+- `npm run astro -- check`: Astro、TypeScript、コンテンツの診断
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## 主要ディレクトリ
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- `src/pages/`: URLに対応するAstroページ。公開URLを維持してください。
+- `src/components/layout/`: 共通ナビゲーション、サイト枠、Wiki編集用ヘッダー
+- `src/components/cards/`: 記事・カテゴリーカード
+- `src/components/search/`: 検索UI
+- `src/components/admin/`: 管理画面で再利用するUI
+- `src/content/docs/`: Starlight Wiki。既存の階層とfrontmatterを維持
+- `src/content/guide/`, `src/content/news/`, `src/content/tool/`: 各コンテンツコレクション
+- `src/layouts/`, `src/lib/`, `src/plugins/`, `src/styles/`: 共通レイアウト、ロジック、Markdownプラグイン、スタイル
+- `functions/`: Cloudflare Pages Functions API
+- `database/`, `migrations/`: D1スキーマとマイグレーション履歴
+- `scripts/`: Pagefind準備とWikiデータの同期・初期化処理
+- `public/`: 公開静的ファイル。画像などの既存パスを維持
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## コンテンツの追加
 
-Any static assets, like images, can be placed in the `public/` directory.
+ガイドは `src/content/guide/`、ニュースは `src/content/news/`、ツール情報は `src/content/tool/` に追加します。Wikiの記事は `src/content/docs/` 配下の既存分類に追加します。コレクションのスキーマは `src/content.config.ts` に定義されています。ツール画面はコンテンツデータとは別に `src/pages/tool/` で管理します。
 
-## 🧞 Commands
+## Cloudflare Pages
 
-All commands are run from the root of the project, from a terminal:
+Astroのビルド出力は `dist/` です。Pages Functions はルートの `functions/` から検出され、D1のバインディングは `wrangler.jsonc` で設定されています。D1の再作成、マイグレーション実行、本番データへの書き込み、バインディングや `remote` 設定の変更は、別途承認なしに行わないでください。Wiki同期・初期化スクリプトも実行前に接続先と生成内容を確認してください。
+Cloudflareのローカル開発環境でのpreviewコマンドは、`npx wrangler pages dev dist`
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## Githubへのプッシュコマンド
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+git add .
+git commit -m "敬敏な修正"
+git push origin main

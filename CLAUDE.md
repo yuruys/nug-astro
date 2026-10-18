@@ -1,3 +1,7 @@
+## Scope
+
+Instructions for Claude Code in this repository. These shared project rules mirror `AGENTS.md` so both agent entry points preserve the same safeguards.
+
 ## Development
 
 When starting the dev server, use background mode:

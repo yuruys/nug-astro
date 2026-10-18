@@ -40,8 +40,8 @@ export default defineConfig({
 			],
 
 			components: {
-				Header: './src/components/Header.astro',
-				ThemeProvider: './src/components/NugThemeProvider.astro',
+				Header: './src/components/layout/Header.astro',
+				ThemeProvider: './src/components/layout/NugThemeProvider.astro',
 			},
 
 			sidebar: [
