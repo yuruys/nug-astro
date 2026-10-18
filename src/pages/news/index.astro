@@ -6,7 +6,7 @@ const entries = await getCollection("news");
 const sortedEntries = [...entries].sort((a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0));
 ---
 
-<Layout title="ニュース | NUG" description="Nekozouneko Serverの最新情報を掲載します。">
+<Layout title="ニュース | ゆるぽーと" description="Nekozouneko Serverの最新情報を掲載します。">
 	<section class="listing-page">
 		<header class="page-header">
 			<p class="page-label">NEWS</p>

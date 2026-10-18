@@ -4,13 +4,13 @@ import Footer from "../components/layout/Footer.astro";
 import "../styles/global.css";
 
 const {
-	title = "NUG",
-	description = "Nekozouneko Unofficial Guide",
+	title = "ゆるぽーと",
+	description = "Minecraftマルチサーバーの攻略・仕様・最新情報をまとめた非公式ガイド",
 	pagefind = false,
 } = Astro.props;
 
-const canonicalURL = Astro.url.href;
-const ogImageURL = new URL("/images/main.webp", Astro.site ?? Astro.url).href;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+const ogImageURL = new URL("/images/mein.webp", Astro.site ?? Astro.url).href;
 ---
 
 <!doctype html>
@@ -85,7 +85,7 @@ const ogImageURL = new URL("/images/main.webp", Astro.site ?? Astro.url).href;
 
 		<meta
 			property="og:site_name"
-			content="NUGBASE"
+			content="ゆるぽーと"
 		/>
 
 		<meta

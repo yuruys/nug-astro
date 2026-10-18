@@ -12,7 +12,7 @@ const navItems = [
 	{ label: "Wiki", href: "/docs/" },
 	{ label: "ニュース", href: "/news/" },
 	{ label: "ツール", href: "/tool/" },
-	{ label: "NUGについて", href: "/about/" },
+	{ label: "ゆるぽーとについて", href: "/about/" },
 ];
 
 const wikiSections = [
@@ -110,10 +110,10 @@ const isActive = (href: string): boolean => {
 		<a
 			href="/"
 			class="logo"
-			aria-label="NUG ホーム"
+			aria-label="ゆるぽーと ホーム"
 		>
 			<span class="logo-mark">
-				NUGBASE
+				ゆるぽーと
 			</span>
 
 			<span class="logo-sub">
@@ -289,7 +289,7 @@ const isActive = (href: string): boolean => {
 					</p>
 
 					<h2 id="nug-search-title">
-						NUGを検索
+						ゆるぽーとを検索
 					</h2>
 				</div>
 
@@ -1040,7 +1040,7 @@ const isActive = (href: string): boolean => {
 				url === "/about" ||
 				url.startsWith("/about/")
 			) {
-				return "NUGについて";
+				return "ゆるぽーとについて";
 			}
 
 			return "サイト";

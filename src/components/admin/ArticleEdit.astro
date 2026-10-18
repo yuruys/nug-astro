@@ -9,9 +9,9 @@ const categories = isGuide
 ---
 <!doctype html>
 <html lang="ja">
-	<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex, nofollow" /><title>{title} | NUGBASE 管理画面</title></head>
+	<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex, nofollow" /><title>{title} | ゆるぽーと 管理画面</title></head>
 	<body data-content-type={contentType} data-guide={String(isGuide)}>
-		<header class="topbar"><a class="brand" href="/admin/" aria-label="管理画面トップ"><span class="brand-mark">NUG</span><span><strong>NUGBASE</strong><small>管理画面</small></span></a><button class="menu-toggle" id="menu-toggle" type="button" aria-controls="admin-nav" aria-expanded="false" aria-label="メニューを開く"><span></span><span></span><span></span></button><a class="site-link" href="/">サイトを見る ↗</a></header>
+		<header class="topbar"><a class="brand" href="/admin/" aria-label="管理画面トップ"><span class="brand-mark">YP</span><span><strong>ゆるぽーと</strong><small>管理画面</small></span></a><button class="menu-toggle" id="menu-toggle" type="button" aria-controls="admin-nav" aria-expanded="false" aria-label="メニューを開く"><span></span><span></span><span></span></button><a class="site-link" href="/">サイトを見る ↗</a></header>
 		<div class="shell">
 			<aside class="sidebar" id="admin-nav" aria-label="管理メニュー"><p class="nav-label">管理メニュー</p><nav><a href="/admin/" class="nav-link">▦ ダッシュボード</a><a href="/admin/guide/" class:list={['nav-link', { active: isGuide }]} aria-current={isGuide ? 'page' : undefined}>▤ 攻略管理</a><a href="/admin/news/" class:list={['nav-link', { active: !isGuide }]} aria-current={!isGuide ? 'page' : undefined}>◷ ニュース管理</a><a href="/admin/servers/" class="nav-link">◈ サーバー管理</a><a href="/admin/review/" class="nav-link">✓ Wikiレビュー</a></nav><div class="sidebar-note"><span class="live-dot"></span> 管理者セッションで保護されています</div></aside>
 			<main class="main">
@@ -26,11 +26,11 @@ const categories = isGuide
 						{isGuide && <label class="field" for="server-id"><span>サーバー</span><select id="server-id" disabled><option>読み込み中…</option></select></label>}
 						<label class="field" for="title"><span>タイトル</span><input id="title" type="text" required /></label>
 						<label class="field full" for="description"><span>説明</span><textarea id="description" rows="3" required></textarea></label>
-						<label class="field" for="category"><span>カテゴリ</span><select id="category" required><option value="">未読み込み</option>{categories.map((category) => <option value={category}>{category}</option>)}</select></label>
+						<label class="field" for="category"><span>カテゴリ</span><select id="category" required><option value="">未読み込み</option>{categories.map((category) => <option value={category}>{category === 'NUGBASEおしらせ' ? 'ゆるぽーとお知らせ' : category}</option>)}</select></label>
 						<label class="field" for="date"><span>投稿日</span><input id="date" type="date" required /></label>
 						<label class="field" for="icon"><span>アイコン</span><input id="icon" type="text" placeholder="emoji" /></label>
 						<label class="field" for="image"><span>画像パス</span><input id="image" type="text" /></label>
-						<label class="field full check-row" for="featured"><input id="featured" type="checkbox" /> NUGBASE PICKUPに掲載する</label>
+						<label class="field full check-row" for="featured"><input id="featured" type="checkbox" /> YURUPORT PICKUPに掲載する</label>
 						<div class="field full body-field">
 							<label for="body" id="body-label">Markdown本文</label>
 							<div class="preview-tabs" role="tablist" aria-label="本文の表示方法">

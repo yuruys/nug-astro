@@ -8,7 +8,7 @@ import remarkGuideAdmonition from './src/plugins/remark-guide-admonition.mjs';
 
 
 export default defineConfig({
-	site: 'https://nugbace.pages.dev',
+	site: 'https://yuruport.com',
 
 	// Astro Dev Toolbarを非表示にする
 	devToolbar: {
@@ -30,10 +30,20 @@ export default defineConfig({
 	// ========================================
 
 	integrations: [
-		sitemap(),
+			 sitemap({
+       	 filter: (page) => {
+            	const pathname = new URL(page).pathname;
+
+	            return !['/admin', '/account', '/wiki'].some(
+	                (prefix) =>
+	                    pathname === prefix ||
+	                    pathname.startsWith(`${prefix}/`),
+	            );
+	        },
+	    }),
 
 		starlight({
-			title: 'NUGBASE Wiki',
+			title: 'ゆるぽーと',
 
 			customCss: [
 				'./src/styles/starlight.css',
