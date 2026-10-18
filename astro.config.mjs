@@ -51,6 +51,7 @@ export default defineConfig({
 
 			components: {
 				Header: './src/components/layout/Header.astro',
+				Head: './src/components/layout/StarlightHead.astro',
 				ThemeProvider: './src/components/layout/NugThemeProvider.astro',
 			},
 

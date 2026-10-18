@@ -4,9 +4,10 @@ import Footer from "../components/layout/Footer.astro";
 import "../styles/global.css";
 
 const {
-	title = "ゆるぽーと",
-	description = "Minecraftマルチサーバーの攻略・仕様・最新情報をまとめた非公式ガイド",
+	title = "ゆるぽーと｜マイクラマルチ情報局",
+	description = "マイクラマルチの攻略記事・Wiki・最新ニュースを発信。サーバー情報や便利ツールもまとめた、マインクラフトのマルチプレイを楽しむための総合情報メディア。",
 	pagefind = false,
+	jsonLd,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
@@ -92,6 +93,8 @@ const ogImageURL = new URL("/images/mein.webp", Astro.site ?? Astro.url).href;
 			property="og:image"
 			content={ogImageURL}
 		/>
+
+		{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
 
 		<!-- ========================================
