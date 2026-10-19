@@ -1,0 +1,211 @@
+---
+---
+
+<div class="discord-widget" data-discord-widget>
+	<section
+		class="discord-card"
+		id="discord-community-card"
+		aria-labelledby="discord-card-title"
+		hidden
+	>
+		<button
+			class="discord-card-close"
+			type="button"
+			aria-label="Discordの案内を閉じる"
+			data-discord-close
+		>
+			<span aria-hidden="true">×</span>
+		</button>
+
+		<p class="discord-card-kicker">ゆるぽーと公式コミュニティ</p>
+		<h2 id="discord-card-title">Discordに参加しませんか？</h2>
+		<p class="discord-card-description">
+			サーバーのお知らせや、プレイヤー同士の交流はこちら。
+		</p>
+		<a
+			class="discord-card-link"
+			href="https://discord.gg/2qNZF5wnxY"
+			target="_blank"
+			rel="noopener noreferrer"
+		>
+			Discordに参加する
+			<span aria-hidden="true">↗</span>
+		</a>
+	</section>
+
+	<button
+		class="discord-widget-toggle"
+		type="button"
+		aria-expanded="false"
+		aria-controls="discord-community-card"
+		data-discord-toggle
+	>
+		<svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+			<path d="M19.7 5.3a18 18 0 0 0-4.4-1.4l-.5 1a16.7 16.7 0 0 0-5.6 0l-.5-1a18 18 0 0 0-4.4 1.4C1.5 9.4.7 13.4 1.1 17.4a18 18 0 0 0 5.4 2.7l1.2-2a11.5 11.5 0 0 1-1.9-.9l.5-.4a12.9 12.9 0 0 0 11.4 0l.5.4a11.5 11.5 0 0 1-1.9.9l1.2 2a18 18 0 0 0 5.4-2.7c.5-4.7-.8-8.7-3.2-12.1ZM8.8 14.8c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 .9 2 2.2-.9 2.2-2 2.2Zm6.4 0c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 .9 2 2.2-.9 2.2-2 2.2Z" />
+		</svg>
+		<span>Discordに参加</span>
+	</button>
+</div>
+
+<script>
+	const widget = document.querySelector<HTMLElement>("[data-discord-widget]");
+	const toggle = widget?.querySelector<HTMLButtonElement>("[data-discord-toggle]");
+	const close = widget?.querySelector<HTMLButtonElement>("[data-discord-close]");
+	const card = widget?.querySelector<HTMLElement>("#discord-community-card");
+
+	if (widget && toggle && close && card) {
+		const setExpanded = (expanded: boolean) => {
+			toggle.setAttribute("aria-expanded", String(expanded));
+			card.hidden = !expanded;
+		};
+
+		toggle.addEventListener("click", () => {
+			setExpanded(toggle.getAttribute("aria-expanded") !== "true");
+		});
+
+		close.addEventListener("click", () => {
+			setExpanded(false);
+			toggle.focus();
+		});
+
+		widget.addEventListener("keydown", (event) => {
+			if (event.key === "Escape" && !card.hidden) {
+				setExpanded(false);
+				toggle.focus();
+			}
+		});
+	}
+</script>
+
+<style>
+	.discord-widget {
+		position: fixed;
+		right: max(20px, env(safe-area-inset-right));
+		bottom: max(20px, env(safe-area-inset-bottom));
+		z-index: 9000;
+		display: grid;
+		justify-items: end;
+		gap: 12px;
+		font-family: var(--font-body, "Noto Sans JP", sans-serif);
+	}
+
+	.discord-widget-toggle {
+		display: inline-flex;
+		min-height: 48px;
+		align-items: center;
+		justify-content: center;
+		gap: 9px;
+		padding: 0 17px;
+		border: 1px solid #3443a5;
+		border-radius: 999px;
+		background: #5865f2;
+		box-shadow: 0 4px 0 #3443a5, 0 8px 22px rgb(0 0 0 / 18%);
+		color: #fff;
+		font-size: 13px;
+		font-weight: 800;
+		transition: transform 150ms ease, box-shadow 150ms ease;
+	}
+
+	.discord-widget-toggle:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 0 #3443a5, 0 10px 24px rgb(0 0 0 / 20%);
+	}
+
+	.discord-widget-toggle:focus-visible,
+	.discord-card-close:focus-visible,
+	.discord-card-link:focus-visible {
+		outline: 3px solid var(--color-grass, #78b94b);
+		outline-offset: 3px;
+	}
+
+	.discord-widget-toggle svg {
+		width: 21px;
+		height: 21px;
+		fill: currentColor;
+	}
+
+	.discord-card {
+		position: relative;
+		width: min(320px, calc(100vw - 32px));
+		padding: 20px;
+		border: 1px solid var(--color-border-strong, #68736f);
+		background: var(--color-surface, #f7f9f8);
+		box-shadow: 0 4px 0 var(--color-border-strong, #68736f), 0 12px 30px rgb(0 0 0 / 16%);
+		color: var(--color-text, #1b211f);
+	}
+
+	.discord-card[hidden] {
+		display: none;
+	}
+
+	.discord-card-close {
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		display: grid;
+		width: 36px;
+		height: 36px;
+		place-items: center;
+		border-radius: 50%;
+		color: var(--color-text-secondary, #59635f);
+		font-size: 24px;
+		line-height: 1;
+	}
+
+	.discord-card-kicker {
+		padding-right: 28px;
+		color: var(--color-grass, #5f9f3a);
+		font-size: 11px;
+		font-weight: 800;
+		letter-spacing: 0.04em;
+	}
+
+	.discord-card h2 {
+		margin-top: 7px;
+		font-size: 17px;
+		line-height: 1.45;
+	}
+
+	.discord-card-description {
+		margin-top: 7px;
+		color: var(--color-text-secondary, #59635f);
+		font-size: 12px;
+		line-height: 1.65;
+	}
+
+	.discord-card-link {
+		display: flex;
+		min-height: 42px;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		margin-top: 15px;
+		padding: 0 14px;
+		background: #5865f2;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 800;
+		text-decoration: none;
+	}
+
+	.discord-card-link:hover {
+		background: #4752c4;
+	}
+
+	:global(html[data-theme="dark"]) .discord-card {
+		box-shadow: 0 4px 0 rgb(0 0 0 / 45%), 0 12px 30px rgb(0 0 0 / 38%);
+	}
+
+	@media (max-width: 768px) {
+		.discord-widget {
+			right: max(12px, env(safe-area-inset-right));
+			bottom: calc(78px + env(safe-area-inset-bottom));
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.discord-widget-toggle {
+			transition: none;
+		}
+	}
+</style>

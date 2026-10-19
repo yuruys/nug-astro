@@ -60,5 +60,5 @@ Cloudflareのローカル開発環境でのpreviewコマンドは、`npx wrangle
 ## Githubへのプッシュコマンド
 
 git add .
-git commit -m "敬敏な修正"
+git commit -m "軽微な修正"
 git push origin main

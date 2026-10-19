@@ -1,6 +1,7 @@
 ---
 import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
+import DiscordCommunityWidget from "../components/layout/DiscordCommunityWidget.astro";
 import "../styles/global.css";
 
 const {
@@ -199,6 +200,8 @@ const ogImageURL = new URL("/images/mein.webp", Astro.site ?? Astro.url).href;
 		======================================== -->
 
 		<Footer />
+
+		<DiscordCommunityWidget />
 
 	</body>
 
