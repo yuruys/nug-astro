@@ -57,6 +57,32 @@ npm run dev
 Astroのビルド出力は `dist/` です。Pages Functions はルートの `functions/` から検出され、D1のバインディングは `wrangler.jsonc` で設定されています。D1の再作成、マイグレーション実行、本番データへの書き込み、バインディングや `remote` 設定の変更は、別途承認なしに行わないでください。Wiki同期・初期化スクリプトも実行前に接続先と生成内容を確認してください。
 Cloudflareのローカル開発環境でのpreviewコマンドは、`npx wrangler pages dev dist`
 
+## Discord記事通知
+
+`main` へのpushで、記事本文の追加・更新を専用Discord BOTから通知します。対象は次のコンテンツコレクションです。
+
+| 領域 | 保存場所 | 公開URL |
+| --- | --- | --- |
+| 攻略ガイド | `src/content/guide/<id>.md` | `https://yuruport.com/guide/<id>/` |
+| Wiki | `src/content/docs/docs/<path>.md` または `.mdx` | `https://yuruport.com/<path>/` |
+| ニュース | `src/content/news/<id>.md` | `https://yuruport.com/news/<id>/` |
+| ツール | `src/content/tool/<id>.md` | `https://yuruport.com/tool/<id>/` |
+
+記事の削除、各コレクション直下の `index.md`、画像・CSS・設定ファイルなどは通知しません。複数コミットを1回のpushで送った場合、同じ記事は最終状態で1回だけ判定されます。一方、別々のpushやActionsの再実行では重複通知されることがあります。通知済み記事を記録する外部ストレージは使用していません。
+
+通知はpushを契機に実行され、Cloudflare Pagesのデプロイ完了を待ちません。そのため、通知直後は公開URLへの反映前の可能性があります。Pagesのデプロイ方式はリポジトリ内の設定では確認できず、このワークフローは既存のデプロイ設定を変更しません。
+
+### GitHub側の設定
+
+リポジトリの **Settings → Secrets and variables → Actions** に、次のRepository secretsを登録してください。
+
+- `DISCORD_BOT_TOKEN`: 専用BOTアカウントのBot token
+- `DISCORD_CHANNEL_ID`: 通知先チャンネルのID（Discordの開発者モードでチャンネルIDをコピー）
+
+BOTを対象サーバーに追加し、通知先チャンネルでメッセージを送信できる権限を付与してください。トークンはソースやActionsログに出力しません。設定漏れがある場合は不足しているSecret名をエラーに表示します。
+
+通知処理のローカルテストは `node --test scripts/notify-discord.test.mjs` で実行できます。Discord secretsやAPIアクセスは不要です。
+
 ## Githubへのプッシュコマンド
 
 git add .

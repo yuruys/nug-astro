@@ -1,0 +1,37 @@
+name: Discord article notifications
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/content/guide/*.md"
+      - "src/content/guide/**/*.md"
+      - "src/content/docs/docs/*.md"
+      - "src/content/docs/docs/*.mdx"
+      - "src/content/docs/docs/**/*.md"
+      - "src/content/docs/docs/**/*.mdx"
+      - "src/content/news/*.md"
+      - "src/content/news/**/*.md"
+      - "src/content/tool/*.md"
+      - "src/content/tool/**/*.md"
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pushed revision
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Send article notifications
+        run: node scripts/notify-discord.mjs
+        env:
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+          GITHUB_SHA: ${{ github.sha }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
