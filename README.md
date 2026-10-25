@@ -88,3 +88,7 @@ BOTを対象サーバーに追加し、通知先チャンネルでメッセー�
 git add .
 git commit -m "軽微な修正"
 git push origin main
+
+# Githubの変更をオフラインに取り込む
+
+git pull
