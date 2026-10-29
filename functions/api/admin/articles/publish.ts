@@ -1,4 +1,5 @@
 import { requireAdmin } from '../_auth';
+import { validateTags } from '../_tags';
 
 type PublishRequest = {
 	article_db_id?: unknown;
@@ -10,6 +11,8 @@ type PublishRequest = {
 	icon?: unknown;
 	image?: unknown;
 	featured?: unknown;
+	tags?: unknown;
+	scbnewsSourceUrl?: unknown;
 	body?: unknown;
 	format?: unknown;
 	[key: string]: unknown;
@@ -67,6 +70,8 @@ type FrontmatterInput = {
 	icon?: string;
 	image?: string;
 	featured?: boolean;
+	tags?: string[];
+	scbnewsSourceUrl?: string;
 	body: string;
 };
 
@@ -127,6 +132,12 @@ function buildMarkdown(input: FrontmatterInput, contentType: ArticleRow['content
 	if (input.icon !== undefined) entries.push(['icon', yamlString(input.icon)]);
 	if (input.image !== undefined) entries.push(['image', yamlString(input.image)]);
 	if (input.featured !== undefined) entries.push(['featured', String(input.featured)]);
+	if (input.tags && input.tags.length > 0) {
+		entries.push(['tags', `[${input.tags.map(yamlString).join(', ')}]`]);
+	}
+	if (input.scbnewsSourceUrl !== undefined) {
+		entries.push(['scbnewsSourceUrl', yamlString(input.scbnewsSourceUrl)]);
+	}
 
 	return `---\n${entries.map(([key, value]) => `${key}: ${value}`).join('\n')}\n---\n\n${input.body}`;
 }
@@ -210,7 +221,7 @@ async function auditSafely(
 function validatePayload(body: PublishRequest): string | null {
 	const allowed = new Set([
 		'article_db_id', 'title', 'description', 'category', 'date', 'server',
-		'icon', 'image', 'featured', 'body', 'format',
+		'icon', 'image', 'featured', 'tags', 'scbnewsSourceUrl', 'body', 'format',
 	]);
 	if (Object.keys(body).some((key) => !allowed.has(key))) {
 		return 'Only article fields and format are accepted';
@@ -238,6 +249,18 @@ function validatePayload(body: PublishRequest): string | null {
 	}
 	if (body.featured !== undefined && body.featured !== null && typeof body.featured !== 'boolean') {
 		return 'featured must be a boolean';
+	}
+	if (body.tags !== undefined) {
+		const tags = validateTags(body.tags);
+		if (!tags) return 'tags must contain up to 20 unique names of 1 to 40 characters';
+	}
+	if (body.scbnewsSourceUrl !== undefined && body.scbnewsSourceUrl !== null && body.scbnewsSourceUrl !== '') {
+		if (typeof body.scbnewsSourceUrl !== 'string' || body.scbnewsSourceUrl.length > 2000) return 'scbnewsSourceUrl must be a URL up to 2000 characters';
+		try {
+			if (new URL(body.scbnewsSourceUrl).protocol !== 'https:') return 'scbnewsSourceUrl must use HTTPS';
+		} catch {
+			return 'scbnewsSourceUrl must be a valid HTTPS URL';
+		}
 	}
 	return null;
 }
@@ -402,6 +425,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 			icon: optionalString(body.icon),
 			image: optionalString(body.image),
 			featured: typeof body.featured === 'boolean' ? body.featured : undefined,
+			tags: body.tags === undefined ? undefined : validateTags(body.tags) ?? undefined,
+			scbnewsSourceUrl: optionalString(body.scbnewsSourceUrl),
 			body: body.body as string,
 		}, article.content_type);
 

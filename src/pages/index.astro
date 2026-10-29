@@ -2,7 +2,6 @@
 import { getCollection } from "astro:content";
 
 import Layout from "../layouts/Layout.astro";
-import SearchBox from "../components/search/SearchBox.astro";
 import ArticleCard from "../components/cards/ArticleCard.astro";
 
 
@@ -69,8 +68,8 @@ const featuredArticles = articles.filter(
 
 const pickupArticles =
 	featuredArticles.length > 0
-		? featuredArticles.slice(0, 2)
-		: articles.slice(0, 2);
+		? featuredArticles.slice(0, 3)
+		: articles.slice(0, 3);
 
 
 /* =========================================================
@@ -78,6 +77,13 @@ const pickupArticles =
 ========================================================= */
 
 const latestArticles = articles.slice(0, 6);
+const articleCategories = [...new Set(articles.map((article) => article.category))].sort((a, b) => a.localeCompare(b, "ja"));
+const articleTags = new Map<string, number>();
+for (const article of articles) {
+	for (const tag of article.data.tags ?? []) {
+		articleTags.set(tag, (articleTags.get(tag) ?? 0) + 1);
+	}
+}
 ---
 
 
@@ -91,62 +97,6 @@ const latestArticles = articles.slice(0, 6);
 		url: "https://yuruport.com/",
 	}}
 >
-
-
-	<!-- =====================================================
-	     Hero
-	===================================================== -->
-
-	<section class="media-hero">
-
-		<div class="media-hero-inner">
-
-			<div class="media-hero-copy">
-
-				<p class="media-hero-brand">
-					ゆるぽーと
-				</p>
-
-				<h1>
-					もっと分かりやすく、
-					<br />
-					もっと楽しく。
-				</h1>
-
-				<p class="media-hero-description">
-					Minecraftマルチサーバーの攻略・仕様・最新情報
-				</p>
-
-			</div>
-
-
-			<div class="media-hero-image">
-
-				<img
-					src="/images/mein.webp"
-					alt=""
-				/>
-
-			</div>
-
-		</div>
-
-	</section>
-
-
-	<!-- =====================================================
-	     Search
-	===================================================== -->
-
-	<section class="search-section">
-
-		<div class="compact-container">
-
-			<SearchBox />
-
-		</div>
-
-	</section>
 
 
 	<!-- =====================================================
@@ -175,109 +125,25 @@ const latestArticles = articles.slice(0, 6);
 
 
 			<div class="information-grid">
-
-				<!-- Guide -->
-
-				<a
-					href="/guide/"
-					class="information-card information-card-guide"
-				>
-
-					<div class="information-icon">
-						🎮
-					</div>
-
-					<div class="information-body">
-
-						<p class="information-label">
-							GUIDE
-						</p>
-
-						<h3>
-							攻略－知る・遊ぶ
-						</h3>
-
-						<p>
-							初心者向けの解説から実践的な攻略まで、
-							新しい楽しみ方や魅力を見つけられます。
-						</p>
-
-					</div>
-
-					<span class="information-arrow">
-						→
-					</span>
-
+				<a href="/guide/" class="information-card information-card-guide">
+					<span class="information-icon" aria-hidden="true">🎮</span>
+					<span class="information-label">GUIDE</span>
+					<span class="information-title">攻略</span>
+					<span class="information-arrow" aria-hidden="true">→</span>
 				</a>
 
-
-				<!-- Wiki -->
-
-				<a
-					href="/docs/"
-					class="information-card information-card-wiki"
-				>
-
-					<div class="information-icon">
-						📖
-					</div>
-
-					<div class="information-body">
-
-						<p class="information-label">
-							WIKI
-						</p>
-
-						<h3>
-							Wiki－調べる
-						</h3>
-
-						<p>
-							プラグインの仕様やコマンドなど、
-							遊んでいて気になった情報を調べられます。
-						</p>
-
-					</div>
-
-					<span class="information-arrow">
-						→
-					</span>
-
+				<a href="/docs/" class="information-card information-card-wiki">
+					<span class="information-icon" aria-hidden="true">📖</span>
+					<span class="information-label">WIKI</span>
+					<span class="information-title">Wiki</span>
+					<span class="information-arrow" aria-hidden="true">→</span>
 				</a>
 
-
-				<!-- News -->
-
-				<a
-					href="/news/"
-					class="information-card information-card-news"
-				>
-
-					<div class="information-icon">
-						📰
-					</div>
-
-					<div class="information-body">
-
-						<p class="information-label">
-							NEWS
-						</p>
-
-						<h3>
-							NEWS－最新情報
-						</h3>
-
-						<p>
-							サーバー内のイベントや仕様変更、
-							Minecraftのアップデートをお知らせします。
-						</p>
-
-					</div>
-
-					<span class="information-arrow">
-						→
-					</span>
-
+				<a href="/news/" class="information-card information-card-news">
+					<span class="information-icon" aria-hidden="true">📰</span>
+					<span class="information-label">NEWS</span>
+					<span class="information-title">ニュース</span>
+					<span class="information-arrow" aria-hidden="true">→</span>
 				</a>
 			</div>
 
@@ -326,7 +192,7 @@ const latestArticles = articles.slice(0, 6);
 					{pickupArticles.map((article, index) => (
 
 						<div
-							class="pickup-item"
+							class:list={["pickup-item", { "pickup-item-lead": index === 0 }]}
 							data-article-kind={article.kind}
 						>
 
@@ -336,6 +202,7 @@ const latestArticles = articles.slice(0, 6);
 								category={article.category}
 								date={article.data.date}
 								image={article.data.image}
+								sourceUrl={article.data.scbnewsSourceUrl}
 								icon={article.data.icon}
 								href={article.href}
 								number={String(index + 1).padStart(2, "0")}
@@ -390,70 +257,34 @@ const latestArticles = articles.slice(0, 6);
 			     Category Filter
 			======================================== -->
 
-			<nav
-				class="article-filter"
-				aria-label="記事カテゴリ"
-			>
-
-				<button
-					type="button"
-					class="article-filter-button is-active"
-					data-filter="all"
-					aria-pressed="true"
-				>
-					すべて
-				</button>
-
-				<button
-					type="button"
-					class="article-filter-button"
-					data-filter="guide"
-					aria-pressed="false"
-				>
-					攻略
-				</button>
-
-				<button
-					type="button"
-					class="article-filter-button"
-					data-filter="news"
-					aria-pressed="false"
-				>
-					ニュース
-				</button>
-
-			</nav>
-
-
-			{latestArticles.length > 0 ? (
-
-				<div class="article-grid">
-
-					{latestArticles.map((article, index) => (
-
-						<div
-							class="article-item"
-							data-article-kind={article.kind}
-						>
-
-							<ArticleCard
-								title={article.data.title}
-								description={article.data.description}
-								category={article.category}
-								date={article.data.date}
-								image={article.data.image}
-								icon={article.data.icon}
-								href={article.href}
-								number={String(index + 1).padStart(2, "0")}
-							/>
-
+			<div class="article-layout">
+				<div class="article-main">
+					{latestArticles.length > 0 ? (
+						<div class="article-grid">
+							{articles.map((article, index) => (
+								<div
+									class="article-item"
+									data-article-kind={article.kind}
+									data-article-category={article.category}
+									data-article-tags={JSON.stringify(article.data.tags ?? [])}
+									data-article-latest={String(index < 6)}
+									hidden={index >= 6}
+								>
+									<ArticleCard
+										title={article.data.title}
+										description={article.data.description}
+										category={article.category}
+										date={article.data.date}
+										image={article.data.image}
+										sourceUrl={article.data.scbnewsSourceUrl}
+										icon={article.data.icon}
+										href={article.href}
+										number={String(index + 1).padStart(2, "0")}
+									/>
+								</div>
+							))}
 						</div>
-
-					))}
-
-				</div>
-
-			) : (
+					) : (
 
 				<div class="empty-articles">
 
@@ -467,29 +298,48 @@ const latestArticles = articles.slice(0, 6);
 
 				</div>
 
-			)}
+					)}
 
+					<div class="article-list-footer">
+						<a href="/guide/" class="media-more-button">攻略記事を見る <span>→</span></a>
+						<a href="/news/" class="media-more-button">ニュースを見る <span>→</span></a>
+					</div>
+				</div>
 
-			<div class="article-list-footer">
+				<aside class="article-sidebar" aria-label="記事を探す">
+					<section class="sidebar-section">
+						<p class="sidebar-label">SEARCH</p>
+						<h3>サイト内検索</h3>
+						<button class="sidebar-search" type="button" aria-label="サイト内検索を開く">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16L21 21"></path></svg>
+							検索を開く
+						</button>
+					</section>
 
-				<a
-					href="/guide/"
-					class="media-more-button"
-				>
-					攻略記事を見る
-					<span>→</span>
-				</a>
+					<section class="sidebar-section">
+						<p class="sidebar-label">CATEGORY</p>
+						<h3>カテゴリ</h3>
+						<div class="sidebar-links">
+							<button type="button" data-category-filter="all" aria-pressed="true">すべて <span>{latestArticles.length}</span></button>
+							{articleCategories.map((category) => (
+								<button type="button" data-category-filter={category} aria-pressed="false">{category} <span>{articles.filter((article) => article.category === category).length}</span></button>
+							))}
+						</div>
+					</section>
 
-				<a
-					href="/news/"
-					class="media-more-button"
-				>
-					ニュースを見る
-					<span>→</span>
-				</a>
-
+					<section class="sidebar-section">
+						<p class="sidebar-label">TAGS</p>
+						<h3>タグ</h3>
+						{articleTags.size > 0 ? (
+							<div class="sidebar-tags">
+								{[...articleTags.entries()].sort(([a], [b]) => a.localeCompare(b, "ja")).map(([tag, count]) => (
+									<button type="button" data-tag-filter={tag} aria-pressed="false">{tag} <span>{count}</span></button>
+								))}
+							</div>
+						) : <p class="sidebar-empty">タグ付きの記事はまだありません。</p>}
+					</section>
+				</aside>
 			</div>
-
 		</div>
 
 	</section>
@@ -573,64 +423,53 @@ const latestArticles = articles.slice(0, 6);
 
 <script>
 
-	const filterButtons =
-		document.querySelectorAll<HTMLButtonElement>(
-			".article-filter-button"
-		);
-
 	const articleItems =
 		document.querySelectorAll<HTMLElement>(
 			".article-item"
 		);
+	const categoryButtons = document.querySelectorAll<HTMLButtonElement>("[data-category-filter]");
+	const tagButtons = document.querySelectorAll<HTMLButtonElement>("[data-tag-filter]");
+	const sidebarSearch = document.querySelector<HTMLButtonElement>(".sidebar-search");
+	let activeCategory = "all";
+	let activeTag = "";
 
+	function updateArticles() {
+		articleItems.forEach((item) => {
+			const categoryMatches = activeCategory === "all" || item.dataset.articleCategory === activeCategory;
+			const tags = JSON.parse(item.dataset.articleTags ?? "[]") as string[];
+			const tagMatches = activeTag === "" || tags.includes(activeTag);
+			const hasFilter = activeCategory !== "all" || activeTag !== "";
+			item.hidden = !categoryMatches || !tagMatches || (!hasFilter && item.dataset.articleLatest !== "true");
+		});
+	}
 
-	filterButtons.forEach((button) => {
+	categoryButtons.forEach((button) => {
 
 		button.addEventListener(
 			"click",
 			() => {
-
-				const filter =
-					button.dataset.filter ?? "all";
-
-
-				filterButtons.forEach((item) => {
-
-					const active =
-						item === button;
-
-					item.classList.toggle(
-						"is-active",
-						active
-					);
-
-					item.setAttribute(
-						"aria-pressed",
-						String(active)
-					);
-
+				activeCategory = button.dataset.categoryFilter ?? "all";
+				categoryButtons.forEach((item) => {
+					const active = item === button;
+					item.classList.toggle("is-active", active);
+					item.setAttribute("aria-pressed", String(active));
 				});
-
-
-				articleItems.forEach((item) => {
-
-					const kind =
-						item.dataset.articleKind;
-
-					const visible =
-						filter === "all" ||
-						kind === filter;
-
-					item.hidden =
-						!visible;
-
-				});
-
+				updateArticles();
 			}
 		);
-
 	});
 
+	tagButtons.forEach((button) => button.addEventListener("click", () => {
+		const selectedTag = button.dataset.tagFilter ?? "";
+		activeTag = activeTag === selectedTag ? "" : selectedTag;
+		tagButtons.forEach((item) => {
+			const active = item.dataset.tagFilter === activeTag;
+			item.classList.toggle("is-active", active);
+			item.setAttribute("aria-pressed", String(active));
+		});
+		updateArticles();
+	}));
+	sidebarSearch?.addEventListener("click", () => document.dispatchEvent(new CustomEvent("nug:open-search")));
 </script>
 
 
@@ -653,170 +492,6 @@ const latestArticles = articles.slice(0, 6);
 
 	padding:
 		0 24px;
-
-}
-
-
-/* =========================================================
-   Hero
-========================================================= */
-
-.media-hero {
-
-	padding:
-		34px 0 0;
-
-	background:
-		var(--color-background);
-
-}
-
-
-.media-hero-inner {
-
-	width:
-		100%;
-
-	max-width:
-		1120px;
-
-	margin:
-		0 auto;
-
-	padding:
-		0 24px;
-
-}
-
-
-.media-hero-copy {
-
-	display:
-		flex;
-
-	align-items:
-		flex-end;
-
-	justify-content:
-		space-between;
-
-	gap:
-		30px;
-
-}
-
-
-.media-hero-brand {
-
-	font-family:
-		var(--font-mono);
-
-	font-size:
-		12px;
-
-	font-weight:
-		900;
-
-	letter-spacing:
-		.16em;
-
-	color:
-		var(--color-text);
-
-}
-
-
-.media-hero h1 {
-
-	margin-top:
-		8px;
-
-	font-size:
-		clamp(30px, 4vw, 48px);
-
-	line-height:
-		1.12;
-
-	letter-spacing:
-		-0.055em;
-
-}
-
-
-.media-hero-description {
-
-	max-width:
-		360px;
-
-	color:
-		var(--color-text-secondary);
-
-	font-size:
-		13px;
-
-	line-height:
-		1.7;
-
-}
-
-
-.media-hero-image {
-
-	margin:
-		24px auto 0;
-
-	overflow:
-		hidden;
-
-	border:
-		1px solid var(--color-border-strong);
-
-	border-radius:
-		22px 22px 0 0;
-
-	background:
-		var(--color-surface);
-
-	box-shadow:
-		0 4px 0 var(--color-border-strong);
-
-}
-
-
-.media-hero-image img {
-
-	display:
-		block;
-
-	width:
-		100%;
-
-	height:
-		clamp(170px, 25vw, 280px);
-
-	object-fit:
-		cover;
-
-	object-position:
-		center;
-
-}
-
-
-/* =========================================================
-   Search
-========================================================= */
-
-.search-section {
-
-	padding:
-		22px 0;
-
-	background:
-		var(--color-background);
-
-	border-bottom:
-		1px solid var(--color-border);
 
 }
 
@@ -993,6 +668,28 @@ const latestArticles = articles.slice(0, 6);
 		background-color var(--transition-fast),
 		box-shadow var(--transition-fast);
 
+}
+
+.information-card {
+	align-items: center;
+	gap: 11px;
+	min-height: 72px;
+	padding: 12px 38px 12px 14px;
+}
+
+.information-card .information-icon {
+	width: 34px;
+	height: 34px;
+	font-size: 16px;
+}
+
+.information-card .information-label {
+	font-size: 8px;
+}
+
+.information-title {
+	font-size: 15px;
+	font-weight: 800;
 }
 
 
@@ -1223,11 +920,35 @@ const latestArticles = articles.slice(0, 6);
 		grid;
 
 	grid-template-columns:
-		repeat(2, minmax(0, 1fr));
+		minmax(0, 1.55fr) minmax(240px, 1fr);
 
 	gap:
 		16px;
 
+}
+
+.pickup-item {
+	min-width: 0;
+}
+
+.pickup-item-lead {
+	grid-row: span 2;
+}
+
+.pickup-item-lead .article-card {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.pickup-item-lead .article-image {
+	flex: 1;
+	min-height: 260px;
+	aspect-ratio: auto;
+}
+
+.pickup-item-lead .article-title {
+	font-size: 22px;
 }
 
 
@@ -1245,86 +966,106 @@ const latestArticles = articles.slice(0, 6);
 
 }
 
-
-.article-filter {
-
-	display:
-		flex;
-
-	align-items:
-		center;
-
-	gap:
-		4px;
-
-	width:
-		max-content;
-
-	max-width:
-		100%;
-
-	margin:
-		0 0 20px;
-
-	padding:
-		4px;
-
-	border:
-		1px solid var(--color-border);
-
-	background:
-		var(--color-surface);
-
-	box-shadow:
-		0 2px 0 var(--color-border-strong);
-
+.article-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 250px;
+	align-items: start;
+	gap: 30px;
 }
 
-
-.article-filter-button {
-
-	padding:
-		7px 16px;
-
-	border:
-		0;
-
-	background:
-		transparent;
-
-	color:
-		var(--color-text-secondary);
-
-	font-size:
-		11px;
-
-	font-weight:
-		850;
-
-	cursor:
-		pointer;
-
+.article-main {
+	min-width: 0;
 }
 
-
-.article-filter-button:hover {
-
-	color:
-		var(--color-text);
-
+.article-sidebar {
+	display: grid;
+	gap: 18px;
+	padding: 18px;
+	border: 1px solid var(--color-border);
+	background: var(--color-surface);
+	box-shadow: 3px 3px 0 var(--color-border-strong);
 }
 
-
-.article-filter-button.is-active {
-
-	background:
-		var(--color-grass);
-
-	color:
-		#ffffff;
-
+.sidebar-section + .sidebar-section {
+	padding-top: 16px;
+	border-top: 1px solid var(--color-border);
 }
 
+.sidebar-label {
+	color: var(--color-text-tertiary);
+	font-family: var(--font-mono);
+	font-size: 9px;
+	font-weight: 800;
+	letter-spacing: .12em;
+}
+
+.sidebar-section h3 {
+	margin: 4px 0 10px;
+	font-size: 15px;
+}
+
+.sidebar-search {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	width: 100%;
+	min-height: 42px;
+	padding: 0 11px;
+	border: 1px solid var(--color-border-strong);
+	background: var(--color-background);
+	color: var(--color-text);
+	font-size: 12px;
+	text-align: left;
+}
+
+.sidebar-search svg {
+	width: 17px;
+	height: 17px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+}
+
+.sidebar-links,
+.sidebar-tags {
+	display: grid;
+	gap: 5px;
+}
+
+.sidebar-links button,
+.sidebar-tags button {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	min-height: 34px;
+	padding: 5px 8px;
+	border: 1px solid transparent;
+	color: var(--color-text-secondary);
+	font-size: 11px;
+	text-align: left;
+}
+
+.sidebar-links button:hover,
+.sidebar-tags button:hover,
+.sidebar-links button.is-active,
+.sidebar-tags button.is-active {
+	border-color: var(--color-border);
+	background: var(--color-surface-hover);
+	color: var(--color-text);
+}
+
+.sidebar-links button span,
+.sidebar-tags button span {
+	color: var(--color-text-tertiary);
+	font-family: var(--font-mono);
+	font-size: 9px;
+}
+
+.sidebar-empty {
+	color: var(--color-text-tertiary);
+	font-size: 11px;
+}
 
 .article-grid {
 
@@ -1332,7 +1073,7 @@ const latestArticles = articles.slice(0, 6);
 		grid;
 
 	grid-template-columns:
-		repeat(3, minmax(0, 1fr));
+		repeat(2, minmax(0, 1fr));
 
 	gap:
 		22px 16px;
@@ -1673,14 +1414,6 @@ const latestArticles = articles.slice(0, 6);
    Dark
 ========================================================= */
 
-:global(html[data-theme="dark"]) .media-hero-image {
-
-	box-shadow:
-		0 4px 0 rgba(0, 0, 0, .45);
-
-}
-
-
 :global(html[data-theme="dark"]) .information-card,
 :global(html[data-theme="dark"]) .tool-card {
 
@@ -1700,8 +1433,8 @@ const latestArticles = articles.slice(0, 6);
 
 	.information-grid {
 
-		grid-template-columns:
-			1fr;
+	grid-template-columns:
+		repeat(3, minmax(0, 1fr));
 
 	}
 
@@ -1709,7 +1442,7 @@ const latestArticles = articles.slice(0, 6);
 	.information-card {
 
 		min-height:
-			116px;
+			72px;
 
 	}
 
@@ -1720,13 +1453,25 @@ const latestArticles = articles.slice(0, 6);
 			repeat(2, minmax(0, 1fr));
 
 	}
+
+	.article-layout {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.article-sidebar {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.sidebar-section + .sidebar-section {
+		padding-top: 0;
+		border-top: 0;
+	}
 }
 
 
 @media (max-width: 768px) {
 
-	.compact-container,
-	.media-hero-inner {
+	.compact-container {
 
 		padding-left:
 			16px;
@@ -1735,65 +1480,6 @@ const latestArticles = articles.slice(0, 6);
 			16px;
 
 	}
-
-
-	.media-hero {
-
-		padding-top:
-			26px;
-
-	}
-
-
-	.media-hero-copy {
-
-		align-items:
-			flex-start;
-
-		flex-direction:
-			column;
-
-		gap:
-			10px;
-
-	}
-
-
-	.media-hero h1 {
-
-		font-size:
-			34px;
-
-	}
-
-
-	.media-hero-description {
-
-		font-size:
-			12px;
-
-	}
-
-
-	.media-hero-image {
-
-		margin-top:
-			18px;
-
-		border-radius:
-			16px 16px 0 0;
-
-	}
-
-
-	.media-hero-image img {
-
-		height:
-			190px;
-
-	}
-
-
 
 
 	.media-section {
@@ -1838,23 +1524,26 @@ const latestArticles = articles.slice(0, 6);
 
 	}
 
-
-	.article-filter {
-
-		width:
-			100%;
-
+	.pickup-item-lead {
+		grid-row: auto;
 	}
 
+	.pickup-item-lead .article-image {
+		min-height: 0;
+		aspect-ratio: 16 / 9;
+	}
 
-	.article-filter-button {
+	.pickup-item-lead .article-title {
+		font-size: 18px;
+	}
 
-		flex:
-			1;
+	.article-sidebar {
+		grid-template-columns: minmax(0, 1fr);
+	}
 
-		text-align:
-			center;
-
+	.sidebar-section + .sidebar-section {
+		padding-top: 16px;
+		border-top: 1px solid var(--color-border);
 	}
 
 
@@ -1911,46 +1600,13 @@ const latestArticles = articles.slice(0, 6);
 
 @media (max-width: 480px) {
 
-	.media-hero h1 {
-
-		font-size:
-			30px;
-
+	.information-grid {
+		grid-template-columns: 1fr;
 	}
-
-
-	.media-hero-image img {
-
-		height:
-			150px;
-
-	}
-
 
 	.information-card {
-
-		min-height:
-			108px;
-
-		padding:
-			14px;
-
-	}
-
-
-	.information-body h3 {
-
-		font-size:
-			18px;
-
-	}
-
-
-	.information-body p:last-child {
-
-		font-size:
-			10px;
-
+		min-height: 58px;
+		padding: 9px 36px 9px 11px;
 	}
 
 

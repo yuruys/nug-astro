@@ -1,5 +1,6 @@
 import { parseDocument } from 'yaml';
 import { requireAdmin } from '../../_auth';
+import { validateTags } from '../../_tags';
 
 type ArticleRow = {
 	id: number;
@@ -19,6 +20,8 @@ type SaveRequest = {
 	image?: unknown;
 	date?: unknown;
 	featured?: unknown;
+	tags?: unknown;
+	scbnewsSourceUrl?: unknown;
 	body?: unknown;
 	[key: string]: unknown;
 };
@@ -35,7 +38,7 @@ const GITHUB_OWNER = 'yuruys';
 const GITHUB_REPOSITORY = 'nug-astro';
 const GITHUB_BRANCH = 'main';
 const GITHUB_API = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPOSITORY}`;
-const ALLOWED_FIELDS = new Set(['title', 'description', 'category', 'icon', 'image', 'date', 'featured', 'body']);
+const ALLOWED_FIELDS = new Set(['title', 'description', 'category', 'icon', 'image', 'date', 'featured', 'tags', 'scbnewsSourceUrl', 'body']);
 
 function json(data: unknown, status = 200): Response {
 	return Response.json(data, { status });
@@ -71,6 +74,15 @@ function validateBody(body: SaveRequest): string | null {
 	}
 	if (typeof body.date !== 'string' || !validDate(body.date)) return 'date must be a valid YYYY-MM-DD date';
 	if (typeof body.featured !== 'boolean') return 'featured must be a boolean';
+	if (body.tags !== undefined && !validateTags(body.tags)) return 'tags must contain up to 20 unique names of 1 to 40 characters';
+	if (body.scbnewsSourceUrl !== undefined && body.scbnewsSourceUrl !== null && body.scbnewsSourceUrl !== '') {
+		if (typeof body.scbnewsSourceUrl !== 'string' || body.scbnewsSourceUrl.length > 2000) return 'scbnewsSourceUrl must be a URL up to 2000 characters';
+		try {
+			if (new URL(body.scbnewsSourceUrl).protocol !== 'https:') return 'scbnewsSourceUrl must use HTTPS';
+		} catch {
+			return 'scbnewsSourceUrl must be a valid HTTPS URL';
+		}
+	}
 	if (typeof body.body !== 'string' || body.body.length > 500_000) return 'body must be a string up to 500000 characters';
 	for (const key of ['icon', 'image'] as const) {
 		if (body[key] !== undefined && body[key] !== null && typeof body[key] !== 'string') return `${key} must be a string`;
@@ -206,6 +218,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 		else if (document.has(key)) document.delete(key);
 	}
 	if (document.has('featured') || body.featured === true) document.set('featured', body.featured as boolean);
+	if (body.tags !== undefined) {
+		const tags = validateTags(body.tags);
+		if (!tags) return json({ ok: false, error: 'Invalid tags' }, 400);
+		if (tags.length > 0) document.set('tags', tags);
+		else if (document.has('tags')) document.delete('tags');
+	}
+	if (body.scbnewsSourceUrl !== undefined) {
+		const sourceUrl = typeof body.scbnewsSourceUrl === 'string' ? body.scbnewsSourceUrl.trim() : '';
+		if (sourceUrl) document.set('scbnewsSourceUrl', sourceUrl);
+		else if (document.has('scbnewsSourceUrl')) document.delete('scbnewsSourceUrl');
+	}
 
 	const yaml = document.toString({ lineWidth: 0 }).trimEnd();
 	const newContent = `---\n${yaml}\n---\n\n${body.body as string}`;

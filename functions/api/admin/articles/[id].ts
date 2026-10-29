@@ -1,5 +1,6 @@
 import { requireAdmin } from '../_auth';
 import { parse } from 'yaml';
+import { validateTags } from '../_tags';
 
 type ArticleDetail = {
 	id: number;
@@ -22,6 +23,8 @@ type ArticleContent = {
 	icon?: string;
 	image?: string;
 	featured: boolean;
+	tags: string[];
+	scbnewsSourceUrl?: string;
 	server?: string;
 	body: string;
 };
@@ -58,6 +61,13 @@ function parseArticleFile(raw: string, contentType: ArticleDetail['content_type'
 	};
 	const featured = metadata.featured;
 	if (featured !== undefined && typeof featured !== 'boolean') throw new Error('Article frontmatter field featured is invalid');
+	const tags = metadata.tags === undefined ? [] : validateTags(metadata.tags);
+	if (!tags) throw new Error('Article frontmatter field tags is invalid');
+	const scbnewsSourceUrl = optionalString('scbnewsSourceUrl');
+	if (scbnewsSourceUrl !== undefined) {
+		const sourceUrl = new URL(scbnewsSourceUrl);
+		if (sourceUrl.protocol !== 'https:') throw new Error('Article frontmatter source URL must use HTTPS');
+	}
 	const server = optionalString('server');
 	if (contentType === 'guide' && (!serverSlug || server !== serverSlug)) throw new Error('Guide frontmatter server does not match D1');
 	let body = raw.slice(match[0].length);
@@ -71,6 +81,8 @@ function parseArticleFile(raw: string, contentType: ArticleDetail['content_type'
 		icon: optionalString('icon'),
 		image: optionalString('image'),
 		featured: featured === true,
+		tags,
+		scbnewsSourceUrl,
 		...(contentType === 'guide' ? { server: serverSlug! } : {}),
 		body,
 	};

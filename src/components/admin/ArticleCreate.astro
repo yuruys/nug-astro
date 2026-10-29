@@ -37,6 +37,7 @@ const categories = isGuide
 						<label class="field" for="date"><span>投稿日 <em>必須</em></span><input id="date" name="date" type="date" required /></label>
 						<label class="field" for="icon"><span>アイコン <small>任意・emoji</small></span><input id="icon" name="icon" type="text" maxlength="32" placeholder="🌱" /></label>
 						<label class="field" for="image"><span>画像 <small>任意</small></span><input id="image" name="image" type="text" maxlength="300" placeholder="/images/example.webp" /></label>
+						{!isGuide && <label class="field full" for="scbnews-source-url"><span>SCBNEWS 出典URL <small>移管記事のみ</small></span><input id="scbnews-source-url" name="scbnewsSourceUrl" type="url" inputmode="url" maxlength="2000" placeholder="https://..." /></label>}
 						<label class="field full" for="featured"><span>YURUPORT PICKUP</span><span class="check-row"><input id="featured" name="featured" type="checkbox" /> YURUPORT PICKUPに掲載する</span></label>
 						<label class="field full" for="body"><span>Markdown本文 <em>必須</em></span><textarea id="body" name="body" rows="12" required placeholder="記事本文を入力してください"></textarea></label>
 					</div><div class="form-actions"><a class="button secondary" href={`/admin/${contentType}/`}>戻る</a><button class="button primary" id="submit-button" type="submit">記事IDを予約する</button></div></form>
@@ -109,6 +110,7 @@ const categories = isGuide
 							date: (document.getElementById('date') as HTMLInputElement).value,
 							icon: (document.getElementById('icon') as HTMLInputElement).value,
 							image: (document.getElementById('image') as HTMLInputElement).value,
+							scbnewsSourceUrl: (document.getElementById('scbnews-source-url') as HTMLInputElement | null)?.value ?? '',
 							featured: (document.getElementById('featured') as HTMLInputElement).checked,
 							body: (document.getElementById('body') as HTMLTextAreaElement).value,
 						};

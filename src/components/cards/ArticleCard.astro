@@ -5,6 +5,7 @@ interface Props {
 	category?: string;
 	date?: Date;
 	image?: string;
+	sourceUrl?: string;
 	icon?: string;
 	href: string;
 	number?: string;
@@ -16,6 +17,7 @@ const {
 	category,
 	date,
 	image,
+	sourceUrl,
 	icon = "📖",
 	href,
 	number = "01",
@@ -99,6 +101,9 @@ const formattedDate = date
 
 		</div>
 
+		{sourceUrl && (
+			<p class="article-source">出典：<span>SCBNEWS</span></p>
+		)}
 
 		{formattedDate && (
 			<p class="article-date">
@@ -511,6 +516,18 @@ const formattedDate = date
 	letter-spacing:
 		.06em;
 
+}
+
+.article-source {
+	margin-top: 7px;
+	color: var(--color-text-secondary);
+	font-size: 10px;
+}
+
+.article-source span {
+	font-weight: 800;
+	text-decoration: underline;
+	text-underline-offset: 2px;
 }
 
 

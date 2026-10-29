@@ -50,7 +50,8 @@ const guide = defineCollection({
 		order: z.number().optional(),
 
 		featured: z.boolean().optional(),
-
+		tags: z.array(z.string()).optional(),
+		scbnewsSourceUrl: z.url({ protocol: /^https$/ }).optional(),
 	}),
 
 });
@@ -87,7 +88,8 @@ const news = defineCollection({
 		order: z.number().optional(),
 
 		featured: z.boolean().optional(),
-
+		tags: z.array(z.string()).optional(),
+		scbnewsSourceUrl: z.url({ protocol: /^https$/ }).optional(),
 	}),
 
 });
