@@ -55,6 +55,9 @@ npm run dev
 ## Cloudflare Pages
 
 Astroのビルド出力は `dist/` です。Pages Functions はルートの `functions/` から検出され、D1のバインディングは `wrangler.jsonc` で設定されています。D1の再作成、マイグレーション実行、本番データへの書き込み、バインディングや `remote` 設定の変更は、別途承認なしに行わないでください。Wiki同期・初期化スクリプトも実行前に接続先と生成内容を確認してください。
+
+攻略・ニュースの記事本文とカテゴリ・タグの割当はGitHub上のMarkdown frontmatterに保存し、カテゴリ・タグの定義カタログはD1の `taxonomy_categories` / `taxonomy_tags` で管理します。`migrations/0002_create_taxonomy_catalog.sql` が必要です。カテゴリ削除時は利用中の記事を「未分類」へ移し、タグ削除時はfrontmatterのタグ関連付けだけを外します。どちらも記事本文や記事レコードは削除しません。名称変更・削除の管理APIは、影響するfrontmatterを1つのGit tree commitで更新します。適用先DBの確認とマイグレーションは本番反映前に行ってください。
+
 Cloudflareのローカル開発環境でのpreviewコマンドは、`npx wrangler pages dev dist`
 
 ## Discord記事通知

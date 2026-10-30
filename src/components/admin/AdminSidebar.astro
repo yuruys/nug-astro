@@ -1,6 +1,6 @@
 ---
 interface Props {
-	active: "dashboard" | "guide" | "news" | "servers" | "review";
+	active: "dashboard" | "guide" | "news" | "servers" | "review" | "taxonomy";
 }
 
 const { active } = Astro.props;
@@ -29,6 +29,12 @@ const navItems = [
 		href: "/admin/servers/",
 		icon: "◈",
 		label: "サーバー管理",
+	},
+	{
+		key: "taxonomy",
+		href: "/admin/taxonomy/",
+		icon: "◇",
+		label: "カテゴリ・タグ",
 	},
 	{
 		key: "review",

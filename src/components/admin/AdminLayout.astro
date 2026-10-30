@@ -1,15 +1,17 @@
 ---
 import AdminHeader from "./AdminHeader.astro";
 import AdminSidebar from "./AdminSidebar.astro";
+import AdminTheme from "./AdminTheme.astro";
 
 interface Props {
-	active: "dashboard" | "guide" | "news" | "servers" | "review";
+	active: "dashboard" | "guide" | "news" | "servers" | "review" | "taxonomy";
 }
 
 const { active } = Astro.props;
 ---
 
 <div class="admin-layout-root">
+	<AdminTheme />
 	<AdminHeader />
 
 	<div class="admin-layout">
@@ -67,8 +69,8 @@ const { active } = Astro.props;
 		min-height: 100vh;
 		width: 100%;
 		overflow-x: clip;
-		background: #111416;
-		color: #f1f4f2;
+		background: var(--admin-bg);
+		color: var(--admin-text);
 		font-family:
 			system-ui,
 			-apple-system,
@@ -90,8 +92,8 @@ const { active } = Astro.props;
 			),
 			linear-gradient(
 				180deg,
-				#111416 0%,
-				#111416 55%,
+				var(--admin-bg) 0%,
+				var(--admin-bg) 55%,
 				#0d1012 100%
 			);
 	}

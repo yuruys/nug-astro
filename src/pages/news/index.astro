@@ -13,9 +13,10 @@ const sortedEntries = [...entries].sort((a, b) => (b.data.date?.valueOf() ?? 0) 
 			<h1>ニュース</h1>
 			<p class="page-description">Nekozouneko Serverに関する最新情報を掲載します。</p>
 		</header>
+		<p class="tag-filter-empty" id="tag-filter-empty" hidden></p>
 		<div class="entry-list">
 			{sortedEntries.map((entry) => (
-				<a class="entry-card" href={`/news/${entry.id}/`}>
+				<a class="entry-card" href={`/news/${entry.id}/`} data-tags={JSON.stringify(entry.data.tags ?? [])}>
 					<span class="entry-icon">{entry.data.icon ?? "📰"}</span>
 					<span class="entry-content">
 						<span class="entry-category">{entry.data.category ?? "ニュース"}</span>
@@ -28,6 +29,30 @@ const sortedEntries = [...entries].sort((a, b) => (b.data.date?.valueOf() ?? 0) 
 		</div>
 	</section>
 </Layout>
+
+<script>
+	const filterTag = new URLSearchParams(window.location.search).get('tag');
+	if (filterTag) {
+		const key = (value: string) => value.normalize('NFKC').trim().toLocaleLowerCase('ja-JP');
+		const cards = [...document.querySelectorAll<HTMLElement>('.entry-card')];
+		let visibleCount = 0;
+		for (const card of cards) {
+			const tags = JSON.parse(card.dataset.tags ?? '[]') as string[];
+			const visible = tags.some((tag) => key(tag) === key(filterTag));
+			card.hidden = !visible;
+			if (visible) visibleCount += 1;
+		}
+		const empty = document.getElementById('tag-filter-empty');
+		if (empty) {
+			empty.hidden = visibleCount > 0;
+			empty.textContent = visibleCount > 0
+				? ''
+				: `「${filterTag}」タグが付いたニュース記事はありません。`;
+			empty.setAttribute('role', 'status');
+			empty.setAttribute('tabindex', '-1');
+		}
+	}
+</script>
 
 <style>
 	.listing-page { padding: 72px 0 100px; }
@@ -43,5 +68,7 @@ const sortedEntries = [...entries].sort((a, b) => (b.data.date?.valueOf() ?? 0) 
 	.entry-content strong { font-size: 20px; }
 	.entry-content span:last-child { font-size: 14px; color: var(--color-text-secondary); }
 	.entry-arrow { font-size: 20px; color: var(--color-text-secondary); }
+	.tag-filter-empty { margin: 0 0 16px; color: var(--color-text-secondary); }
+	.entry-card[hidden] { display: none; }
 	@media (max-width: 768px) { .listing-page { padding: 48px 0 72px; } }
 </style>

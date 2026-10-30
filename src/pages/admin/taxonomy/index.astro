@@ -1,0 +1,603 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>カテゴリ・タグ管理 | ゆるぽーと 管理画面</title>
+	</head>
+	<body>
+		<AdminLayout active="taxonomy">
+			<header class="page-heading">
+				<div>
+					<p class="eyebrow">ARTICLE TAXONOMY</p>
+					<h1>カテゴリ・タグ管理</h1>
+					<p class="intro">定義の変更は記事frontmatterにも反映されます。削除しても記事本文や公開状態は変更しません。</p>
+				</div>
+			</header>
+
+			<p class="notice" id="notice" role="status" aria-live="polite" hidden></p>
+			<label class="catalog-filter" for="catalog-filter">項目を検索
+				<input id="catalog-filter" type="search" placeholder="カテゴリ名・タグ名" />
+			</label>
+
+			<section class="panel" aria-labelledby="category-title">
+				<div class="panel-heading">
+					<div>
+						<p class="eyebrow">CATEGORIES</p>
+						<h2 id="category-title">カテゴリ <span id="category-count">読み込み中</span></h2>
+					</div>
+					<button class="button primary" type="button" data-add-kind="category">カテゴリを追加</button>
+				</div>
+				<div class="category-columns">
+					<section aria-labelledby="guide-categories-title">
+						<h3 id="guide-categories-title">攻略</h3>
+						<ul class="entry-list" id="guide-categories"></ul>
+					</section>
+					<section aria-labelledby="news-categories-title">
+						<h3 id="news-categories-title">ニュース</h3>
+						<ul class="entry-list" id="news-categories"></ul>
+					</section>
+				</div>
+			</section>
+
+			<section class="panel" aria-labelledby="tag-title">
+				<div class="panel-heading">
+					<div>
+						<p class="eyebrow">TAGS</p>
+						<h2 id="tag-title">タグ <span id="tag-count">読み込み中</span></h2>
+					</div>
+					<button class="button primary" type="button" data-add-kind="tag">タグを追加</button>
+				</div>
+				<ul class="entry-list tag-list" id="tags"></ul>
+			</section>
+
+			<dialog class="taxonomy-dialog" id="edit-dialog" aria-labelledby="dialog-title">
+				<form id="edit-form">
+					<p class="eyebrow" id="dialog-eyebrow">TAXONOMY</p>
+					<h2 id="dialog-title"></h2>
+					<label class="field" for="entry-name">名前
+						<input id="entry-name" name="name" type="text" maxlength="40" required />
+					</label>
+					<label class="field" id="content-type-field" for="entry-content-type">対象
+						<select id="entry-content-type" name="content_type">
+							<option value="guide">攻略</option>
+							<option value="news">ニュース</option>
+						</select>
+					</label>
+					<div class="dialog-actions">
+						<button class="button secondary" type="button" data-close-dialog>キャンセル</button>
+						<button class="button primary" id="save-entry" type="submit">保存</button>
+					</div>
+				</form>
+			</dialog>
+
+			<dialog class="taxonomy-dialog" id="delete-dialog" aria-labelledby="delete-title">
+				<form id="delete-form">
+					<p class="eyebrow">DELETE CONFIRMATION</p>
+					<h2 id="delete-title">項目を削除しますか？</h2>
+					<p id="delete-impact"></p>
+					<p class="delete-warning">記事本文・記事レコード・公開状態は削除されません。</p>
+					<div class="dialog-actions">
+						<button class="button secondary" type="button" data-close-dialog>キャンセル</button>
+						<button class="button danger" id="confirm-delete" type="submit">削除を確定</button>
+					</div>
+				</form>
+			</dialog>
+		</AdminLayout>
+	</body>
+</html>
+
+<script>
+	type TaxonomyKind = 'category' | 'tag';
+	type ContentType = 'guide' | 'news';
+	type Entry = { id: number; name: string; contentType?: ContentType; articleCount: number };
+	type ApiResult = {
+		ok?: boolean;
+		error?: string;
+		current_count?: number;
+		categories?: Entry[];
+		tags?: Entry[];
+	};
+
+	const notice = document.getElementById('notice') as HTMLElement;
+	const guideList = document.getElementById('guide-categories') as HTMLUListElement;
+	const newsList = document.getElementById('news-categories') as HTMLUListElement;
+	const tagList = document.getElementById('tags') as HTMLUListElement;
+	const editDialog = document.getElementById('edit-dialog') as HTMLDialogElement;
+	const deleteDialog = document.getElementById('delete-dialog') as HTMLDialogElement;
+	const editForm = document.getElementById('edit-form') as HTMLFormElement;
+	const deleteForm = document.getElementById('delete-form') as HTMLFormElement;
+	const nameInput = document.getElementById('entry-name') as HTMLInputElement;
+	const contentTypeInput = document.getElementById('entry-content-type') as HTMLSelectElement;
+	const contentTypeField = document.getElementById('content-type-field') as HTMLElement;
+	const saveButton = document.getElementById('save-entry') as HTMLButtonElement;
+	const deleteButton = document.getElementById('confirm-delete') as HTMLButtonElement;
+	const filterInput = document.getElementById('catalog-filter') as HTMLInputElement;
+	let categories: Entry[] = [];
+	let tags: Entry[] = [];
+	let filterText = '';
+	let editing: { kind: TaxonomyKind; entry: Entry } | null = null;
+	let deleting: { kind: TaxonomyKind; entry: Entry } | null = null;
+	let busy = false;
+
+	function showMessage(message: string, error = false) {
+		notice.textContent = message;
+		notice.className = error ? 'notice error' : 'notice success';
+		notice.hidden = false;
+	}
+
+	async function readResponse(response: Response): Promise<ApiResult> {
+		let data: ApiResult = {};
+		try {
+			data = await response.json() as ApiResult;
+		} catch {
+			// The HTTP status still gives the caller an actionable error.
+		}
+		if (!response.ok || !data.ok) {
+			if (response.status === 401) throw new Error('未認証です。管理者として再ログインしてください。');
+			if (response.status === 403) throw new Error('この操作を行う権限がありません。');
+			throw new Error(data.error || `処理に失敗しました（${response.status}）。`);
+		}
+		return data;
+	}
+
+	async function loadCatalog() {
+		const result = await readResponse(await fetch('/api/admin/taxonomy', { credentials: 'same-origin' }));
+		categories = result.categories ?? [];
+		tags = result.tags ?? [];
+		renderList(guideList, categories.filter((entry) => entry.contentType === 'guide'), 'category');
+		renderList(newsList, categories.filter((entry) => entry.contentType === 'news'), 'category');
+		renderList(tagList, tags, 'tag');
+		(document.getElementById('category-count') as HTMLElement).textContent = `${categories.length}件`;
+		(document.getElementById('tag-count') as HTMLElement).textContent = `${tags.length}件`;
+	}
+
+	function makeButton(label: string, className: string, action: () => void): HTMLButtonElement {
+		const button = document.createElement('button');
+		button.type = 'button';
+		button.className = className;
+		button.textContent = label;
+		button.addEventListener('click', action);
+		return button;
+	}
+
+	function renderList(list: HTMLUListElement, entries: Entry[], kind: TaxonomyKind) {
+		list.replaceChildren();
+		const visibleEntries = entries.filter((entry) => entry.name.toLocaleLowerCase('ja-JP').includes(filterText));
+		if (visibleEntries.length === 0) {
+			const empty = document.createElement('li');
+			empty.className = 'empty-state';
+			empty.textContent = entries.length === 0 ? '登録項目はありません。' : '検索に一致する項目はありません。';
+			list.append(empty);
+			return;
+		}
+		for (const entry of visibleEntries) {
+			const item = document.createElement('li');
+			item.className = 'entry-row';
+			const info = document.createElement('div');
+			info.className = 'entry-info';
+			const name = document.createElement('strong');
+			name.textContent = entry.name;
+			const usage = document.createElement('span');
+			usage.textContent = `${entry.articleCount}記事で使用`;
+			info.append(name, usage);
+			const actions = document.createElement('div');
+			actions.className = 'entry-actions';
+			actions.append(
+				makeButton('編集', 'button secondary', () => openEdit(kind, entry)),
+				makeButton('削除', 'button danger-outline', () => openDelete(kind, entry)),
+			);
+			item.append(info, actions);
+			list.append(item);
+		}
+	}
+
+	function openEdit(kind: TaxonomyKind, entry?: Entry) {
+		editing = entry ? { kind, entry } : null;
+		nameInput.value = entry?.name ?? '';
+		contentTypeField.hidden = kind === 'tag';
+		contentTypeInput.value = entry?.contentType ?? 'guide';
+		(document.getElementById('dialog-title') as HTMLElement).textContent =
+			entry ? `${kind === 'category' ? 'カテゴリ' : 'タグ'}を編集` : `${kind === 'category' ? 'カテゴリ' : 'タグ'}を追加`;
+		editDialog.showModal();
+		nameInput.focus();
+	}
+
+	function openDelete(kind: TaxonomyKind, entry: Entry) {
+		if (kind === 'category' && entry.name === '未分類') {
+			showMessage('「未分類」は退避先として必要なため削除できません。', true);
+			return;
+		}
+		deleting = { kind, entry };
+		const impact = document.getElementById('delete-impact') as HTMLElement;
+		impact.textContent = kind === 'category'
+			? `カテゴリ「${entry.name}」を削除します。関連する${entry.articleCount}件の記事は「未分類」に移動します。`
+			: `タグ「${entry.name}」を削除します。関連する${entry.articleCount}件の記事からタグの関連付けだけを解除します。`;
+		deleteDialog.showModal();
+	}
+
+	async function runRequest(method: 'POST' | 'PATCH' | 'DELETE', body: Record<string, unknown>) {
+		return readResponse(await fetch('/api/admin/taxonomy', {
+			method,
+			credentials: 'same-origin',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body),
+		}));
+	}
+
+	document.querySelectorAll<HTMLButtonElement>('[data-add-kind]').forEach((button) => {
+		button.addEventListener('click', () => openEdit(button.dataset.addKind as TaxonomyKind));
+	});
+	filterInput.addEventListener('input', () => {
+		filterText = filterInput.value.trim().toLocaleLowerCase('ja-JP');
+		renderList(guideList, categories.filter((entry) => entry.contentType === 'guide'), 'category');
+		renderList(newsList, categories.filter((entry) => entry.contentType === 'news'), 'category');
+		renderList(tagList, tags, 'tag');
+	});
+
+	document.querySelectorAll<HTMLButtonElement>('[data-close-dialog]').forEach((button) => {
+		button.addEventListener('click', () => {
+			editDialog.close();
+			deleteDialog.close();
+		});
+	});
+
+	editForm.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		if (busy || !editForm.reportValidity()) return;
+		const kind = editing?.kind ?? (contentTypeField.hidden ? 'tag' : 'category');
+		const name = nameInput.value.normalize('NFKC').trim().replace(/\s+/g, ' ');
+		const contentType = contentTypeInput.value as ContentType;
+		busy = true;
+		saveButton.disabled = true;
+		try {
+			if (editing) {
+				await runRequest('PATCH', {
+					kind,
+					name: editing.entry.name,
+					new_name: name,
+					content_type: kind === 'category' ? editing.entry.contentType : undefined,
+					expected_count: editing.entry.articleCount,
+				});
+				showMessage('名前を更新しました。');
+			} else {
+				await runRequest('POST', {
+					kind,
+					name,
+					content_type: kind === 'category' ? contentType : undefined,
+				});
+				showMessage('項目を追加しました。');
+			}
+			editDialog.close();
+			await loadCatalog();
+		} catch (error) {
+			showMessage(error instanceof Error ? error.message : '項目を保存できませんでした。', true);
+			if (error instanceof Error && error.message.includes('使用数が変わりました')) {
+				await loadCatalog();
+			}
+		} finally {
+			busy = false;
+			saveButton.disabled = false;
+		}
+	});
+
+	deleteForm.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		if (busy || !deleting) return;
+		busy = true;
+		deleteButton.disabled = true;
+		try {
+			await runRequest('DELETE', {
+				kind: deleting.kind,
+				name: deleting.entry.name,
+				content_type: deleting.kind === 'category' ? deleting.entry.contentType : undefined,
+				expected_count: deleting.entry.articleCount,
+			});
+			deleteDialog.close();
+			showMessage(deleting.kind === 'category'
+				? `削除しました。${deleting.entry.articleCount}件の記事を「未分類」に移動しました。`
+				: `削除しました。${deleting.entry.articleCount}件の記事からタグを解除しました。`);
+			deleting = null;
+			await loadCatalog();
+		} catch (error) {
+			showMessage(error instanceof Error ? error.message : '項目を削除できませんでした。', true);
+			await loadCatalog();
+		} finally {
+			busy = false;
+			deleteButton.disabled = false;
+		}
+	});
+
+	void loadCatalog().catch((error: unknown) => {
+		showMessage(error instanceof Error ? error.message : '一覧を読み込めませんでした。', true);
+	});
+</script>
+
+<style>
+	.page-heading {
+		margin-bottom: 28px;
+	}
+
+	.page-heading h1 {
+		margin: 6px 0 0;
+		font-size: clamp(26px, 3vw, 36px);
+	}
+
+	.eyebrow {
+		margin: 0;
+		color: var(--admin-accent-light);
+		font-size: 10px;
+		font-weight: 900;
+		letter-spacing: 0.13em;
+	}
+
+	.intro {
+		max-width: 720px;
+		margin-top: 10px;
+		color: var(--admin-text-muted);
+		font-size: 13px;
+	}
+
+	.catalog-filter {
+		display: grid;
+		gap: 6px;
+		max-width: 420px;
+		margin: 0 0 20px;
+		color: var(--admin-text-secondary);
+		font-size: 12px;
+		font-weight: 700;
+	}
+
+	.catalog-filter input {
+		min-height: 42px;
+		padding: 0 12px;
+		border: 1px solid var(--admin-border);
+		border-radius: var(--admin-radius-small);
+		background: var(--admin-surface);
+		color: var(--admin-text);
+	}
+
+	.panel {
+		margin-bottom: 24px;
+		border: 1px solid var(--admin-border);
+		border-radius: var(--admin-radius);
+		background: var(--admin-surface);
+		box-shadow: var(--admin-shadow-small);
+	}
+
+	.panel-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 20px 22px;
+		border-bottom: 1px solid var(--admin-border);
+	}
+
+	.panel-heading h2 {
+		margin: 3px 0 0;
+		font-size: 18px;
+	}
+
+	.panel-heading h2 span {
+		margin-left: 6px;
+		color: var(--admin-text-muted);
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	.category-columns {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
+		padding: 20px 22px 22px;
+	}
+
+	.category-columns h3 {
+		margin: 0 0 12px;
+		font-size: 14px;
+	}
+
+	.entry-list {
+		display: grid;
+		margin: 0;
+		padding: 0 22px 22px;
+		list-style: none;
+	}
+
+	.category-columns .entry-list {
+		padding: 0;
+	}
+
+	.entry-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		min-width: 0;
+		padding: 13px 0;
+		border-bottom: 1px solid var(--admin-border);
+	}
+
+	.entry-info {
+		display: grid;
+		gap: 3px;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	.entry-info span,
+	.empty-state {
+		color: var(--admin-text-muted);
+		font-size: 11px;
+	}
+
+	.entry-actions,
+	.dialog-actions {
+		display: flex;
+		flex: 0 0 auto;
+		gap: 8px;
+	}
+
+	.button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 40px;
+		padding: 0 12px;
+		border: 1px solid var(--admin-border);
+		border-radius: var(--admin-radius-small);
+		font-size: 12px;
+		font-weight: 750;
+		cursor: pointer;
+	}
+
+	.button:focus-visible,
+	input:focus-visible,
+	select:focus-visible {
+		outline: 2px solid var(--admin-warning);
+		outline-offset: 3px;
+	}
+
+	.button:disabled {
+		opacity: 0.6;
+		cursor: wait;
+	}
+
+	.primary {
+		border-color: var(--admin-accent-dark);
+		background: var(--admin-accent);
+		color: #fff;
+	}
+
+	.secondary {
+		background: var(--admin-surface-alt);
+		color: var(--admin-text-secondary);
+	}
+
+	.danger {
+		border-color: var(--admin-danger);
+		background: var(--admin-danger);
+		color: #fff;
+	}
+
+	.danger-outline {
+		border-color: var(--admin-danger);
+		background: transparent;
+		color: var(--admin-danger);
+	}
+
+	.notice {
+		margin-bottom: 16px;
+		padding: 12px 14px;
+		border: 1px solid var(--admin-border);
+		border-radius: var(--admin-radius-small);
+	}
+
+	.notice.success {
+		border-color: var(--admin-accent);
+		color: var(--admin-text);
+	}
+
+	.notice.error {
+		border-color: var(--admin-danger);
+		color: var(--admin-danger);
+	}
+
+	.taxonomy-dialog {
+		width: min(460px, calc(100% - 32px));
+		max-height: min(85vh, 640px);
+		padding: 0;
+		border: 1px solid var(--admin-border-strong);
+		border-radius: var(--admin-radius);
+		background: var(--admin-surface);
+		color: var(--admin-text);
+		box-shadow: var(--admin-shadow);
+	}
+
+	.taxonomy-dialog::backdrop {
+		background: rgb(0 0 0 / 65%);
+		backdrop-filter: blur(2px);
+	}
+
+	.taxonomy-dialog form {
+		display: grid;
+		gap: 16px;
+		padding: 24px;
+	}
+
+	.taxonomy-dialog h2 {
+		margin: -10px 0 0;
+		font-size: 19px;
+	}
+
+	.field {
+		display: grid;
+		gap: 7px;
+		color: var(--admin-text-secondary);
+		font-size: 12px;
+		font-weight: 700;
+	}
+
+	.field input,
+	.field select {
+		width: 100%;
+		min-height: 44px;
+		padding: 0 12px;
+		border: 1px solid var(--admin-border);
+		border-radius: var(--admin-radius-small);
+		background: var(--admin-bg);
+		color: var(--admin-text);
+	}
+
+	.dialog-actions {
+		justify-content: flex-end;
+		margin-top: 4px;
+	}
+
+	.delete-warning {
+		color: var(--admin-text-muted);
+		font-size: 12px;
+	}
+
+	@media (max-width: 760px) {
+		.category-columns {
+			grid-template-columns: 1fr;
+		}
+
+		.panel-heading {
+			align-items: flex-start;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.panel-heading {
+			flex-direction: column;
+			padding: 16px;
+		}
+
+		.entry-list {
+			padding-right: 16px;
+			padding-left: 16px;
+		}
+
+		.category-columns {
+			padding-right: 16px;
+			padding-left: 16px;
+		}
+
+		.entry-row {
+			align-items: flex-start;
+		}
+
+		.entry-actions .button {
+			min-height: 36px;
+			padding: 0 8px;
+		}
+	}
+</style>

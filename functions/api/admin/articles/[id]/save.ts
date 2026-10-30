@@ -1,6 +1,6 @@
 import { parseDocument } from 'yaml';
 import { requireAdmin } from '../../_auth';
-import { validateTags } from '../../_tags';
+import { validateArticleTaxonomy, validateTags } from '../../_tags';
 
 type ArticleRow = {
 	id: number;
@@ -154,6 +154,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 	if (article.status !== 'publishing' && article.status !== 'published') return json({ ok: false, error: 'Article is not editable' }, 409);
 	if (article.content_type !== 'guide' && article.content_type !== 'news') return json({ ok: false, error: 'Unsupported article type' }, 409);
 	if (article.content_type === 'guide' && (article.server_id === null || !article.server_slug)) return json({ ok: false, error: 'Guide server configuration is invalid' }, 409);
+	let taxonomyError: string | null;
+	try {
+		taxonomyError = await validateArticleTaxonomy(
+			context.env,
+			article.content_type,
+			(body.category as string).trim(),
+			body.tags === undefined ? [] : validateTags(body.tags) ?? [],
+		);
+	} catch (error) {
+		console.error('Failed to validate article taxonomy:', error);
+		return json({ ok: false, error: 'カテゴリ・タグを確認できませんでした。設定を確認して再試行してください。' }, 500);
+	}
+	if (taxonomyError) return json({ ok: false, error: taxonomyError }, 400);
 	const expectedPath = expectedSourcePath(article);
 	if (!expectedPath || article.source_path !== expectedPath) return json({ ok: false, error: 'D1 article ID and source_path do not match' }, 409);
 	if (!context.env.GITHUB_TOKEN) return json({ ok: false, error: 'GitHub integration is not configured' }, 500);

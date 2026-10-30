@@ -1,0 +1,38 @@
+---
+import '../../styles/admin-theme.css';
+---
+
+<script is:inline>
+	(() => {
+		const key = 'nug-admin-theme';
+		const saved = localStorage.getItem(key);
+		const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+		const theme = saved === 'light' || saved === 'dark'
+			? saved
+			: systemDark ? 'dark' : 'light';
+		document.documentElement.dataset.adminTheme = theme;
+		document.documentElement.style.colorScheme = theme;
+	})();
+</script>
+
+<script>
+	const updateThemeButtons = () => {
+		const dark = document.documentElement.dataset.adminTheme === 'dark';
+		document.querySelectorAll<HTMLButtonElement>('[data-admin-theme-toggle]').forEach((button) => {
+			button.setAttribute('aria-label', dark ? 'ライトモードに切り替える' : 'ダークモードに切り替える');
+			button.title = dark ? 'ライトモードに切り替える' : 'ダークモードに切り替える';
+		});
+	};
+
+	updateThemeButtons();
+	document.addEventListener('click', (event) => {
+		if (!(event.target instanceof Element)) return;
+		const button = event.target.closest<HTMLButtonElement>('[data-admin-theme-toggle]');
+		if (!button) return;
+		const nextTheme = document.documentElement.dataset.adminTheme === 'dark' ? 'light' : 'dark';
+		document.documentElement.dataset.adminTheme = nextTheme;
+		document.documentElement.style.colorScheme = nextTheme;
+		localStorage.setItem('nug-admin-theme', nextTheme);
+		updateThemeButtons();
+	});
+</script>

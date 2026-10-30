@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import ArticleSidebar from "../../components/layout/ArticleSidebar.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -20,6 +21,25 @@ export async function getStaticPaths() {
 const { guide } = Astro.props;
 
 const { Content } = await render(guide);
+const otherGuides = (await getCollection("guide"))
+	.filter((item) => item.id !== "index" && item.id !== guide.id);
+const categoryArticles = guide.data.category
+	? otherGuides
+		.filter((item) => item.data.category === guide.data.category)
+		.slice(0, 4)
+		.map((item) => ({ title: item.data.title, href: `/guide/${item.id}/` }))
+	: [];
+const guideTags = guide.data.tags ?? [];
+const relatedArticles = otherGuides
+	.map((item) => {
+		const sharedTags = (item.data.tags ?? []).filter((tag) => guideTags.includes(tag)).length;
+		const sameCategory = Boolean(guide.data.category && item.data.category === guide.data.category);
+		return { item, score: sharedTags * 3 + (sameCategory ? 1 : 0), sameCategory };
+	})
+	.filter(({ score, sameCategory }) => score > 0 && !sameCategory)
+	.sort((a, b) => b.score - a.score)
+	.slice(0, 5)
+	.map(({ item }) => ({ title: item.data.title, href: `/guide/${item.id}/` }));
 ---
 
 <Layout
@@ -30,33 +50,39 @@ const { Content } = await render(guide);
 	}
 	pagefind={true}
 >
-	<article class="guide-article">
-		<header class="article-header">
-			{
-				guide.data.category && (
-					<p class="article-category">
-						{guide.data.category}
-					</p>
-				)
-			}
+	<div class="article-layout">
+		<article class="guide-article">
+			<header class="article-header">
+				{
+					guide.data.category && (
+						<p class="article-category">
+							{guide.data.category}
+						</p>
+					)
+				}
 
-			<h1>
-				{guide.data.title}
-			</h1>
+				<h1>{guide.data.title}</h1>
 
-			{
-				guide.data.description && (
-					<p class="article-description">
-						{guide.data.description}
-					</p>
-				)
-			}
-		</header>
+				{
+					guide.data.description && (
+						<p class="article-description">
+							{guide.data.description}
+						</p>
+					)
+				}
+			</header>
 
-		<div class="article-content">
-			<Content />
-		</div>
-	</article>
+			<div class="article-content">
+				<Content />
+			</div>
+		</article>
+		<ArticleSidebar
+			contentType="guide"
+			categoryArticles={categoryArticles}
+			relatedArticles={relatedArticles}
+			tags={guideTags}
+		/>
+	</div>
 </Layout>
 
 <style>
@@ -67,6 +93,14 @@ const { Content } = await render(guide);
 	.guide-article {
 		padding:
 			64px 0 80px;
+	}
+
+	.article-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 290px;
+		gap: 28px;
+		width: min(1200px, calc(100% - 48px));
+		margin: 0 auto;
 	}
 
 
@@ -145,6 +179,18 @@ const { Content } = await render(guide);
 			1.9;
 	}
 
+	@media (max-width: 1023px) {
+		.article-layout {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.article-layout {
+			width: calc(100% - 32px);
+		}
+	}
 
 	.article-content :global(h2) {
 		margin-top:

@@ -1,5 +1,5 @@
 import { requireAdmin } from '../_auth';
-import { validateTags } from '../_tags';
+import { validateArticleTaxonomy, validateTags } from '../_tags';
 
 type PublishRequest = {
 	article_db_id?: unknown;
@@ -389,6 +389,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 		if (article.content_type !== 'guide' && article.content_type !== 'news') {
 			return json({ ok: false, error: 'Unsupported article content_type' }, 409);
 		}
+		const taxonomyError = await validateArticleTaxonomy(
+			context.env,
+			article.content_type,
+			(body.category as string).trim(),
+			body.tags === undefined ? [] : validateTags(body.tags) ?? [],
+		);
+		if (taxonomyError) return json({ ok: false, error: taxonomyError }, 400);
 
 		let serverSlug: string | null = null;
 		if (article.content_type === 'guide') {

@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import ArticleSidebar from "../../components/layout/ArticleSidebar.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -20,6 +21,25 @@ export async function getStaticPaths() {
 const { news } = Astro.props;
 
 const { Content } = await render(news);
+const otherNews = (await getCollection("news"))
+	.filter((item) => item.id !== "index" && item.id !== news.id);
+const categoryArticles = news.data.category
+	? otherNews
+		.filter((item) => item.data.category === news.data.category)
+		.slice(0, 4)
+		.map((item) => ({ title: item.data.title, href: `/news/${item.id}/` }))
+	: [];
+const newsTags = news.data.tags ?? [];
+const relatedArticles = otherNews
+	.map((item) => {
+		const sharedTags = (item.data.tags ?? []).filter((tag) => newsTags.includes(tag)).length;
+		const sameCategory = Boolean(news.data.category && item.data.category === news.data.category);
+		return { item, score: sharedTags * 3 + (sameCategory ? 1 : 0), sameCategory };
+	})
+	.filter(({ score, sameCategory }) => score > 0 && !sameCategory)
+	.sort((a, b) => b.score - a.score)
+	.slice(0, 5)
+	.map(({ item }) => ({ title: item.data.title, href: `/news/${item.id}/` }));
 ---
 
 <Layout
@@ -30,6 +50,7 @@ const { Content } = await render(news);
 	}
 	pagefind={true}
 >
+	<div class="article-layout">
 	<article class="news-article">
 
 		<header class="article-header">
@@ -80,6 +101,13 @@ const { Content } = await render(news);
 		</div>
 
 	</article>
+	<ArticleSidebar
+		contentType="news"
+		categoryArticles={categoryArticles}
+		relatedArticles={relatedArticles}
+		tags={newsTags}
+	/>
+	</div>
 </Layout>
 
 
@@ -92,6 +120,14 @@ const { Content } = await render(news);
 	.news-article {
 		padding:
 			64px 0 80px;
+	}
+
+	.article-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 290px;
+		gap: 28px;
+		width: min(1200px, calc(100% - 48px));
+		margin: 0 auto;
 	}
 
 
@@ -183,6 +219,19 @@ const { Content } = await render(news);
 
 		line-height:
 			1.9;
+	}
+
+	@media (max-width: 1023px) {
+		.article-layout {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.article-layout {
+			width: calc(100% - 32px);
+		}
 	}
 
 

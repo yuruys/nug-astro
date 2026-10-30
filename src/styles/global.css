@@ -51,6 +51,7 @@ html {
 	color-scheme: light;
 	background: var(--color-background);
 	scroll-behavior: smooth;
+	scroll-padding-top: 96px;
 	-webkit-tap-highlight-color: transparent;
 	overflow-x: hidden;
 }
@@ -1482,6 +1483,12 @@ button:active {
 	.guide-admonition {
 		transition:
 			none;
+	}
+
+	@media (max-width: 1023px) {
+		body {
+			padding-bottom: calc(76px + env(safe-area-inset-bottom));
+		}
 	}
 
 	.starlight-aside:hover,

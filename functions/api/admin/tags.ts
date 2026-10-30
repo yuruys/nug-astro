@@ -108,7 +108,22 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 				else tags.set(key, { name, articleCount: 1 });
 			}
 		}
-		return json({ ok: true, tags: [...tags.values()].sort((a, b) => a.name.localeCompare(b.name, 'ja')) });
+		const now = new Date().toISOString();
+		const inserts = [...tags.values()].map(({ name }) => context.env.DB.prepare(`
+			INSERT OR IGNORE INTO taxonomy_tags (name, normalized_name, created_at, updated_at)
+			VALUES (?, ?, ?, ?)
+		`).bind(name, tagKey(name), now, now));
+		if (inserts.length > 0) await context.env.DB.batch(inserts);
+		const catalog = await context.env.DB.prepare(`
+			SELECT name FROM taxonomy_tags ORDER BY name
+		`).all<{ name: string }>();
+		return json({
+			ok: true,
+			tags: (catalog.results ?? []).map(({ name }) => ({
+				name,
+				articleCount: tags.get(tagKey(name))?.articleCount ?? 0,
+			})),
+		});
 	} catch (error) {
 		console.error('Failed to load article tags:', error);
 		return json({ ok: false, error: 'Could not load article tags' }, 502);
@@ -131,8 +146,8 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
 	const body = requestBody as Record<string, unknown>;
 	if (Object.keys(body).some((key) => key !== 'name' && key !== 'expected_count')
 		|| typeof body.name !== 'string' || typeof body.expected_count !== 'number'
-		|| !Number.isSafeInteger(body.expected_count) || body.expected_count < 1) {
-		return json({ ok: false, error: 'name and a positive expected_count are required' }, 400);
+		|| !Number.isSafeInteger(body.expected_count) || body.expected_count < 0) {
+		return json({ ok: false, error: 'name and a non-negative expected_count are required' }, 400);
 	}
 	const name = normalizeTagName(body.name);
 	if (!name || name.length > 40) return json({ ok: false, error: 'Invalid tag name' }, 400);
@@ -159,7 +174,10 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
 				current_count: matchingFiles.length,
 			}, 409);
 		}
-		if (matchingFiles.length === 0) return json({ ok: false, error: 'Tag not found' }, 404);
+		const catalogTag = await context.env.DB.prepare(`
+			SELECT id FROM taxonomy_tags WHERE normalized_name = ? LIMIT 1
+		`).bind(tagKey(name)).first<{ id: number }>();
+		if (!catalogTag) return json({ ok: false, error: 'Tag not found' }, 404);
 
 		for (const file of matchingFiles) {
 			const rawTags = getDocumentTags(file.document);
@@ -170,7 +188,18 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
 			else file.document.delete('tags');
 		}
 
-		const commitSha = await commitTagRemoval(context.env.GITHUB_TOKEN, name, matchingFiles, parentSha);
+		const commitSha = matchingFiles.length > 0
+			? await commitTagRemoval(context.env.GITHUB_TOKEN, name, matchingFiles, parentSha)
+			: null;
+		try {
+			const deletion = await context.env.DB.prepare(`
+				DELETE FROM taxonomy_tags WHERE id = ?
+			`).bind(catalogTag.id).run();
+			if ((deletion.meta?.changes ?? 0) === 0) throw new Error('Tag catalog entry changed during deletion');
+		} catch (error) {
+			console.error('Article tags were removed but D1 catalog synchronization failed:', error);
+			return json({ ok: false, error: '記事のタグ関連付けは更新されましたが、D1の管理カタログを更新できませんでした。再読み込みして状態を確認してください。' }, 500);
+		}
 		try {
 			await context.env.DB.prepare(`
 				INSERT INTO audit_logs (id, user_id, action, target_type, target_id, metadata, created_at)
@@ -188,6 +217,6 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
 		return json({ ok: true, tag: name, affected_articles: matchingFiles.length, commit_sha: commitSha });
 	} catch (error) {
 		console.error('Failed to delete article tag:', error);
-		return json({ ok: false, error: 'Could not delete the tag from all articles. No article records were deleted.' }, 502);
+		return json({ ok: false, error: '処理結果を確定できませんでした。タグ一覧を再読み込みして状態を確認してください。記事レコードは削除していません。' }, 502);
 	}
 };

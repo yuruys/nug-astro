@@ -39,6 +39,7 @@ const sortedGuides = guides.sort((a, b) => {
 				<a
 					href={`/guide/${guide.id}/`}
 					class="guide-card"
+					data-tags={JSON.stringify(guide.data.tags ?? [])}
 				>
 
 					<div class="guide-card-content">
@@ -80,8 +81,33 @@ const sortedGuides = guides.sort((a, b) => {
 		}
 
 	</section>
+	<p class="tag-filter-empty" id="tag-filter-empty" hidden></p>
 
 </Layout>
+
+<script>
+	const filterTag = new URLSearchParams(window.location.search).get('tag');
+	if (filterTag) {
+		const key = (value: string) => value.normalize('NFKC').trim().toLocaleLowerCase('ja-JP');
+		const cards = [...document.querySelectorAll<HTMLElement>('.guide-card')];
+		let visibleCount = 0;
+		for (const card of cards) {
+			const tags = JSON.parse(card.dataset.tags ?? '[]') as string[];
+			const visible = tags.some((tag) => key(tag) === key(filterTag));
+			card.hidden = !visible;
+			if (visible) visibleCount += 1;
+		}
+		const empty = document.getElementById('tag-filter-empty');
+		if (empty) {
+			empty.hidden = visibleCount > 0;
+			empty.textContent = visibleCount > 0
+				? ''
+				: `「${filterTag}」タグが付いた攻略記事はありません。`;
+			empty.setAttribute('role', 'status');
+			empty.setAttribute('tabindex', '-1');
+		}
+	}
+</script>
 
 
 <style>
@@ -195,6 +221,10 @@ const sortedGuides = guides.sort((a, b) => {
 
 	}
 
+
+	.guide-card[hidden] {
+		display: none;
+	}
 
 	.guide-card:hover {
 
