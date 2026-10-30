@@ -157,7 +157,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 		return Response.json({ ok: true, articles });
 	} catch (error) {
 		console.error('Failed to fetch admin article list:', error);
-		return Response.json({ ok: false, error: 'Could not load article list' }, { status: 502 });
+		const message = error instanceof Error ? error.message : '';
+		return Response.json({
+			ok: false,
+			error: message === 'GitHub integration is not configured'
+				? 'GitHub連携が設定されていないため、公開記事の情報を取得できません。'
+				: '記事一覧を取得できませんでした。管理DBへの接続とGitHub連携の設定を確認してください。',
+		}, { status: 502 });
 	}
 };
 

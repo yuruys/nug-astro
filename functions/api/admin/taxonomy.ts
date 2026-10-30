@@ -149,7 +149,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 	if (!auth.ok) return auth.response;
 
 	try {
-		const { files } = await loadCurrentFiles(context.env);
+		const publishedResult = await context.env.DB.prepare(`
+			SELECT COUNT(*) AS count
+			FROM articles
+			WHERE status = 'published'
+		`).first<{ count: number }>();
+		const files = publishedResult?.count
+			? (await loadCurrentFiles(context.env)).files
+			: [];
 		await ensureObservedDefinitions(context.env, files);
 		const [categoryResult, tagResult] = await Promise.all([
 			context.env.DB.prepare(`
@@ -180,7 +187,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 		});
 	} catch (error) {
 		console.error('Failed to load taxonomy catalog:', error);
-		return json({ ok: false, error: 'カテゴリ・タグ一覧を読み込めませんでした。設定を確認して再試行してください。' }, 502);
+		const message = error instanceof Error ? error.message : '';
+		const migrationMissing = /no such table: taxonomy_(categories|tags)/i.test(message);
+		return json({
+			ok: false,
+			error: migrationMissing
+				? 'カテゴリ・タグ用のD1移行が未適用です。migrations/0002_create_taxonomy_catalog.sqlを適用してから再読み込みしてください。'
+				: 'カテゴリ・タグ一覧を読み込めませんでした。D1とGitHub連携の設定を確認して再試行してください。',
+		}, migrationMissing ? 503 : 502);
 	}
 };
 

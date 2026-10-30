@@ -58,7 +58,15 @@ Astroのビルド出力は `dist/` です。Pages Functions はルートの `fun
 
 攻略・ニュースの記事本文とカテゴリ・タグの割当はGitHub上のMarkdown frontmatterに保存し、カテゴリ・タグの定義カタログはD1の `taxonomy_categories` / `taxonomy_tags` で管理します。`migrations/0002_create_taxonomy_catalog.sql` が必要です。カテゴリ削除時は利用中の記事を「未分類」へ移し、タグ削除時はfrontmatterのタグ関連付けだけを外します。どちらも記事本文や記事レコードは削除しません。名称変更・削除の管理APIは、影響するfrontmatterを1つのGit tree commitで更新します。適用先DBの確認とマイグレーションは本番反映前に行ってください。
 
-Cloudflareのローカル開発環境でのpreviewコマンドは、`npx wrangler pages dev dist`
+Cloudflare Pages Functionsをローカルで確認する場合は、初回にローカルD1へマイグレーションを適用してからビルド・起動します。
+
+```powershell
+npx wrangler d1 migrations apply nugbase-db --local
+npm run build
+npx wrangler pages dev dist
+```
+
+ローカルD1は本番D1と別の空データベースです。マイグレーションはテーブルとカテゴリ定義を作成しますが、本番のサーバー・記事・ユーザーはコピーしません。公開記事のfrontmatterを一覧表示するには、ローカルの`.dev.vars`にGitHub連携を設定する必要があります。秘密情報をリポジトリへ登録しないでください。
 
 ## Discord記事通知
 
