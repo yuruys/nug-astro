@@ -2,6 +2,8 @@
 title: Lands コマンド一覧
 description: Landsプラグインで使用できるコマンドを一覧でまとめています。
 category: プラグイン
+sidebar:
+  order: 1
 ---
 
 # Lands コマンド一覧

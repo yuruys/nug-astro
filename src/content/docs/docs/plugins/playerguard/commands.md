@@ -2,6 +2,8 @@
 title: PlayerGuard コマンド一覧
 description: PlayerGuardプラグインで使用できるコマンドを一覧でまとめています。
 category: プラグイン
+sidebar:
+  order: 1
 ---
 
 # PlayerGuard コマンド一覧

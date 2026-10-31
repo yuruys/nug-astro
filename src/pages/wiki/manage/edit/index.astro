@@ -1,0 +1,507 @@
+---
+import AdminTheme from '../../../../components/admin/AdminTheme.astro';
+import WikiAdminHeader from '../../../../components/layout/WikiAdminHeader.astro';
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Wikiページ編集 | ゆるぽーと</title>
+	</head>
+	<body>
+		<WikiAdminHeader active="manage" />
+		<main class="edit-page">
+			<header class="page-heading">
+				<div>
+					<a class="back-link" href="/wiki/manage/">← Wiki管理へ戻る</a>
+					<p class="eyebrow">WIKI EDITOR</p>
+					<h1 id="page-heading">Wikiページ</h1>
+					<p>下書きはログインユーザー間で共有され、公開Wikiには反映されません。</p>
+				</div>
+				<a id="preview-link" class="button secondary" href="/docs/" target="_blank" rel="noopener noreferrer">公開ページを見る</a>
+			</header>
+
+			<section id="loading" class="panel state">編集情報を読み込んでいます…</section>
+			<section id="editor" class="panel" hidden>
+				<div class="panel-heading">
+					<div><p class="eyebrow">PAGE DETAILS</p><h2 id="editor-title">ページ情報</h2></div>
+					<span id="draft-status" class="badge">下書き</span>
+				</div>
+				<div id="page-info" class="page-info" hidden>
+					<span>対象パス</span><code id="target-path"></code>
+					<span>作成者 / 更新者</span><span id="authors">—</span>
+				</div>
+
+				<form id="draft-form">
+					<div class="form-grid">
+						<label class="field" for="title">タイトル<input id="title" maxlength="200" required /></label>
+						<label class="field" for="slug">URLスラッグ<input id="slug" maxlength="80" pattern="[a-z0-9][a-z0-9_-]*[a-z0-9]|[a-z0-9]" required /></label>
+						<label class="field full" for="folder">親フォルダ<input id="folder" maxlength="200" placeholder="servers/nearth または plugins/lands" /></label>
+						<div class="field full"><span class="field-label">公開URL</span><code id="path-preview">/docs/</code></div>
+						<label class="field full" for="description">説明<textarea id="description" rows="2" maxlength="500"></textarea></label>
+						<div class="field full body-field">
+							<div class="editor-heading"><label for="content">Markdown / MDX本文</label><span id="character-count">0文字</span></div>
+							<div class="preview-tabs" role="tablist" aria-label="編集・プレビュー">
+								<button id="edit-tab" class="preview-tab is-active" type="button" aria-selected="true">編集</button>
+								<button id="preview-tab" class="preview-tab" type="button" aria-selected="false">プレビュー</button>
+							</div>
+							<textarea id="content" rows="18" spellcheck="false" autocomplete="off" aria-label="Wiki本文"></textarea>
+							<div id="markdown-preview" class="markdown-preview" hidden></div>
+							<p class="field-help">既存ページでは現在のfrontmatterも保持します。プレビューではMarkdownを安全に表示します。</p>
+						</div>
+					</div>
+
+					<div class="action-message" id="action-message" role="status" aria-live="polite" hidden></div>
+					<div class="form-actions">
+						<button id="save-button" class="button secondary" type="button">下書き保存</button>
+						<button id="delete-button" class="button danger" type="button" hidden>削除を申請</button>
+						<button id="remove-draft-button" class="button danger subtle" type="button" hidden>下書きを削除</button>
+						<button id="submit-button" class="button primary" type="button">GitHub PRを申請</button>
+					</div>
+				</form>
+				<div id="pr-info" class="pr-info" hidden></div>
+			</section>
+		</main>
+		<AdminTheme />
+	</body>
+</html>
+
+<script>
+	import { renderMarkdownPreview } from '../../../../lib/markdown-preview';
+
+	interface WikiPage {
+		path: string;
+		title: string;
+		source_path: string;
+		content?: string | null;
+		revision_number?: number | null;
+		revision_created_at?: string | null;
+	}
+	interface Draft {
+		id: string;
+		operation: 'create' | 'update' | 'delete';
+		status: 'draft' | 'publishing' | 'pending' | 'merged' | 'closed';
+		title: string;
+		slug: string;
+		folder_path: string;
+		page_path: string;
+		source_path: string;
+		description: string;
+		content: string;
+		created_by_name: string;
+		updated_by_name: string;
+		version: number;
+		github_pr_number?: number | null;
+		github_pr_url?: string | null;
+		github_pr_state?: string | null;
+	}
+
+	const $ = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
+	const params = new URLSearchParams(location.search);
+	const draftId = params.get('draft');
+	const requestedPath = params.get('path');
+	let draft: Draft | null = null;
+	let operation: Draft['operation'] = 'create';
+	let pagePath = '';
+	let sourcePath = '';
+	let version = 0;
+	let childPageCount = 0;
+	let isNew = params.get('new') === '1' || (!draftId && !requestedPath);
+
+	const loading = $('#loading');
+	const editor = $('#editor');
+	const titleInput = $('#title') as HTMLInputElement;
+	const slugInput = $('#slug') as HTMLInputElement;
+	const folderInput = $('#folder') as HTMLInputElement;
+	const descriptionInput = $('#description') as HTMLTextAreaElement;
+	const contentInput = $('#content') as HTMLTextAreaElement;
+	const preview = $('#markdown-preview');
+
+	function setActionMessage(text: string, type = '') {
+		const target = $('#action-message');
+		target.textContent = text;
+		target.className = `action-message ${type}`;
+		target.hidden = !text;
+	}
+
+	function readFrontmatter(source: string): { title: string; description: string } {
+		const match = source.match(/^\uFEFF?---[ \t]*\r?\n([\s\S]*?)\r?\n---/);
+		if (!match) return { title: '', description: '' };
+		const read = (key: string) => {
+			const line = match[1].match(new RegExp(`^${key}:\\s*(.*)$`, 'm'))?.[1]?.trim() ?? '';
+			if (line.startsWith('"') && line.endsWith('"')) {
+				try { return JSON.parse(line) as string; } catch { return line.slice(1, -1); }
+			}
+			return line.replace(/^['"]|['"]$/g, '');
+		};
+		return { title: read('title'), description: read('description') };
+	}
+
+	function setupForm() {
+		$('#page-heading').textContent = isNew ? '新しいWikiページ' : 'Wikiページ編集';
+		$('#editor-title').textContent = isNew ? '新規ページ情報' : 'ページ情報';
+		$('#page-info').hidden = isNew;
+		$('#delete-button').hidden = isNew || operation === 'delete' || Boolean(draft?.status !== 'draft' && draft);
+		$('#remove-draft-button').hidden = !draft || draft.status !== 'draft';
+		$('#preview-link').setAttribute('href', pagePath || '/docs/');
+		$('#target-path').textContent = sourcePath;
+		$('#authors').textContent = draft ? `${draft.created_by_name} / ${draft.updated_by_name}` : '—';
+		const badge = $('#draft-status');
+		badge.textContent = !draft ? '未保存' :
+			draft.status === 'pending' ? `PR申請済み${draft.github_pr_number ? ` #${draft.github_pr_number}` : ''}` :
+			draft.status === 'merged' ? 'マージ済み' :
+			draft.status === 'closed' ? 'PR終了' :
+			draft.status === 'publishing' ? '申請処理中' : operation === 'delete' ? '削除下書き' : '下書き';
+		$('#submit-button').hidden = Boolean(draft && draft.status !== 'draft');
+		$('#save-button').hidden = Boolean(draft && draft.status !== 'draft');
+		$('#delete-button').hidden = isNew || Boolean(draft && draft.status !== 'draft') || operation === 'delete';
+		const locked = Boolean(draft && draft.status !== 'draft');
+		for (const input of [titleInput, slugInput, folderInput, descriptionInput, contentInput]) {
+			input.disabled = locked;
+		}
+		if (!isNew) {
+			slugInput.readOnly = true;
+			folderInput.readOnly = true;
+		}
+		if (operation === 'delete') {
+			titleInput.disabled = true;
+			descriptionInput.disabled = true;
+			contentInput.disabled = true;
+			$('#submit-button').textContent = '削除PRを申請';
+		} else {
+			$('#submit-button').textContent = 'GitHub PRを申請';
+		}
+		updatePathPreview();
+		updateCount();
+	}
+
+	function updatePathPreview() {
+		if (!isNew) {
+			$('#path-preview').textContent = pagePath;
+			return;
+		}
+		const folder = folderInput.value.trim().replace(/^\/+|\/+$/g, '');
+		const slug = slugInput.value.trim();
+		$('#path-preview').textContent = `/docs/${folder ? `${folder}/` : ''}${slug && slug !== 'index' ? `${slug}/` : ''}`;
+	}
+
+	function updateCount() {
+		$('#character-count').textContent = `${contentInput.value.length.toLocaleString('ja-JP')}文字`;
+	}
+
+	async function updatePreview() {
+		try {
+			preview.innerHTML = await renderMarkdownPreview(contentInput.value);
+		} catch (error) {
+			console.error('Wiki preview render failed:', error);
+			preview.textContent = 'プレビューを表示できませんでした。';
+		}
+	}
+
+	async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
+		const response = await fetch(url, { credentials: 'same-origin', ...init });
+		const data = await response.json() as T & { ok?: boolean; error?: string };
+		if (response.status === 401) {
+			location.assign(`/api/auth/google?returnTo=${encodeURIComponent(location.pathname + location.search)}`);
+			throw new Error('ログインが必要です。');
+		}
+		if (!response.ok || data.ok === false) throw new Error(data.error || '処理に失敗しました。');
+		return data;
+	}
+
+	async function initialize() {
+		try {
+			if (draftId) {
+				const result = await fetchJson<{ draft: Draft; childPageCount: number }>(`/api/wiki/drafts/${encodeURIComponent(draftId)}`);
+				draft = result.draft;
+				operation = draft.operation;
+				isNew = operation === 'create';
+				pagePath = draft.page_path;
+				sourcePath = draft.source_path;
+				version = draft.version;
+				childPageCount = result.childPageCount;
+				titleInput.value = draft.title;
+				slugInput.value = draft.slug;
+				folderInput.value = draft.folder_path;
+				descriptionInput.value = draft.description;
+				contentInput.value = draft.content;
+				if (draft.github_pr_url) {
+					const pr = document.createElement('a');
+					pr.href = draft.github_pr_url;
+					pr.target = '_blank';
+					pr.rel = 'noopener noreferrer';
+					pr.textContent = `PR #${draft.github_pr_number ?? ''} を開く (${draft.github_pr_state ?? draft.status})`;
+					$('#pr-info').replaceChildren(pr);
+					$('#pr-info').hidden = false;
+				}
+			} else if (requestedPath) {
+				const result = await fetchJson<{ page: WikiPage }>(`/api/wiki/pages?path=${encodeURIComponent(requestedPath)}`);
+				operation = 'update';
+				if (typeof result.page.content !== 'string') {
+					throw new Error('D1に公開本文がありません。Wiki同期データを確認してください。');
+				}
+				pagePath = result.page.path;
+				sourcePath = result.page.source_path;
+				const frontmatter = readFrontmatter(result.page.content);
+				titleInput.value = frontmatter.title || result.page.title;
+				descriptionInput.value = frontmatter.description;
+				contentInput.value = result.page.content;
+				const relative = sourcePath.replace(/^src\/content\/docs\/docs\//, '');
+				folderInput.value = relative.split('/').slice(0, -1).join('/');
+				slugInput.value = pagePath === '/docs/' ? 'index' : pagePath.replace(/\/$/, '').split('/').at(-1) ?? '';
+			} else {
+				operation = 'create';
+				folderInput.value = params.get('folder') ?? 'servers';
+				slugInput.value = params.get('slug') ?? '';
+				titleInput.value = params.get('title') ?? '';
+			}
+
+			if (!draft && !isNew) {
+				const pageResponse = await fetchJson<{ pages: WikiPage[] }>('/api/wiki/pages');
+				childPageCount = pageResponse.pages.filter((page) => page.path !== pagePath && page.path.startsWith(pagePath)).length;
+			}
+			setupForm();
+			loading.hidden = true;
+			editor.hidden = false;
+			await updatePreview();
+		} catch (error) {
+			loading.textContent = error instanceof Error ? error.message : '編集情報を読み込めませんでした。';
+			loading.classList.add('error');
+		}
+	}
+
+	function getInputPayload(): Record<string, unknown> {
+		const title = titleInput.value.trim();
+		const slug = isNew ? slugInput.value.trim() : slugInput.value;
+		const folderPath = folderInput.value.trim().replace(/^\/+|\/+$/g, '');
+		if (isNew) {
+			pagePath = `/docs/${folderPath ? `${folderPath}/` : ''}${slug === 'index' ? '' : `${slug}/`}`;
+			sourcePath = `src/content/docs/docs/${folderPath ? `${folderPath}/` : ''}${slug}.md`;
+		}
+		return {
+			operation,
+			title,
+			slug,
+			folderPath,
+			pagePath,
+			sourcePath,
+			description: descriptionInput.value.trim(),
+			content: contentInput.value,
+			...(draft ? { version } : {}),
+		};
+	}
+
+	async function saveDraft(): Promise<boolean> {
+		if (!titleInput.value.trim()) {
+			setActionMessage('タイトルを入力してください。', 'error');
+			titleInput.focus();
+			return false;
+		}
+		const button = $('#save-button') as HTMLButtonElement;
+		button.disabled = true;
+		button.textContent = '保存中…';
+		setActionMessage('');
+		try {
+			const payload = getInputPayload();
+			if (draft) {
+				const result = await fetchJson<{ version: number; updatedAt: string }>(`/api/wiki/drafts/${encodeURIComponent(draft.id)}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+				version = result.version;
+				draft = { ...draft, ...payload, version } as Draft;
+			} else {
+				const result = await fetchJson<{ draft: { id: string; version: number } }>('/api/wiki/drafts', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload),
+				});
+				draft = {
+					...payload,
+					id: result.draft.id,
+					version: result.draft.version,
+					status: 'draft',
+					created_by_name: '自分',
+					updated_by_name: '自分',
+				} as Draft;
+				history.replaceState(null, '', `?draft=${encodeURIComponent(draft.id)}`);
+				isNew = operation === 'create';
+			}
+			setActionMessage('下書きを保存しました。ログイン中のユーザー間で共有されています。', 'success');
+			setupForm();
+			return true;
+		} catch (error) {
+			setActionMessage(error instanceof Error ? error.message : '下書きを保存できませんでした。', 'error');
+			return false;
+		} finally {
+			button.disabled = false;
+			button.textContent = '下書き保存';
+		}
+	}
+
+	$('#save-button').addEventListener('click', () => void saveDraft());
+
+	$('#delete-button').addEventListener('click', async () => {
+		const childWarning = childPageCount > 0
+			? `\n子ページが${childPageCount}件あります。子ページは削除されず残ります。`
+			: '';
+		if (!confirm(`次のファイルの削除をGitHub PRで申請する下書きを作成します。\n${sourcePath}${childWarning}\n続行しますか？`)) return;
+		operation = 'delete';
+		setupForm();
+		await saveDraft();
+	});
+
+	$('#remove-draft-button').addEventListener('click', async () => {
+		if (!draft || !confirm(`下書き「${draft.title}」を削除しますか？公開ページは変更されません。`)) return;
+		try {
+			await fetchJson(`/api/wiki/drafts/${encodeURIComponent(draft.id)}`, {
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ version }),
+			});
+			location.assign('/wiki/manage/');
+		} catch (error) {
+			setActionMessage(error instanceof Error ? error.message : '下書きを削除できませんでした。', 'error');
+		}
+	});
+
+	$('#submit-button').addEventListener('click', async () => {
+		if (draft && draft.status !== 'draft') {
+			setActionMessage('申請できる下書きがありません。', 'error');
+			return;
+		}
+		const button = $('#submit-button') as HTMLButtonElement;
+		const targetTitle = titleInput.value.trim() || draft?.title || '新しいページ';
+		const targetPath = sourcePath || draft?.source_path || '入力したWikiパス';
+		if (!confirm(`「${targetTitle}」をGitHub Pull Requestとして申請します。\n対象: ${targetPath}\n実際の公開はPRのマージ後です。`)) return;
+		button.disabled = true;
+		button.textContent = '保存中…';
+		if (!(await saveDraft()) || !draft) {
+			button.disabled = false;
+			button.textContent = operation === 'delete' ? '削除PRを申請' : 'GitHub PRを申請';
+			return;
+		}
+		button.textContent = 'PR申請中…';
+		setActionMessage('GitHubに変更を申請しています…');
+		try {
+			const result = await fetchJson<{ github: { pullRequest: { number?: number; html_url?: string; state?: string } } }>(
+				`/api/wiki/drafts/${encodeURIComponent(draft.id)}/submit`,
+				{ method: 'POST' },
+			);
+			const pullRequest = result.github.pullRequest;
+			setActionMessage(`PR #${pullRequest.number ?? ''} を申請しました。`, 'success');
+			draft.status = 'pending';
+			draft.github_pr_number = pullRequest.number;
+			draft.github_pr_url = pullRequest.html_url;
+			draft.github_pr_state = pullRequest.state;
+			setupForm();
+			if (pullRequest.html_url) {
+				const link = document.createElement('a');
+				link.href = pullRequest.html_url;
+				link.target = '_blank';
+				link.rel = 'noopener noreferrer';
+				link.textContent = `PR #${pullRequest.number ?? ''} を開く`;
+				$('#pr-info').replaceChildren(link);
+				$('#pr-info').hidden = false;
+			}
+		} catch (error) {
+			setActionMessage(error instanceof Error ? error.message : 'PR申請に失敗しました。下書きは保持されています。', 'error');
+			button.disabled = false;
+			button.textContent = operation === 'delete' ? '削除PRを申請' : 'GitHub PRを申請';
+		}
+	});
+
+	$('#edit-tab').addEventListener('click', () => {
+		contentInput.hidden = false;
+		preview.hidden = true;
+		$('#edit-tab').classList.add('is-active');
+		$('#preview-tab').classList.remove('is-active');
+		$('#edit-tab').setAttribute('aria-selected', 'true');
+		$('#preview-tab').setAttribute('aria-selected', 'false');
+	});
+	$('#preview-tab').addEventListener('click', async () => {
+		await updatePreview();
+		contentInput.hidden = true;
+		preview.hidden = false;
+		$('#preview-tab').classList.add('is-active');
+		$('#edit-tab').classList.remove('is-active');
+		$('#preview-tab').setAttribute('aria-selected', 'true');
+		$('#edit-tab').setAttribute('aria-selected', 'false');
+	});
+	for (const input of [slugInput, folderInput]) input.addEventListener('input', updatePathPreview);
+	contentInput.addEventListener('input', updateCount);
+	void initialize();
+</script>
+
+<style>
+	.edit-page { width: min(1120px, calc(100% - 32px)); margin: 34px auto 80px; color: #edf2ef; }
+	.page-heading { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 20px; }
+	.back-link { display: inline-block; margin-bottom: 16px; color: #aac39f; font-size: 13px; text-decoration: none; }
+	.eyebrow { margin: 0 0 5px; color: #84b66b; font-size: 11px; font-weight: 900; letter-spacing: .12em; }
+	h1, h2, p { margin-top: 0; }
+	h1 { margin-bottom: 7px; font-size: clamp(26px, 4vw, 36px); }
+	.page-heading p:last-child { margin-bottom: 0; color: #bdc8c0; }
+	.panel { overflow: hidden; border: 1px solid #49534d; border-radius: 7px; background: #222927; box-shadow: 0 6px 22px #0002; }
+	.panel-heading { display: flex; justify-content: space-between; align-items: center; padding: 18px; border-bottom: 1px solid #49534d; }
+	.panel-heading h2 { margin: 0; font-size: 20px; }
+	.badge { padding: 4px 10px; border: 1px solid #64707a; border-radius: 99px; color: #ced7d1; font-size: 12px; }
+	.page-info { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 8px; padding: 14px 18px; border-bottom: 1px solid #49534d; color: #abb7af; font-size: 12px; }
+	.page-info code { color: #dce4de; overflow-wrap: anywhere; }
+	form { padding: 18px; }
+	.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+	.field { display: grid; gap: 6px; color: #cbd4ce; font-size: 13px; font-weight: 700; }
+	.field.full { grid-column: 1 / -1; }
+	.field-label { font-size: 12px; }
+	input, textarea { width: 100%; min-width: 0; padding: 10px 11px; border: 1px solid #58635c; border-radius: 4px; background: #171d1a; color: #edf2ef; font: inherit; font-weight: 400; }
+	input { min-height: 42px; }
+	textarea { resize: vertical; }
+	#path-preview { overflow-wrap: anywhere; padding: 6px 0; color: #aeb9b1; }
+	.body-field { margin-top: 5px; }
+	.editor-heading { display: flex; justify-content: space-between; gap: 10px; }
+	#character-count { color: #aeb9b1; font-size: 11px; font-weight: 400; }
+	.preview-tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid #49534d; border-radius: 4px; }
+	.preview-tab { min-height: 34px; padding: 0 14px; border: 0; border-radius: 3px; background: transparent; color: #bdc8c0; font: inherit; font-size: 12px; cursor: pointer; }
+	.preview-tab.is-active { background: #39433d; color: white; }
+	#content { min-height: 340px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; line-height: 1.65; }
+	.markdown-preview { min-height: 340px; padding: 14px; border: 1px solid #58635c; border-radius: 4px; background: #171d1a; color: #edf2ef; overflow-wrap: anywhere; }
+	:global(#markdown-preview img) { max-width: 100%; }
+	:global(#markdown-preview pre) { overflow-x: auto; padding: 12px; background: #0e1310; }
+	.field-help { margin: 0; color: #aeb9b1; font-size: 12px; font-weight: 400; }
+	.form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #49534d; }
+	.button { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; padding: 0 14px; border: 1px solid transparent; border-radius: 4px; font: inherit; font-size: 13px; font-weight: 800; text-decoration: none; cursor: pointer; }
+	.button:disabled { opacity: .6; cursor: wait; }
+	.button.primary { background: #4c843b; color: white; }
+	.button.secondary { border-color: #58635c; background: #303833; color: #e5ece7; }
+	.button.danger { background: #813d39; color: white; }
+	.button.subtle { border-color: #8b5250; background: transparent; color: #e8a7a3; }
+	.action-message { margin: 18px 0 0; padding: 12px 14px; border: 1px solid #4d7650; border-radius: 5px; background: #263a2b; color: #b6e0a9; }
+	.action-message.error { border-color: #8a504d; background: #3a2827; color: #f1b3ae; }
+	.pr-info { padding: 0 18px 18px; }
+	.pr-info a { color: #94c1ee; }
+	.state { padding: 38px; color: #bdc8c0; text-align: center; }
+	.state.error { color: #f1b3ae; }
+	html[data-admin-theme='light'] .edit-page { color: #202725; }
+	html[data-admin-theme='light'] .panel { border-color: #d3dcde; background: #fff; }
+	html[data-admin-theme='light'] .panel-heading, html[data-admin-theme='light'] .page-info, html[data-admin-theme='light'] .form-actions { border-color: #d3dcde; }
+	html[data-admin-theme='light'] .page-heading p:last-child, html[data-admin-theme='light'] .page-info, html[data-admin-theme='light'] .field, html[data-admin-theme='light'] #character-count, html[data-admin-theme='light'] .field-help { color: #46514b; }
+	html[data-admin-theme='light'] .page-info code, html[data-admin-theme='light'] #path-preview { color: #36443a; }
+	html[data-admin-theme='light'] input, html[data-admin-theme='light'] textarea, html[data-admin-theme='light'] .markdown-preview { border-color: #b7c3c6; background: #fff; color: #202725; }
+	html[data-admin-theme='light'] .preview-tabs { border-color: #d3dcde; }
+	html[data-admin-theme='light'] .preview-tab { color: #46514b; }
+	html[data-admin-theme='light'] .preview-tab.is-active { background: #e9eef0; color: #202725; }
+	html[data-admin-theme='light'] .button.secondary { border-color: #b7c3c6; background: #f6f8f8; color: #36443a; }
+	@media (max-width: 700px) {
+		.edit-page { width: calc(100% - 24px); margin-top: 22px; }
+		.page-heading { align-items: start; flex-direction: column; }
+		.form-grid { grid-template-columns: 1fr; }
+		.field.full { grid-column: auto; }
+		.page-info { grid-template-columns: 1fr; gap: 3px; }
+		.form-actions { justify-content: stretch; }
+		.form-actions .button { flex: 1 1 100%; }
+		#content, .markdown-preview { min-height: 260px; }
+	}
+</style>

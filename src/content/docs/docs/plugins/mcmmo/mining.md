@@ -2,6 +2,8 @@
 title: Mining - 採掘
 description: mcMMOの「採掘」スキルの仕様について解説します。
 category: プラグイン
+sidebar:
+  order: 1
 ---
 
 # Mining - 採掘

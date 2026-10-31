@@ -2,6 +2,8 @@
 title: Axes - 斧
 description: mcMMOの「斧」スキルの仕様について解説します。
 category: プラグイン
+sidebar:
+  order: 7
 ---
 
 # Axes - 斧

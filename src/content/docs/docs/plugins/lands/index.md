@@ -2,6 +2,8 @@
 title: Lands
 description: 土地を保護・管理するためのプラグインです。
 category: プラグイン
+sidebar:
+  order: 1
 ---
 
 **Lands** は、プレイヤーが土地を保護し、他プレイヤーと集団・国家を運営するためのプラグインです。

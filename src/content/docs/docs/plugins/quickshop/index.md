@@ -2,6 +2,8 @@
 title: QuickShop
 description: チェストを使って、コマンドなしでお店を作れるプラグインです。
 category: プラグイン
+sidebar:
+  order: 2
 ---
 
 # QuickShop

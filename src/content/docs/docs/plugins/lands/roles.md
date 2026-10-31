@@ -2,6 +2,8 @@
 title: メンバー・ロール管理
 description: Landsで設定できるロール（役職）と権限（フラグ）についてまとめています。
 category: プラグイン
+sidebar:
+  order: 2
 ---
 
 # メンバー・ロール管理

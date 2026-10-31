@@ -35,6 +35,10 @@
  * - 既存の users.email カラムは維持する
  * ========================================================= */
 
+import {
+	clearReturnToCookie,
+	getOAuthReturnTo,
+} from '../_return-to';
 
 export const onRequestGet: PagesFunction<{
 	DB: D1Database;
@@ -497,7 +501,7 @@ export const onRequestGet: PagesFunction<{
 
 	headers.set(
 		'Location',
-		'/account/',
+		getOAuthReturnTo(request, state),
 	);
 
 
@@ -516,6 +520,7 @@ export const onRequestGet: PagesFunction<{
 			'Max-Age=2592000',
 		].join('; '),
 	);
+	headers.append('Set-Cookie', clearReturnToCookie(state));
 
 
 	/* -----------------------------------------------------

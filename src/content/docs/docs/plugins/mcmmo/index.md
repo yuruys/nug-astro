@@ -2,6 +2,8 @@
 title: mcMMO
 description: 行動に応じてレベルが上がり、多彩なスキル・アビリティが使えるようになるプラグインです。
 category: プラグイン
+sidebar:
+  order: 4
 ---
 
 # mcMMO

@@ -2,6 +2,8 @@
 title: 超サーバー
 description: 便利な機能が満載の、Nekozouneko Serverのサバイバルサーバーです。
 category: サーバー
+sidebar:
+  order: 3
 ---
 
 # 超サーバー

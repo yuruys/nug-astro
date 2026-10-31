@@ -2,6 +2,8 @@
 title: Sword - 剣
 description: mcMMOの「剣」スキルの仕様について解説します。
 category: プラグイン
+sidebar:
+  order: 6
 ---
 
 # Sword - 剣

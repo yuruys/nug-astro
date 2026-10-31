@@ -1,3 +1,5 @@
+import { clearReturnToCookie, getOAuthReturnTo } from '../_return-to';
+
 type DiscordUser = { id?: string; username?: string; global_name?: string | null; avatar?: string | null };
 const textError = (message: string, status = 400) => new Response(message, { status, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } });
 export const onRequestGet: PagesFunction<{ DB: D1Database; DISCORD_CLIENT_ID: string; DISCORD_CLIENT_SECRET: string }> = async ({ request, env }) => {
@@ -26,8 +28,8 @@ export const onRequestGet: PagesFunction<{ DB: D1Database; DISCORD_CLIENT_ID: st
   else { userId = crypto.randomUUID(); await env.DB.batch([env.DB.prepare(`INSERT INTO users (id, display_name, avatar_url, role, created_at, updated_at) VALUES (?, ?, ?, 'user', datetime('now'), datetime('now'))`).bind(userId, displayName, avatarUrl), env.DB.prepare(`INSERT INTO user_identities (id, user_id, provider, provider_user_id, created_at) VALUES (?, ?, 'discord', ?, datetime('now'))`).bind(crypto.randomUUID(), userId, discordUser.id)]); }
   const sessionId = crypto.randomUUID(); const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
   await env.DB.prepare(`INSERT INTO sessions (id, user_id, expires_at, created_at) VALUES (?, ?, ?, datetime('now'))`).bind(sessionId, userId, expiresAt).run();
-  const headers = new Headers({ Location: '/account/', 'Cache-Control': 'no-store' });
-  headers.append('Set-Cookie', `nug_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`); headers.append('Set-Cookie', `${stateCookieName}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`);
+  const headers = new Headers({ Location: getOAuthReturnTo(request, state), 'Cache-Control': 'no-store' });
+  headers.append('Set-Cookie', `nug_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`); headers.append('Set-Cookie', `${stateCookieName}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`); headers.append('Set-Cookie', clearReturnToCookie(state));
   return new Response(null, { status: 302, headers });
  } catch { return textError('Discordログインの処理中にエラーが発生しました。時間をおいて、もう一度お試しください。', 502); }
 };

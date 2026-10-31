@@ -2,6 +2,8 @@
 title: Bolt コマンド一覧
 description: Boltプラグインで使用できるコマンドを一覧でまとめています。
 category: プラグイン
+sidebar:
+  order: 1
 ---
 
 # Bolt コマンド一覧

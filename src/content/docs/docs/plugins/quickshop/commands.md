@@ -2,6 +2,8 @@
 title: QuickShop コマンド一覧
 description: QuickShopプラグインで使用できるコマンドを一覧でまとめています。
 category: プラグイン
+sidebar:
+  order: 1
 ---
 
 # QuickShop コマンド一覧

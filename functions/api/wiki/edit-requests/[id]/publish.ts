@@ -23,38 +23,8 @@
    01. Function-local types
    ========================================================= */
 
-interface D1PreparedStatementLike {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	bind(...values: any[]): D1PreparedStatementLike;
-
-	first<T = Record<string, unknown>>(
-		colName?: string,
-	): Promise<T | null>;
-
-	run(): Promise<{
-		meta: {
-			changes: number;
-		};
-	}>;
-
-	all<T = Record<string, unknown>>(): Promise<{
-		results: T[];
-		meta: Record<string, unknown>;
-	}>;
-}
-
-interface D1DatabaseLike {
-	prepare(
-		query: string,
-	): D1PreparedStatementLike;
-
-	batch(
-		statements: D1PreparedStatementLike[],
-	): Promise<unknown[]>;
-}
-
 interface Env {
-	DB: D1DatabaseLike;
+	DB: D1Database;
 	GITHUB_TOKEN: string;
 }
 
@@ -116,6 +86,7 @@ interface GitHubFileResponse {
 	path?: string;
 	sha?: string;
 	html_url?: string;
+	type?: 'file' | 'dir' | 'symlink' | 'submodule';
 }
 
 interface GitHubCommitResponse {
@@ -143,6 +114,19 @@ interface GitHubPullRequestResponse {
 interface GitHubErrorResponse {
 	message?: string;
 	documentation_url?: string;
+}
+
+interface WikiDraftRow {
+	id: string;
+	operation: 'create' | 'update' | 'delete';
+	status: string;
+	title: string;
+	description: string;
+	page_path: string;
+	source_path: string;
+	content: string;
+	user_id: string;
+	version: number;
 }
 
 /* =========================================================
@@ -325,6 +309,46 @@ function encodeBase64(
 	);
 }
 
+function yamlString(value: string): string {
+	return JSON.stringify(value);
+}
+
+function buildDraftMarkdown(draft: WikiDraftRow): string {
+	if (draft.operation === 'create') {
+		return `---\ntitle: ${yamlString(draft.title)}\ndescription: ${yamlString(draft.description)}\n---\n\n${draft.content}`;
+	}
+
+	const frontmatter = draft.content.match(
+		/^\uFEFF?---[ \t]*\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/,
+	);
+	if (!frontmatter) {
+		return `---\ntitle: ${yamlString(draft.title)}\ndescription: ${yamlString(draft.description)}\n---\n\n${draft.content}`;
+	}
+
+	const values = new Map<string, string>();
+	const lines = frontmatter[1].split(/\r?\n/);
+	const preserved: string[] = [];
+	for (const line of lines) {
+		const match = line.match(/^([A-Za-z][\w-]*)\s*:\s*(.*)$/);
+		if (!match) {
+			preserved.push(line);
+			continue;
+		}
+		if (match[1] !== 'title' && match[1] !== 'description') {
+			preserved.push(line);
+		}
+	}
+	values.set('title', yamlString(draft.title));
+	values.set('description', yamlString(draft.description));
+
+	const updatedFrontmatter = [
+		`title: ${values.get('title')}`,
+		`description: ${values.get('description')}`,
+		...preserved,
+	].join('\n');
+	return `---\n${updatedFrontmatter}\n---\n${draft.content.slice(frontmatter[0].length)}`;
+}
+
 /* =========================================================
    07. GitHub error helper
    ========================================================= */
@@ -360,6 +384,7 @@ export const onRequestPost =
 		let currentUserId:
 			| string
 			| null = null;
+		let managedDraft: WikiDraftRow | null = null;
 
 		try {
 			/* ------------------------------------------------
@@ -387,25 +412,7 @@ export const onRequestPost =
 				user.user_id;
 
 			/* ------------------------------------------------
-			   2. Admin only
-			------------------------------------------------ */
-
-			if (
-				user.role !==
-				'admin'
-			) {
-				return json(
-					{
-						ok: false,
-						error:
-							'Forbidden',
-					},
-					403,
-				);
-			}
-
-			/* ------------------------------------------------
-			   3. GitHub token
+			   2. GitHub token
 			------------------------------------------------ */
 
 			if (!env.GITHUB_TOKEN) {
@@ -420,7 +427,7 @@ export const onRequestPost =
 			}
 
 			/* ------------------------------------------------
-			   4. Edit request ID
+			   3. Request ID
 			------------------------------------------------ */
 
 			const rawId =
@@ -444,10 +451,10 @@ export const onRequestPost =
 			}
 
 			/* ------------------------------------------------
-			   5. Edit request
+			   4. Edit request or shared draft
 			------------------------------------------------ */
 
-			const editRequest =
+			let editRequest =
 				await env.DB.prepare(`
 					SELECT
 						er.id,
@@ -482,41 +489,112 @@ export const onRequestPost =
 					.first<EditRequestRow>();
 
 			if (!editRequest) {
-				return json(
-					{
-						ok: false,
-						error:
-							'Edit request not found',
-					},
-					404,
-				);
+				managedDraft = await env.DB.prepare(`
+					SELECT
+						id,
+						operation,
+						status,
+						title,
+						description,
+						page_path,
+						source_path,
+						content,
+						updated_by AS user_id,
+						version
+					FROM wiki_drafts
+					WHERE id = ?
+					LIMIT 1
+				`)
+					.bind(editRequestId)
+					.first<WikiDraftRow>();
+
+				if (!managedDraft) {
+					return json(
+						{
+							ok: false,
+							error: 'Wiki request not found',
+						},
+						404,
+					);
+				}
+
+				if (
+					managedDraft.status !== 'draft' ||
+					!/^src\/content\/docs\/docs\/[a-z0-9_/-]+\.(md|mdx)$/.test(managedDraft.source_path) ||
+					managedDraft.source_path.split('/').includes('..')
+				) {
+					return json(
+						{
+							ok: false,
+							error: 'Draft is not eligible for PR submission',
+							status: managedDraft.status,
+						},
+						409,
+					);
+				}
+
+				editRequest = {
+					id: managedDraft.id,
+					page_id: '',
+					revision_id: '',
+					base_revision_id: null,
+					user_id: managedDraft.user_id,
+					status: managedDraft.status,
+					message: null,
+					reviewer_id: null,
+					review_comment: null,
+					created_at: '',
+					reviewed_at: null,
+					page_path: managedDraft.page_path,
+					page_title: managedDraft.title,
+					source_path: managedDraft.source_path,
+					published_revision_id: null,
+				};
 			}
 
 			/* ------------------------------------------------
-			   6. approved only
+			   5. Request state
 			------------------------------------------------ */
 
-			if (
-				editRequest.status !==
-				'approved'
-			) {
+			if (managedDraft) {
+				if (editRequest.status !== 'draft') {
+					return json(
+						{
+							ok: false,
+							error: 'Draft has already been submitted',
+							status: editRequest.status,
+						},
+						409,
+					);
+				}
+			} else if (editRequest.status !== 'approved' || user.role !== 'admin') {
 				return json(
 					{
 						ok: false,
 						error:
-							'Only approved edit requests can be published',
+							'Only approved edit requests can be published by an administrator',
 						status:
 							editRequest.status,
 					},
-					400,
+					403,
 				);
 			}
 
 			/* ------------------------------------------------
-			   7. Revision
+			   6. Revision
 			------------------------------------------------ */
 
-			const revision =
+			let revision =
+				managedDraft
+					? {
+						id: managedDraft.id,
+						page_id: '',
+						revision_number: managedDraft.version,
+						content: buildDraftMarkdown(managedDraft),
+						editor_id: managedDraft.user_id,
+						created_at: '',
+					}
+					:
 				await env.DB.prepare(`
 					SELECT
 						id,
@@ -546,6 +624,7 @@ export const onRequestPost =
 			}
 
 			if (
+				!managedDraft &&
 				revision.page_id !==
 				editRequest.page_id
 			) {
@@ -560,7 +639,7 @@ export const onRequestPost =
 			}
 
 			/* ------------------------------------------------
-			   8. Current published revision
+			   7. Current published revision
 			------------------------------------------------ */
 
 			let publishedRevision:
@@ -568,6 +647,7 @@ export const onRequestPost =
 				null;
 
 			if (
+				!managedDraft &&
 				editRequest.published_revision_id
 			) {
 				publishedRevision =
@@ -596,6 +676,7 @@ export const onRequestPost =
 			------------------------------------------------ */
 
 			if (
+				!managedDraft &&
 				publishedRevision &&
 				publishedRevision.content ===
 					revision.content
@@ -611,31 +692,34 @@ export const onRequestPost =
 			}
 
 			/* ------------------------------------------------
-			   10. approved → publishing
+			   8. Claim request to prevent duplicate submission
 			------------------------------------------------ */
 
-			const updateResult =
-				await env.DB.prepare(`
-					UPDATE edit_requests
-					SET
-						status = 'publishing'
-					WHERE id = ?
-					  AND status = 'approved'
+			const updateResult = managedDraft
+				? await env.DB.prepare(`
+					UPDATE wiki_drafts
+					SET status = 'publishing'
+					WHERE id = ? AND status = 'draft' AND version = ?
 				`)
-					.bind(
-						editRequestId,
-					)
+					.bind(editRequestId, managedDraft.version)
+					.run()
+				: await env.DB.prepare(`
+					UPDATE edit_requests
+					SET status = 'publishing'
+					WHERE id = ? AND status = 'approved'
+				`)
+					.bind(editRequestId)
 					.run();
 
 			if (
-				updateResult.meta.changes !==
+				updateResult.meta?.changes !==
 				1
 			) {
 				return json(
 					{
 						ok: false,
 						error:
-							'Edit request could not be moved to publishing',
+							'Request could not be moved to publishing',
 					},
 					409,
 				);
@@ -733,6 +817,36 @@ export const onRequestPost =
 				);
 			}
 
+			const sourcePath = String(editRequest.source_path);
+			const encodedSourcePath = sourcePath
+				.split('/')
+				.map((segment) => encodeURIComponent(segment))
+				.join('/');
+			const operation = managedDraft?.operation ?? 'update';
+
+			if (managedDraft) {
+				const mainFileResponse = await fetch(
+					`${apiBase}/contents/${encodedSourcePath}?ref=${encodeURIComponent(GITHUB_BASE_BRANCH)}`,
+					{ method: 'GET', headers },
+				);
+				if (
+					(operation === 'create' && mainFileResponse.ok) ||
+					(operation !== 'create' && mainFileResponse.status === 404)
+				) {
+					throw new Error(`GitHub main branch file state conflicts with the ${operation} request`);
+				}
+				if (!mainFileResponse.ok && mainFileResponse.status !== 404) {
+					const message = await getGitHubError(mainFileResponse);
+					throw new Error(`GitHub main branch file lookup failed: ${mainFileResponse.status} ${message ?? ''}`);
+				}
+				if (mainFileResponse.ok) {
+					const mainFile = await mainFileResponse.json() as GitHubFileResponse;
+					if (mainFile.type !== 'file' || mainFile.path !== sourcePath || !mainFile.sha) {
+						throw new Error('GitHub main branch returned an unexpected target file');
+					}
+				}
+			}
+
 			/* ------------------------------------------------
 			   14. Publish branch
 			------------------------------------------------ */
@@ -802,22 +916,6 @@ export const onRequestPost =
 			   15. Source file
 			------------------------------------------------ */
 
-			const sourcePath =
-				String(
-					editRequest.source_path,
-				);
-
-			const encodedSourcePath =
-				sourcePath
-					.split('/')
-					.map(
-						segment =>
-							encodeURIComponent(
-								segment,
-							),
-					)
-					.join('/');
-
 			const fileResponse =
 				await fetch(
 					`${apiBase}/contents/${encodedSourcePath}?ref=${encodeURIComponent(branchName)}`,
@@ -836,6 +934,12 @@ export const onRequestPost =
 					(await fileResponse.json()) as
 						GitHubFileResponse;
 
+				if (
+					managedDraft &&
+					(fileData.type !== 'file' || fileData.path !== sourcePath || !fileData.sha)
+				) {
+					throw new Error('GitHub branch returned an unexpected target file');
+				}
 				existingFileSha =
 					fileData.sha;
 			} else if (
@@ -852,77 +956,67 @@ export const onRequestPost =
 				);
 			}
 
+			if (managedDraft && operation !== 'create' && !existingFileSha) {
+				throw new Error(`GitHub target file is missing for the ${operation} request`);
+			}
+
 			/* ------------------------------------------------
 			   16. Write MD/MDX
 			------------------------------------------------ */
 
-			const content =
-				String(
-					revision.content,
-				);
-
-			const encodedContent =
-				encodeBase64(
-					content,
-				);
-
-			const putBody: Record<
-				string,
-				unknown
-			> = {
-				message:
-					`content: update ${editRequest.page_path} (revision ${revision.revision_number})`,
-				content:
-					encodedContent,
-				branch:
-					branchName,
-			};
-
-			if (existingFileSha) {
-				putBody.sha =
-					existingFileSha;
-			}
-
-			const putResponse =
-				await fetch(
+			const commitMessage =
+				`content: ${operation} ${editRequest.page_path} (revision ${revision.revision_number})`;
+			const writeResponse = operation === 'delete'
+				? await fetch(
+					`${apiBase}/contents/${encodedSourcePath}`,
+					{
+						method: 'DELETE',
+						headers: {
+							...headers,
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							message: commitMessage,
+							sha: existingFileSha,
+							branch: branchName,
+						}),
+					},
+				)
+				: await fetch(
 					`${apiBase}/contents/${encodedSourcePath}`,
 					{
 						method: 'PUT',
 						headers: {
 							...headers,
-							'Content-Type':
-								'application/json',
+							'Content-Type': 'application/json',
 						},
-						body:
-							JSON.stringify(
-								putBody,
-							),
+						body: JSON.stringify({
+							message: commitMessage,
+							content: encodeBase64(String(revision.content)),
+							branch: branchName,
+							...(existingFileSha ? { sha: existingFileSha } : {}),
+						}),
 					},
 				);
 
-			const putData =
-				(await putResponse.json()) as
-					| {
-							content?: GitHubFileResponse;
-							commit?: GitHubCommitResponse;
-					  }
-					| GitHubErrorResponse;
+			const writeData = await writeResponse.json() as
+				| {
+					content?: GitHubFileResponse;
+					commit?: GitHubCommitResponse;
+					message?: string;
+				}
+				| GitHubErrorResponse;
 
-			if (!putResponse.ok) {
-				const errorData =
-					putData as
-						GitHubErrorResponse;
-
+			if (!writeResponse.ok) {
 				throw new Error(
-					`GitHub file update failed: ${putResponse.status} ${errorData.message ?? ''}`,
+					`GitHub file ${operation} failed: ${writeResponse.status} ${writeData.message ?? ''}`,
 				);
 			}
 
-			const fileData =
-				putData as {
-					content?: GitHubFileResponse;
-					commit?: GitHubCommitResponse;
-				};
+			const fileData = writeData as {
+				content?: GitHubFileResponse;
+				commit?: GitHubCommitResponse;
+			};
 
 			/* ------------------------------------------------
 			   17. Existing PR
@@ -1027,6 +1121,33 @@ export const onRequestPost =
 					true;
 			}
 
+			if (managedDraft) {
+				const savedDraft = await env.DB.prepare(`
+					UPDATE wiki_drafts
+					SET
+						status = 'pending',
+						submitted_content = ?,
+						github_pr_number = ?,
+						github_pr_url = ?,
+						github_pr_state = ?,
+						updated_at = ?
+					WHERE id = ? AND status = 'publishing'
+				`)
+					.bind(
+						String(revision.content),
+						pullRequest?.number ?? null,
+						pullRequest?.html_url ?? null,
+						pullRequest?.state ?? 'open',
+						new Date().toISOString(),
+						editRequestId,
+					)
+					.run();
+
+				if (savedDraft.meta?.changes !== 1) {
+					throw new Error('Draft PR status could not be saved');
+				}
+			}
+
 			/* ------------------------------------------------
 			   19. Audit: GitHub publish
 			------------------------------------------------ */
@@ -1046,8 +1167,10 @@ export const onRequestPost =
 				.bind(
 					crypto.randomUUID(),
 					user.user_id,
-					'wiki.edit_request.github_publish',
-					'edit_request',
+					managedDraft
+						? 'wiki.draft.github_pr'
+						: 'wiki.edit_request.github_publish',
+					managedDraft ? 'wiki_draft' : 'edit_request',
 					editRequestId,
 					JSON.stringify({
 						branch:
@@ -1085,7 +1208,9 @@ export const onRequestPost =
 			   20. Updated request
 			------------------------------------------------ */
 
-			const updatedEditRequest =
+			const updatedEditRequest = managedDraft
+				? null
+				:
 				await env.DB.prepare(`
 					SELECT
 						er.id,
@@ -1119,6 +1244,21 @@ export const onRequestPost =
 					)
 					.first<EditRequestRow>();
 
+			const updatedDraft = managedDraft
+				? await env.DB.prepare(`
+					SELECT
+						id, operation, status, title, description,
+						page_path, source_path, content, updated_by AS user_id,
+						created_by, updated_by, created_at, updated_at,
+						version, github_pr_number, github_pr_url, github_pr_state
+					FROM wiki_drafts
+					WHERE id = ?
+					LIMIT 1
+				`)
+					.bind(editRequestId)
+					.first()
+				: null;
+
 			/* ------------------------------------------------
 			   21. Success
 			------------------------------------------------ */
@@ -1131,6 +1271,9 @@ export const onRequestPost =
 
 				editRequest:
 					updatedEditRequest,
+
+				draft:
+					updatedDraft,
 
 				revision,
 
@@ -1197,7 +1340,16 @@ export const onRequestPost =
 
 			if (editRequestId) {
 				try {
-					await env.DB.prepare(`
+					if (managedDraft) {
+						await env.DB.prepare(`
+							UPDATE wiki_drafts
+							SET status = 'draft'
+							WHERE id = ? AND status = 'publishing'
+						`)
+							.bind(editRequestId)
+							.run();
+					} else {
+						await env.DB.prepare(`
 						UPDATE edit_requests
 						SET
 							status = 'approved'
@@ -1208,6 +1360,7 @@ export const onRequestPost =
 							editRequestId,
 						)
 						.run();
+					}
 
 					await env.DB.prepare(`
 						INSERT INTO audit_logs (
@@ -1224,8 +1377,10 @@ export const onRequestPost =
 						.bind(
 							crypto.randomUUID(),
 							currentUserId,
-							'wiki.edit_request.publish_failed',
-							'edit_request',
+							managedDraft
+								? 'wiki.draft.github_pr_failed'
+								: 'wiki.edit_request.publish_failed',
+							managedDraft ? 'wiki_draft' : 'edit_request',
 							editRequestId,
 							JSON.stringify({
 								error:
@@ -1234,7 +1389,7 @@ export const onRequestPost =
 										: String(error),
 
 								statusRestored:
-									'approved',
+									managedDraft ? 'draft' : 'approved',
 							}),
 							new Date().toISOString(),
 						)

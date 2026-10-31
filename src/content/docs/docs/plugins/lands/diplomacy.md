@@ -2,6 +2,8 @@
 title: 国際関係・戦争
 description: Landsの土地・国家間で設定できる外交関係と戦争の仕組みについて解説します。
 category: プラグイン
+sidebar:
+  order: 3
 ---
 
 # 国際関係・戦争

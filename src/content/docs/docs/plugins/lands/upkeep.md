@@ -2,6 +2,8 @@
 title: Lands作成・維持費
 description: Landsで土地を維持するために必要な、税金・維持費・土地バンクの仕組みについて解説します。
 category: プラグイン
+sidebar:
+  order: 4
 ---
 
 # Lands作成・維持費

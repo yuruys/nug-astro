@@ -2,6 +2,8 @@
 title: 就職・職業一覧
 description: Jobsプラグインで選べる職業と、それぞれの収入源をまとめています。
 category: プラグイン
+sidebar:
+  order: 1
 ---
 
 # 就職・職業一覧

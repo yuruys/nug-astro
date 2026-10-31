@@ -2,6 +2,8 @@
 title: LWC
 description: チェストやドアなどのブロックを保護するためのプラグインです。
 category: プラグイン
+sidebar:
+  order: 7
 ---
 
 # LWC

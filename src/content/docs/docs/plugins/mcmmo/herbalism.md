@@ -2,6 +2,8 @@
 title: Herbalism - 農業
 description: mcMMOの「農業」スキルの仕様について解説します。
 category: プラグイン
+sidebar:
+  order: 5
 ---
 
 # Herbalism - 農業

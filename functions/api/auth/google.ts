@@ -1,3 +1,5 @@
+import { createReturnToCookie } from './_return-to';
+
 export const onRequestGet: PagesFunction<{
 	DB: D1Database;
 	GOOGLE_CLIENT_ID: string;
@@ -51,6 +53,11 @@ export const onRequestGet: PagesFunction<{
 		'Set-Cookie',
 		`nug_oauth_state_${state}=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
 	);
+	const returnToCookie = createReturnToCookie(
+		state,
+		url.searchParams.get('returnTo'),
+	);
+	if (returnToCookie) headers.append('Set-Cookie', returnToCookie);
 
 	return new Response(null, {
 		status: 302,

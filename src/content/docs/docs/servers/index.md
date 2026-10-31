@@ -2,6 +2,8 @@
 title: サーバー紹介
 description: Nekozouneko Serverで遊べる各サーバーの特徴をまとめています。
 category: サーバー
+sidebar:
+  order: 0
 ---
 
 # サーバー紹介

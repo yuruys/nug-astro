@@ -2,6 +2,8 @@
 title: Jobs
 description: 職業に就いて働くことで報酬を得られるプラグインです。
 category: プラグイン
+sidebar:
+  order: 3
 ---
 
 # Jobs

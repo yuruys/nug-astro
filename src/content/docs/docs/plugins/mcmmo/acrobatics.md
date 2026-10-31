@@ -2,6 +2,8 @@
 title: Acrobatics - アクロバティック
 description: mcMMOの「アクロバティック」スキルの仕様について解説します。
 category: プラグイン
+sidebar:
+  order: 9
 ---
 
 # Acrobatics - アクロバティック

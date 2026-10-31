@@ -2,6 +2,8 @@
 title: Woodcutting - 木こり
 description: mcMMOの「木こり」スキルの仕様について解説します。
 category: プラグイン
+sidebar:
+  order: 2
 ---
 
 # Woodcutting - 木こり

@@ -2,6 +2,8 @@
 title: Excavation - 掘削
 description: mcMMOの「掘削」スキルの仕様について解説します。
 category: プラグイン
+sidebar:
+  order: 3
 ---
 
 # Excavation - 掘削

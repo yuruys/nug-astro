@@ -2,6 +2,8 @@
 title: Archery - 弓
 description: mcMMOの「弓」スキルの仕様について解説します。
 category: プラグイン
+sidebar:
+  order: 8
 ---
 
 # Archery - 弓

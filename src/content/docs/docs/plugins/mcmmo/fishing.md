@@ -2,6 +2,8 @@
 title: Fishing - 釣り
 description: mcMMOの「釣り」スキルの仕様について解説します。
 category: プラグイン
+sidebar:
+  order: 4
 ---
 
 # Fishing - 釣り

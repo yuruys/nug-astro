@@ -2,6 +2,8 @@
 title: NEarthサーバー
 description: 1:326スケールの地球再現マップで、建国・経済・戦争が楽しめるMMOサーバーです。
 category: サーバー
+sidebar:
+  order: 1
 ---
 
 # NEarthサーバー

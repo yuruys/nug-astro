@@ -2,6 +2,8 @@
 title: ライフサーバー
 description: 「自由」とラグの少なさをテーマにした、Nekozouneko Serverのベータ公開サーバーです。
 category: サーバー
+sidebar:
+  order: 2
 ---
 
 # ライフサーバー

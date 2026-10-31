@@ -353,24 +353,6 @@ export const onRequestPost = async ({
 
 	/*
 	 * -------------------------------------------------------
-	 * 11. Mergeされているか確認
-	 * -------------------------------------------------------
-	 *
-	 * closedでもmerged !== trueなら、
-	 * 単純にPRが閉じられただけなので、
-	 * D1の状態は変更しない。
-	 */
-
-	if (payload.pull_request?.merged !== true) {
-		return json({
-			ok: true,
-			message:
-				'Pull request was closed without being merged',
-		});
-	}
-
-	/*
-	 * -------------------------------------------------------
 	 * 12. Repository確認
 	 * -------------------------------------------------------
 	 */
@@ -400,6 +382,16 @@ export const onRequestPost = async ({
 
 	const pullRequest =
 		payload.pull_request;
+
+	if (!pullRequest) {
+		return json(
+			{
+				ok: false,
+				error: 'Pull Request payload is missing',
+			},
+			400,
+		);
+	}
 
 	const headRepository =
 		pullRequest.head?.repo?.full_name;
@@ -504,6 +496,44 @@ export const onRequestPost = async ({
 		);
 	}
 
+	if (payload.pull_request?.merged !== true) {
+		const draft = await env.DB.prepare(`
+			SELECT id, status
+			FROM wiki_drafts
+			WHERE id = ?
+			LIMIT 1
+		`)
+			.bind(editRequestId)
+			.first<{ id: string; status: string }>();
+
+		if (draft?.status === 'pending') {
+			const now = new Date().toISOString();
+			const result = await env.DB.prepare(`
+				UPDATE wiki_drafts
+				SET status = 'closed', github_pr_state = 'closed', updated_at = ?
+				WHERE id = ? AND status = 'pending'
+					AND (github_pr_number = ? OR github_pr_number IS NULL)
+			`)
+				.bind(now, editRequestId, pullRequest.number ?? null)
+				.run();
+			return json({
+				ok: true,
+				message: result.meta?.changes === 1
+					? 'Wiki draft PR closed without merging'
+					: 'Wiki draft PR state was already updated',
+				draftId: editRequestId,
+				status: result.meta?.changes === 1 ? 'closed' : draft.status,
+			});
+		}
+
+		return json({
+			ok: true,
+			message: 'Pull request was closed without being merged',
+			draftId: draft?.id ?? null,
+			status: draft?.status ?? 'unknown',
+		});
+	}
+
 	/*
 	 * -------------------------------------------------------
 	 * 18. D1からEdit Request取得
@@ -531,11 +561,160 @@ export const onRequestPost = async ({
 			}>();
 
 	if (!editRequest) {
+		const draft = await env.DB.prepare(`
+			SELECT
+				id, status, operation, title, page_path, source_path,
+				submitted_content, updated_by
+			FROM wiki_drafts
+			WHERE id = ?
+			LIMIT 1
+		`)
+			.bind(editRequestId)
+			.first<{
+				id: string;
+				status: string;
+				operation: 'create' | 'update' | 'delete';
+				title: string;
+				page_path: string;
+				source_path: string;
+				submitted_content: string | null;
+				updated_by: string;
+			}>();
+
+		if (draft) {
+			const now = new Date().toISOString();
+			if (draft.status === 'merged') {
+				return json({ ok: true, draftId: editRequestId, status: 'merged' });
+			}
+			if (draft.status !== 'pending' || (draft.operation !== 'delete' && !draft.submitted_content)) {
+				return json({ ok: false, error: 'Wiki draft is not ready to finalize', draftId: editRequestId }, 409);
+			}
+
+			try {
+				const finalizedRevisionId = crypto.randomUUID();
+				const finalizeStatements = draft.operation === 'delete'
+					? [
+						env.DB.prepare(`
+							UPDATE wiki_drafts
+							SET status = 'merged', github_pr_state = 'closed', updated_at = ?
+							WHERE id = ? AND status = 'pending'
+						`).bind(now, editRequestId),
+						env.DB.prepare(`
+							DELETE FROM wiki_pages
+							WHERE path = ? AND source_path = ? AND changes() = 1
+						`).bind(draft.page_path, draft.source_path),
+						env.DB.prepare(`
+							INSERT INTO audit_logs (id, user_id, action, target_type, target_id, metadata, created_at)
+							SELECT ?, NULL, 'wiki.draft.github_pr_merged', 'wiki_draft', ?, ?, ?
+							WHERE changes() = 1
+						`).bind(
+							crypto.randomUUID(),
+							editRequestId,
+							JSON.stringify({
+								operation: draft.operation,
+								pull_request_number: payload.pull_request?.number ?? null,
+								merge_commit_sha: payload.pull_request?.merge_commit_sha ?? null,
+								branch: branchName,
+								repository,
+							}),
+							now,
+						),
+					]
+					: [
+						env.DB.prepare(`
+							UPDATE wiki_drafts
+							SET status = 'merged', github_pr_state = 'closed', updated_at = ?
+							WHERE id = ? AND status = 'pending'
+						`).bind(now, editRequestId),
+						env.DB.prepare(`
+							INSERT INTO wiki_pages (
+								id, path, title, source_path, published_revision_id, created_at, updated_at
+							)
+							SELECT ?, ?, ?, ?, NULL, ?, ?
+							WHERE changes() = 1
+							ON CONFLICT(source_path) DO UPDATE SET
+								path = excluded.path,
+								title = excluded.title,
+								updated_at = excluded.updated_at
+						`).bind(
+							crypto.randomUUID(),
+							draft.page_path,
+							draft.title,
+							draft.source_path,
+							now,
+							now,
+						),
+						env.DB.prepare(`
+							INSERT INTO wiki_revisions (
+								id, page_id, revision_number, content, editor_id, created_at
+							)
+							SELECT
+								?,
+								p.id,
+								COALESCE((
+									SELECT MAX(r.revision_number) + 1
+									FROM wiki_revisions r
+									WHERE r.page_id = p.id
+								), 1),
+								?,
+								?,
+								?
+							FROM wiki_pages p
+							WHERE p.source_path = ? AND changes() = 1
+						`).bind(
+							finalizedRevisionId,
+							draft.submitted_content,
+							draft.updated_by,
+							now,
+							draft.source_path,
+						),
+						env.DB.prepare(`
+							UPDATE wiki_pages
+							SET published_revision_id = ?, updated_at = ?
+							WHERE source_path = ? AND changes() = 1
+						`).bind(
+							finalizedRevisionId,
+							now,
+							draft.source_path,
+						),
+						env.DB.prepare(`
+							INSERT INTO audit_logs (id, user_id, action, target_type, target_id, metadata, created_at)
+							SELECT ?, NULL, 'wiki.draft.github_pr_merged', 'wiki_draft', ?, ?, ?
+							WHERE changes() = 1
+						`).bind(
+							crypto.randomUUID(),
+							editRequestId,
+							JSON.stringify({
+								operation: draft.operation,
+								pull_request_number: payload.pull_request?.number ?? null,
+								merge_commit_sha: payload.pull_request?.merge_commit_sha ?? null,
+								branch: branchName,
+								repository,
+							}),
+							now,
+						),
+					];
+
+				const results = await env.DB.batch<D1ExecResult>(finalizeStatements);
+				if (Number(results[0]?.meta?.changes ?? 0) !== 1) {
+					return json({ ok: true, draftId: editRequestId, status: 'merged' });
+				}
+				return json({
+					ok: true,
+					message: 'Wiki draft PR merged and page catalog updated',
+					draftId: editRequestId,
+					status: 'merged',
+				});
+			} catch (error) {
+				console.error('Failed to finalize merged Wiki draft:', error);
+				return json({ ok: false, error: 'Failed to update the Wiki page catalog after merge' }, 500);
+			}
+		}
+
 		return json(
 			{
 				ok: false,
-				error:
-					'Edit request not found',
+				error: 'Edit request or Wiki draft not found',
 				editRequestId,
 			},
 			404,

@@ -2,6 +2,8 @@
 title: Bolt
 description: チェストやドアなど、個々のブロック・エンティティを保護するためのプラグインです。
 category: プラグイン
+sidebar:
+  order: 5
 ---
 
 # Bolt

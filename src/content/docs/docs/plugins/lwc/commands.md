@@ -2,6 +2,8 @@
 title: LWC コマンド一覧
 description: LWCプラグインで使用できるコマンドを一覧でまとめています。
 category: プラグイン
+sidebar:
+  order: 1
 ---
 
 # LWC コマンド一覧

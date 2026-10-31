@@ -52,6 +52,10 @@ npm run dev
 
 ガイドは `src/content/guide/`、ニュースは `src/content/news/`、ツール情報は `src/content/tool/` に追加します。Wikiの記事は `src/content/docs/` 配下の既存分類に追加します。コレクションのスキーマは `src/content.config.ts` に定義されています。ツール画面はコンテンツデータとは別に `src/pages/tool/` で管理します。
 
+Wikiのサイドバーは `astro.config.mjs` のStarlight `autogenerate` を使い、`src/content/docs/docs/` 配下のフォルダ構成とMarkdown/MDXファイルから生成します。ページfrontmatterの `sidebar.order` を指定すると、その階層内で自動順より優先されます。未指定のページはパス順になります。`index.md` はそのフォルダのページとして扱われます。
+
+ログイン中のWiki管理は `/wiki/manage/` から利用できます。下書きはD1の `wiki_drafts` に共有保存され、GitHub PR申請後もPRがマージされるまでは公開されません。新しいD1はローカルで `npx wrangler d1 migrations apply nugbase-db --local` を実行してから利用してください。マイグレーション `0003_create_wiki_drafts.sql` を本番へ適用する場合は、本番データベースを確認したうえで別途実施してください。
+
 攻略一覧は `date` の降順を初期表示にし、frontmatter の任意項目 `updatedAt` があれば更新日順にも切り替えられます。カテゴリとタグは記事データから一覧の絞り込み候補に反映されます。
 
 ## Cloudflare Pages

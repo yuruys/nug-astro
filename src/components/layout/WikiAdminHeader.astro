@@ -1,12 +1,13 @@
 ---
 interface Props {
-	active?: 'wiki' | 'requests' | 'editor';
+	active?: 'wiki' | 'requests' | 'editor' | 'manage';
 }
 
 const { active } = Astro.props;
 
 const navigation = [
 	{ label: 'Wikiトップ', href: '/docs/', key: 'wiki' },
+	{ label: 'Wiki管理', href: '/wiki/manage/', key: 'manage' },
 	{ label: '申請一覧', href: '/wiki/requests/', key: 'requests' },
 	{ label: 'アカウント', href: '/account/', key: 'account' },
 ] as const;

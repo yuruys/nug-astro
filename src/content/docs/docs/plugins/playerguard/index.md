@@ -2,6 +2,8 @@
 title: PlayerGuard
 description: 範囲選択による土地保護ができるプラグインです。
 category: プラグイン
+sidebar:
+  order: 6
 ---
 
 # PlayerGuard

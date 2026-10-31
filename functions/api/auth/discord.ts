@@ -1,3 +1,5 @@
+import { createReturnToCookie } from './_return-to';
+
 export const onRequestGet: PagesFunction<{
 	DISCORD_CLIENT_ID: string;
 }> = async ({ request, env }) => {
@@ -14,12 +16,16 @@ export const onRequestGet: PagesFunction<{
 	authUrl.searchParams.set('scope', 'identify');
 	authUrl.searchParams.set('state', state);
 
+	const headers = new Headers({
+		Location: authUrl.toString(),
+		'Cache-Control': 'no-store',
+	});
+	headers.append('Set-Cookie', `nug_discord_oauth_state_${state}=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`);
+	const returnToCookie = createReturnToCookie(state, url.searchParams.get('returnTo'));
+	if (returnToCookie) headers.append('Set-Cookie', returnToCookie);
+
 	return new Response(null, {
 		status: 302,
-		headers: {
-			Location: authUrl.toString(),
-			'Set-Cookie': `nug_discord_oauth_state_${state}=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
-			'Cache-Control': 'no-store',
-		},
+		headers,
 	});
 };
