@@ -38,7 +38,7 @@ const title = isGuide ? '攻略を新規作成' : 'ニュースを新規作成';
 						<label class="field" for="category"><span>カテゴリ <em>必須</em></span><select id="category" name="category" required><option value="">読み込み中…</option></select></label>
 						<label class="field" for="date"><span>投稿日 <em>必須</em></span><input id="date" name="date" type="date" required /></label>
 						<label class="field" for="icon"><span>アイコン <small>任意・emoji</small></span><input id="icon" name="icon" type="text" maxlength="32" placeholder="🌱" /></label>
-						<label class="field" for="image"><span>画像 <small>任意</small></span><input id="image" name="image" type="text" maxlength="300" placeholder="/images/example.webp" /></label>
+						<label class="field" for="image"><span>一覧用画像 <small>任意</small></span><input id="image" name="image" type="text" maxlength="300" placeholder="/images/example.webp" /></label>
 						<fieldset class="field full tag-fieldset">
 							<legend>タグ <small>任意・複数選択可</small></legend>
 							<div class="tag-list" id="tag-list" aria-live="polite">読み込み中…</div>
@@ -46,13 +46,24 @@ const title = isGuide ? '攻略を新規作成' : 'ニュースを新規作成';
 						</fieldset>
 						{!isGuide && <label class="field full" for="scbnews-source-url"><span>SCBNEWS 出典URL <small>移管記事のみ</small></span><input id="scbnews-source-url" name="scbnewsSourceUrl" type="url" inputmode="url" maxlength="2000" placeholder="https://..." /></label>}
 						<label class="field full" for="featured"><span>YURUPORT PICKUP</span><span class="check-row"><input id="featured" name="featured" type="checkbox" /> YURUPORT PICKUPに掲載する</span></label>
-						<label class="field full" for="body"><span>Markdown本文 <em>必須</em></span><textarea id="body" name="body" rows="12" required placeholder="記事本文を入力してください"></textarea></label>
+						<div class="field full body-field">
+							<label for="body">Markdown本文 <em>必須</em></label>
+							<div class="image-upload-controls">
+								<button class="button secondary" id="image-upload-button" type="button">画像をアップロードして挿入</button>
+								<input id="image-upload-input" type="file" accept="image/jpeg,image/png,image/gif,image/webp" hidden />
+								<span id="image-upload-status" role="status" aria-live="polite"></span>
+							</div>
+							<small>JPEG・PNG・GIF・WebP（5MB以下）に対応。画像は本文のカーソル位置に挿入されます。</small>
+							<textarea id="body" name="body" rows="12" required placeholder="記事本文を入力してください"></textarea>
+						</div>
 					</div><div class="form-actions"><a class="button secondary" href={`/admin/${contentType}/`}>戻る</a><button class="button primary" id="submit-button" type="submit">記事IDを予約する</button></div></form>
 				</section>
 				<section class="panel success-panel" id="reservation-panel" aria-live="polite" hidden><div class="success-mark" aria-hidden="true">✓</div><p class="eyebrow">ID RESERVED</p><h2>記事IDを予約しました</h2><dl class="reservation-details"><div><dt>記事ID</dt><dd id="reserved-article-id"></dd></div><div><dt>公開状態</dt><dd>公開待ち</dd></div><div><dt>source path</dt><dd id="reserved-source-path"></dd></div></dl><p class="success-note">入力内容はこの画面に保持されています。「公開する」からGitHubへ作成できます。</p></section>
 			</main>
 		</div>
 		<script>
+			import { setupArticleImageUpload } from '../../lib/article-image-upload';
+
 			type Server = { id: number; name: string; enabled: number | boolean };
 			type Article = { id: number; article_id: string; source_path: string; status: string };
 			type TaxonomyEntry = { name: string; contentType?: 'guide' | 'news'; articleCount: number };
@@ -68,9 +79,14 @@ const title = isGuide ? '攻略を新規作成' : 'ニュースを新規作成';
 			const tagList = document.getElementById('tag-list') as HTMLElement;
 			const newTagInput = document.getElementById('new-tag') as HTMLInputElement;
 			const addTagButton = document.getElementById('add-tag') as HTMLButtonElement;
+			const imageUploadButton = document.getElementById('image-upload-button') as HTMLButtonElement;
+			const imageUploadInput = document.getElementById('image-upload-input') as HTMLInputElement;
+			const imageUploadStatus = document.getElementById('image-upload-status') as HTMLElement;
+			const bodyEditor = document.getElementById('body') as HTMLTextAreaElement;
 			let tagCatalog: TaxonomyEntry[] = [];
 			let selectedTags = new Set<string>();
 			let reservedArticleDbId: number | null = null;
+			const imageUploader = setupArticleImageUpload(bodyEditor, imageUploadButton, imageUploadInput, imageUploadStatus);
 			function showError(message: string) { notice.textContent = message; notice.className = 'notice error'; notice.hidden = false; notice.focus(); }
 			function localDate() { const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`; }
 			async function responseData(response: Response): Promise<ApiResult> {
@@ -143,6 +159,7 @@ const title = isGuide ? '攻略を新規作成' : 'ニュースを新規作成';
 			});
 			form.addEventListener('submit', async (event) => {
 				event.preventDefault(); notice.hidden = true;
+				if (imageUploader.isUploading()) { showError('画像のアップロードが完了してから公開してください。'); return; }
 				if (!form.reportValidity()) return;
 				if (reservedArticleDbId === null && isGuide && !serverSelect?.value) { showError('サーバーを選択してください。'); serverSelect?.focus(); return; }
 				submitButton.disabled = true;
@@ -196,6 +213,12 @@ const title = isGuide ? '攻略を新規作成' : 'ニュースを新規作成';
 	.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:20px;height:72px;padding:0 clamp(16px,3vw,40px);border-bottom:1px solid #343c3e;background:#111416f2;backdrop-filter:blur(14px)}.brand{display:flex;align-items:center;gap:12px;min-width:0}.brand-mark{display:grid;place-items:center;width:42px;height:42px;border:1px solid #568f43;border-radius:4px;background:linear-gradient(145deg,#6ea95a,#38642f);font-size:12px;font-weight:950}.brand strong,.brand small{display:block}.brand strong{font-size:14px}.brand small{color:var(--muted);font-size:10px}.site-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-left:auto;padding:0 14px;border:1px solid var(--line);border-radius:3px;background:var(--panel);color:var(--soft);font-size:12px;font-weight:750}.menu-toggle{display:none}.shell{display:grid;grid-template-columns:236px minmax(0,1fr);width:min(1440px,100%);min-height:calc(100vh - 72px);margin:auto}.sidebar{position:sticky;top:72px;display:flex;flex-direction:column;align-self:start;min-height:calc(100vh - 72px);padding:30px 16px 20px;border-right:1px solid #30373a}.nav-label,.eyebrow{margin:0;color:#88bf70;font-size:10px;font-weight:900;letter-spacing:.13em}.nav-label{padding:0 12px 12px;color:var(--muted)}.sidebar nav{display:grid;gap:5px}.nav-link{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 12px;border:1px solid transparent;border-radius:3px;color:#b7c0ba;font-size:13px;font-weight:750}.nav-link:hover{background:#ffffff08;color:white}.nav-link.active{border-color:#456043;background:#42653a33;color:#f3f8f0}.sidebar-note{display:flex;align-items:flex-start;gap:9px;margin-top:auto;padding:15px 10px 0;border-top:1px solid #30373a;color:var(--muted);font-size:10px}.live-dot{width:7px;height:7px;flex:0 0 7px;margin-top:5px;border-radius:50%;background:var(--green)}.main{width:min(1000px,100%);min-width:0;margin:auto;padding:42px clamp(18px,4vw,56px) 48px}.page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}.page-heading h1{margin:7px 0 0;font-size:clamp(27px,3vw,36px);font-weight:900;line-height:1.2}.intro{margin:10px 0 0;color:var(--muted);font-size:13px}.button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 15px;border:1px solid;border-radius:3px;font-size:12px;font-weight:850;cursor:pointer}.button:disabled{opacity:.6;cursor:wait}.primary{border-color:#568f43;background:linear-gradient(180deg,#7dbd5f,#609c49);color:white}.secondary{border-color:var(--line2);background:linear-gradient(180deg,#333a3e,#272d30);color:var(--soft)}.panel{min-width:0;border:1px solid var(--line);border-radius:4px;background:#202529;box-shadow:0 4px #0004,0 10px 24px #0002}.panel-heading{padding:20px 22px;border-bottom:1px solid #ffffff0c}.panel-heading h2,.success-panel h2{margin:4px 0 0;font-size:19px}.form-panel form{padding:22px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.field{display:grid;align-content:start;gap:8px;min-width:0;color:var(--soft);font-size:12px;font-weight:750}.field>span:first-child{display:flex;align-items:center;gap:8px}.field em{color:#e5ca7b;font-size:10px;font-style:normal}.field small{color:var(--muted);font-size:10px;font-weight:500}.field input:not([type=checkbox]),.field textarea,.field select{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line2);border-radius:3px;background:#15191b;color:var(--text);font-size:13px}.field textarea{min-height:92px;resize:vertical}.field textarea[name=body]{min-height:260px}.full{grid-column:1/-1}.check-row{display:flex;align-items:center;gap:11px;min-height:44px;color:var(--text);font-weight:600}.check-row input{width:20px;height:20px;accent-color:var(--green)}.form-actions,.success-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid #ffffff10}.notice{margin:0 0 18px;padding:13px 16px;border:1px solid #754543;border-left:4px solid var(--red);background:#301f20;color:#f2d0cd;font-size:13px;overflow-wrap:anywhere}.success-panel{margin-top:18px;padding:26px}.success-mark{display:grid;width:48px;height:48px;place-items:center;margin-bottom:14px;border:1px solid #568f43;background:#34512a55;color:#a7d891;font-size:25px}.reservation-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}.reservation-details div{min-width:0;padding:13px;border:1px solid #ffffff12;background:#171b1e}.reservation-details div:last-child{grid-column:1/-1}.reservation-details dt{color:var(--muted);font-size:11px}.reservation-details dd{margin:4px 0 0;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;overflow-wrap:anywhere}.success-note{color:var(--muted);font-size:12px}.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 	@media(max-width:760px){.topbar{height:64px;gap:12px}.brand-mark{width:38px;height:38px}.menu-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:44px;height:44px;margin-left:auto;border:1px solid var(--line);border-radius:3px;background:var(--panel)}.menu-toggle span{width:18px;height:2px;background:#d5ddd7}.site-link{padding:0 10px;font-size:11px}.shell{display:block;min-height:calc(100vh - 64px)}.sidebar{position:fixed;top:64px;bottom:0;left:0;z-index:19;width:min(290px,86vw);min-height:0;padding:22px 16px 20px;border-right:1px solid var(--line);background:#15191bf7;transform:translateX(-105%);transition:transform .2s}.sidebar.is-open{transform:translateX(0)}.main{padding:30px 18px 38px}.page-heading{align-items:stretch;flex-direction:column;gap:16px;margin-bottom:22px}.back-button{width:100%}.form-grid{grid-template-columns:minmax(0,1fr);gap:17px}.full{grid-column:auto}.form-panel form{padding:18px}.form-actions,.success-actions{flex-direction:column-reverse}.form-actions .button,.success-actions .button{width:100%}.reservation-details{grid-template-columns:minmax(0,1fr)}.reservation-details div:last-child{grid-column:auto}}
 	@media(max-width:380px){.site-link{padding:0 8px;font-size:10px}.brand{gap:8px}.brand strong{font-size:12px}.main{padding-right:13px;padding-left:13px}}
+</style>
+
+<style is:global>
+	.body-field>label{color:var(--soft);font-size:12px;font-weight:750}
+	.image-upload-controls{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+	.image-upload-controls>span{color:var(--muted);font-size:11px}
 </style>
 
 <style is:global>

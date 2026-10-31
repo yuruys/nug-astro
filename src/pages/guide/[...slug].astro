@@ -179,6 +179,14 @@ const relatedArticles = otherGuides
 			1.9;
 	}
 
+	.article-content :global(img) {
+		display: block;
+		max-width: 100%;
+		height: auto;
+		margin: 24px auto;
+		border-radius: 4px;
+	}
+
 	@media (max-width: 1023px) {
 		.article-layout {
 			grid-template-columns: minmax(0, 1fr);
