@@ -46,6 +46,7 @@ const guide = defineCollection({
 		image: z.string().optional(),
 
 		date: z.coerce.date().optional(),
+		updatedAt: z.coerce.date().optional(),
 
 		order: z.number().optional(),
 

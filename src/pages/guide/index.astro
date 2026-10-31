@@ -5,14 +5,16 @@ import { getCollection } from "astro:content";
 
 const guides = await getCollection("guide");
 
-const sortedGuides = guides
+const sortedGuides = [...guides]
 	.filter((guide) => guide.id !== "index")
-	.sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999));
+	.sort((a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0));
+const categories = [...new Set(sortedGuides.map((guide) => guide.data.category ?? "攻略"))].sort((a, b) => a.localeCompare(b, "ja"));
+const tags = [...new Set(sortedGuides.flatMap((guide) => guide.data.tags ?? []))].sort((a, b) => a.localeCompare(b, "ja"));
 ---
 
 <Layout
 	title="攻略 | ゆるぽーと"
-	description="マルチサーバーの攻略情報をまとめています。"
+	description="マイクラマルチサーバーの攻略情報をまとめています。"
 >
 
 	<section class="guide-header">
@@ -26,20 +28,50 @@ const sortedGuides = guides
 		</h1>
 
 		<p class="description">
-			Nekozouneko Serverを楽しむための攻略情報をまとめています。
+			マイクラマルチサーバーの攻略情報をまとめています。
 		</p>
 
 	</section>
 
 
-	<section class="guide-list">
+	<section class="guide-controls" aria-label="攻略記事の表示条件">
+		<label class="guide-control">
+			<span>並び替え</span>
+			<select id="guide-sort">
+				<option value="newest">新着順</option>
+				<option value="updated">更新日順</option>
+			</select>
+		</label>
+		<label class="guide-control">
+			<span>カテゴリ</span>
+			<select id="guide-category">
+				<option value="">すべて</option>
+				{categories.map((category) => <option value={category}>{category}</option>)}
+			</select>
+		</label>
+		<label class="guide-control">
+			<span>タグ</span>
+			<select id="guide-tag">
+				<option value="">すべて</option>
+				{tags.map((tag) => <option value={tag}>{tag}</option>)}
+			</select>
+		</label>
+		<p class="guide-result-count" id="guide-result-count" aria-live="polite"></p>
+	</section>
+
+	<p class="tag-filter-empty" id="tag-filter-empty" hidden></p>
+
+	<section class="guide-list" id="guide-list" aria-label="攻略記事一覧">
 
 		{
 			sortedGuides.map((guide, index) => (
 
 				<div
 					class="guide-card-item"
+					data-category={guide.data.category ?? "攻略"}
 					data-tags={JSON.stringify(guide.data.tags ?? [])}
+					data-created={guide.data.date?.valueOf() ?? 0}
+					data-updated={guide.data.updatedAt?.valueOf() ?? guide.data.date?.valueOf() ?? 0}
 				>
 					<ArticleCard
 						title={guide.data.title}
@@ -63,27 +95,76 @@ const sortedGuides = guides
 </Layout>
 
 <script>
-	const filterTag = new URLSearchParams(window.location.search).get('tag');
-	if (filterTag) {
-		const key = (value: string) => value.normalize('NFKC').trim().toLocaleLowerCase('ja-JP');
-		const cards = [...document.querySelectorAll<HTMLElement>('.guide-card-item')];
+	const key = (value: string) => value.normalize('NFKC').trim().toLocaleLowerCase('ja-JP');
+	const list = document.getElementById('guide-list');
+	const cards = [...document.querySelectorAll<HTMLElement>('.guide-card-item')];
+	const sortSelect = document.getElementById('guide-sort') as HTMLSelectElement | null;
+	const categorySelect = document.getElementById('guide-category') as HTMLSelectElement | null;
+	const tagSelect = document.getElementById('guide-tag') as HTMLSelectElement | null;
+	const count = document.getElementById('guide-result-count');
+	const empty = document.getElementById('tag-filter-empty');
+	const params = new URLSearchParams(window.location.search);
+	const initialTag = params.get('tag') ?? '';
+	let activeTag = initialTag;
+
+	if (sortSelect && ['newest', 'updated'].includes(params.get('sort') ?? '')) {
+		sortSelect.value = params.get('sort')!;
+	}
+	if (categorySelect) categorySelect.value = params.get('category') ?? '';
+	if (tagSelect) tagSelect.value = initialTag;
+
+	const applyFilters = () => {
+		if (!list || !sortSelect || !categorySelect || !tagSelect) return;
+
+		const selectedTag = activeTag;
+		const sorted = [...cards].sort((a, b) => {
+			const dateKey = sortSelect.value === 'updated' ? 'updated' : 'created';
+			return Number(b.dataset[dateKey] ?? 0) - Number(a.dataset[dateKey] ?? 0);
+		});
 		let visibleCount = 0;
-		for (const card of cards) {
-			const tags = JSON.parse(card.dataset.tags ?? '[]') as string[];
-			const visible = tags.some((tag) => key(tag) === key(filterTag));
-			card.hidden = !visible;
-			if (visible) visibleCount += 1;
+
+		for (const card of sorted) {
+			const cardTags = JSON.parse(card.dataset.tags ?? '[]') as string[];
+			const matchesCategory = !categorySelect.value || key(card.dataset.category ?? '') === key(categorySelect.value);
+			const matchesTag = !selectedTag || cardTags.some((tag) => key(tag) === key(selectedTag));
+			card.hidden = !(matchesCategory && matchesTag);
+			if (!card.hidden) {
+				visibleCount += 1;
+				const number = card.querySelector('.article-number');
+				if (number) number.textContent = String(visibleCount).padStart(2, '0');
+			}
+			list.append(card);
 		}
-		const empty = document.getElementById('tag-filter-empty');
+
+		if (count) count.textContent = `${visibleCount}件`;
 		if (empty) {
 			empty.hidden = visibleCount > 0;
 			empty.textContent = visibleCount > 0
 				? ''
-				: `「${filterTag}」タグが付いた攻略記事はありません。`;
+				: selectedTag
+					? `「${selectedTag}」タグが付いた攻略記事はありません。`
+					: '条件に一致する攻略記事はありません。';
 			empty.setAttribute('role', 'status');
-			empty.setAttribute('tabindex', '-1');
 		}
-	}
+
+		const nextParams = new URLSearchParams(window.location.search);
+		if (sortSelect.value === 'newest') nextParams.delete('sort');
+		else nextParams.set('sort', sortSelect.value);
+		if (categorySelect.value) nextParams.set('category', categorySelect.value);
+		else nextParams.delete('category');
+		if (activeTag) nextParams.set('tag', activeTag);
+		else nextParams.delete('tag');
+		const query = nextParams.toString();
+		window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`);
+	};
+
+	sortSelect?.addEventListener('change', applyFilters);
+	categorySelect?.addEventListener('change', applyFilters);
+	tagSelect?.addEventListener('change', () => {
+		activeTag = tagSelect.value;
+		applyFilters();
+	});
+	applyFilters();
 </script>
 
 
@@ -147,6 +228,55 @@ const sortedGuides = guides
 
 	}
 
+	.guide-controls {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: end;
+		gap: 12px;
+		margin-bottom: 24px;
+		padding: 16px;
+		border: 1px solid var(--color-border);
+		border-radius: 10px;
+		background: var(--color-surface);
+	}
+
+	.guide-control {
+		display: grid;
+		min-width: 150px;
+		gap: 6px;
+		color: var(--color-text-secondary);
+		font-size: 12px;
+		font-weight: 700;
+	}
+
+	.guide-control select {
+		width: 100%;
+		min-height: 44px;
+		padding: 0 34px 0 12px;
+		border: 1px solid var(--color-border);
+		border-radius: 7px;
+		background: var(--color-surface-subtle);
+		color: var(--color-text);
+		font-size: 14px;
+	}
+
+	.guide-control select:focus-visible {
+		outline: 3px solid var(--color-accent);
+		outline-offset: 2px;
+	}
+
+	.guide-result-count {
+		margin-left: auto;
+		padding: 0 4px 12px;
+		color: var(--color-text-secondary);
+		font-size: 13px;
+		font-weight: 700;
+	}
+
+	.tag-filter-empty {
+		margin: 0 0 16px;
+		color: var(--color-text-secondary);
+	}
 
 	.guide-list {
 		display: grid;
@@ -161,6 +291,29 @@ const sortedGuides = guides
 
 	.guide-card-item[hidden] {
 		display: none;
+	}
+
+	@media (max-width: 520px) {
+		.guide-controls {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+			padding: 12px;
+		}
+
+		.guide-control:first-child {
+			grid-column: 1 / -1;
+		}
+
+		.guide-control {
+			min-width: 0;
+		}
+
+		.guide-result-count {
+			grid-column: 1 / -1;
+			margin-left: 0;
+			padding: 0;
+		}
 	}
 
 	@media (max-width: 768px) {

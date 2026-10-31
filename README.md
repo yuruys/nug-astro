@@ -52,6 +52,8 @@ npm run dev
 
 ガイドは `src/content/guide/`、ニュースは `src/content/news/`、ツール情報は `src/content/tool/` に追加します。Wikiの記事は `src/content/docs/` 配下の既存分類に追加します。コレクションのスキーマは `src/content.config.ts` に定義されています。ツール画面はコンテンツデータとは別に `src/pages/tool/` で管理します。
 
+攻略一覧は `date` の降順を初期表示にし、frontmatter の任意項目 `updatedAt` があれば更新日順にも切り替えられます。カテゴリとタグは記事データから一覧の絞り込み候補に反映されます。
+
 ## Cloudflare Pages
 
 Astroのビルド出力は `dist/` です。Pages Functions はルートの `functions/` から検出され、D1のバインディングは `wrangler.jsonc` で設定されています。D1の再作成、マイグレーション実行、本番データへの書き込み、バインディングや `remote` 設定の変更は、別途承認なしに行わないでください。Wiki同期・初期化スクリプトも実行前に接続先と生成内容を確認してください。
