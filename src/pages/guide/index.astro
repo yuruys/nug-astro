@@ -12,7 +12,7 @@ const sortedGuides = guides
 
 <Layout
 	title="攻略 | ゆるぽーと"
-	description="Nekozouneko Serverの攻略情報をまとめています。"
+	description="マルチサーバーの攻略情報をまとめています。"
 >
 
 	<section class="guide-header">
@@ -38,7 +38,7 @@ const sortedGuides = guides
 			sortedGuides.map((guide, index) => (
 
 				<div
-					class="guide-card"
+					class="guide-card-item"
 					data-tags={JSON.stringify(guide.data.tags ?? [])}
 				>
 					<ArticleCard
@@ -66,7 +66,7 @@ const sortedGuides = guides
 	const filterTag = new URLSearchParams(window.location.search).get('tag');
 	if (filterTag) {
 		const key = (value: string) => value.normalize('NFKC').trim().toLocaleLowerCase('ja-JP');
-		const cards = [...document.querySelectorAll<HTMLElement>('.guide-card')];
+		const cards = [...document.querySelectorAll<HTMLElement>('.guide-card-item')];
 		let visibleCount = 0;
 		for (const card of cards) {
 			const tags = JSON.parse(card.dataset.tags ?? '[]') as string[];
@@ -159,7 +159,7 @@ const sortedGuides = guides
 	}
 
 
-	.guide-card[hidden] {
+	.guide-card-item[hidden] {
 		display: none;
 	}
 

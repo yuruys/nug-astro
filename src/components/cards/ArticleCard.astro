@@ -136,12 +136,29 @@ const formattedDate = date
 	border-radius: 10px;
 	background: var(--color-surface);
 	color: var(--color-text);
+	overflow: hidden;
 	text-decoration: none;
 	transition:
 		transform var(--transition-fast),
 		background-color var(--transition-fast),
 		border-color var(--transition-fast),
 		box-shadow var(--transition-fast);
+}
+
+.article-card::before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 55%;
+	height: 2px;
+	background: linear-gradient(
+		90deg,
+		var(--color-gold-light),
+		var(--color-grass-light),
+		transparent
+	);
+	content: "";
+	pointer-events: none;
 }
 
 .article-card:hover {
