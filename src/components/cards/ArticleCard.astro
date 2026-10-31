@@ -7,6 +7,7 @@ interface Props {
 	image?: string;
 	sourceUrl?: string;
 	icon?: string;
+	tags?: string[];
 	href: string;
 	number?: string;
 }
@@ -19,8 +20,9 @@ const {
 	image,
 	sourceUrl,
 	icon = "📖",
+	tags = [],
 	href,
-	number = "01",
+	number,
 } = Astro.props;
 
 const formattedDate = date
@@ -63,9 +65,7 @@ const formattedDate = date
 			aria-hidden="true"
 		></div>
 
-		<span class="article-number">
-			{number}
-		</span>
+		{number && <span class="article-number">{number}</span>}
 
 	</div>
 
@@ -95,20 +95,24 @@ const formattedDate = date
 				</span>
 			)}
 
-			<span class="article-meta-arrow">
-				→
-			</span>
+			<span class="article-meta-arrow" aria-hidden="true">→</span>
 
 		</div>
 
+		{tags.length > 0 && (
+			<ul class="article-tags" aria-label="タグ">
+				{tags.map((tag) => <li>{tag}</li>)}
+			</ul>
+		)}
+
 		{sourceUrl && (
-			<p class="article-source">出典：<span>SCBNEWS</span></p>
+			<p class="article-source">出典：SCBNEWS</p>
 		)}
 
 		{formattedDate && (
-			<p class="article-date">
+			<time class="article-date" datetime={date?.toISOString()}>
 				{formattedDate}
-			</p>
+			</time>
 		)}
 
 	</div>
@@ -123,501 +127,204 @@ const formattedDate = date
 ========================================================= */
 
 .article-card {
-
-	position:
-		relative;
-
-	display:
-		block;
-
-	color:
-		var(--color-text);
-
-	text-decoration:
-		none;
-
-}
-
-
-/* =========================================================
-   Image
-========================================================= */
-
-.article-image {
-
-	position:
-		relative;
-
-	aspect-ratio:
-		16 / 9;
-
-	overflow:
-		hidden;
-
-	border:
-		1px solid var(--color-border-strong);
-
-	border-radius:
-		0;
-
-	background:
-		var(--color-surface-strong);
-
-	box-shadow:
-		3px 3px 0 var(--color-border-strong);
-
-}
-
-
-/* =========================================================
-   Image
-========================================================= */
-
-.article-image img {
-
-	width:
-		100%;
-
-	height:
-		100%;
-
-	display:
-		block;
-
-	object-fit:
-		cover;
-
-	transition:
-		transform var(--transition-normal),
-		filter var(--transition-normal);
-
-}
-
-
-/* =========================================================
-   Placeholder
-========================================================= */
-
-.article-image-placeholder {
-
-	width:
-		100%;
-
-	height:
-		100%;
-
-	display:
-		flex;
-
-	align-items:
-		center;
-
-	justify-content:
-		center;
-
-	background:
-		linear-gradient(
-			135deg,
-			var(--color-grass),
-			var(--color-dirt)
-		);
-
-}
-
-
-.article-image-placeholder span {
-
-	font-size:
-		44px;
-
-	filter:
-		drop-shadow(2px 2px 0 rgba(0, 0, 0, .25));
-
-}
-
-
-/* =========================================================
-   Image Overlay
-========================================================= */
-
-.article-image-overlay {
-
-	position:
-		absolute;
-
-	inset:
-		0;
-
-	background:
-		linear-gradient(
-			180deg,
-			transparent 55%,
-			rgba(0, 0, 0, .28)
-		);
-
-	pointer-events:
-		none;
-
-}
-
-
-/* =========================================================
-   Number
-========================================================= */
-
-.article-number {
-
-	position:
-		absolute;
-
-	top:
-		8px;
-
-	left:
-		8px;
-
-	display:
-		flex;
-
-	align-items:
-		center;
-
-	justify-content:
-		center;
-
-	min-width:
-		27px;
-
-	height:
-		23px;
-
-	padding:
-		0 5px;
-
-	border:
-		1px solid rgba(0, 0, 0, .55);
-
-	background:
-		rgba(255, 255, 255, .90);
-
-	color:
-		#111;
-
-	font-family:
-		var(--font-mono);
-
-	font-size:
-		9px;
-
-	font-weight:
-		800;
-
-	letter-spacing:
-		.08em;
-
-	box-shadow:
-		2px 2px 0 rgba(0, 0, 0, .25);
-
-}
-
-
-/* =========================================================
-   Content
-========================================================= */
-
-.article-content {
-
-	padding:
-		13px 2px 0;
-
-}
-
-
-/* =========================================================
-   Title
-========================================================= */
-
-.article-title {
-
-	font-size:
-		16px;
-
-	font-weight:
-		850;
-
-	line-height:
-		1.55;
-
-	letter-spacing:
-		-0.025em;
-
-}
-
-
-/* =========================================================
-   Description
-========================================================= */
-
-.article-description {
-
-	margin-top:
-		7px;
-
-	color:
-		var(--color-text-secondary);
-
-	font-size:
-		12px;
-
-	line-height:
-		1.65;
-
-	display:
-		-webkit-box;
-
-	-webkit-line-clamp:
-		2;
-
-	-webkit-box-orient:
-		vertical;
-
-	overflow:
-		hidden;
-
-}
-
-
-/* =========================================================
-   Meta
-========================================================= */
-
-.article-meta {
-
-	display:
-		flex;
-
-	align-items:
-		center;
-
-	justify-content:
-		space-between;
-
-	gap:
-		8px;
-
-	margin-top:
-		11px;
-
-}
-
-
-/* =========================================================
-   Category
-========================================================= */
-
-.article-category {
-
-	display:
-		inline-flex;
-
-	align-items:
-		center;
-
-	min-height:
-		27px;
-
-	padding:
-		0 11px;
-
-	border:
-		1px solid var(--color-border);
-
-	border-radius:
-		999px;
-
-	background:
-		var(--color-surface);
-
-	color:
-		var(--color-text-secondary);
-
-	font-size:
-		10px;
-
-	font-weight:
-		800;
-
-}
-
-
-/* =========================================================
-   Arrow
-========================================================= */
-
-.article-meta-arrow {
-
-	display:
-		flex;
-
-	align-items:
-		center;
-
-	justify-content:
-		center;
-
-	width:
-		27px;
-
-	height:
-		27px;
-
-	border:
-		1px solid var(--color-border);
-
-	background:
-		var(--color-surface);
-
-	color:
-		var(--color-text-secondary);
-
-	font-size:
-		14px;
-
-	box-shadow:
-		2px 2px 0 var(--color-border-strong);
-
+	position: relative;
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+	padding: 10px;
+	border: 1px solid var(--color-border);
+	border-radius: 10px;
+	background: var(--color-surface);
+	color: var(--color-text);
+	text-decoration: none;
 	transition:
 		transform var(--transition-fast),
 		background-color var(--transition-fast),
-		color var(--transition-fast),
-		border-color var(--transition-fast);
-
+		border-color var(--transition-fast),
+		box-shadow var(--transition-fast);
 }
 
+.article-card:hover {
+	transform: translateY(-2px);
+	border-color: var(--color-border-accent);
+	background: var(--color-surface-hover);
+	box-shadow: 0 3px 0 var(--color-border);
+}
 
-/* =========================================================
-   Date
-========================================================= */
+.article-card:focus-visible {
+	outline: 3px solid var(--color-accent);
+	outline-offset: 3px;
+}
+
+.article-image {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	overflow: hidden;
+	border: 1px solid var(--color-border);
+	border-radius: 6px;
+	background: var(--color-surface-strong);
+}
+
+.article-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform var(--transition-normal);
+}
+
+.article-card:hover .article-image img {
+	transform: scale(1.03);
+}
+
+.article-image-placeholder {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(135deg, var(--color-grass), var(--color-dirt));
+}
+
+.article-image-placeholder span {
+	font-size: 44px;
+	filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, .25));
+}
+
+.article-image-overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, .28));
+	pointer-events: none;
+}
+
+.article-number {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	display: flex;
+	min-width: 27px;
+	height: 23px;
+	align-items: center;
+	justify-content: center;
+	padding: 0 5px;
+	border: 1px solid rgba(0, 0, 0, .55);
+	border-radius: 4px;
+	background: rgba(255, 255, 255, .90);
+	color: #111;
+	font-family: var(--font-mono);
+	font-size: 9px;
+	font-weight: 800;
+	letter-spacing: .08em;
+	box-shadow: 2px 2px 0 rgba(0, 0, 0, .25);
+}
+
+.article-content {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	padding: 12px 3px 3px;
+}
+
+.article-title {
+	color: var(--color-text);
+	font-size: 16px;
+	font-weight: 800;
+	line-height: 1.55;
+	letter-spacing: -0.025em;
+}
+
+.article-description {
+	display: -webkit-box;
+	overflow: hidden;
+	margin-top: 7px;
+	color: var(--color-text-secondary);
+	font-size: 12px;
+	line-height: 1.65;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+
+.article-meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-top: auto;
+	padding-top: 12px;
+}
+
+.article-category {
+	display: inline-flex;
+	min-height: 27px;
+	align-items: center;
+	padding: 0 10px;
+	border: 1px solid var(--color-border-accent);
+	border-radius: 999px;
+	background: var(--color-accent-soft);
+	color: var(--color-accent);
+	font-size: 10px;
+	font-weight: 700;
+}
+
+.article-meta-arrow {
+	color: var(--color-text-secondary);
+	font-size: 16px;
+	transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.article-card:hover .article-meta-arrow {
+	transform: translateX(3px);
+	color: var(--color-accent);
+}
 
 .article-date {
+	margin-top: 8px;
+	color: var(--color-text-secondary);
+	font-family: var(--font-mono);
+	font-size: 10px;
+	letter-spacing: .04em;
+}
 
-	margin-top:
-		8px;
+.article-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+	margin-top: 9px;
+}
 
-	color:
-		var(--color-text-tertiary);
-
-	font-family:
-		var(--font-mono);
-
-	font-size:
-		9px;
-
-	letter-spacing:
-		.06em;
-
+.article-tags li {
+	padding: 3px 7px;
+	border: 1px solid var(--color-border);
+	border-radius: 999px;
+	background: var(--color-surface-subtle);
+	color: var(--color-text-secondary);
+	font-size: 10px;
+	line-height: 1.4;
 }
 
 .article-source {
-	margin-top: 7px;
+	margin-top: 8px;
 	color: var(--color-text-secondary);
 	font-size: 10px;
 }
 
-.article-source span {
-	font-weight: 800;
-	text-decoration: underline;
-	text-underline-offset: 2px;
+@media (prefers-reduced-motion: reduce) {
+	.article-card,
+	.article-image img,
+	.article-meta-arrow {
+		transition: none;
+	}
 }
-
-
-/* =========================================================
-   Hover
-========================================================= */
-
-.article-card:hover .article-image img {
-
-	transform:
-		scale(1.045);
-
-	filter:
-		saturate(1.05);
-
-}
-
-
-.article-card:hover .article-image {
-
-	border-color:
-		var(--color-accent);
-
-}
-
-
-.article-card:hover .article-meta-arrow {
-
-	transform:
-		translateX(4px);
-
-	background:
-		var(--color-accent);
-
-	border-color:
-		var(--color-accent);
-
-	color:
-		#ffffff;
-
-}
-
-
-/* =========================================================
-   Dark Mode
-========================================================= */
 
 :global(html[data-theme="dark"]) .article-number {
-
-	background:
-		rgba(25, 29, 27, .92);
-
-	color:
-		#ffffff;
-
-	border-color:
-		rgba(255, 255, 255, .25);
-
+	background: rgba(25, 29, 27, .92);
+	color: #ffffff;
+	border-color: rgba(255, 255, 255, .25);
 }
-
-
-:global(html[data-theme="dark"]) .article-image {
-
-	box-shadow:
-		3px 3px 0 rgba(0, 0, 0, .48);
-
-}
-
-
-/* =========================================================
-   Mobile
-========================================================= */
 
 @media (max-width: 768px) {
-
-	.article-title {
-
-		font-size:
-			15px;
-
-	}
-
-
-	.article-description {
-
-		font-size:
-			11px;
-
-	}
-
+	.article-title { font-size: 15px; }
+	.article-description { font-size: 11px; }
 }
 
 </style>

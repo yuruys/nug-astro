@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
+import ArticleCard from "../../components/cards/ArticleCard.astro";
 
 const entries = await getCollection("news");
 const sortedEntries = [...entries].sort((a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0));
@@ -16,15 +17,19 @@ const sortedEntries = [...entries].sort((a, b) => (b.data.date?.valueOf() ?? 0) 
 		<p class="tag-filter-empty" id="tag-filter-empty" hidden></p>
 		<div class="entry-list">
 			{sortedEntries.map((entry) => (
-				<a class="entry-card" href={`/news/${entry.id}/`} data-tags={JSON.stringify(entry.data.tags ?? [])}>
-					<span class="entry-icon">{entry.data.icon ?? "📰"}</span>
-					<span class="entry-content">
-						<span class="entry-category">{entry.data.category ?? "ニュース"}</span>
-						<strong>{entry.data.title}</strong>
-						<span>{entry.data.description}</span>
-					</span>
-					<span class="entry-arrow">→</span>
-				</a>
+				<div class="entry-card" data-tags={JSON.stringify(entry.data.tags ?? [])}>
+					<ArticleCard
+						title={entry.data.title}
+						description={entry.data.description}
+						category={entry.data.category ?? "ニュース"}
+						date={entry.data.date}
+						image={entry.data.image}
+						icon={entry.data.icon ?? "📰"}
+						sourceUrl={entry.data.scbnewsSourceUrl}
+						tags={entry.data.tags}
+						href={`/news/${entry.id}/`}
+					/>
+				</div>
 			))}
 		</div>
 	</section>
@@ -57,18 +62,14 @@ const sortedEntries = [...entries].sort((a, b) => (b.data.date?.valueOf() ?? 0) 
 <style>
 	.listing-page { padding: 72px 0 100px; }
 	.page-header { max-width: 760px; margin-bottom: 48px; }
-	.page-label, .entry-category { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: var(--color-text-secondary); }
+	.page-label { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: var(--color-text-secondary); }
 	.page-header h1 { margin-top: 8px; font-size: clamp(40px, 7vw, 64px); line-height: 1.1; }
 	.page-description { margin-top: 16px; color: var(--color-text-secondary); }
-	.entry-list { display: grid; gap: 12px; }
-	.entry-card { display: flex; align-items: center; gap: 16px; padding: 24px; border: 1px solid var(--color-border); border-radius: var(--radius-medium); transition: transform var(--transition-normal), box-shadow var(--transition-normal); }
-	.entry-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08); }
-	.entry-icon { font-size: 24px; }
-	.entry-content { display: grid; gap: 5px; flex: 1; }
-	.entry-content strong { font-size: 20px; }
-	.entry-content span:last-child { font-size: 14px; color: var(--color-text-secondary); }
-	.entry-arrow { font-size: 20px; color: var(--color-text-secondary); }
+	.entry-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 16px; }
+	.entry-card { min-width: 0; }
 	.tag-filter-empty { margin: 0 0 16px; color: var(--color-text-secondary); }
 	.entry-card[hidden] { display: none; }
 	@media (max-width: 768px) { .listing-page { padding: 48px 0 72px; } }
+	@media (max-width: 768px) { .entry-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+	@media (max-width: 520px) { .entry-list { grid-template-columns: 1fr; } }
 </style>
