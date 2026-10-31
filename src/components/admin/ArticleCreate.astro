@@ -49,11 +49,11 @@ const title = isGuide ? '攻略を新規作成' : 'ニュースを新規作成';
 						<div class="field full body-field">
 							<label for="body">Markdown本文 <em>必須</em></label>
 							<div class="image-upload-controls">
-								<button class="button secondary" id="image-upload-button" type="button">画像をアップロードして挿入</button>
+								<button class="button secondary" id="image-upload-button" type="button">本文のカーソル位置に画像を挿入</button>
 								<input id="image-upload-input" type="file" accept="image/jpeg,image/png,image/gif,image/webp" hidden />
 								<span id="image-upload-status" role="status" aria-live="polite"></span>
 							</div>
-							<small>JPEG・PNG・GIF・WebP（5MB以下）に対応。画像は本文のカーソル位置に挿入されます。</small>
+							<small>本文で画像を置きたい位置をクリックしてから選択してください。JPEG・PNG・GIF・WebP（5MB以下）に対応します。</small>
 							<textarea id="body" name="body" rows="12" required placeholder="記事本文を入力してください"></textarea>
 						</div>
 					</div><div class="form-actions"><a class="button secondary" href={`/admin/${contentType}/`}>戻る</a><button class="button primary" id="submit-button" type="submit">記事IDを予約する</button></div></form>

@@ -11,9 +11,13 @@ export function setupArticleImageUpload(
 	status: HTMLElement,
 ): { isUploading: () => boolean } {
 	let uploading = false;
+	let selectionStart = editor.selectionStart;
 
 	button.addEventListener('click', () => {
-		if (!uploading) input.click();
+		if (!uploading) {
+			selectionStart = editor.selectionStart;
+			input.click();
+		}
 	});
 
 	input.addEventListener('change', async () => {
@@ -52,12 +56,25 @@ export function setupArticleImageUpload(
 				.replaceAll(']', '\\]')
 				.replace(/[\r\n]/g, ' ')
 				.trim() || '記事画像';
-			const offset = editor.selectionStart;
-			const prefix = offset > 0 && editor.value[offset - 1] !== '\n' ? '\n' : '';
-			const markdown = `${prefix}![${altText}](${result.url})\n`;
-			editor.value = `${editor.value.slice(0, offset)}${markdown}${editor.value.slice(offset)}`;
+			const offset = selectionStart;
+			const before = editor.value.slice(0, offset);
+			const after = editor.value.slice(offset);
+			const prefix = !before || before.endsWith('\n\n')
+				? ''
+				: before.endsWith('\n')
+					? '\n'
+					: '\n\n';
+			const suffix = !after || after.startsWith('\n\n')
+				? ''
+				: after.startsWith('\n')
+					? '\n'
+					: '\n\n';
+			const markdown = `![${altText}](${result.url})`;
+			const insertion = `${prefix}${markdown}${suffix}`;
+			editor.value = `${before}${insertion}${after}`;
 			editor.focus();
-			editor.setSelectionRange(offset + markdown.length, offset + markdown.length);
+			const cursor = offset + insertion.length;
+			editor.setSelectionRange(cursor, cursor);
 			editor.dispatchEvent(new Event('input', { bubbles: true }));
 			status.textContent = '画像を本文に挿入しました。';
 		} catch (error) {

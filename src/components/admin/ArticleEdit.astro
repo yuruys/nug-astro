@@ -49,11 +49,11 @@ const title = isGuide ? '攻略を編集' : 'ニュースを編集';
 								<button class="preview-tab" id="preview-tab" type="button" role="tab" aria-selected="false" aria-controls="body-preview">プレビュー</button>
 							</div>
 							<div class="image-upload-controls">
-								<button class="button secondary" id="image-upload-button" type="button">画像をアップロードして挿入</button>
+								<button class="button secondary" id="image-upload-button" type="button">本文のカーソル位置に画像を挿入</button>
 								<input id="image-upload-input" type="file" accept="image/jpeg,image/png,image/gif,image/webp" hidden />
 								<span id="image-upload-status" role="status" aria-live="polite"></span>
 							</div>
-							<small class="image-upload-help">JPEG・PNG・GIF・WebP（5MB以下）に対応。画像は本文のカーソル位置に挿入されます。</small>
+							<small class="image-upload-help">本文で画像を置きたい位置をクリックしてから選択してください。JPEG・PNG・GIF・WebP（5MB以下）に対応します。</small>
 							<textarea id="body" rows="16" required aria-labelledby="body-label" aria-controls="body-editor" data-editor-pane></textarea>
 							<div class="markdown-preview" id="body-preview" role="tabpanel" aria-labelledby="preview-tab" tabindex="0" hidden data-editor-pane></div>
 						</div>
