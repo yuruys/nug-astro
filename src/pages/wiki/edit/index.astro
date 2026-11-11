@@ -1,5 +1,6 @@
 ---
 import WikiAdminHeader from '../../../components/layout/WikiAdminHeader.astro';
+import MarkdownEditor from '../../../components/editor/MarkdownEditor.astro';
 
 const pagePath = Astro.url.searchParams.get('path') ?? '';
 ---
@@ -257,9 +258,9 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 						<div class="content-toolbar">
 
 							<div>
-								<label for="content">
+								<span>
 									本文
-								</label>
+								</span>
 
 								<span
 									id="content-status"
@@ -338,24 +339,8 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 								role="tabpanel"
 								aria-labelledby="edit-tab"
 							>
-								<div class="pane-header">
-									<span>
-										Markdown / MDX
-									</span>
-
-									<span>
-										編集
-									</span>
-								</div>
-
-								<textarea
-									id="content"
-									name="content"
-									spellcheck="false"
-									autocomplete="off"
-									aria-label="Wiki本文"
-									placeholder="Wiki本文を入力してください"
-								></textarea>
+								<MarkdownEditor contentType="wiki" source="" format="mdx" />
+								<textarea id="content" name="content" hidden aria-hidden="true"></textarea>
 							</div>
 
 
@@ -518,6 +503,7 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 			interface WikiPage {
 				title?: string;
 				path?: string;
+				source_path?: string;
 				revision_number?: number | null;
 				content?: string | null;
 			}
@@ -613,6 +599,10 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 				document.querySelector<HTMLTextAreaElement>(
 					'#content'
 				)!;
+			const editorHost =
+				document.querySelector<HTMLElement>(
+					'#edit-pane .markdown-editor'
+				)!;
 
 			const message =
 				document.querySelector<HTMLInputElement>(
@@ -683,6 +673,34 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 			let originalMessage = '';
 
 			let isSaving = false;
+
+			editorHost.addEventListener(
+				'markdown-editor-change',
+				(event) => {
+					const detail = (
+						event as CustomEvent<{ source: string }>
+					).detail;
+					if (typeof detail?.source !== 'string') {
+						throw new Error('MarkdownEditor did not provide serialized source.');
+					}
+
+					content.value = detail.source;
+					updateCharacterCount();
+					updateDirtyState();
+					void updateMarkdownPreview();
+				}
+			);
+
+			function loadEditorSource(
+				source: string,
+				format: 'md' | 'mdx' = 'mdx'
+			): void {
+				editorHost.dispatchEvent(
+					new CustomEvent('markdown-editor-load', {
+						detail: { source, format },
+					})
+				);
+			}
 
 
 			/* ========================================
@@ -799,6 +817,16 @@ const pagePath = Astro.url.searchParams.get('path') ?? '';
 				disabled: boolean
 			): void {
 				content.disabled = disabled;
+				editorHost
+					.querySelectorAll<
+						HTMLInputElement |
+						HTMLTextAreaElement |
+						HTMLButtonElement |
+						HTMLSelectElement
+					>('input, textarea, button, select')
+					.forEach((control) => {
+						control.disabled = disabled;
+					});
 				message.disabled = disabled;
 
 				saveDraftButton.disabled =
@@ -1431,6 +1459,13 @@ ${renderedBody}
 							);
 						}
 					}
+
+					loadEditorSource(
+						content.value,
+						page.source_path?.toLowerCase().endsWith('.md')
+							? 'md'
+							: 'mdx'
+					);
 
 					originalContent =
 						content.value;

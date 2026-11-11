@@ -1,0 +1,874 @@
+---
+import type { EditorContentType, EditorFormat } from '../../lib/editor/editor-types.ts';
+
+interface Props {
+	contentType: EditorContentType;
+	source: string;
+	format?: EditorFormat;
+	bodyOnly?: boolean;
+}
+
+const { contentType, source, format = 'md', bodyOnly = false } = Astro.props;
+---
+
+<section
+	class="markdown-editor"
+	data-content-type={contentType}
+	data-format={format}
+	data-body-only={String(bodyOnly)}
+	data-source={encodeURIComponent(source)}
+	aria-label="共通Markdownエディター"
+>
+	<div class="editor-heading">
+		<div>
+			<h2>Markdownエディター</h2>
+			<p class="editor-safety" role="status" aria-live="polite"></p>
+		</div>
+		<p class="editor-mode" aria-live="polite"></p>
+	</div>
+	<p class="editor-safety-detail"></p>
+	<div class="editor-controls" role="group" aria-label="編集モード">
+		<button class="editor-button source-mode is-active" type="button" aria-pressed="true">Markdownソース</button>
+		<button class="editor-button visual-mode" type="button" aria-pressed="false">ビジュアル編集</button>
+	</div>
+	<p class="editor-message" role="status" aria-live="polite"></p>
+	<label class="editor-label" hidden={bodyOnly}>Frontmatter（本文とは分離して保持）</label>
+	<textarea class="editor-textarea frontmatter" aria-label="Frontmatter" readonly spellcheck="false" hidden={bodyOnly}></textarea>
+	<div class="source-panel">
+		<label class="editor-label">Markdown本文</label>
+		<textarea class="editor-textarea source-body" aria-label="Markdown本文" spellcheck="false"></textarea>
+	</div>
+	<div class="visual-panel" hidden>
+		<p class="visual-help"></p>
+		<div class="milkdown-root"></div>
+		<div class="preserved-markdown" hidden></div>
+		<div class="card-grid-editor" aria-label="CardGridブロック"></div>
+		<div class="admonition-editor" aria-label="Admonitionブロック"></div>
+		<div class="image-insert-controls">
+			<label>画像の代替テキスト<input class="image-alt" type="text" /></label>
+			<label>画像URL<input class="image-url" type="url" /></label>
+			<button class="editor-button add-image" type="button">画像を追加</button>
+		</div>
+		<div class="block-controls" hidden>
+			<button class="editor-button add-admonition" type="button">Admonitionを追加</button>
+			<button class="editor-button add-card-grid" type="button">CardGridを追加</button>
+		</div>
+	</div>
+	<label class="editor-label">現在のMarkdown（保存処理なし）</label>
+	<textarea class="editor-textarea editor-output" aria-label="現在のMarkdown" readonly spellcheck="false"></textarea>
+</section>
+
+<script>
+	import { Crepe } from '@milkdown/crepe';
+	import '@milkdown/crepe/theme/common/style.css';
+	import '@milkdown/crepe/theme/classic.css';
+	import { createEditorDocument, createEditorResult, requiresSourceMode, serializeEditorDocument } from '../../lib/editor/editor-source.ts';
+	import { preserveUntouchedMarkdown } from '../../lib/editor/editor-serialization.ts';
+	import type { EditorMode } from '../../lib/editor/editor-types.ts';
+	import { parseAdmonitions, serializeAdmonition, type AdmonitionBlock } from '../../lib/editor/blocks/admonition.ts';
+	import { parseCardGrids, serializeCardGrid, type CardGridBlock } from '../../lib/editor/blocks/starlight-card-grid.ts';
+
+	const normalizeNewlines = (value: string) => value.replace(/\r\n?/g, '\n');
+	const roots = document.querySelectorAll<HTMLElement>('.markdown-editor');
+
+	for (const root of roots) {
+		const contentType = root.dataset.contentType;
+		let format = root.dataset.format;
+		const bodyOnly = root.dataset.bodyOnly === 'true';
+		const source = decodeURIComponent(root.dataset.source ?? '');
+		if (!['guide', 'news', 'wiki'].includes(contentType ?? '') || !['md', 'mdx'].includes(format ?? '')) {
+			throw new Error('MarkdownEditor requires a valid contentType and format.');
+		}
+
+		let currentDocument = createEditorDocument(
+			contentType as 'guide' | 'news' | 'wiki',
+			format as 'md' | 'mdx',
+			source,
+			{ bodyOnly },
+		);
+		let initialSource = source;
+		const frontmatter = root.querySelector<HTMLTextAreaElement>('.frontmatter')!;
+		const sourceBody = root.querySelector<HTMLTextAreaElement>('.source-body')!;
+		const output = root.querySelector<HTMLTextAreaElement>('.editor-output')!;
+		const sourcePanel = root.querySelector<HTMLElement>('.source-panel')!;
+		const visualPanel = root.querySelector<HTMLElement>('.visual-panel')!;
+		const editorRoot = root.querySelector<HTMLDivElement>('.milkdown-root')!;
+		const sourceButton = root.querySelector<HTMLButtonElement>('.source-mode')!;
+		const visualButton = root.querySelector<HTMLButtonElement>('.visual-mode')!;
+		const safety = root.querySelector<HTMLElement>('.editor-safety')!;
+		const safetyDetail = root.querySelector<HTMLElement>('.editor-safety-detail')!;
+		const message = root.querySelector<HTMLElement>('.editor-message')!;
+		const modeLabel = root.querySelector<HTMLElement>('.editor-mode')!;
+		const visualHelp = root.querySelector<HTMLElement>('.visual-help')!;
+		const preserved = root.querySelector<HTMLElement>('.preserved-markdown')!;
+		const cardGridEditor = root.querySelector<HTMLElement>('.card-grid-editor')!;
+		const admonitionEditor = root.querySelector<HTMLElement>('.admonition-editor')!;
+		const blockControls = root.querySelector<HTMLElement>('.block-controls')!;
+		let editor: Crepe | undefined;
+		let mode: EditorMode = 'source';
+		let editorDirty = false;
+		let structuredDirty = false;
+		let admonitions: AdmonitionBlock[] = [];
+		let cardGrids: CardGridBlock[] = [];
+		let visualKind: 'markdown' | 'structured' | undefined;
+
+		frontmatter.value = currentDocument.frontmatterRaw ?? '';
+		sourceBody.value = normalizeNewlines(currentDocument.body);
+
+		const getStructuredBody = () => {
+			const replacements = [
+				...admonitions.map((block) => ({
+					start: block.start,
+					end: block.end,
+					value: block.deleted ? '' : serializeAdmonition(block),
+				})),
+				...cardGrids.map((block) => ({
+					start: block.start,
+					end: block.end,
+					value: block.deleted ? '' : serializeCardGrid(block),
+				})),
+			].sort((left, right) => right.start - left.start);
+			let body = normalizeNewlines(currentDocument.body);
+			for (const replacement of replacements) {
+				body = body.slice(0, replacement.start) + replacement.value + body.slice(replacement.end);
+			}
+			return body;
+		};
+
+		const getEditedBody = () => {
+			if (mode === 'source') return sourceBody.value;
+			if (visualKind === 'structured') return getStructuredBody();
+			if (visualKind === 'markdown' && editor && editorDirty) {
+				return preserveUntouchedMarkdown(currentDocument.body, editor.getMarkdown());
+			}
+			return currentDocument.body;
+		};
+
+		const getSerializedSource = () => {
+			const changed = mode === 'source'
+				? sourceBody.value !== normalizeNewlines(currentDocument.body)
+				: visualKind === 'structured'
+					? structuredDirty
+					: editorDirty;
+			const result = createEditorResult(currentDocument, getEditedBody(), mode, { hasUserChanges: changed });
+			return { source: serializeEditorDocument(currentDocument, result), result };
+		};
+
+		const emitChange = () => {
+			const { source: nextSource, result } = getSerializedSource();
+			output.value = nextSource;
+			root.dispatchEvent(new CustomEvent('markdown-editor-change', {
+				bubbles: true,
+				detail: { contentType, format, source: nextSource, body: result.body, changed: nextSource !== initialSource, mode },
+			}));
+		};
+
+		const getVisualBlockers = (body: string) => {
+			const normalized = normalizeNewlines(body);
+			const parsedAdmonitions = parseAdmonitions(normalized);
+			const parsedGrids = parseCardGrids(normalized);
+			if (parsedAdmonitions.invalid || parsedGrids.invalid) return ['未対応または不正なブロック構文'];
+			if (parsedAdmonitions.blocks.some((block) => requiresSourceMode(block.body, 'mdx'))) {
+				return ['Admonition内の未対応MDX / JSX構文'];
+			}
+
+			const hasGridMarkup = /<\/?(?:CardGrid|LinkCard)\b/.test(normalized);
+			const imports = normalized.split('\n').filter((line) => /^\s*(?:import|export)\s/.test(line));
+			const supportedImport = /^\s*import\s+\{\s*CardGrid\s*,\s*LinkCard\s*\}\s+from\s+['"]@astrojs\/starlight\/components['"];\s*$/;
+			const hasSupportedImport = imports.length === 1 && supportedImport.test(imports[0] ?? '');
+			if ((hasGridMarkup || imports.length > 0) && !hasSupportedImport) {
+				return ['import文とCardGrid / LinkCardの対応関係'];
+			}
+
+			const ranges = [
+				...parsedAdmonitions.blocks.map(({ start, end }) => ({ start, end })),
+				...parsedGrids.blocks.map(({ start, end }) => ({ start, end })),
+			].sort((left, right) => left.start - right.start);
+			let masked = normalized;
+			for (const range of [...ranges].reverse()) {
+				masked = masked.slice(0, range.start) + masked.slice(range.end);
+			}
+			if (hasSupportedImport) {
+				masked = masked.replace(imports[0], '');
+			}
+			return requiresSourceMode(masked, 'mdx') ? ['未対応のMDX / JSX構文'] : [];
+		};
+
+		const setMode = (nextMode: EditorMode) => {
+			mode = nextMode;
+			sourcePanel.hidden = nextMode === 'visual';
+			visualPanel.hidden = nextMode !== 'visual';
+			sourceButton.classList.toggle('is-active', nextMode === 'source');
+			visualButton.classList.toggle('is-active', nextMode === 'visual');
+			sourceButton.setAttribute('aria-pressed', String(nextMode === 'source'));
+			visualButton.setAttribute('aria-pressed', String(nextMode === 'visual'));
+			modeLabel.textContent = `現在のモード: ${nextMode === 'source' ? 'Markdownソース' : 'ビジュアル編集'}`;
+		};
+
+		const renderPreservedMarkdown = () => {
+			const ranges = [
+				...admonitions.map(({ start, end }) => ({ start, end })),
+				...cardGrids.map(({ start, end }) => ({ start, end })),
+			].sort((left, right) => left.start - right.start);
+			const body = normalizeNewlines(currentDocument.body);
+			let cursor = 0;
+			let text = '';
+			for (const range of ranges) {
+				text += body.slice(cursor, range.start);
+				cursor = range.end;
+			}
+			text += body.slice(cursor);
+			preserved.textContent = text.trim();
+			preserved.hidden = !text.trim();
+		};
+
+		const renderCardGrids = () => {
+			cardGridEditor.replaceChildren();
+			for (const [gridIndex, grid] of cardGrids.entries()) {
+				if (grid.deleted) continue;
+				const section = document.createElement('section');
+				section.className = 'card-grid-block';
+				const heading = document.createElement('h3');
+				heading.textContent = `CardGrid ${gridIndex + 1}`;
+				section.append(heading);
+				for (const [cardIndex, card] of grid.cards.entries()) {
+					const fields = document.createElement('div');
+					fields.className = 'link-card-fields';
+					for (const [key, label] of [['title', 'タイトル'], ['href', 'リンク先'], ['description', '説明']] as const) {
+						const field = document.createElement('label');
+						field.textContent = label;
+						const input = document.createElement('input');
+						input.value = card[key];
+						input.setAttribute('aria-label', `CardGrid ${gridIndex + 1} LinkCard ${cardIndex + 1} ${label}`);
+						input.addEventListener('input', () => {
+							card[key] = input.value;
+							card.dirty = true;
+							grid.dirty = true;
+							structuredDirty = true;
+							emitChange();
+						});
+						field.append(input);
+						fields.append(field);
+					}
+					const actions = document.createElement('div');
+					actions.className = 'editor-actions';
+					const moveCard = (label: string, delta: -1 | 1) => {
+						const button = document.createElement('button');
+						button.type = 'button';
+						button.className = 'editor-button';
+						button.textContent = label;
+						button.disabled = cardIndex + delta < 0 || cardIndex + delta >= grid.cards.length;
+						button.addEventListener('click', () => {
+							[grid.cards[cardIndex], grid.cards[cardIndex + delta]] = [grid.cards[cardIndex + delta], grid.cards[cardIndex]];
+							grid.dirty = true;
+							structuredDirty = true;
+							renderCardGrids();
+							emitChange();
+						});
+						return button;
+					};
+					actions.append(moveCard('上へ', -1), moveCard('下へ', 1));
+					const removeCard = document.createElement('button');
+					removeCard.type = 'button';
+					removeCard.className = 'editor-button';
+					removeCard.textContent = 'LinkCardを削除';
+					removeCard.addEventListener('click', () => {
+						grid.cards.splice(cardIndex, 1);
+						if (grid.separators.length) grid.separators.splice(Math.max(0, cardIndex - 1), 1);
+						grid.dirty = true;
+						structuredDirty = true;
+						renderCardGrids();
+						emitChange();
+					});
+					actions.append(removeCard);
+					fields.append(actions);
+					section.append(fields);
+				}
+				const actions = document.createElement('div');
+				actions.className = 'editor-actions';
+				const addCard = document.createElement('button');
+				addCard.type = 'button';
+				addCard.className = 'editor-button';
+				addCard.textContent = 'LinkCardを追加';
+				addCard.addEventListener('click', () => {
+					if (grid.cards.length) {
+						const indentation = grid.leadingWhitespace.match(/(?:^|\n)([ \t]*)$/)?.[1] ?? '';
+						grid.separators.push(`\n${indentation}`);
+					} else {
+						grid.leadingWhitespace = '\n\n';
+						grid.trailingWhitespace = '\n\n';
+					}
+					grid.cards.push({ title: '', href: '', description: '', dirty: true });
+					grid.dirty = true;
+					structuredDirty = true;
+					renderCardGrids();
+					emitChange();
+				});
+				actions.append(addCard);
+				const moveGrid = (label: string, delta: -1 | 1) => {
+					const button = document.createElement('button');
+					button.type = 'button';
+					button.className = 'editor-button';
+					button.textContent = `CardGridを${label}`;
+					button.disabled = gridIndex + delta < 0 || gridIndex + delta >= cardGrids.length;
+					button.addEventListener('click', () => {
+						const currentRange = { start: cardGrids[gridIndex].start, end: cardGrids[gridIndex].end };
+						const targetRange = {
+							start: cardGrids[gridIndex + delta].start,
+							end: cardGrids[gridIndex + delta].end,
+						};
+						[cardGrids[gridIndex], cardGrids[gridIndex + delta]] = [cardGrids[gridIndex + delta], cardGrids[gridIndex]];
+						Object.assign(cardGrids[gridIndex], currentRange);
+						Object.assign(cardGrids[gridIndex + delta], targetRange);
+						cardGrids[gridIndex].dirty = true;
+						cardGrids[gridIndex + delta].dirty = true;
+						structuredDirty = true;
+						renderCardGrids();
+						emitChange();
+					});
+					return button;
+				};
+				actions.append(moveGrid('上へ', -1), moveGrid('下へ', 1));
+				const removeGrid = document.createElement('button');
+				removeGrid.type = 'button';
+				removeGrid.className = 'editor-button';
+				removeGrid.textContent = 'CardGridを削除';
+				removeGrid.addEventListener('click', () => {
+					grid.deleted = true;
+					structuredDirty = true;
+					renderCardGrids();
+					renderPreservedMarkdown();
+					emitChange();
+				});
+				actions.append(removeGrid);
+				section.append(actions);
+				cardGridEditor.append(section);
+			}
+		};
+
+		const renderAdmonitions = () => {
+			admonitionEditor.replaceChildren();
+			for (const [index, block] of admonitions.entries()) {
+				if (block.deleted) continue;
+				const section = document.createElement('section');
+				section.className = 'admonition-block';
+				const type = document.createElement('select');
+				type.setAttribute('aria-label', `Admonition ${index + 1} の種類`);
+				for (const item of ['note', 'tip', 'caution', 'danger']) {
+					const option = document.createElement('option');
+					option.value = item;
+					option.textContent = item;
+					option.selected = item === block.type;
+					type.append(option);
+				}
+				type.addEventListener('change', () => {
+					block.type = type.value as AdmonitionBlock['type'];
+					block.dirty = true;
+					structuredDirty = true;
+					emitChange();
+				});
+				const title = document.createElement('input');
+				title.value = block.title;
+				title.placeholder = 'タイトル（任意）';
+				title.setAttribute('aria-label', `Admonition ${index + 1} のタイトル`);
+				title.addEventListener('input', () => {
+					if (title.value.includes(']')) {
+						message.textContent = 'タイトルに ] は使用できません。構文を壊さないため変更を取り消しました。';
+						title.value = block.title;
+						return;
+					}
+					block.title = title.value;
+					block.dirty = true;
+					structuredDirty = true;
+					emitChange();
+				});
+				const body = document.createElement('textarea');
+				body.value = block.body;
+				body.setAttribute('aria-label', `Admonition ${index + 1} の本文`);
+				body.addEventListener('input', () => {
+					block.body = body.value;
+					block.dirty = true;
+					structuredDirty = true;
+					emitChange();
+				});
+				const actions = document.createElement('div');
+				actions.className = 'editor-actions';
+				const move = (label: string, delta: -1 | 1) => {
+					const button = document.createElement('button');
+					button.type = 'button';
+					button.className = 'editor-button';
+					button.textContent = `Admonitionを${label}`;
+					button.disabled = index + delta < 0 || index + delta >= admonitions.length;
+					button.addEventListener('click', () => {
+						const currentRange = { start: admonitions[index].start, end: admonitions[index].end };
+						const targetRange = { start: admonitions[index + delta].start, end: admonitions[index + delta].end };
+						[admonitions[index], admonitions[index + delta]] = [admonitions[index + delta], admonitions[index]];
+						Object.assign(admonitions[index], currentRange);
+						Object.assign(admonitions[index + delta], targetRange);
+						admonitions[index].dirty = true;
+						admonitions[index + delta].dirty = true;
+						structuredDirty = true;
+						renderAdmonitions();
+						emitChange();
+					});
+					return button;
+				};
+				actions.append(move('上へ', -1), move('下へ', 1));
+				const remove = document.createElement('button');
+				remove.type = 'button';
+				remove.className = 'editor-button';
+				remove.textContent = '削除';
+				remove.addEventListener('click', () => {
+					block.deleted = true;
+					structuredDirty = true;
+					renderAdmonitions();
+					renderPreservedMarkdown();
+					emitChange();
+				});
+				actions.append(remove);
+				section.append(type, title, body, actions);
+				admonitionEditor.append(section);
+			}
+		};
+
+		const updateSafety = () => {
+			const blockers = getVisualBlockers(sourceBody.value);
+			const parsedA = parseAdmonitions(sourceBody.value);
+			const parsedC = parseCardGrids(sourceBody.value);
+			const structured = parsedA.blocks.length > 0 || parsedC.blocks.length > 0;
+			visualButton.disabled = blockers.length > 0;
+			safety.textContent = blockers.length
+				? 'ソースモード限定'
+				: structured ? 'Admonition / CardGrid専用編集できます' : 'ビジュアル編集できます';
+			safety.classList.toggle('is-blocked', blockers.length > 0);
+			safetyDetail.textContent = blockers.length
+				? `原文の損失を防ぐためビジュアル編集を無効にしています（${blockers.join('、')}）。`
+				: structured
+					? '対応するブロックのみを専用UIで編集します。その他のMarkdownは原文のまま保持します。'
+					: 'Frontmatterを分離して保持し、見出し・リスト・表・リンク・画像・コードを含むMarkdownを編集できます。';
+		};
+
+		const switchToSource = async () => {
+			if (mode === 'source') return;
+			const { source: nextSource } = getSerializedSource();
+			currentDocument = createEditorDocument(contentType as 'guide' | 'news' | 'wiki', format as 'md' | 'mdx', nextSource, { bodyOnly });
+			sourceBody.value = normalizeNewlines(currentDocument.body);
+			if (editor) {
+				await editor.destroy();
+				editor = undefined;
+			}
+			editorDirty = false;
+			structuredDirty = false;
+			visualKind = undefined;
+			setMode('source');
+			updateSafety();
+			emitChange();
+		};
+
+		const switchToVisual = async () => {
+			if (mode === 'visual') return;
+			const blockers = getVisualBlockers(sourceBody.value);
+			if (blockers.length) {
+				message.textContent = `切り替えを中止しました。未対応構文があるため原文を保持します（${blockers.join('、')}）。`;
+				return;
+			}
+			const currentSource = getSerializedSource().source;
+			currentDocument = createEditorDocument(
+				contentType as 'guide' | 'news' | 'wiki',
+				format as 'md' | 'mdx',
+				currentSource,
+				{ bodyOnly },
+			);
+			sourceBody.value = normalizeNewlines(currentDocument.body);
+			const body = sourceBody.value;
+			const parsedA = parseAdmonitions(body);
+			const parsedC = parseCardGrids(body);
+			admonitions = parsedA.blocks;
+			cardGrids = parsedC.blocks;
+			editorDirty = false;
+			structuredDirty = false;
+			if (admonitions.length || cardGrids.length) {
+				visualKind = 'structured';
+				editorRoot.replaceChildren();
+				visualHelp.textContent = 'ブロックは専用UIで編集します。ブロック外のMarkdownは読み取り専用で原文を保持します。';
+				renderPreservedMarkdown();
+				renderCardGrids();
+				renderAdmonitions();
+				blockControls.hidden = false;
+			} else {
+				visualKind = 'markdown';
+				preserved.hidden = true;
+				cardGridEditor.replaceChildren();
+				admonitionEditor.replaceChildren();
+				blockControls.hidden = true;
+				visualHelp.textContent = 'MarkdownをMilkdownで編集できます。';
+				editorRoot.replaceChildren();
+				const crepe = new Crepe({
+					root: editorRoot,
+					defaultValue: body,
+					features: {
+						[Crepe.Feature.Toolbar]: true,
+						[Crepe.Feature.ImageBlock]: false,
+					},
+				});
+				crepe.on((listener) => listener.markdownUpdated(() => {
+					if (mode !== 'visual') return;
+					editorDirty = true;
+					emitChange();
+				}));
+				await crepe.create();
+				editor = crepe;
+			}
+			setMode('visual');
+			message.textContent = '保存処理はありません。出力欄または markdown-editor-change イベントから内容を取得できます。';
+			updateSafety();
+			emitChange();
+		};
+
+		const appendBlock = async (block: string) => {
+			if (mode === 'visual') await switchToSource();
+			sourceBody.value += `${sourceBody.value && !sourceBody.value.endsWith('\n') ? '\n' : ''}${block}`;
+			updateSafety();
+			emitChange();
+			await switchToVisual();
+		};
+
+		sourceButton.addEventListener('click', () => void switchToSource());
+		visualButton.addEventListener('click', () => void switchToVisual());
+		sourceBody.addEventListener('input', () => {
+			updateSafety();
+			emitChange();
+		});
+		root.querySelector<HTMLButtonElement>('.add-admonition')!.addEventListener('click', () => {
+			void appendBlock(':::note\n\n:::');
+		});
+		root.querySelector<HTMLButtonElement>('.add-card-grid')!.addEventListener('click', () => {
+			const prefix = /import\s+\{\s*CardGrid\s*,\s*LinkCard\s*\}\s+from\s+['"]@astrojs\/starlight\/components['"];?/.test(sourceBody.value)
+				? ''
+				: "import { CardGrid, LinkCard } from '@astrojs/starlight/components';\n\n";
+			void appendBlock(`${prefix}<CardGrid>\n\n</CardGrid>`);
+		});
+		root.querySelector<HTMLButtonElement>('.add-image')!.addEventListener('click', () => {
+			const alt = root.querySelector<HTMLInputElement>('.image-alt')!.value.trim();
+			const url = root.querySelector<HTMLInputElement>('.image-url')!.value.trim();
+			if (!alt || !url || /[\r\n]/.test(url)) {
+				message.textContent = '画像の代替テキストと改行を含まない画像URLを入力してください。';
+				return;
+			}
+			const escapedAlt = alt.replace(/\\/g, '\\\\').replace(/\]/g, '\\]');
+			const destination = url.replace(/[()<>\\\s]/g, (character) => encodeURIComponent(character));
+			void (async () => {
+				await appendBlock(`![${escapedAlt}](${destination})`);
+				root.querySelector<HTMLInputElement>('.image-alt')!.value = '';
+				root.querySelector<HTMLInputElement>('.image-url')!.value = '';
+			})();
+		});
+		root.addEventListener('markdown-editor-load', (event) => {
+			const nextSource = (event as CustomEvent<{ source?: string }>).detail?.source;
+			const detail = (event as CustomEvent<{ source?: string; format?: string }>).detail;
+			if (typeof nextSource !== 'string') {
+				throw new Error('markdown-editor-load requires a source string.');
+			}
+			if (detail.format !== undefined && !['md', 'mdx'].includes(detail.format)) {
+				throw new Error('markdown-editor-load requires a valid format.');
+			}
+			void (async () => {
+				if (mode === 'visual') await switchToSource();
+				if (editor) {
+					await editor.destroy();
+					editor = undefined;
+				}
+				initialSource = nextSource;
+				if (detail.format) format = detail.format;
+				currentDocument = createEditorDocument(
+					contentType as 'guide' | 'news' | 'wiki',
+					format as 'md' | 'mdx',
+					nextSource,
+					{ bodyOnly },
+				);
+				frontmatter.value = currentDocument.frontmatterRaw ?? '';
+				sourceBody.value = normalizeNewlines(currentDocument.body);
+				root.querySelector<HTMLInputElement>('.image-alt')!.value = '';
+				root.querySelector<HTMLInputElement>('.image-url')!.value = '';
+				editorDirty = false;
+				structuredDirty = false;
+				visualKind = undefined;
+				message.textContent = 'サンプルを読み込みました。';
+				setMode('source');
+				updateSafety();
+				emitChange();
+			})();
+		});
+		updateSafety();
+		emitChange();
+	}
+</script>
+
+<style>
+	.markdown-editor {
+		--editor-bg: #202629;
+		--editor-surface: #151a1c;
+		--editor-border: #424b4f;
+		--editor-text: #f1f4f2;
+		--editor-muted: #aeb8b2;
+		--editor-accent: #8bc56c;
+		display: grid;
+		gap: 14px;
+		min-width: 0;
+		padding: 18px;
+		border: 1px solid var(--editor-border);
+		border-radius: 8px;
+		background: var(--editor-bg);
+		color: var(--editor-text);
+		font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Yu Gothic", Meiryo, sans-serif;
+	}
+
+	:global(html[data-admin-theme='light']) .markdown-editor {
+		--editor-bg: #fff;
+		--editor-surface: #fbfcfc;
+		--editor-border: #d3dcde;
+		--editor-text: #202725;
+		--editor-muted: #59665f;
+		--editor-accent: #3d762b;
+	}
+
+	.editor-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
+	.editor-heading h2 {
+		margin: 0 0 8px;
+		font-size: 1.2rem;
+	}
+
+	.editor-mode,
+	.editor-safety {
+		margin: 0;
+		color: var(--editor-accent);
+		font-weight: 700;
+	}
+
+	.editor-safety.is-blocked {
+		color: #e2a35a;
+	}
+
+	.editor-safety-detail,
+	.visual-help,
+	.editor-message {
+		margin: 0;
+		color: var(--editor-muted);
+		line-height: 1.6;
+	}
+
+	.editor-controls,
+	.block-controls,
+	.image-insert-controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	:global(.editor-actions) {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 8px;
+	}
+
+	.image-insert-controls {
+		align-items: end;
+	}
+
+	.image-insert-controls label {
+		display: grid;
+		flex: 1 1 180px;
+		gap: 4px;
+	}
+
+	.image-insert-controls input {
+		box-sizing: border-box;
+		width: 100%;
+		min-height: 40px;
+		padding: 8px;
+		border: 1px solid var(--editor-border);
+		border-radius: 4px;
+		background: var(--editor-surface);
+		color: var(--editor-text);
+		font: inherit;
+	}
+
+	:global(.editor-button) {
+		min-height: 40px;
+		padding: 8px 12px;
+		border: 1px solid var(--editor-border);
+		border-radius: 5px;
+		background: var(--editor-surface);
+		color: var(--editor-text);
+		font: inherit;
+		cursor: pointer;
+	}
+
+	:global(.editor-button.is-active),
+	:global(.editor-button:hover) {
+		border-color: var(--editor-accent);
+	}
+
+	:global(.editor-button:disabled) {
+		cursor: not-allowed;
+		opacity: 0.55;
+	}
+
+	.editor-label {
+		display: block;
+		font-weight: 700;
+	}
+
+	.editor-textarea {
+		box-sizing: border-box;
+		width: 100%;
+		border: 1px solid var(--editor-border);
+		border-radius: 4px;
+		background: var(--editor-surface);
+		color: var(--editor-text);
+		font: 13px/1.6 "JetBrains Mono", Consolas, monospace;
+	}
+
+	:global(.link-card-fields input),
+	:global(.admonition-block input),
+	:global(.admonition-block select),
+	:global(.admonition-block textarea) {
+		box-sizing: border-box;
+		width: 100%;
+		border: 1px solid var(--editor-border);
+		border-radius: 4px;
+		background: var(--editor-surface);
+		color: var(--editor-text);
+		font: 13px/1.6 "JetBrains Mono", Consolas, monospace;
+	}
+
+	.editor-textarea {
+		padding: 10px;
+	}
+
+	.frontmatter {
+		min-height: 80px;
+		resize: vertical;
+	}
+
+	.source-body,
+	.editor-output {
+		min-height: 300px;
+		resize: vertical;
+	}
+
+	.editor-output {
+		min-height: 180px;
+	}
+
+	.milkdown-root {
+		overflow: auto;
+		min-height: 360px;
+		border-radius: 4px;
+		background: #fffdfb;
+		color: #1f1b16;
+	}
+
+	:global(html[data-admin-theme='dark']) .milkdown-root :global(.milkdown) {
+		--crepe-color-background: #1f1b16;
+		--crepe-color-on-background: #eae1d9;
+		--crepe-color-surface: #18120b;
+		--crepe-color-surface-low: #201b13;
+		--crepe-color-on-surface: #ede0d4;
+		--crepe-color-on-surface-variant: #d3c4b4;
+		--crepe-color-outline: #9c8f80;
+		--crepe-color-primary: #f4bd6f;
+		--crepe-color-secondary: #56442a;
+		--crepe-color-on-secondary: #fbdebc;
+		--crepe-color-inverse: #ede0d4;
+		--crepe-color-on-inverse: #362f27;
+		--crepe-color-inline-code: #ffb4ab;
+		--crepe-color-hover: #251f17;
+		--crepe-color-selected: #3b342b;
+		--crepe-color-inline-area: #3f3830;
+		background: var(--crepe-color-background);
+		color: var(--crepe-color-on-background);
+	}
+
+	.preserved-markdown,
+	:global(.card-grid-block),
+	:global(.admonition-block) {
+		min-width: 0;
+		padding: 14px;
+		border: 1px solid var(--editor-border);
+		border-radius: 5px;
+		background: var(--editor-surface);
+	}
+
+	.preserved-markdown {
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+		color: var(--editor-muted);
+	}
+
+	.card-grid-editor,
+	.admonition-editor {
+		display: grid;
+		gap: 12px;
+	}
+
+	:global(.card-grid-block h3) {
+		margin-top: 0;
+	}
+
+	:global(.link-card-fields) {
+		display: grid;
+		gap: 8px;
+		min-width: 0;
+		margin: 10px 0;
+	}
+
+	:global(.link-card-fields label) {
+		display: grid;
+		gap: 4px;
+	}
+
+	:global(.admonition-block) {
+		display: grid;
+		gap: 8px;
+		border-left: 5px solid var(--editor-accent);
+	}
+
+	:global(.admonition-block textarea) {
+		min-height: 100px;
+		padding: 8px;
+		resize: vertical;
+	}
+
+	@media (max-width: 600px) {
+		.markdown-editor {
+			padding: 12px;
+		}
+
+		.editor-heading {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.editor-controls > .editor-button,
+		.block-controls > .editor-button {
+			flex: 1 1 120px;
+		}
+
+		:global(.editor-actions > .editor-button) {
+			flex: 1 1 120px;
+		}
+
+		.source-body,
+		.editor-output {
+			min-height: 260px;
+		}
+	}
+</style>

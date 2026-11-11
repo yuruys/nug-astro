@@ -1,0 +1,217 @@
+---
+import AdminHeader from '../../../components/admin/AdminHeader.astro';
+import AdminTheme from '../../../components/admin/AdminTheme.astro';
+import MarkdownEditor from '../../../components/editor/MarkdownEditor.astro';
+
+const markdownSample = `---
+title: Milkdown標準Markdown検証
+description: 見出し、リスト、表、リンク、画像、コードと日本語入力を確認します。
+---
+
+# Markdownの編集
+
+日本語の文章と **太字**、[Wikiへのリンク](/docs/) を編集できます。
+
+## リストと表
+
+- 箇条書き
+- 二つ目の項目
+
+| 項目 | 値 |
+| --- | --- |
+| Milkdown | 有効 |
+
+\`\`\`js
+const message = '日本語入力';
+console.log(message);
+\`\`\`
+
+![画像表示テスト](/images/mein.webp)
+`;
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>Milkdown共通エディター | ゆるぽーと 管理画面</title>
+	</head>
+	<body>
+		<AdminTheme />
+		<AdminHeader />
+		<main class="test-page">
+			<div class="page-content">
+				<a class="back-link" href="/admin/">← 管理画面へ戻る</a>
+				<header>
+					<p class="eyebrow">COMMON EDITOR</p>
+					<h1>Milkdown共通エディター検証</h1>
+					<p>Guide / News / Wikiで共通利用するエディターです。編集内容の確認のみを行い、保存処理はありません。未対応MDXを含む文書はソースモードに固定します。</p>
+				</header>
+				<div class="samples" role="group" aria-label="検証サンプル">
+					<button class="sample-button" type="button" data-sample="markdown">標準Markdown</button>
+					<button class="sample-button" type="button" data-sample="structured">Admonition / CardGrid</button>
+					<button class="sample-button" type="button" data-sample="unsafe">未知MDX安全確認</button>
+				</div>
+				<MarkdownEditor contentType="wiki" format="mdx" source={markdownSample} />
+			</div>
+		</main>
+	</body>
+</html>
+
+<script>
+	const samples = {
+		markdown: `---
+title: Milkdown標準Markdown検証
+description: 見出し、リスト、表、リンク、画像、コードと日本語入力を確認します。
+---
+
+# Markdownの編集
+
+日本語の文章と **太字**、[Wikiへのリンク](/docs/) を編集できます。
+
+## リストと表
+
+- 箇条書き
+- 二つ目の項目
+
+| 項目 | 値 |
+| --- | --- |
+| Milkdown | 有効 |
+
+\`\`\`js
+const message = '日本語入力';
+console.log(message);
+\`\`\`
+
+![画像表示テスト](/images/mein.webp)
+`,
+		structured: `---
+title: 構造化ブロック検証
+---
+
+前後の文章は編集対象外として保持します。
+
+:::note[補足]
+Admonitionの本文です。
+:::
+
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <LinkCard title="日本語タイトル" href="/docs/" description="カードの説明" />
+</CardGrid>
+
+この文章も保持します。
+`,
+		unsafe: `---
+title: 未対応MDX安全確認
+---
+
+<UnknownWidget label="日本語" custom={someValue}>
+  {calculate(value)}
+</UnknownWidget>
+`,
+	};
+
+	const editor = document.querySelector<HTMLElement>('.markdown-editor');
+	for (const button of document.querySelectorAll<HTMLButtonElement>('[data-sample]')) {
+		button.addEventListener('click', () => {
+			const sample = button.dataset.sample as keyof typeof samples | undefined;
+			if (!sample || !editor) return;
+			editor.dispatchEvent(new CustomEvent('markdown-editor-load', {
+				bubbles: true,
+				detail: { source: samples[sample] },
+			}));
+		});
+	}
+</script>
+
+<style>
+	:global(body) {
+		margin: 0;
+		background: #111416;
+		color: #f1f4f2;
+		font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Yu Gothic", Meiryo, sans-serif;
+	}
+
+	.test-page {
+		min-height: calc(100vh - 72px);
+		padding: 28px 20px 60px;
+		background: #111416;
+		color: #f1f4f2;
+	}
+
+	:global(html[data-admin-theme='light'] body),
+	:global(html[data-admin-theme='light'] .test-page) {
+		background: #f2f5f6;
+		color: #202725;
+	}
+
+	.page-content {
+		width: min(1120px, 100%);
+		margin: 0 auto;
+	}
+
+	.back-link {
+		color: #8bc56c;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	header {
+		margin: 22px 0;
+	}
+
+	header h1 {
+		margin: 4px 0 8px;
+		font-size: clamp(1.7rem, 3vw, 2.4rem);
+	}
+
+	header > p:last-child {
+		max-width: 760px;
+		line-height: 1.7;
+		opacity: 0.8;
+	}
+
+	.eyebrow {
+		color: #8bc56c;
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.1em;
+	}
+
+	.samples {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin: 16px 0;
+	}
+
+	.sample-button {
+		min-height: 40px;
+		padding: 8px 12px;
+		border: 1px solid #424b4f;
+		border-radius: 5px;
+		background: #202629;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+	}
+
+	:global(html[data-admin-theme='light'] .sample-button) {
+		background: #fff;
+		color: #202725;
+	}
+
+	@media (max-width: 600px) {
+		.test-page {
+			padding: 20px 12px 40px;
+		}
+
+		.sample-button {
+			flex: 1 1 130px;
+		}
+	}
+</style>

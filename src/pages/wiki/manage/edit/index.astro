@@ -1,6 +1,7 @@
 ---
 import AdminTheme from '../../../../components/admin/AdminTheme.astro';
 import WikiAdminHeader from '../../../../components/layout/WikiAdminHeader.astro';
+import MarkdownEditor from '../../../../components/editor/MarkdownEditor.astro';
 ---
 
 <!doctype html>
@@ -43,12 +44,13 @@ import WikiAdminHeader from '../../../../components/layout/WikiAdminHeader.astro
 						<div class="field full"><span class="field-label">公開URL</span><code id="path-preview">/docs/</code></div>
 						<label class="field full" for="description">説明<textarea id="description" rows="2" maxlength="500"></textarea></label>
 						<div class="field full body-field">
-							<div class="editor-heading"><label for="content">Markdown / MDX本文</label><span id="character-count">0文字</span></div>
+							<div class="editor-heading"><span class="field-label">Markdown / MDX本文</span><span id="character-count">0文字</span></div>
 							<div class="preview-tabs" role="tablist" aria-label="編集・プレビュー">
 								<button id="edit-tab" class="preview-tab is-active" type="button" aria-selected="true">編集</button>
 								<button id="preview-tab" class="preview-tab" type="button" aria-selected="false">プレビュー</button>
 							</div>
-							<textarea id="content" rows="18" spellcheck="false" autocomplete="off" aria-label="Wiki本文"></textarea>
+							<div id="markdown-editor-host"><MarkdownEditor contentType="wiki" source="" format="mdx" /></div>
+							<textarea id="content" hidden aria-hidden="true"></textarea>
 							<div id="markdown-preview" class="markdown-preview" hidden></div>
 							<p class="field-help">既存ページでは現在のfrontmatterも保持します。プレビューではMarkdownを安全に表示します。</p>
 						</div>
@@ -118,7 +120,27 @@ import WikiAdminHeader from '../../../../components/layout/WikiAdminHeader.astro
 	const folderInput = $('#folder') as HTMLInputElement;
 	const descriptionInput = $('#description') as HTMLTextAreaElement;
 	const contentInput = $('#content') as HTMLTextAreaElement;
+	const editorHost = $('#markdown-editor-host');
 	const preview = $('#markdown-preview');
+
+	editorHost.addEventListener('markdown-editor-change', (event) => {
+		const detail = (event as CustomEvent<{ source: string }>).detail;
+		if (typeof detail?.source !== 'string') {
+			throw new Error('MarkdownEditor did not provide serialized source.');
+		}
+		contentInput.value = detail.source;
+		updateCount();
+		if (!preview.hidden) void updatePreview();
+	});
+
+	function loadEditorSource(source: string): void {
+		editorHost.dispatchEvent(new CustomEvent('markdown-editor-load', {
+			detail: {
+				source,
+				format: sourcePath.toLowerCase().endsWith('.md') ? 'md' : 'mdx',
+			},
+		}));
+	}
 
 	function setActionMessage(text: string, type = '') {
 		const target = $('#action-message');
@@ -162,6 +184,11 @@ import WikiAdminHeader from '../../../../components/layout/WikiAdminHeader.astro
 		for (const input of [titleInput, slugInput, folderInput, descriptionInput, contentInput]) {
 			input.disabled = locked;
 		}
+		editorHost
+			.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | HTMLSelectElement>('input, textarea, button, select')
+			.forEach((control) => {
+				control.disabled = locked || operation === 'delete';
+			});
 		if (!isNew) {
 			slugInput.readOnly = true;
 			folderInput.readOnly = true;
@@ -263,6 +290,7 @@ import WikiAdminHeader from '../../../../components/layout/WikiAdminHeader.astro
 				const pageResponse = await fetchJson<{ pages: WikiPage[] }>('/api/wiki/pages');
 				childPageCount = pageResponse.pages.filter((page) => page.path !== pagePath && page.path.startsWith(pagePath)).length;
 			}
+			loadEditorSource(contentInput.value);
 			setupForm();
 			loading.hidden = true;
 			editor.hidden = false;
@@ -466,7 +494,6 @@ import WikiAdminHeader from '../../../../components/layout/WikiAdminHeader.astro
 	.preview-tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid #49534d; border-radius: 4px; }
 	.preview-tab { min-height: 34px; padding: 0 14px; border: 0; border-radius: 3px; background: transparent; color: #bdc8c0; font: inherit; font-size: 12px; cursor: pointer; }
 	.preview-tab.is-active { background: #39433d; color: white; }
-	#content { min-height: 340px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; line-height: 1.65; }
 	.markdown-preview { min-height: 340px; padding: 14px; border: 1px solid #58635c; border-radius: 4px; background: #171d1a; color: #edf2ef; overflow-wrap: anywhere; }
 	:global(#markdown-preview img) { max-width: 100%; }
 	:global(#markdown-preview pre) { overflow-x: auto; padding: 12px; background: #0e1310; }
@@ -502,6 +529,6 @@ import WikiAdminHeader from '../../../../components/layout/WikiAdminHeader.astro
 		.page-info { grid-template-columns: 1fr; gap: 3px; }
 		.form-actions { justify-content: stretch; }
 		.form-actions .button { flex: 1 1 100%; }
-		#content, .markdown-preview { min-height: 260px; }
+		.markdown-preview { min-height: 260px; }
 	}
 </style>

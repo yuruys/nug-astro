@@ -1,0 +1,540 @@
+---
+import AdminHeader from '../../../components/admin/AdminHeader.astro';
+import AdminTheme from '../../../components/admin/AdminTheme.astro';
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex, nofollow" />
+		<title>エディタ検証 | ゆるぽーと 管理画面</title>
+	</head>
+	<body>
+		<AdminTheme />
+		<AdminHeader />
+
+		<main class="editor-test-page">
+			<div class="page-content">
+				<a class="back-link" href="/admin/">← 管理画面へ戻る</a>
+				<header class="page-heading">
+					<p class="eyebrow">INDEPENDENT EDITOR TEST</p>
+					<h1>TOAST UI Editor 検証ページ</h1>
+					<p>
+						このページはMarkdownの読み込み・出力と、Markdown／WYSIWYGモード間の変換を確認するための独立した検証環境です。
+						既存の記事やWikiの編集・保存は行いません。MDX・Starlight記法がWYSIWYGで安全に保持されることは保証されません。
+					</p>
+				</header>
+
+				<section class="panel editor-panel" aria-labelledby="editor-heading">
+					<div class="panel-heading">
+						<div>
+							<p class="eyebrow">EDITOR</p>
+							<h2 id="editor-heading">エディタ</h2>
+						</div>
+						<p class="mode-status" aria-live="polite">
+							現在の編集モード: <strong id="current-mode">Markdown</strong>
+						</p>
+					</div>
+					<div class="mode-controls" role="group" aria-label="編集モード">
+						<button class="button secondary mode-button is-active" type="button" data-edit-mode="markdown" aria-pressed="true">Markdown</button>
+						<button class="button secondary mode-button" type="button" data-edit-mode="wysiwyg" aria-pressed="false">WYSIWYG</button>
+					</div>
+					<div id="editor" class="editor-container"></div>
+					<textarea id="initial-markdown" hidden>
+# 見出し1
+これは通常の文章です。
+
+**太字**、*斜体*、~~取り消し線~~、`インラインコード`を確認します。
+
+## リスト
+
+- 項目A
+- 項目B
+  - 項目B-1
+  - 項目B-2
+
+1. 番号付き項目
+2. 番号付き項目
+
+## 引用
+
+> これは引用文です。
+
+## 表
+
+| 項目 | 内容 |
+| --- | --- |
+| Markdown | テスト |
+| Editor | TOAST UI |
+
+## コードブロック
+
+```js
+const message = "Hello, Markdown!";
+console.log(message);
+```
+
+## リンクと画像
+
+[公式サイト](https://ui.toast.com/tui-editor)
+
+![画像表示テスト](/images/mein.webp)
+
+## Admonition
+
+:::note[補足]
+既存のAdmonition記法の保持を確認します。
+:::
+
+## Starlightコンポーネント
+
+&lt;CardGrid&gt;
+  &lt;LinkCard title="テストリンク" href="/docs/" /&gt;
+&lt;/CardGrid&gt;
+
+## 終了
+
+以上が検証用Markdownです。
+					</textarea>
+
+					<div class="actions">
+						<button class="button secondary" id="reload-markdown" type="button">Markdownを再読み込み</button>
+						<button class="button secondary" id="copy-markdown" type="button">Markdownをコピー</button>
+						<button class="button danger" id="reset-editor" type="button">初期状態に戻す</button>
+						<span id="editor-status" class="status" role="status" aria-live="polite"></span>
+					</div>
+				</section>
+
+				<section class="panel output-panel" aria-labelledby="output-heading">
+					<div class="panel-heading">
+						<div>
+							<p class="eyebrow">MARKDOWN OUTPUT</p>
+							<h2 id="output-heading">Markdown出力</h2>
+						</div>
+						<p id="diff-summary" class="diff-summary" aria-live="polite"></p>
+					</div>
+					<p class="help-text">出力を直接編集して「Markdownを再読み込み」を押すと、編集内容をエディタに読み込めます。</p>
+					<textarea id="markdown-output" class="markdown-output" aria-label="現在のMarkdown出力" spellcheck="false"></textarea>
+				</section>
+
+				<section class="panel history-panel" aria-labelledby="history-heading">
+					<div class="panel-heading">
+						<div>
+							<p class="eyebrow">MODE HISTORY</p>
+							<h2 id="history-heading">モード切り替えの記録</h2>
+						</div>
+					</div>
+					<p class="help-text">各欄は、その状態になった時点のMarkdownです。WYSIWYGで編集すると「WYSIWYG編集後」が更新されます。</p>
+					<div class="history-grid">
+						<label class="history-item">
+							<span>初期Markdown</span>
+							<textarea id="history-initial" readonly aria-label="初期Markdown"></textarea>
+						</label>
+						<label class="history-item">
+							<span>モード切り替え後</span>
+							<textarea id="history-switched" readonly aria-label="モード切り替え後のMarkdown" placeholder="WYSIWYGへ切り替えると記録されます"></textarea>
+						</label>
+						<label class="history-item">
+							<span>WYSIWYG編集後</span>
+							<textarea id="history-wysiwyg" readonly aria-label="WYSIWYGで編集した後のMarkdown" placeholder="WYSIWYGモードで編集すると記録されます"></textarea>
+						</label>
+						<label class="history-item">
+							<span>Markdownに戻した後</span>
+							<textarea id="history-returned" readonly aria-label="Markdownモードに戻した後のMarkdown" placeholder="Markdownへ戻すと記録されます"></textarea>
+						</label>
+					</div>
+				</section>
+
+				<section class="panel frontmatter-panel" aria-labelledby="frontmatter-heading">
+					<div class="panel-heading">
+						<div>
+							<p class="eyebrow">FRONTMATTER TEST</p>
+							<h2 id="frontmatter-heading">Frontmatter保持テスト</h2>
+						</div>
+					</div>
+					<p class="help-text">
+						Frontmatterはエディタ本文とは別に保持しています。この欄の内容はモード切り替えで変換されません。
+					</p>
+					<textarea id="frontmatter-input" class="frontmatter-input" aria-label="Frontmatter保持テスト" spellcheck="false">---
+title: エディタ検証用記事
+description: TOAST UI EditorのMarkdown互換性を確認するための記事です。
+category: 検証
+date: 2026-11-09
+tags:
+  - 検証
+  - Markdown
+---</textarea>
+					<div class="actions">
+						<button class="button secondary" id="copy-frontmatter" type="button">Frontmatterをコピー</button>
+						<span id="frontmatter-status" class="status" role="status" aria-live="polite"></span>
+					</div>
+				</section>
+			</div>
+		</main>
+	</body>
+</html>
+
+<script>
+	import Editor from '@toast-ui/editor';
+	import '@toast-ui/editor/dist/toastui-editor.css';
+	import '@toast-ui/editor/dist/i18n/ja-jp';
+
+	const initialMarkdown = document.querySelector<HTMLTextAreaElement>('#initial-markdown');
+	const editorElement = document.querySelector<HTMLDivElement>('#editor');
+	const output = document.querySelector<HTMLTextAreaElement>('#markdown-output');
+	const currentModeLabel = document.querySelector<HTMLElement>('#current-mode');
+	const diffSummary = document.querySelector<HTMLElement>('#diff-summary');
+	const editorStatus = document.querySelector<HTMLElement>('#editor-status');
+	const frontmatterInput = document.querySelector<HTMLTextAreaElement>('#frontmatter-input');
+	const frontmatterStatus = document.querySelector<HTMLElement>('#frontmatter-status');
+	const compactViewport = window.matchMedia('(max-width: 700px)');
+
+	if (!initialMarkdown || !editorElement || !output || !currentModeLabel || !diffSummary || !editorStatus || !frontmatterInput || !frontmatterStatus) {
+		throw new Error('TOAST UI Editor test page could not find required elements.');
+	}
+
+	const initialValue = initialMarkdown.value.trim();
+	const editor = new Editor({
+		el: editorElement,
+		height: '600px',
+		initialEditType: 'markdown',
+		initialValue,
+		previewStyle: compactViewport.matches ? 'tab' : 'vertical',
+		hideModeSwitch: true,
+		usageStatistics: false,
+		language: 'ja-JP',
+	});
+	compactViewport.addEventListener('change', (event) => {
+		editor.changePreviewStyle(event.matches ? 'tab' : 'vertical');
+	});
+
+	type Mode = 'markdown' | 'wysiwyg';
+	let currentMode: Mode = 'markdown';
+
+	const historyFields: Record<string, HTMLTextAreaElement | null> = {
+		initial: document.querySelector<HTMLTextAreaElement>('#history-initial'),
+		switched: document.querySelector<HTMLTextAreaElement>('#history-switched'),
+		wysiwyg: document.querySelector<HTMLTextAreaElement>('#history-wysiwyg'),
+		returned: document.querySelector<HTMLTextAreaElement>('#history-returned'),
+	};
+
+	const capture = (stage: keyof typeof historyFields, markdown: string) => {
+		const field = historyFields[stage];
+		if (field) field.value = markdown;
+	};
+
+	const updateOutput = () => {
+		const markdown = editor.getMarkdown();
+		output.value = markdown;
+		const unchanged = markdown === initialValue;
+		diffSummary.textContent = unchanged
+			? `初期Markdownと同じ (${markdown.length}文字)`
+			: `初期Markdownから変更あり (${initialValue.length}文字 → ${markdown.length}文字)`;
+	};
+
+	const updateMode = (mode: Mode) => {
+		currentMode = mode;
+		currentModeLabel.textContent = mode === 'markdown' ? 'Markdown' : 'WYSIWYG';
+		document.querySelectorAll<HTMLButtonElement>('[data-edit-mode]').forEach((button) => {
+			const selected = button.dataset.editMode === mode;
+			button.setAttribute('aria-pressed', String(selected));
+			button.classList.toggle('is-active', selected);
+		});
+	};
+
+	capture('initial', initialValue);
+	updateOutput();
+
+	editor.on('change', () => {
+		updateOutput();
+		if (currentMode === 'wysiwyg') capture('wysiwyg', editor.getMarkdown());
+	});
+
+	document.querySelectorAll<HTMLButtonElement>('[data-edit-mode]').forEach((button) => {
+		button.addEventListener('click', () => {
+			const nextMode = button.dataset.editMode;
+			if (nextMode !== 'markdown' && nextMode !== 'wysiwyg') return;
+			if (nextMode === currentMode) return;
+
+			editor.changeMode(nextMode, true);
+			updateMode(nextMode);
+			requestAnimationFrame(() => {
+				updateOutput();
+				if (nextMode === 'wysiwyg') capture('switched', editor.getMarkdown());
+				if (nextMode === 'markdown') capture('returned', editor.getMarkdown());
+			});
+		});
+	});
+
+	document.querySelector<HTMLButtonElement>('#reload-markdown')?.addEventListener('click', () => {
+		editor.setMarkdown(output.value);
+		updateOutput();
+		editorStatus.textContent = '出力欄のMarkdownをエディタに読み込みました。';
+	});
+
+	document.querySelector<HTMLButtonElement>('#copy-markdown')?.addEventListener('click', async () => {
+		try {
+			await navigator.clipboard.writeText(editor.getMarkdown());
+			editorStatus.textContent = 'Markdownをクリップボードにコピーしました。';
+		} catch {
+			editorStatus.textContent = 'コピーできませんでした。ブラウザーのクリップボード権限を確認してください。';
+		}
+	});
+
+	document.querySelector<HTMLButtonElement>('#reset-editor')?.addEventListener('click', () => {
+		editor.changeMode('markdown', true);
+		updateMode('markdown');
+		editor.setMarkdown(initialValue);
+		frontmatterInput.value = `---
+title: エディタ検証用記事
+description: TOAST UI EditorのMarkdown互換性を確認するための記事です。
+category: 検証
+date: 2026-11-09
+tags:
+  - 検証
+  - Markdown
+---`;
+		Object.keys(historyFields).forEach((stage) => capture(stage, ''));
+		capture('initial', initialValue);
+		updateOutput();
+		editorStatus.textContent = 'エディタとFrontmatterを初期状態に戻しました。';
+		frontmatterStatus.textContent = '';
+	});
+
+	document.querySelector<HTMLButtonElement>('#copy-frontmatter')?.addEventListener('click', async () => {
+		try {
+			await navigator.clipboard.writeText(frontmatterInput.value);
+			frontmatterStatus.textContent = 'Frontmatterをクリップボードにコピーしました。';
+		} catch {
+			frontmatterStatus.textContent = 'コピーできませんでした。ブラウザーのクリップボード権限を確認してください。';
+		}
+	});
+</script>
+
+<style>
+	:global(body) {
+		margin: 0;
+		background: #111416;
+		color: #f1f4f2;
+		font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Yu Gothic", Meiryo, sans-serif;
+	}
+
+	.editor-test-page {
+		--test-bg: #111416;
+		--test-surface: #202629;
+		--test-border: #424b4f;
+		--test-text: #f1f4f2;
+		--test-muted: #aeb8b2;
+		--test-accent: #8bc56c;
+		min-height: calc(100vh - 72px);
+		padding: 32px 24px 72px;
+		background: var(--test-bg);
+		color: var(--test-text);
+	}
+
+	:global(html[data-admin-theme='light'] body) {
+		background: #f2f5f6;
+		color: #202725;
+	}
+
+	:global(html[data-admin-theme='light']) .editor-test-page {
+		--test-bg: #f2f5f6;
+		--test-surface: #fff;
+		--test-border: #d3dcde;
+		--test-text: #202725;
+		--test-muted: #59665f;
+		--test-accent: #3d762b;
+	}
+
+	.page-content {
+		width: min(1200px, 100%);
+		margin: 0 auto;
+	}
+
+	.back-link {
+		display: inline-block;
+		margin-bottom: 20px;
+		color: var(--test-accent);
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.page-heading {
+		margin-bottom: 24px;
+	}
+
+	.page-heading h1 {
+		margin: 4px 0 10px;
+		font-size: clamp(1.7rem, 3vw, 2.4rem);
+	}
+
+	.page-heading > p:last-child,
+	.help-text {
+		color: var(--test-muted);
+		line-height: 1.75;
+	}
+
+	.eyebrow {
+		color: var(--test-accent);
+		font-size: 0.72rem;
+		font-weight: 800;
+		letter-spacing: 0.1em;
+	}
+
+	.panel {
+		margin-top: 20px;
+		padding: 22px;
+		border: 1px solid var(--test-border);
+		border-radius: 8px;
+		background: var(--test-surface);
+	}
+
+	.panel-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 16px;
+	}
+
+	.panel-heading h2 {
+		margin: 3px 0 0;
+		font-size: 1.25rem;
+	}
+
+	.mode-status,
+	.diff-summary {
+		margin: 0;
+		color: var(--test-muted);
+		font-size: 0.92rem;
+	}
+
+	.mode-status strong {
+		color: var(--test-accent);
+	}
+
+	.mode-controls,
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+		margin: 14px 0;
+	}
+
+	.button {
+		min-height: 40px;
+		padding: 8px 14px;
+		border: 1px solid var(--test-border);
+		border-radius: 5px;
+		background: #323a3e;
+		color: #f1f4f2;
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+	}
+
+	:global(html[data-admin-theme='light']) .button {
+		background: #f5f8f6;
+		color: #202725;
+	}
+
+	.button:hover,
+	.button.is-active {
+		border-color: var(--test-accent);
+	}
+
+	.button.is-active {
+		box-shadow: inset 0 0 0 1px var(--test-accent);
+	}
+
+	.button.danger {
+		border-color: #9c5555;
+	}
+
+	.editor-container {
+		overflow: hidden;
+		border-radius: 4px;
+		background: #fff;
+		color: #222;
+	}
+
+	.markdown-output,
+	.frontmatter-input,
+	.history-item textarea {
+		display: block;
+		width: 100%;
+		border: 1px solid var(--test-border);
+		border-radius: 4px;
+		background: #151a1c;
+		color: var(--test-text);
+		font: 13px/1.6 "JetBrains Mono", Consolas, monospace;
+		tab-size: 2;
+	}
+
+	:global(html[data-admin-theme='light']) .markdown-output,
+	:global(html[data-admin-theme='light']) .frontmatter-input,
+	:global(html[data-admin-theme='light']) .history-item textarea {
+		background: #fbfcfc;
+		color: #202725;
+	}
+
+	.markdown-output,
+	.frontmatter-input {
+		min-height: 260px;
+		padding: 12px;
+		resize: vertical;
+	}
+
+	.frontmatter-input {
+		min-height: 190px;
+	}
+
+	.history-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+		margin-top: 16px;
+	}
+
+	.history-item {
+		display: grid;
+		gap: 8px;
+		color: var(--test-text);
+		font-weight: 700;
+	}
+
+	.history-item textarea {
+		min-height: 180px;
+		padding: 10px;
+		resize: vertical;
+		font-weight: 400;
+	}
+
+	.status {
+		color: var(--test-accent);
+		font-size: 0.9rem;
+	}
+
+	@media (max-width: 700px) {
+		.editor-test-page {
+			padding: 24px 14px 48px;
+		}
+
+		.panel {
+			padding: 16px;
+		}
+
+		.panel-heading {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.history-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
