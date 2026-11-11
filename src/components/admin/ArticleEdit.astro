@@ -103,7 +103,16 @@ const title = isGuide ? '攻略を編集' : 'ニュースを編集';
 			let selectedTags = new Set<string>();
 			const sourceBody = editorHost.querySelector<HTMLTextAreaElement>('.source-body');
 			const sourceModeButton = editorHost.querySelector<HTMLButtonElement>('.source-mode');
-			if (!sourceBody || !sourceModeButton) throw new Error('MarkdownEditor source controls are unavailable.');
+			const editorRoot = editorHost.querySelector<HTMLElement>('.markdown-editor');
+			if (!sourceBody || !sourceModeButton || !editorRoot) throw new Error('MarkdownEditor source controls are unavailable.');
+			const markdownEditor = editorRoot;
+			const editorReady = new Promise<void>((resolve) => {
+				if (markdownEditor.dataset.editorReady === 'true') {
+					resolve();
+					return;
+				}
+				markdownEditor.addEventListener('markdown-editor-ready', () => resolve(), { once: true });
+			});
 			editorHost.addEventListener('markdown-editor-change', (event) => {
 				bodyEditor.value = (event as CustomEvent<{ body: string }>).detail.body;
 			});
@@ -222,10 +231,12 @@ const title = isGuide ? '攻略を編集' : 'ニュースを編集';
 						} finally { addTagButton.disabled = false; }
 					});
 					renderTags();
-					(document.getElementById('body') as HTMLTextAreaElement).value = content?.body ?? '';
-					editorHost.dispatchEvent(new CustomEvent('markdown-editor-load', {
+					const articleBody = content?.body ?? '';
+					bodyEditor.value = articleBody;
+					await editorReady;
+					markdownEditor.dispatchEvent(new CustomEvent('markdown-editor-load', {
 						detail: {
-							source: content?.body ?? '',
+							source: articleBody,
 							format: article.source_path.toLowerCase().endsWith('.mdx') ? 'mdx' : 'md',
 						},
 					}));

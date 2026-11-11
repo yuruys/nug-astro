@@ -599,6 +599,8 @@ const { contentType, source, format = 'md', bodyOnly = false } = Astro.props;
 				emitChange();
 			})();
 		});
+		root.dataset.editorReady = 'true';
+		root.dispatchEvent(new CustomEvent('markdown-editor-ready'));
 		updateSafety();
 		emitChange();
 	}
