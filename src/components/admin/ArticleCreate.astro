@@ -1,5 +1,5 @@
 ---
-import AdminTheme from './AdminTheme.astro';
+import AdminLayout from './AdminLayout.astro';
 import MarkdownEditor from '../editor/MarkdownEditor.astro';
 
 interface Props { contentType: 'guide' | 'news' }
@@ -11,23 +11,8 @@ const title = isGuide ? '攻略を新規作成' : 'ニュースを新規作成';
 <html lang="ja">
 	<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex, nofollow" /><title>{title} | ゆるぽーと 管理画面</title></head>
 	<body data-content-type={contentType} data-guide={String(isGuide)}>
-		<AdminTheme />
-		<header class="topbar">
-			<a class="brand" href="/admin/" aria-label="管理画面トップ"><span class="brand-mark">YP</span><span><strong>ゆるぽーと</strong><small>管理画面</small></span></a>
-			<button class="menu-toggle" id="menu-toggle" type="button" aria-controls="admin-nav" aria-expanded="false" aria-label="メニューを開く"><span></span><span></span><span></span></button>
-			<button class="theme-toggle" type="button" data-admin-theme-toggle aria-label="テーマを切り替える"><svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg><svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.3A8.5 8.5 0 0 1 8.7 3.5 8.5 8.5 0 1 0 20.5 15.3Z"></path></svg></button>
-			<a class="site-link" href="/">サイトを見る ↗</a>
-		</header>
-		<div class="shell">
-			<aside class="sidebar" id="admin-nav" aria-label="管理メニュー"><p class="nav-label">管理メニュー</p><nav>
-				<a href="/admin/" class="nav-link">▦ ダッシュボード</a>
-				<a href="/admin/guide/" class:list={['nav-link', { active: isGuide }]} aria-current={isGuide ? 'page' : undefined}>▤ 攻略管理</a>
-				<a href="/admin/news/" class:list={['nav-link', { active: !isGuide }]} aria-current={!isGuide ? 'page' : undefined}>◷ ニュース管理</a>
-				<a href="/admin/servers/" class="nav-link">◈ サーバー管理</a>
-				<a href="/admin/taxonomy/" class="nav-link">◇ カテゴリ・タグ管理</a>
-				<a href="/admin/review/" class="nav-link">✓ Wikiレビュー</a>
-			</nav><div class="sidebar-note"><span class="live-dot"></span> 管理者セッションで保護されています</div></aside>
-			<main class="main">
+		<AdminLayout active={contentType}>
+			<div class="main">
 				<div class="page-heading"><div><p class="eyebrow">NEW ARTICLE</p><h1>{title}</h1><p class="intro">記事IDを予約した後、この画面から公開します。</p></div><a class="button secondary back-button" href={`/admin/${contentType}/`}>一覧へ戻る</a></div>
 				<div class="notice" id="notice" role="alert" aria-live="polite" hidden></div>
 				<section class="panel form-panel" aria-labelledby="form-title">
@@ -66,8 +51,8 @@ const title = isGuide ? '攻略を新規作成' : 'ニュースを新規作成';
 					</div><div class="form-actions"><a class="button secondary" href={`/admin/${contentType}/`}>戻る</a><button class="button primary" id="submit-button" type="submit">記事IDを予約する</button></div></form>
 				</section>
 				<section class="panel success-panel" id="reservation-panel" aria-live="polite" hidden><div class="success-mark" aria-hidden="true">✓</div><p class="eyebrow">ID RESERVED</p><h2>記事IDを予約しました</h2><dl class="reservation-details"><div><dt>記事ID</dt><dd id="reserved-article-id"></dd></div><div><dt>公開状態</dt><dd>公開待ち</dd></div><div><dt>source path</dt><dd id="reserved-source-path"></dd></div></dl><p class="success-note">入力内容はこの画面に保持されています。「公開する」からGitHubへ作成できます。</p></section>
-			</main>
-		</div>
+			</div>
+		</AdminLayout>
 		<script>
 			import { renderMarkdownPreview } from '../../lib/markdown-preview';
 			import { setupArticleImageUpload } from '../../lib/article-image-upload';
@@ -242,8 +227,6 @@ const title = isGuide ? '攻略を新規作成' : 'ニュースを新規作成';
 				finally { submitButton.disabled = false; submitButton.textContent = reservedArticleDbId === null ? '記事IDを予約する' : '公開する'; }
 			});
 			(document.getElementById('date') as HTMLInputElement).value = localDate();
-			const menuButton = document.getElementById('menu-toggle') as HTMLButtonElement;
-			menuButton.addEventListener('click', () => { const open = menuButton.getAttribute('aria-expanded') !== 'true'; menuButton.setAttribute('aria-expanded', String(open)); menuButton.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く'); (document.getElementById('admin-nav') as HTMLElement).classList.toggle('is-open', open); });
 			void loadServers();
 			void loadTaxonomy().catch((error: unknown) => showError(error instanceof Error ? error.message : 'カテゴリ・タグを読み込めませんでした。'));
 		</script>

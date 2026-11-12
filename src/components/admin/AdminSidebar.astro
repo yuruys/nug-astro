@@ -1,6 +1,6 @@
 ---
 interface Props {
-	active: "dashboard" | "guide" | "news" | "servers" | "review" | "taxonomy";
+	active: "dashboard" | "guide" | "news" | "servers" | "review" | "taxonomy" | "wiki";
 }
 
 const { active } = Astro.props;
@@ -41,6 +41,12 @@ const navItems = [
 		href: "/admin/review/",
 		icon: "✓",
 		label: "Wikiレビュー",
+	},
+	{
+		key: "wiki",
+		href: "/wiki/manage/",
+		icon: "▧",
+		label: "Wikiページ管理",
 	},
 ] as const;
 ---

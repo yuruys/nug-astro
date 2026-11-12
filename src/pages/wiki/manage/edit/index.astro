@@ -1,7 +1,6 @@
 ---
-import AdminTheme from '../../../../components/admin/AdminTheme.astro';
-import WikiAdminHeader from '../../../../components/layout/WikiAdminHeader.astro';
 import MarkdownEditor from '../../../../components/editor/MarkdownEditor.astro';
+import AdminLayout from '../../../../components/admin/AdminLayout.astro';
 ---
 
 <!doctype html>
@@ -13,8 +12,8 @@ import MarkdownEditor from '../../../../components/editor/MarkdownEditor.astro';
 		<title>Wikiページ編集 | ゆるぽーと</title>
 	</head>
 	<body>
-		<WikiAdminHeader active="manage" />
-		<main class="edit-page">
+		<AdminLayout active="wiki">
+			<div class="edit-page">
 			<header class="page-heading">
 				<div>
 					<a class="back-link" href="/wiki/manage/">← Wiki管理へ戻る</a>
@@ -66,8 +65,8 @@ import MarkdownEditor from '../../../../components/editor/MarkdownEditor.astro';
 				</form>
 				<div id="pr-info" class="pr-info" hidden></div>
 			</section>
-		</main>
-		<AdminTheme />
+			</div>
+		</AdminLayout>
 	</body>
 </html>
 

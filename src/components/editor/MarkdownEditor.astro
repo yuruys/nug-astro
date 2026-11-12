@@ -36,6 +36,19 @@ const { contentType, source, format = 'md', bodyOnly = false } = Astro.props;
 	<textarea class="editor-textarea frontmatter" aria-label="Frontmatter" readonly spellcheck="false" hidden={bodyOnly}></textarea>
 	<div class="source-panel">
 		<label class="editor-label">Markdown本文</label>
+		<div class="source-toolbar" role="toolbar" aria-label="Markdown書式">
+			<button class="editor-button" type="button" data-markdown-action="bold" title="太字">太字</button>
+			<button class="editor-button" type="button" data-markdown-action="italic" title="斜体">斜体</button>
+			<button class="editor-button" type="button" data-markdown-action="heading-2" title="見出し2">H2</button>
+			<button class="editor-button" type="button" data-markdown-action="heading-3" title="見出し3">H3</button>
+			<button class="editor-button" type="button" data-markdown-action="unordered-list" title="箇条書き">箇条書き</button>
+			<button class="editor-button" type="button" data-markdown-action="ordered-list" title="番号付きリスト">番号付き</button>
+			<button class="editor-button" type="button" data-markdown-action="quote" title="引用">引用</button>
+			<button class="editor-button" type="button" data-markdown-action="link" title="リンク">リンク</button>
+			<button class="editor-button" type="button" data-markdown-action="image" title="画像">画像</button>
+			<button class="editor-button" type="button" data-markdown-action="undo" title="元に戻す">↶</button>
+			<button class="editor-button" type="button" data-markdown-action="redo" title="やり直す">↷</button>
+		</div>
 		<textarea class="editor-textarea source-body" aria-label="Markdown本文" spellcheck="false"></textarea>
 	</div>
 	<div class="visual-panel" hidden>
@@ -59,9 +72,7 @@ const { contentType, source, format = 'md', bodyOnly = false } = Astro.props;
 </section>
 
 <script>
-	import { Crepe } from '@milkdown/crepe';
-	import '@milkdown/crepe/theme/common/style.css';
-	import '@milkdown/crepe/theme/classic.css';
+	import { mountMarkdownSurface, type MarkdownSurface } from '../../lib/markdown-editor/milkdown-surface.ts';
 	import { createEditorDocument, createEditorResult, requiresSourceMode, serializeEditorDocument } from '../../lib/editor/editor-source.ts';
 	import { preserveUntouchedMarkdown } from '../../lib/editor/editor-serialization.ts';
 	import type { EditorMode } from '../../lib/editor/editor-types.ts';
@@ -104,7 +115,7 @@ const { contentType, source, format = 'md', bodyOnly = false } = Astro.props;
 		const cardGridEditor = root.querySelector<HTMLElement>('.card-grid-editor')!;
 		const admonitionEditor = root.querySelector<HTMLElement>('.admonition-editor')!;
 		const blockControls = root.querySelector<HTMLElement>('.block-controls')!;
-		let editor: Crepe | undefined;
+		let editor: MarkdownSurface | undefined;
 		let mode: EditorMode = 'source';
 		let editorDirty = false;
 		let structuredDirty = false;
@@ -503,21 +514,11 @@ const { contentType, source, format = 'md', bodyOnly = false } = Astro.props;
 				blockControls.hidden = true;
 				visualHelp.textContent = 'MarkdownをMilkdownで編集できます。';
 				editorRoot.replaceChildren();
-				const crepe = new Crepe({
-					root: editorRoot,
-					defaultValue: body,
-					features: {
-						[Crepe.Feature.Toolbar]: true,
-						[Crepe.Feature.ImageBlock]: false,
-					},
-				});
-				crepe.on((listener) => listener.markdownUpdated(() => {
+				editor = await mountMarkdownSurface(editorRoot, body, () => {
 					if (mode !== 'visual') return;
 					editorDirty = true;
 					emitChange();
-				}));
-				await crepe.create();
-				editor = crepe;
+				});
 			}
 			setMode('visual');
 			message.textContent = '保存処理はありません。出力欄または markdown-editor-change イベントから内容を取得できます。';
@@ -535,6 +536,55 @@ const { contentType, source, format = 'md', bodyOnly = false } = Astro.props;
 
 		sourceButton.addEventListener('click', () => void switchToSource());
 		visualButton.addEventListener('click', () => void switchToVisual());
+		root.querySelector<HTMLElement>('.source-toolbar')!.addEventListener('click', (event) => {
+			const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-markdown-action]');
+			const action = button?.dataset.markdownAction;
+			if (!action) return;
+			if (action === 'undo' || action === 'redo') {
+				sourceBody.focus();
+				document.execCommand(action);
+				return;
+			}
+
+			const start = sourceBody.selectionStart;
+			const end = sourceBody.selectionEnd;
+			const selected = sourceBody.value.slice(start, end);
+			let inserted = selected;
+			let selectionStart = start;
+			let selectionEnd = end;
+
+			if (action === 'bold' || action === 'italic') {
+				const marker = action === 'bold' ? '**' : '*';
+				const content = selected || '強調テキスト';
+				inserted = `${marker}${content}${marker}`;
+				selectionStart = start + marker.length;
+				selectionEnd = selectionStart + content.length;
+			} else if (action === 'link') {
+				const content = selected || 'リンクテキスト';
+				inserted = `[${content}](URL)`;
+				selectionStart = start + content.length + 3;
+				selectionEnd = selectionStart + 3;
+			} else if (action === 'image') {
+				inserted = '![代替テキスト](画像URL)';
+				selectionStart = start + 2;
+				selectionEnd = selectionStart + 6;
+			} else {
+				const prefix = action === 'heading-2' ? '## '
+					: action === 'heading-3' ? '### '
+						: action === 'unordered-list' ? '- '
+							: action === 'ordered-list' ? '1. '
+								: action === 'quote' ? '> ' : '';
+				if (!prefix) return;
+				inserted = (selected || 'テキスト').split('\n').map((line) => `${prefix}${line}`).join('\n');
+				selectionStart = start;
+				selectionEnd = start + inserted.length;
+			}
+
+			sourceBody.setRangeText(inserted, start, end, 'select');
+			sourceBody.setSelectionRange(selectionStart, selectionEnd);
+			sourceBody.focus();
+			sourceBody.dispatchEvent(new Event('input', { bubbles: true }));
+		});
 		sourceBody.addEventListener('input', () => {
 			updateSafety();
 			emitChange();
@@ -667,10 +717,16 @@ const { contentType, source, format = 'md', bodyOnly = false } = Astro.props;
 
 	.editor-controls,
 	.block-controls,
-	.image-insert-controls {
+	.image-insert-controls,
+	.source-toolbar {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
+	}
+
+	.source-toolbar .editor-button {
+		min-height: 38px;
+		padding: 0 10px;
 	}
 
 	:global(.editor-actions) {

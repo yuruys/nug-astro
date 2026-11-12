@@ -1,6 +1,5 @@
 ---
-import WikiAdminHeader from '../../../components/layout/WikiAdminHeader.astro';
-import AdminTheme from '../../../components/admin/AdminTheme.astro';
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
 ---
 
 <!doctype html>
@@ -12,8 +11,8 @@ import AdminTheme from '../../../components/admin/AdminTheme.astro';
 		<title>Wiki管理 | ゆるぽーと</title>
 	</head>
 	<body>
-		<WikiAdminHeader active="manage" />
-		<main class="manage-page">
+		<AdminLayout active="wiki">
+			<div class="manage-page">
 			<header class="page-heading">
 				<div>
 					<p class="eyebrow">WIKI MANAGEMENT</p>
@@ -57,8 +56,8 @@ import AdminTheme from '../../../components/admin/AdminTheme.astro';
 					</table>
 				</div>
 			</section>
-		</main>
-		<AdminTheme />
+			</div>
+		</AdminLayout>
 	</body>
 </html>
 
